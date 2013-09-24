@@ -1,4 +1,4 @@
 registration-service
 ====================
 
-REST Service for Waste Carrier Registrations
+Waste Carrier Registrations REST Services
