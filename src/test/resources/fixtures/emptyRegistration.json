@@ -1,0 +1,21 @@
+{
+	"id":null,
+	"businessType":null, 
+	"companyName":null, 
+	"individualsType":null, 
+	"publicBodyType":null, 
+	"publicBodyTypeOther":null, 
+	"houseNumber":null, 
+	"streetLineOne":null,
+	"streetLineTwo":null,
+	"townCity":null,
+	"postcode":null,
+	"address":null, 
+	"uprn":null,
+	"title":null, 
+	"firstName":null, 
+	"lastName":null, 
+	"phoneNumber":null, 
+	"email":null, 
+	"declaration":null
+}

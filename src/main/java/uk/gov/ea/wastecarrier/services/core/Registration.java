@@ -1,5 +1,7 @@
 package uk.gov.ea.wastecarrier.services.core;
 
+import java.util.logging.Logger;
+
 import javax.validation.Valid;
 
 import net.vz.mongodb.jackson.Id;
@@ -105,6 +107,9 @@ public class Registration
 	
 	@JsonInclude(Include.NON_DEFAULT)	/*TEST: This should not be generated in the JSON */
 	private MetaData metaData;
+	
+	// Standard logging declaration
+	private Logger log = Logger.getLogger(Registration.class.getName());
 	
 	/**
 	 * Default constructor is required for non complete objects, and as alternative to 
@@ -477,4 +482,65 @@ public class Registration
 	{
 		this.metaData = metaData;
 	}
+	
+	/**
+	 * Custom comparison method for comparing the contents of the user entered fields 
+	 * to ensure objects are the same.
+	 * 
+	 * Effectively created to enable automated testing of comparison objects.
+	 */
+	@Override
+    public boolean equals(Object obj) {
+		log.finer("Start equals()");
+        if (this == obj) 
+        {
+            return true;
+        }
+        if(obj == null || getClass() != obj.getClass()) 
+        {
+            return false;
+        }
+        boolean res = true; // default to true, and if any field is not null, reset to false
+        res = checkString(this.getBusinessType(), ((Registration) obj).getBusinessType(), res);
+        res = checkString(this.getCompanyName(), ((Registration) obj).getCompanyName(), res);
+        res = checkString(this.getIndividualsType(), ((Registration) obj).getIndividualsType(), res);
+        res = checkString(this.getPublicBodyType(), ((Registration) obj).getPublicBodyType(), res);
+        res = checkString(this.getPublicBodyTypeOther(), ((Registration) obj).getPublicBodyTypeOther(), res);
+        res = checkString(this.getHouseNumber(), ((Registration) obj).getHouseNumber(), res);
+        res = checkString(this.getStreetLineOne(), ((Registration) obj).getStreetLineOne(), res);
+        res = checkString(this.getStreetLineTwo(), ((Registration) obj).getStreetLineTwo(), res);
+        res = checkString(this.getTownCity(), ((Registration) obj).getTownCity(), res);
+        res = checkString(this.getPostcode(), ((Registration) obj).getPostcode(), res);
+        res = checkString(this.getAddress(), ((Registration) obj).getAddress(), res);
+        res = checkString(this.getUprn(), ((Registration) obj).getUprn(), res);
+        res = checkString(this.getTitle(), ((Registration) obj).getTitle(), res);
+        res = checkString(this.getFirstName(), ((Registration) obj).getFirstName(), res);
+        res = checkString(this.getLastName(), ((Registration) obj).getLastName(), res);
+        res = checkString(this.getPhoneNumber(), ((Registration) obj).getPhoneNumber(), res);
+        res = checkString(this.getEmail(), ((Registration) obj).getEmail(), res);
+        res = checkString(this.getDeclaration(), ((Registration) obj).getDeclaration(), res);
+        log.finer("equals result: " + res);
+        return res;
+    }
+	
+	/**
+	 * Helper method for comparing strings, and returning status boolean
+	 * @param val1
+	 * @param val2
+	 * @param validSoFar
+	 * @return
+	 */
+	private boolean checkString(String val1, String val2, boolean validSoFar)
+	{
+		if (val1 != null && validSoFar)
+	    {
+			validSoFar = false;
+	    	if (val1.compareTo(val2) == 0)
+	    	{
+	    		validSoFar = true;
+	    	}
+	    }
+		return validSoFar;
+	}
+
 }

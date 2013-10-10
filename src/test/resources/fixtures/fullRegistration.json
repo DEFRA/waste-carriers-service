@@ -1,0 +1,21 @@
+{
+	"id":null,
+	"businessType":"businessTypeVal", 
+	"companyName":"testJSONcompanyName", 
+	"individualsType":"indivTypeVal", 
+	"publicBodyType":null, 
+	"publicBodyTypeOther":null, 
+	"houseNumber":"1", 
+	"streetLineOne":null,
+	"streetLineTwo":null,
+	"townCity":null,
+	"postcode":"BS3 3GE",
+	"address":null, 
+	"uprn":null,
+	"title":"Mr", 
+	"firstName":"firstname", 
+	"lastName":"lastname", 
+	"phoneNumber":"34534654", 
+	"email":"email@you.com", 
+	"declaration":"on"
+}
