@@ -1,0 +1,28 @@
+# Default parameters defined in WasteCarrierConfiguration
+template: Hello, %s, %s!
+defaultName: Stranger
+
+# messageQueue complex parameter to show class of different configuration types MessageQueueConfiguration
+messageQueue:
+  host: host.myexamplevalue.com
+  port: 5673
+
+# Added standard logging information
+logging:
+  # ...
+  # Settings for logging to stdout.
+  console:
+
+    # If true, write log statements to stdout.
+    enabled: true
+
+    # Do not display log statements below this threshold to stdout.
+    threshold: ALL
+
+# added database connection properties, DatabaseConfiguration
+database:
+  host: 127.0.0.1
+  port: 27017
+  name: waste-carriers
+  
+# more properties go here

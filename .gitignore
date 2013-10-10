@@ -4,3 +4,14 @@
 *.jar
 *.war
 *.ear
+
+# Ignore Output folder #
+target
+
+# Ignore eclipse project files #
+.classpath
+.settings
+.project
+
+# Ignore dependency reduced POM #
+dependency-reduced-pom.xml
