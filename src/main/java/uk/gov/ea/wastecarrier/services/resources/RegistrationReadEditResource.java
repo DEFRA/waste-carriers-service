@@ -132,11 +132,29 @@ public class RegistrationReadEditResource
 			JacksonDBCollection<Registration, String> registrations = JacksonDBCollection.wrap(
 					db.getCollection(Registration.COLLECTION_NAME), Registration.class, String.class);
 			
-			// Update Registration MetaData last Modified Time
-			MetaData md = reg.getMetaData();
-			md.setLastModified(MetaData.getCurrentDateTime());
-			reg.setMetaData(md);
-			
+			// Get and check if ID exist
+			Registration foundReg = null;
+			try
+			{
+				foundReg = registrations.findOneById(id);
+				if (foundReg != null)
+				{
+					// Update Registration MetaData last Modified Time
+					MetaData md = foundReg.getMetaData();
+					md.setLastModified(MetaData.getCurrentDateTime());
+					reg.setMetaData(md);
+				}
+				else
+				{
+					throw new Exception("Registration not Found in Database");
+				}
+			}
+			catch (Exception e)
+			{
+				log.severe("Cannot find Registration ID: " + id + ". Error: " + e.getMessage() );
+				throw new WebApplicationException(Status.NOT_FOUND);
+			}
+			// If object found
 			WriteResult<Registration, String> result = registrations.updateById(id, reg);
 			log.fine("Found result: '" + result + "' " );
 			
