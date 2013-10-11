@@ -53,9 +53,9 @@ public class Registration
 	@JsonProperty
 	private String houseNumber;
 	@JsonProperty
-	private String streetLineOne;
+	private String streetLine1;
 	@JsonProperty
-	private String streetLineTwo;
+	private String streetLine2;
 	@JsonProperty
 	private String townCity;
 	@NotEmpty
@@ -222,17 +222,17 @@ public class Registration
 	/**
 	 * @return the streetLineOne
 	 */
-	public String getStreetLineOne()
+	public String getStreetLine1()
 	{
-		return streetLineOne;
+		return streetLine1;
 	}
 
 	/**
 	 * @return the streetLineTwo
 	 */
-	public String getStreetLineTwo()
+	public String getStreetLine2()
 	{
-		return streetLineTwo;
+		return streetLine2;
 	}
 
 	/**
@@ -382,17 +382,17 @@ public class Registration
 	/**
 	 * @param streetLineOne the streetLineOne to set
 	 */
-	public void setStreetLineOne(String streetLineOne)
+	public void setStreetLine1(String streetLineOne)
 	{
-		this.streetLineOne = streetLineOne;
+		this.streetLine1 = streetLineOne;
 	}
 	
 	/**
 	 * @param streetLineTwo the streetLineTwo to set
 	 */
-	public void setStreetLineTwo(String streetLineTwo)
+	public void setStreetLine2(String streetLineTwo)
 	{
-		this.streetLineTwo = streetLineTwo;
+		this.streetLine2 = streetLineTwo;
 	}
 	
 	/**
@@ -507,8 +507,8 @@ public class Registration
         res = checkString(this.getPublicBodyType(), ((Registration) obj).getPublicBodyType(), res);
         res = checkString(this.getPublicBodyTypeOther(), ((Registration) obj).getPublicBodyTypeOther(), res);
         res = checkString(this.getHouseNumber(), ((Registration) obj).getHouseNumber(), res);
-        res = checkString(this.getStreetLineOne(), ((Registration) obj).getStreetLineOne(), res);
-        res = checkString(this.getStreetLineTwo(), ((Registration) obj).getStreetLineTwo(), res);
+        res = checkString(this.getStreetLine1(), ((Registration) obj).getStreetLine1(), res);
+        res = checkString(this.getStreetLine2(), ((Registration) obj).getStreetLine2(), res);
         res = checkString(this.getTownCity(), ((Registration) obj).getTownCity(), res);
         res = checkString(this.getPostcode(), ((Registration) obj).getPostcode(), res);
         res = checkString(this.getAddress(), ((Registration) obj).getAddress(), res);
