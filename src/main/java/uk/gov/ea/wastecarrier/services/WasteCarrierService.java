@@ -9,6 +9,7 @@ import uk.gov.ea.wastecarrier.services.mongoDb.MongoManaged;
 import uk.gov.ea.wastecarrier.services.resources.RegistrationReadEditResource;
 import uk.gov.ea.wastecarrier.services.resources.RegistrationsResource;
 
+import com.mongodb.DB;
 import com.mongodb.MongoClient;
 import com.yammer.dropwizard.Service;
 import com.yammer.dropwizard.config.Bootstrap;
@@ -61,6 +62,13 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration> {
         // Add Database Heath checks
         DatabaseHelper dbHelper = new DatabaseHelper(dbConfig);
         mongoClient = dbHelper.getMongoClient();
+        
+        // TEST authentication
+        DB db = mongoClient.getDB( dbConfig.getName());
+        char[] pword = dbConfig.getPassword().toCharArray(); 
+        boolean auth = db.authenticate( dbConfig.getUsername(), pword);
+        log.info("\n\nauth: " + auth + " -- " + db.isAuthenticated() + "\n");
+        
         environment.addHealthCheck(new MongoHealthCheck(mongoClient));
         
         // Add Database management features

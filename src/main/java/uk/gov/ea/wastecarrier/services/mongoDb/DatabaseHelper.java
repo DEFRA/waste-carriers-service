@@ -92,6 +92,9 @@ public class DatabaseHelper
 			// Get Specific database
 			db = mc.getDB( dbConfig.getName() );
 			
+			// NEW
+			db.authenticate(dbConfig.getUsername(), dbConfig.getPassword().toCharArray());
+			
 			log.logp(Level.FINE, DatabaseHelper.class.getName(), "getConnection", "Returning new connection");
 			return db;
 		}

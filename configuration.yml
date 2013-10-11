@@ -24,5 +24,7 @@ database:
   host: 127.0.0.1
   port: 27017
   name: waste-carriers
+  username: mongoUser
+  password: password123
   
 # more properties go here

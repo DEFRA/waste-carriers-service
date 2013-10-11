@@ -81,7 +81,12 @@ public class RegistrationReadEditResource
     	// Use id to lookup record in database return registration details
     	DB db = databaseHelper.getConnection();
 		if (db != null)
-		{
+		{	
+			if (!db.isAuthenticated())
+			{
+				throw new WebApplicationException(Status.FORBIDDEN);
+			}
+			
 			// Create MONGOJACK connection to the database
 			JacksonDBCollection<Registration, String> registrations = JacksonDBCollection.wrap(
 					db.getCollection(Registration.COLLECTION_NAME), Registration.class, String.class);
@@ -126,6 +131,11 @@ public class RegistrationReadEditResource
     	DB db = databaseHelper.getConnection();
 		if (db != null)
 		{
+			if (!db.isAuthenticated())
+			{
+				throw new WebApplicationException(Status.FORBIDDEN);
+			}
+			
 			// Create MONGOJACK connection to the database
 			JacksonDBCollection<Registration, String> registrations = JacksonDBCollection.wrap(
 					db.getCollection(Registration.COLLECTION_NAME), Registration.class, String.class);

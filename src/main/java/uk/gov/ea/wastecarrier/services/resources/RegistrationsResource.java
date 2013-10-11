@@ -94,6 +94,11 @@ public class RegistrationsResource
 		DB db = databaseHelper.getConnection();
 		if (db != null)
 		{
+			if (!db.isAuthenticated())
+			{
+				throw new WebApplicationException(Status.FORBIDDEN);
+			}
+			
 			// Database available
 			if (name.isPresent() || businessType.isPresent() || postcode.isPresent())
 			{
@@ -207,6 +212,11 @@ public class RegistrationsResource
 		DB db = databaseHelper.getConnection();
 		if (db != null)
 		{
+			if (!db.isAuthenticated())
+			{
+				throw new WebApplicationException(Status.FORBIDDEN);
+			}
+			
 			/*
 			 * Insert registration details into the database
 			 */
