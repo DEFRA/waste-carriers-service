@@ -28,8 +28,6 @@ import java.util.logging.Logger;
 /**
  * This class represents a GET and PUT Resource provided as the @Path parameter. 
  * Specifically serving the Edit and Update services
- * 
- * @author Steve stevenr@aptosolutions.co.uk
  *
  */
 @Path("/registrations/{id}.json")

@@ -19,8 +19,6 @@ import com.yammer.dropwizard.config.Environment;
  * The Waste Carrier Service class provides the RESTful services available for completing operations 
  * to the waste carrier registration service. Operations in Create registration, Edit registration, 
  * various get and search operations, and cancel registration.
- * 
- * @author Steve stevenr@aptosolutions.co.uk
  *
  */
 public class WasteCarrierService extends Service<WasteCarrierConfiguration> {

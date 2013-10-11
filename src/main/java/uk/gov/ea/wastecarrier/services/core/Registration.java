@@ -16,8 +16,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * This class represents the entire model of the initial Waste Carrier Registration details
  * Ideally the models details could be split into subclasses for each distinct type of details (page)
- * 
- * @author Steve stevenr@aptosolutions.co.uk
  *
  */
 public class Registration

@@ -37,8 +37,6 @@ import java.util.logging.Logger;
  * This class represents the registration details URL (defined at @Path) and associated operations for POSTing
  * registrations, and GETting the entire registration information, as well as specific search results
  * 
- * @author Steve stevenr@aptosolutions.co.uk
- * 
  */
 @Path("/registrations.json")
 @Produces(MediaType.APPLICATION_JSON)

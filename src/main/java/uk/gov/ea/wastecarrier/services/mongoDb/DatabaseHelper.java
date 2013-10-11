@@ -12,8 +12,6 @@ import com.mongodb.MongoClient;
 /**
  * This class is intended to make the various database connections and operations simple by handling the database 
  * configuration and setup, and returning a connection object to be operated upon.
- * 
- * @author Steve stevenr@aptosolutions.co.uk
  *
  */
 public class DatabaseHelper

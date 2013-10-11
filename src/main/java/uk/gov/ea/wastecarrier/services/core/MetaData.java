@@ -9,8 +9,6 @@ import java.util.Date;
  * related to a registration but is not information that a user would 
  * provide on screen. This information is intended to be used for 
  * Audit trail and monitoring purposes
- * 
- * @author Steve stevenr@aptosolutions.co.uk
  *
  */
 public class MetaData {
