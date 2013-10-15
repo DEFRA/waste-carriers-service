@@ -54,7 +54,7 @@ public class DatabaseHelper
 			try
 			{
 				// Check database status
-				getMongoClient().getDatabaseNames();
+				//getMongoClient().getDatabaseNames();
 				// Use existing connection
 				log.logp(Level.FINE, DatabaseHelper.class.getName(), "getConnection", "Returning cachced connection");
 				return db;
@@ -77,7 +77,7 @@ public class DatabaseHelper
 			try
 			{
 				// Check database status
-				mc.getDatabaseNames();
+				//mc.getDatabaseNames();
 			}
 			catch (Exception e)
 			{
