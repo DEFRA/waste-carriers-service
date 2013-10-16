@@ -4,8 +4,8 @@ defaultName: Stranger
 
 # messageQueue complex parameter to show class of different configuration types MessageQueueConfiguration
 messageQueue:
-  host: host.myexamplevalue.com
-  port: 5673
+  host: ENV_MQ_HOST
+  port: ENV_MQ_PORT
 
 # Added standard logging information
 logging:
@@ -21,10 +21,10 @@ logging:
 
 # added database connection properties, DatabaseConfiguration
 database:
-  host: 127.0.0.1
-  port: 27017
-  name: waste-carriers
-  username: mongoUser
-  password: password123
+  host: ENV_DB_HOST
+  port: ENV_DB_PORT
+  name: ENV_DB_NAME
+  username: ENV_DB_USER
+  password: ENV_DB_PASSWD
   
 # more properties go here
