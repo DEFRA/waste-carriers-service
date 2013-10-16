@@ -15,3 +15,6 @@ target
 
 # Ignore dependency reduced POM #
 dependency-reduced-pom.xml
+
+# Individual developer configuration files
+configuration_*.yml
