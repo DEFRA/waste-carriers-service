@@ -4,8 +4,8 @@ defaultName: Stranger
 
 # messageQueue complex parameter to show class of different configuration types MessageQueueConfiguration
 messageQueue:
-  host: ENV_MQ_HOST
-  port: ENV_MQ_PORT
+  host: WESERVICESMQ_HOST
+  port: WESERVICESMQ_PORT
 
 # Added standard logging information
 logging:
@@ -21,10 +21,10 @@ logging:
 
 # added database connection properties, DatabaseConfiguration
 database:
-  host: ENV_DB_HOST
-  port: ENV_DB_PORT
-  name: ENV_DB_NAME
-  username: ENV_DB_USER
-  password: ENV_DB_PASSWD
+  host: WESERVICESDB_HOST
+  port: WESERVICESDB_PORT
+  name: WESERVICESDB_NAME
+  username: WESERVICESDB_USER
+  password: WESERVICESDB_PASSWD
   
 # more properties go here
