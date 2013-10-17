@@ -47,7 +47,6 @@ public class Registration
 	/* 
 	 * These are the Trading Address Details
 	 */
-	@NotEmpty
 	@JsonProperty
 	private String houseNumber;
 	@JsonProperty
@@ -56,7 +55,6 @@ public class Registration
 	private String streetLine2;
 	@JsonProperty
 	private String townCity;
-	@NotEmpty
 	@JsonProperty
 	private String postcode;
 	
