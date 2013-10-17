@@ -1,0 +1,38 @@
+## The deploy.sh script will deploy the we-services application. The following
+## environment variables should be set in the shell of the user who owns this
+## process:
+##
+## WESERVICES_JAVA_HOME  <= java home
+## WESERVICES_HOME  <= base destination dir for deploy
+## WESERVICES_SOURCE  <= location of files to be deployed
+## WESERVICES_PORT  <= port to run the we-services on
+## WESERVICES_MQ_HOST  <= hostname of message queue server
+## WESERVICES_MQ_PORT  <= message queue port
+## WESERVICES_DB_HOST  <= hostname of database server
+## WESERVICES_DB_PORT  <= database port
+## WESERVICES_DB_NAME  <= database name
+## WESERVICES_DB_USER  <= database user name
+## WESERVICES_DB_PASSWD  <= database password
+##
+## Example:
+## >>>>> Add to ~/.bashrc and ~/.bash_profile <<<<<
+## if [ -f ~/.bash_we-services_config ]; then
+##   . ~/.bash_we-services_config
+## fi
+##
+## >>>>> Secure the file <<<<<
+## chmod 600 ~/.bash_we-services_config
+##
+## >>>>> Content of ~/.bash_we-services_config <<<<<
+## export WESERVICES_JAVA_HOME="/path/to/java"
+## export WESERVICES_HOME="/path/to/we-services"
+## export WESERVICES_SOURCE="/path/to/jenkins/jobs/waste-exemplar-services/workspace"
+## export WESERVICES_PORT=9090
+## export WESERVICES_MQ_HOST="mqserver.com"
+## export WESERVICES_MQ_PORT=5673
+## export WESERVICES_DB_HOST= "db.com"
+## export WESERVICES_DB_PORT=27017
+## export WESERVICES_DB_NAME="waste-carriers"
+## export WESERVICES_DB_USER="username"
+## export WESERVICES_DB_PASSWD="password"
+
