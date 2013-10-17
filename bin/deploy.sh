@@ -27,6 +27,7 @@ if [[ -z "${WESERVICES_DB_NAME}" ]]; then env_alert WESERVICES_DB_NAME; fi
 if [[ -z "${WESERVICES_DB_USER}" ]]; then env_alert WESERVICES_DB_USER; fi
 if [[ -z "${WESERVICES_DB_PASSWD}" ]]; then env_alert WESERVICES_DB_PASSWD; fi
 
+
 ## Ensure directory structure is in place.
 if [ -d "${WESERVICES_HOME}" ]; then
   if [ -w "${WESERVICES_HOME}" ]; then
@@ -44,6 +45,13 @@ else
   echo "ERROR: ${WESERVICES_HOME} does not exist."
   exit 1
 fi
+
+
+## Deploy the bin scripts but rename them .orig so as not to overwrite custom changes.
+cp "${WESERVICES_SOURCE}/bin/README.deploy" "${WESERVICES_HOME}/bin/"
+cp "${WESERVICES_SOURCE}/bin/stop.sh" "${WESERVICES_HOME}/bin/stop.sh.orig"
+cp "${WESERVICES_SOURCE}/bin/start.sh" "${WESERVICES_HOME}/bin/start.sh.orig"
+cp "${WESERVICES_SOURCE}/bin/deploy.sh" "${WESERVICES_HOME}/bin/deploy.sh.orig"
 
 
 ## Deploy the most recent jar file.
