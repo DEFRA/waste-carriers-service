@@ -22,6 +22,7 @@ public class MongoHealthCheck extends HealthCheck {
     	//TODO get database name from configuration rather than hard-coding again here. Or: Allow the mongoUser to see/read all databases.
     	DB db = mongo.getDB("waste-carriers");
     	Set<String> collectionNames = db.getCollectionNames();
+    	collectionNames.isEmpty();
         return Result.healthy();
     }
 
