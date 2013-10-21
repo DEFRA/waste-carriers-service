@@ -1,5 +1,6 @@
 package uk.gov.ea.wastecarrier.services.resources;
 
+import static org.elasticsearch.node.NodeBuilder.*;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.MessageQueueConfiguration;
 import uk.gov.ea.wastecarrier.services.core.MetaData;
@@ -21,14 +22,27 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.search.SearchType;
+import org.elasticsearch.client.Client;
+import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
+
 import net.vz.mongodb.jackson.DBCursor;
 import net.vz.mongodb.jackson.DBQuery;
 import net.vz.mongodb.jackson.DBQuery.Query;
 import net.vz.mongodb.jackson.JacksonDBCollection;
 import net.vz.mongodb.jackson.WriteResult;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -52,6 +66,8 @@ public class RegistrationsResource
 	// Standard logging declaration
 	private Logger log = Logger.getLogger(RegistrationsResource.class.getName());
 
+	private Client esClient;
+	
 	/**
 	 * 
 	 * @param template
@@ -70,7 +86,15 @@ public class RegistrationsResource
 		log.fine("> messageQueue: " + this.messageQueue);
 		
 		this.databaseHelper = new DatabaseHelper(database);
+		
+		esClient = new TransportClient().addTransportAddress(new InetSocketTransportAddress("localhost", 9300));
 	}
+	
+	protected void finalize() throws Throwable {
+		esClient.close();
+	};
+	
+	
 
 	/**
 	 * Gets a list of registrations. If a YYY is provided then a list limited by YYY is returned, otherwise the entire
@@ -86,10 +110,41 @@ public class RegistrationsResource
 	@Timed
 	public List<Registration> getRegistrations(@QueryParam("companyName") Optional<String> name,
 			@QueryParam("businessType") Optional<String> businessType, 
-			@QueryParam("postcode") Optional<String> postcode)
+			@QueryParam("postcode") Optional<String> postcode, @QueryParam("q") Optional<String> q)
 	{
 		log.fine("Get Method Detected at /registrations");
 		ArrayList<Registration> returnlist = new ArrayList<Registration>();
+		
+		if(q.isPresent()){
+			String qValue = q.get();
+			if(!"".equals(qValue)){
+				SearchResponse response = esClient.prepareSearch("registrations")
+				        .setTypes("registration")
+				        .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+				        .setQuery(QueryBuilders.queryString(qValue))             // Query
+				        .execute()
+				        .actionGet();
+				
+				Iterator<SearchHit> hit_it = response.getHits().iterator();
+				while(hit_it.hasNext()){
+					SearchHit hit = hit_it.next();
+					ObjectMapper mapper = new ObjectMapper();
+					System.out.println(hit.getSourceAsString());
+					Registration r;
+					try {
+						r = mapper.readValue(hit.getSourceAsString(), Registration.class);
+					} catch (JsonParseException e) {
+						throw new RuntimeException(e);
+					} catch (JsonMappingException e) {
+						throw new RuntimeException(e);
+					} catch (IOException e) {
+						throw new RuntimeException(e);
+					}
+					returnlist.add(r);
+				}
+				return returnlist;
+			}
+		}
 
 		DB db = databaseHelper.getConnection();
 		if (db != null)
