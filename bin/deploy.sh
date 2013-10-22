@@ -114,6 +114,10 @@ if [[ ! -f "${WESERVICES_SOURCE}/configuration.yml" ]]; then
 fi
 cp "${WESERVICES_SOURCE}/configuration.yml" "${WESERVICES_HOME}/${RELEASE_DIR}/conf/"
 echo "Setting environment variables in ${WESERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
+sed -i "s/WESERVICES_PORT/${WESERVICES_PORT}/g" \
+       "${WESERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
+sed -i "s/WESERVICES_ADMIN_PORT/${WESERVICES_ADMIN_PORT}/g" \
+       "${WESERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
 sed -i "s/WESERVICES_MQ_HOST/${WESERVICES_MQ_HOST}/g" \
        "${WESERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
 sed -i "s/WESERVICES_MQ_PORT/${WESERVICES_MQ_PORT}/g" \
