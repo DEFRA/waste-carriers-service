@@ -1,6 +1,5 @@
 package uk.gov.ea.wastecarrier.services.resources;
 
-import static org.elasticsearch.node.NodeBuilder.*;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.MessageQueueConfiguration;
 import uk.gov.ea.wastecarrier.services.core.MetaData;
@@ -8,7 +7,10 @@ import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
 
 import com.google.common.base.Optional;
+import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
 import com.yammer.metrics.annotation.Timed;
 
 import javax.validation.Valid;
@@ -277,6 +279,9 @@ public class RegistrationsResource
 			 */
 			// Update Registration MetaData to include current time
 			reg.setMetaData(new MetaData(MetaData.getCurrentDateTime(), "userDetailAddedAtRegistration"));
+			
+			// Update Registration to include sequential identifier
+			updateRegistrationIdentifier(reg, db);
 
 			// Create MONGOJACK connection to the database
 			JacksonDBCollection<Registration, String> registrations = JacksonDBCollection.wrap(
@@ -298,6 +303,68 @@ public class RegistrationsResource
 		{
 			throw new WebApplicationException(Status.SERVICE_UNAVAILABLE);
 		}
+	}
+
+	/**
+	 * Update Registration to include a unique sequential ID.
+	 * Use the 'counters' collection and search for 'regid' and then increment the counter 'seq' by 1 every time
+	 * 
+	 * @param reg the current Registration document
+	 * @param db the database connection to use
+	 */
+	private void updateRegistrationIdentifier(Registration reg, DB db)
+	{
+		DBCollection col = db.getCollection(Registration.COUNTERS_COLLECTION_NAME);
+		DBObject query = DBQuery.is("_id", "regid");
+		BasicDBObject incDocument = 
+				new BasicDBObject().append("$inc", 
+				new BasicDBObject().append("seq", 1));
+		// Find the current latest sequence and update it
+		DBObject dbObj = col.findAndModify(query, incDocument);
+		if (dbObj == null)
+		{
+			// Try to Create/First Entry and then use if did not exist.
+			BasicDBObject newDocument = 
+                    new BasicDBObject().append("_id", "regid")
+                                       .append("seq", 1);
+			com.mongodb.WriteResult wr = col.insert(newDocument);
+			if (wr.getError() != null)
+			{
+				// Counters collection cannot be found
+				log.severe("Cannot create initial Counters table");
+				throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+			}
+			// Re-try find and modify
+			dbObj = col.findAndModify(query, incDocument);
+		}
+		if (dbObj != null)
+		{
+			int sequentialNumber = (Integer) dbObj.get("seq");
+			// Set the formatted identifier in the registration document
+			reg.setRegIdentifier(getFormattedRegIdentifier(sequentialNumber));	
+		}
+		else
+		{
+			// Counters collection cannot be found
+			log.severe("Cannot find Counters table, and or cannot update it");
+			throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	/**
+	 * Returns a formated unique string representing the registration identifier.
+	 * NOTE: THis is NOT the ID for the registration
+	 * @param sequentialNumber sequential integer of the registration counter
+	 * @return String of the formatted registration, prefixed with Registration.REGID_PREFIX
+	 */
+	private String getFormattedRegIdentifier(int sequentialNumber)
+	{
+		String numberAsString = Integer.toString(sequentialNumber);
+		while (numberAsString.length() < Registration.REGID_LENGTH)
+		{
+			numberAsString = "0" + numberAsString;
+		}
+		return Registration.REGID_PREFIX + numberAsString;
 	}
 
 }

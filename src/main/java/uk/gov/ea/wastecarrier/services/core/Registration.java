@@ -96,10 +96,17 @@ public class Registration
 	@JsonProperty
 	private String declaration;
 	
+	@JsonInclude(Include.NON_DEFAULT)
+	private String regIdentifier;
+	
 	/* Static not applicable value */
 	//private final static String NA = "n/a";
 	
 	public final static String COLLECTION_NAME = "registrations";
+	public final static String COUNTERS_COLLECTION_NAME = "counters";
+	
+	public final static String REGID_PREFIX = "CBD";
+	public final static int REGID_LENGTH = 10;
 	
 	@JsonInclude(Include.NON_DEFAULT)	/*TEST: This should not be generated in the JSON */
 	private MetaData metaData;
@@ -312,6 +319,14 @@ public class Registration
 	}
 	
 	/**
+	 * @return the regIdentifier
+	 */
+	public String getRegIdentifier()
+	{
+		return regIdentifier;
+	}
+	
+	/**
 	 * @return the metaData
 	 */
 	public MetaData getMetaData()
@@ -469,6 +484,14 @@ public class Registration
 	public void setDeclaration(String declaration)
 	{
 		this.declaration = declaration;
+	}
+	
+	/**
+	 * @param regIdentifier the regIdentifier to set
+	 */
+	public void setRegIdentifier(String regIdentifier)
+	{
+		this.regIdentifier = regIdentifier;
 	}
 
 	/**
