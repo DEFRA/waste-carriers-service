@@ -32,12 +32,12 @@ http:
   # Because Java cannot drop privileges in a POSIX system, these
   # ports cannot be in the range 1-1024. A port value of 0 will
   # make the OS use an arbitrary unused port.
-  port: 9090
+  port: WESERVICES_PORT
   
   # The port on which the HTTP server listens for administrative
   # requests. Subject to the same limitations as "port". If this is
   # set to the same value as port, the admin routes will be mounted
   # under /admin.
-  adminPort: 9091
+  adminPort: WESERVICES_ADMIN_PORT
   
 # more properties go here
