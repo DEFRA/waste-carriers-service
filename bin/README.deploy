@@ -6,6 +6,7 @@
 ## WESERVICES_HOME  <= base destination dir for deploy
 ## WESERVICES_SOURCE  <= location of files to be deployed
 ## WESERVICES_PORT  <= port to run the we-services on
+## WESERVICES_ADMIN_PORT  <= port to run the we-services admin on
 ## WESERVICES_MQ_HOST  <= hostname of message queue server
 ## WESERVICES_MQ_PORT  <= message queue port
 ## WESERVICES_DB_HOST  <= hostname of database server
@@ -28,6 +29,7 @@
 ## export WESERVICES_HOME="/path/to/we-services"
 ## export WESERVICES_SOURCE="/path/to/jenkins/jobs/waste-exemplar-services/workspace"
 ## export WESERVICES_PORT=9090
+## export WESERVICES_ADMIN_PORT=9091
 ## export WESERVICES_MQ_HOST="mqserver.com"
 ## export WESERVICES_MQ_PORT=5673
 ## export WESERVICES_DB_HOST= "db.com"
