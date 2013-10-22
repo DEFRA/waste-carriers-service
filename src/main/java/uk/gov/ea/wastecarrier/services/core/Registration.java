@@ -543,6 +543,17 @@ public class Registration
     }
 	
 	/**
+	 * Added a hashCode function, as the equals was overridden, and standards say this should 
+	 * also be overridden, but this should not be being used.
+	 */
+	@Override
+	public int hashCode()
+	{
+		assert false : "hashcode not designed";
+		return 42; // any arbitrary constant will do
+	}
+	
+	/**
 	 * Helper method for comparing strings, and returning status boolean
 	 * @param val1
 	 * @param val2
