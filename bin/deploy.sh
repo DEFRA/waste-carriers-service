@@ -19,6 +19,7 @@ if [[ -z "${WESERVICES_JAVA_HOME}" ]]; then env_alert WESERVICES_JAVA_HOME; fi
 if [[ -z "${WESERVICES_HOME}" ]]; then env_alert WESERVICES_HOME; fi
 if [[ -z "${WESERVICES_SOURCE}" ]]; then env_alert WESERVICES_SOURCE; fi
 if [[ -z "${WESERVICES_PORT}" ]]; then env_alert WESERVICES_PORT; fi
+if [[ -z "${WESERVICES_ADMIN_PORT}" ]]; then env_alert WESERVICES_ADMIN_PORT; fi
 if [[ -z "${WESERVICES_MQ_HOST}" ]]; then env_alert WESERVICES_MQ_HOST; fi
 if [[ -z "${WESERVICES_MQ_PORT}" ]]; then env_alert WESERVICES_MQ_PORT; fi
 if [[ -z "${WESERVICES_DB_HOST}" ]]; then env_alert WESERVICES_DB_HOST; fi
@@ -141,10 +142,12 @@ ln -s "${RELEASE_DIR}" live
 ## Start we-services.
 echo "Starting we-services on port ${WESERVICES_PORT}."
 cd "${WESERVICES_HOME}/live/logs"
-if [ -f "${WESERVICES_HOME}/live/logs/nohup.out" ]; then
-  mv nohup.out nohup.out.${DATESTAMP}
+if [ -f "${WESERVICES_HOME}/live/logs/we-services.log" ]; then
+  mv we-services.log we-services.log.${DATESTAMP}
 fi
-nohup "${WESERVICES_JAVA_HOME}/bin/java" -Ddw.http.port=${WESERVICES_PORT} -jar "${WESERVICES_HOME}/live/webapps/${WESERVICES_JAR}" server "${WESERVICES_HOME}/live/conf/configuration.yml" &
+nohup "${WESERVICES_JAVA_HOME}/bin/java" -Ddw.http.port=${WESERVICES_PORT} \
+      -jar "${WESERVICES_HOME}/live/webapps/${WESERVICES_JAR}" \
+      server "${WESERVICES_HOME}/live/conf/configuration.yml" > "${WESERVICES_HOME}/live/logs/we-services.log" &
 echo $! > "${WESERVICES_HOME}/live/logs/pid"
 
 
