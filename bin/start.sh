@@ -29,15 +29,8 @@ if [[ -z "${WESERVICES_DB_PASSWD}" ]]; then env_alert WESERVICES_DB_PASSWD; fi
 
 ## Ensure directory structure is in place.
 if [ -d "${WESERVICES_HOME}" ]; then
-  if [ -w "${WESERVICES_HOME}" ]; then
-    for DIR in bin conf logs webapps; do
-      if [ ! -d "${WESERVICES_HOME}/${DIR}" ]; then
-        echo "Creating directory: ${WESERVICES_HOME}/${DIR}" 
-        mkdir "${WESERVICES_HOME}/${DIR}" 
-      fi
-    done
-  else
-    echo "ERROR: Unable to write to ${WESERVICES_HOME}"
+  if [ ! -w "${WESERVICES_HOME}/live/logs" ]; then
+    echo "ERROR: Unable to write to ${WESERVICES_HOME}/live/logs. Exiting now."
     exit 1
   fi
 else
@@ -56,17 +49,18 @@ fi
 
 
 ## Use the jar file with the most recent timestamp.
-WESERVICES_JAR=`ls -tr "${WESERVICES_HOME}/webapps/" | grep '\<waste-exemplar-services.*jar\>' | tail -1`
+WESERVICES_JAR=`ls -tr "${WESERVICES_HOME}/live/webapps/" | grep '\<waste-exemplar-services.*jar\>' | tail -1`
 
 
 ## Start we-services.
 echo "Starting we-services on port ${WESERVICES_PORT}."
-cd "${WESERVICES_HOME}/logs"
-if [ -f "${WESERVICES_HOME}/logs/nohup.out" ]; then
-  mv nohup.out nohup.out.old
+cd "${WESERVICES_HOME}/live/logs"
+if [ -f "${WESERVICES_HOME}/live/logs/nohup.out" ]; then
+  DATESTAMP=`date +%Y.%m.%d-%H.%M`
+  mv nohup.out nohup.out.${DATESTAMP}
 fi
-nohup "${WESERVICES_JAVA_HOME}/bin/java" -Ddw.http.port=${WESERVICES_PORT} -jar "${WESERVICES_HOME}/webapps/${WESERVICES_JAR}" server "${WESERVICES_HOME}/conf/configuration.yml" &
-echo $! > "${WESERVICES_HOME}/logs/pid"
+nohup "${WESERVICES_JAVA_HOME}/bin/java" -Ddw.http.port=${WESERVICES_PORT} -jar "${WESERVICES_HOME}/live/webapps/${WESERVICES_JAR}" server "${WESERVICES_HOME}/live/conf/configuration.yml" &
+echo $! > "${WESERVICES_HOME}/live/logs/pid"
 
 echo ""
 exit 0

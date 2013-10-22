@@ -29,15 +29,10 @@ if [[ -z "${WESERVICES_DB_PASSWD}" ]]; then env_alert WESERVICES_DB_PASSWD; fi
 
 ## Ensure directory structure is in place.
 if [ -d "${WESERVICES_HOME}" ]; then
-  if [ -w "${WESERVICES_HOME}" ]; then
-    for DIR in bin conf logs webapps; do
-      if [ ! -d "${WESERVICES_HOME}/${DIR}" ]; then
-        echo "Creating directory: ${WESERVICES_HOME}/${DIR}" 
-        mkdir "${WESERVICES_HOME}/${DIR}" 
-      fi
-    done
-  else
-    echo "ERROR: Unable to write to ${WESERVICES_HOME}"
+  if [ ! -w "${WESERVICES_HOME}/live/logs" ]; then
+    echo "ERROR: Unable to write to ${WESERVICES_HOME}/live/logs"
+    echo "       Exiting now."
+    echo ""
     exit 1
   fi
 else
@@ -48,13 +43,13 @@ fi
 
 ## Stop previously running we-services.
 echo "Stopping we-services."
-if [ -f "${WESERVICES_HOME}/logs/pid" ]; then
-  WESERVICES_PID=`cat "${WESERVICES_HOME}/logs/pid"`
+if [ -f "${WESERVICES_HOME}/live/logs/pid" ]; then
+  WESERVICES_PID=`cat "${WESERVICES_HOME}/live/logs/pid"`
   kill -0 ${WESERVICES_PID} > /dev/null 2>&1
   if [ $? -eq 0 ]; then
     kill ${WESERVICES_PID} > /dev/null 2>&1
   fi
-  rm "${WESERVICES_HOME}/logs/pid"
+  rm "${WESERVICES_HOME}/live/logs/pid"
 fi
 ## A second check in case the pid file was out of date.
 WESERVICES_PID=`ps -ef | grep java | grep ${WESERVICES_PORT} | awk '{print $2}'`
