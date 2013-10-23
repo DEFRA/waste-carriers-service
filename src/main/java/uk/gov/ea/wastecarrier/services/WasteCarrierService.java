@@ -45,9 +45,10 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration> {
         final String defaultName = configuration.getDefaultName();
         final MessageQueueConfiguration mQConfig = configuration.getMessageQueueConfiguration();
         final DatabaseConfiguration dbConfig = configuration.getDatabase();
+        final ElasticSearchConfiguration eSConfig = configuration.getElasticSearch();
         
         // Add Create Resource
-        environment.addResource(new RegistrationsResource(template, defaultName, mQConfig, dbConfig));
+        environment.addResource(new RegistrationsResource(template, defaultName, mQConfig, dbConfig, eSConfig));
         // Add Read Resource
         environment.addResource(new RegistrationReadEditResource(template, defaultName, mQConfig, dbConfig));
         

@@ -1,6 +1,7 @@
 package uk.gov.ea.wastecarrier.services.resources;
 
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
+import uk.gov.ea.wastecarrier.services.ElasticSearchConfiguration;
 import uk.gov.ea.wastecarrier.services.MessageQueueConfiguration;
 import uk.gov.ea.wastecarrier.services.core.MetaData;
 import uk.gov.ea.wastecarrier.services.core.Registration;
@@ -64,6 +65,7 @@ public class RegistrationsResource
 	private final String defaultName;
 	private final MessageQueueConfiguration messageQueue;
 	private final DatabaseHelper databaseHelper;
+	private final ElasticSearchConfiguration elasticSearch;
 
 	// Standard logging declaration
 	private Logger log = Logger.getLogger(RegistrationsResource.class.getName());
@@ -78,7 +80,7 @@ public class RegistrationsResource
 	 * @param database
 	 */
 	public RegistrationsResource(String template, String defaultName, MessageQueueConfiguration mQConfig,
-			DatabaseConfiguration database)
+			DatabaseConfiguration database, ElasticSearchConfiguration elasticSearch)
 	{
 		this.template = template;
 		this.defaultName = defaultName;
@@ -88,8 +90,9 @@ public class RegistrationsResource
 		log.fine("> messageQueue: " + this.messageQueue);
 		
 		this.databaseHelper = new DatabaseHelper(database);
+		this.elasticSearch = elasticSearch;
 		
-		esClient = new TransportClient().addTransportAddress(new InetSocketTransportAddress("localhost", 9300));
+		esClient = new TransportClient().addTransportAddress(new InetSocketTransportAddress(this.elasticSearch.getHost(), this.elasticSearch.getPort()));
 	}
 	
 	protected void finalize() throws Throwable {

@@ -30,6 +30,11 @@ public class WasteCarrierConfiguration extends Configuration {
     @NotNull
     @JsonProperty
     private DatabaseConfiguration database = new DatabaseConfiguration();
+    
+    @Valid
+    @NotNull
+    @JsonProperty
+    private ElasticSearchConfiguration elasticSearch = new ElasticSearchConfiguration();
 
     public String getTemplate() {
         return template;
@@ -45,5 +50,9 @@ public class WasteCarrierConfiguration extends Configuration {
     
     public DatabaseConfiguration getDatabase() {
         return database;
+    }
+    
+    public ElasticSearchConfiguration getElasticSearch() {
+        return elasticSearch;
     }
 }
