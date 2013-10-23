@@ -28,7 +28,7 @@ database:
   password: WESERVICES_DB_PASSWD
   
 elasticSearch:
-  host: localhost
+  host: ea-dev
   port: 9300
 
 http:
