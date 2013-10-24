@@ -17,15 +17,7 @@ echo ""
 ## Ensure required environment variables have been set.
 if [[ -z "${WESERVICES_JAVA_HOME}" ]]; then env_alert WESERVICES_JAVA_HOME; fi
 if [[ -z "${WESERVICES_HOME}" ]]; then env_alert WESERVICES_HOME; fi
-if [[ -z "${WESERVICES_SOURCE}" ]]; then env_alert WESERVICES_SOURCE; fi
 if [[ -z "${WESERVICES_PORT}" ]]; then env_alert WESERVICES_PORT; fi
-if [[ -z "${WESERVICES_MQ_HOST}" ]]; then env_alert WESERVICES_MQ_HOST; fi
-if [[ -z "${WESERVICES_MQ_PORT}" ]]; then env_alert WESERVICES_MQ_PORT; fi
-if [[ -z "${WESERVICES_DB_HOST}" ]]; then env_alert WESERVICES_DB_HOST; fi
-if [[ -z "${WESERVICES_DB_PORT}" ]]; then env_alert WESERVICES_DB_PORT; fi
-if [[ -z "${WESERVICES_DB_NAME}" ]]; then env_alert WESERVICES_DB_NAME; fi
-if [[ -z "${WESERVICES_DB_USER}" ]]; then env_alert WESERVICES_DB_USER; fi
-if [[ -z "${WESERVICES_DB_PASSWD}" ]]; then env_alert WESERVICES_DB_PASSWD; fi
 
 ## Ensure directory structure is in place.
 if [ -d "${WESERVICES_HOME}" ]; then
