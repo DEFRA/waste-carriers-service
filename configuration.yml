@@ -28,8 +28,8 @@ database:
   password: WESERVICES_DB_PASSWD
   
 elasticSearch:
-  host: ea-dev
-  port: 9300
+  host: WESERVICES_ES_HOST
+  port: WESERVICES_ES_PORT
 
 http:
   # The port on which the HTTP server listens for service requests.

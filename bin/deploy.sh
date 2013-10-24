@@ -27,6 +27,8 @@ if [[ -z "${WESERVICES_DB_PORT}" ]]; then env_alert WESERVICES_DB_PORT; fi
 if [[ -z "${WESERVICES_DB_NAME}" ]]; then env_alert WESERVICES_DB_NAME; fi
 if [[ -z "${WESERVICES_DB_USER}" ]]; then env_alert WESERVICES_DB_USER; fi
 if [[ -z "${WESERVICES_DB_PASSWD}" ]]; then env_alert WESERVICES_DB_PASSWD; fi
+if [[ -z "${WESERVICES_ES_HOST}" ]]; then env_alert WESERVICES_ES_HOST; fi
+if [[ -z "${WESERVICES_ES_PORT}" ]]; then env_alert WESERVICES_ES_PORT; fi
 
 
 ## Stop previously running we-services.
@@ -131,6 +133,10 @@ sed -i "s/WESERVICES_DB_NAME/${WESERVICES_DB_NAME}/g" \
 sed -i "s/WESERVICES_DB_USER/${WESERVICES_DB_USER}/g" \
        "${WESERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
 sed -i "s/WESERVICES_DB_PASSWD/${WESERVICES_DB_PASSWD}/g" \
+       "${WESERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
+sed -i "s/WESERVICES_ES_HOST/${WESERVICES_ES_HOST}/g" \
+       "${WESERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
+sed -i "s/WESERVICES_ES_PORT/${WESERVICES_ES_PORT}/g" \
        "${WESERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
 
 
