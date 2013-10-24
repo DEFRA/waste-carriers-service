@@ -8,6 +8,7 @@ import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.MongoManaged;
 import uk.gov.ea.wastecarrier.services.resources.RegistrationReadEditResource;
 import uk.gov.ea.wastecarrier.services.resources.RegistrationsResource;
+import uk.gov.ea.wastecarrier.services.tasks.Indexer;
 
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
@@ -75,6 +76,10 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration> {
         // Add Database management features
         MongoManaged mongoManaged = new MongoManaged(mongoClient);
         environment.manage(mongoManaged);
+        
+        // Add Indexing functionality to clean Elastic Search Indexes and perform re-index of all data
+        Indexer task = new Indexer("indexer", dbConfig, eSConfig);
+		environment.addTask(task);
         
         // Get and Print the Jar Version to the console for logging purposes
         Package objPackage = this.getClass().getPackage();

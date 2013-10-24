@@ -6,6 +6,7 @@ import uk.gov.ea.wastecarrier.services.MessageQueueConfiguration;
 import uk.gov.ea.wastecarrier.services.core.MetaData;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
+import uk.gov.ea.wastecarrier.services.tasks.Indexer;
 
 import com.google.common.base.Optional;
 import com.mongodb.BasicDBObject;
@@ -28,6 +29,7 @@ import javax.ws.rs.core.Response.Status;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
@@ -298,6 +300,20 @@ public class RegistrationsResource
 			savedObject = registrations.findOneById(id);
 
 			log.info("Found savedObject: '" + savedObject.getId() );
+			
+			/*
+			 * Add same record to Elastic Search
+			 */
+			BulkResponse bulkResponse = Indexer.createElasticSearchIndex(esClient, savedObject);
+			if (bulkResponse.hasFailures()) {
+			    // process failures by iterating through each bulk response item
+				log.severe( bulkResponse.buildFailureMessage());
+				throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+			}
+			else
+			{
+				log.info("createdIndex for: " + reg.getId());
+			}
 			
 			// Return saved object to user (returned as JSON)
 			return savedObject;
