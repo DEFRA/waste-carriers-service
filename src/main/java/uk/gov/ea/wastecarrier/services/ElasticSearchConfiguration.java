@@ -15,6 +15,11 @@ public class ElasticSearchConfiguration {
     @Max(65535)
     @JsonProperty
     private int port = 5672;
+    
+    @Min(1)
+    @Max(250)
+    @JsonProperty
+    private int size = 100;
 
     public String getHost() {
         return host;
@@ -22,5 +27,9 @@ public class ElasticSearchConfiguration {
 
     public int getPort() {
         return port;
+    }
+    
+    public int getSize() {
+        return size;
     }
 }

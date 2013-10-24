@@ -125,10 +125,12 @@ public class RegistrationsResource
 		if(q.isPresent()){
 			String qValue = q.get();
 			if(!"".equals(qValue)){
-				SearchResponse response = esClient.prepareSearch("registrations")
+				log.info("Param GET Method Detected - Return List of Registrations limited by ElasticSearch limit of " + this.elasticSearch.getSize());
+				SearchResponse response = esClient.prepareSearch(Registration.COLLECTION_NAME)
 				        .setTypes("registration")
 				        .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
 				        .setQuery(QueryBuilders.queryString(qValue))             // Query
+				        .setSize(this.elasticSearch.getSize())
 				        .execute()
 				        .actionGet();
 				
@@ -149,6 +151,8 @@ public class RegistrationsResource
 					}
 					returnlist.add(r);
 				}
+				long totalHits = response.getHits().getTotalHits();
+				log.info("Found " + totalHits + " matching records in ElasticSearch, but returning up to: "+this.elasticSearch.getSize());
 				return returnlist;
 			}
 		}

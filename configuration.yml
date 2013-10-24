@@ -30,6 +30,9 @@ database:
 elasticSearch:
   host: WESERVICES_ES_HOST
   port: WESERVICES_ES_PORT
+  # Can also specify a size for the maximum number of results to return in a given query
+  # By default the 100 is used, but can be overridden here if specified
+  #size: 100
 
 http:
   # The port on which the HTTP server listens for service requests.
