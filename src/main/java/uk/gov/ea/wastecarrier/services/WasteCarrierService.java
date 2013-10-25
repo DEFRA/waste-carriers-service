@@ -72,7 +72,7 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration> {
         try
         {
         	boolean auth = db.authenticate( dbConfig.getUsername(), pword);
-        	log.info("\n\nauth: " + auth + " -- " + db.isAuthenticated() + "\n");
+        	log.info("Is Authenticated: " + auth);
         }
         catch (MongoException e)
         {
