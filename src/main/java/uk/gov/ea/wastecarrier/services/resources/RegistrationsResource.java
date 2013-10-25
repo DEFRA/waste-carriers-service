@@ -13,6 +13,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
+import com.mongodb.MongoException;
 import com.yammer.metrics.annotation.Timed;
 
 import javax.validation.Valid;
@@ -30,11 +31,14 @@ import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.elasticsearch.action.bulk.BulkResponse;
+import org.elasticsearch.action.search.MultiSearchResponse;
+import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 
@@ -125,97 +129,175 @@ public class RegistrationsResource
 		if(q.isPresent()){
 			String qValue = q.get();
 			if(!"".equals(qValue)){
-				log.info("Param GET Method Detected - Return List of Registrations limited by ElasticSearch limit of " + this.elasticSearch.getSize());
-				SearchResponse response = esClient.prepareSearch(Registration.COLLECTION_NAME)
-				        .setTypes("registration")
-				        .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-				        .setQuery(QueryBuilders.queryString(qValue))             // Query
-				        .setSize(this.elasticSearch.getSize())
-				        .execute()
-				        .actionGet();
+				log.info("Param GET Method Detected - Return List of Registrations limited by ElasticSearch");
 				
-				Iterator<SearchHit> hit_it = response.getHits().iterator();
-				while(hit_it.hasNext()){
-					SearchHit hit = hit_it.next();
-					ObjectMapper mapper = new ObjectMapper();
-					System.out.println(hit.getSourceAsString());
-					Registration r;
-					try {
-						r = mapper.readValue(hit.getSourceAsString(), Registration.class);
-					} catch (JsonParseException e) {
-						throw new RuntimeException(e);
-					} catch (JsonMappingException e) {
-						throw new RuntimeException(e);
-					} catch (IOException e) {
-						throw new RuntimeException(e);
+				/**
+				 * Search
+				 * 
+				 * Search has been designed to be a three tiered approach to optimize certain 
+				 * business and search criteria, and has been broken down into the following rules:
+				 * 
+				 * 1. Exact Match to RegIdentifier
+				 * 2. Exact match to any other value
+				 * 3. Fuzzy match to certain fields, such as company name, postcode, first and last names
+				 * 
+				 * Each of these queries will run in turn and if any tier finds any number of matches, 
+				 * those matches are returned.
+				 * 
+				 * For example if a RegIdentifier is specified and an exact match is found, only that one
+				 * result is returned.
+				 * If However a match is not found the search continues onto the next tier, i.e. Exact match 
+				 * to any other value, and so on.
+				 * 
+				 */
+				
+				// First Priority - Exact Match to RegIdentifier
+				QueryBuilder qb0 = QueryBuilders.matchQuery("regIdentifier", qValue);
+				SearchRequestBuilder srb0 = esClient.prepareSearch(Registration.COLLECTION_NAME)
+						.setTypes("registration")
+						.setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+						.setQuery(qb0)
+						.setSize(1);
+				
+				// Second Priority - Exact match to any other value
+				QueryBuilder qb1 = QueryBuilders.queryString(qValue);
+				SearchRequestBuilder srb1 = esClient.prepareSearch(Registration.COLLECTION_NAME)
+						.setTypes("registration")
+						.setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+						.setQuery(qb1)
+						.setSize(this.elasticSearch.getSize());
+				
+				// Third Priority - Fuzzy match to certain fields
+				//QueryBuilder qb2 = QueryBuilders.fuzzyQuery("companyName", qValue);	// Works as a fuzzy search but only on 1 field
+				QueryBuilder qb2 = QueryBuilders.fuzzyLikeThisQuery("companyName", "postcode", "firstName", "lastName")
+						.likeText(qValue)
+						.maxQueryTerms(12);                             // Max num of Terms in generated queries
+				SearchRequestBuilder srb2 = esClient.prepareSearch(Registration.COLLECTION_NAME)
+						.setTypes("registration")
+						.setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+						.setQuery(qb2)
+						.setSize(this.elasticSearch.getSize());
+
+				MultiSearchResponse sr = esClient.prepareMultiSearch().add(srb0).add(srb1).add(srb2).execute().actionGet();
+				
+				long totalHits = 0;
+				int count = 0;
+				String matchType = "";
+				for (MultiSearchResponse.Item item : sr.getResponses()) 
+				{
+					SearchResponse response = item.getResponse();
+					if (response != null)
+					{
+						Iterator<SearchHit> hit_it = response.getHits().iterator();
+						while(hit_it.hasNext()){
+							SearchHit hit = hit_it.next();
+							ObjectMapper mapper = new ObjectMapper();
+							System.out.println(hit.getSourceAsString());
+							Registration r;
+							try {
+								r = mapper.readValue(hit.getSourceAsString(), Registration.class);
+							} catch (JsonParseException e) {
+								throw new RuntimeException(e);
+							} catch (JsonMappingException e) {
+								throw new RuntimeException(e);
+							} catch (IOException e) {
+								throw new RuntimeException(e);
+							}
+							returnlist.add(r);
+						}
+						totalHits += response.getHits().getTotalHits();
+						if (totalHits > 0)
+						{
+							if (count == 0)
+								matchType = "RegIdentifier ";
+							else if (count == 1)
+								matchType = "Value ";
+							else if (count == 2)
+								matchType = "Fuzzy ";
+							break;
+						}
+						count++;
 					}
-					returnlist.add(r);
+					else
+					{
+						log.severe("Error: response object from ElasticSearch was null");
+					}
 				}
-				long totalHits = response.getHits().getTotalHits();
-				log.info("Found " + totalHits + " matching records in ElasticSearch, but returning up to: "+this.elasticSearch.getSize());
+				log.info("Found " + totalHits + " matching " + matchType 
+						+ "records in ElasticSearch, but returning up to: "+this.elasticSearch.getSize());
 				return returnlist;
 			}
 		}
 
-		DB db = databaseHelper.getConnection();
-		if (db != null)
+		try
 		{
-			if (!db.isAuthenticated())
+			DB db = databaseHelper.getConnection();
+			if (db != null)
 			{
-				throw new WebApplicationException(Status.FORBIDDEN);
-			}
-			
-			// Database available
-			if (name.isPresent() || businessType.isPresent() || postcode.isPresent())
-			{
-				log.info("Param GET Method Detected - Return List of Registrations limited by Search criteria");
-				
-				// Determine which/what combination of parameters have been provided
-				Map <String, Optional<String>> myMap= new HashMap<String, Optional<String>>();
-				myMap.put("companyName", name);
-				myMap.put("businessType", businessType);
-				myMap.put("postcode", postcode);
-				
-				Query[] queryList = createConditionalSearchParams(myMap);
-				log.info("Number of search parameters provided: " + queryList.length);
-
-				// Total multiple search criteria, such that if multiple parameters are provided,
-				// they are combined in an AND operation
-				Query totalQuery = DBQuery.and(queryList);
-
-				// Create MONGOJACK connection to the database
-				JacksonDBCollection<Registration, String> registrations = JacksonDBCollection.wrap(
-						db.getCollection(Registration.COLLECTION_NAME), Registration.class, String.class);
-
-				DBCursor<Registration> dbcur = registrations.find(totalQuery);
-				log.info("Found: " + dbcur.size() + " Matching criteria");
-
-				for (Registration r : dbcur)
+				if (!db.isAuthenticated())
 				{
-					log.fine("> search found registration id: " + r.getId());
-					returnlist.add(r);
+					log.info("Database not authenticated, access forbidden");
+					throw new WebApplicationException(Status.UNAUTHORIZED);
+				}
+				
+				// Database available
+				if (name.isPresent() || businessType.isPresent() || postcode.isPresent())
+				{
+					log.info("Param GET Method Detected - Return List of Registrations limited by Search criteria");
+					
+					// Determine which/what combination of parameters have been provided
+					Map <String, Optional<String>> myMap= new HashMap<String, Optional<String>>();
+					myMap.put("companyName", name);
+					myMap.put("businessType", businessType);
+					myMap.put("postcode", postcode);
+					
+					Query[] queryList = createConditionalSearchParams(myMap);
+					log.info("Number of search parameters provided: " + queryList.length);
+	
+					// Total multiple search criteria, such that if multiple parameters are provided,
+					// they are combined in an AND operation
+					Query totalQuery = DBQuery.and(queryList);
+	
+					// Create MONGOJACK connection to the database
+					JacksonDBCollection<Registration, String> registrations = JacksonDBCollection.wrap(
+							db.getCollection(Registration.COLLECTION_NAME), Registration.class, String.class);
+	
+					DBCursor<Registration> dbcur = registrations.find(totalQuery);
+					log.info("Found: " + dbcur.size() + " Matching criteria");
+	
+					for (Registration r : dbcur)
+					{
+						log.fine("> search found registration id: " + r.getId());
+						returnlist.add(r);
+					}
+				}
+				else
+				{
+					log.info("Empty GET Method Detected - Return List of ALL Registrations (limited by max)");
+	
+					// Create MONGOJACK connection to the database
+					JacksonDBCollection<Registration, String> registrations = JacksonDBCollection.wrap(
+							db.getCollection(Registration.COLLECTION_NAME), Registration.class, String.class);
+	
+					// Attempt to retrieve all registrations
+					DBCursor<Registration> dbcur = registrations.find();
+					for (Registration r : dbcur)
+					{
+						log.fine("> search found registrations id: " + r.getId());
+						returnlist.add(r);
+					}
+	
 				}
 			}
 			else
 			{
-				log.info("Empty GET Method Detected - Return List of ALL Registrations (limited by max)");
-
-				// Create MONGOJACK connection to the database
-				JacksonDBCollection<Registration, String> registrations = JacksonDBCollection.wrap(
-						db.getCollection(Registration.COLLECTION_NAME), Registration.class, String.class);
-
-				// Attempt to retrieve all registrations
-				DBCursor<Registration> dbcur = registrations.find();
-				for (Registration r : dbcur)
-				{
-					log.fine("> search found registrations id: " + r.getId());
-					returnlist.add(r);
-				}
-
+				log.info("Database not available, check the database is running");
+				throw new WebApplicationException(Status.SERVICE_UNAVAILABLE);
 			}
 		}
-		else
+		catch (MongoException e)
 		{
+			log.info("Database not found, check the database is running");
 			throw new WebApplicationException(Status.SERVICE_UNAVAILABLE);
 		}
 
