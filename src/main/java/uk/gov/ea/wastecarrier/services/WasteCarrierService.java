@@ -12,6 +12,7 @@ import uk.gov.ea.wastecarrier.services.tasks.Indexer;
 
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
+import com.mongodb.MongoException;
 import com.yammer.dropwizard.Service;
 import com.yammer.dropwizard.config.Bootstrap;
 import com.yammer.dropwizard.config.Environment;
@@ -68,9 +69,15 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration> {
         // TEST authentication
         DB db = mongoClient.getDB( dbConfig.getName());
         char[] pword = dbConfig.getPassword().toCharArray(); 
-        boolean auth = db.authenticate( dbConfig.getUsername(), pword);
-        log.info("\n\nauth: " + auth + " -- " + db.isAuthenticated() + "\n");
-        
+        try
+        {
+        	boolean auth = db.authenticate( dbConfig.getUsername(), pword);
+        	log.info("\n\nauth: " + auth + " -- " + db.isAuthenticated() + "\n");
+        }
+        catch (MongoException e)
+        {
+        	log.severe("Could not connect to Database: " + e.getMessage() + ", continuing to startup.");
+        }
         environment.addHealthCheck(new MongoHealthCheck(mongoClient));
         
         // Add Database management features

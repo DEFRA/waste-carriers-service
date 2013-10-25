@@ -76,24 +76,21 @@ public class DatabaseHelper
 			MongoClient mc = getMongoClient();
 			try
 			{
-				// Check database status
-				//mc.getDatabaseNames();
+				// Get Specific database
+				db = mc.getDB( dbConfig.getName() );
+				// Authenticate connection
+				db.authenticate(dbConfig.getUsername(), dbConfig.getPassword().toCharArray());
 			}
 			catch (Exception e)
 			{
 				log.severe("Database connection not Found: " + e.getMessage() + "\n\nStackTrace:");
 				for (StackTraceElement k : e.getStackTrace())
 				{
-					log.severe(">>" + k.toString());
+					log.info("! " + k.toString());
 				}
+				db = null;
 				return null;
 			}
-			
-			// Get Specific database
-			db = mc.getDB( dbConfig.getName() );
-			
-			// NEW
-			db.authenticate(dbConfig.getUsername(), dbConfig.getPassword().toCharArray());
 			
 			log.logp(Level.FINE, DatabaseHelper.class.getName(), "getConnection", "Returning new connection");
 			return db;
