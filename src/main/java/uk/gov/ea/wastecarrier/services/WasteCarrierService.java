@@ -2,6 +2,10 @@ package uk.gov.ea.wastecarrier.services;
 
 import java.util.logging.Logger;
 
+import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.transport.InetSocketTransportAddress;
+
+import uk.gov.ea.wastecarrier.services.health.ElasticSearchHealthCheck;
 import uk.gov.ea.wastecarrier.services.health.MongoHealthCheck;
 import uk.gov.ea.wastecarrier.services.health.TemplateHealthCheck;
 import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
@@ -87,6 +91,11 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration> {
         // Add Indexing functionality to clean Elastic Search Indexes and perform re-index of all data
         Indexer task = new Indexer("indexer", dbConfig, eSConfig);
 		environment.addTask(task);
+		
+		// Add Heath Check to indexing Service
+		environment.addHealthCheck(
+				new ElasticSearchHealthCheck(new TransportClient().addTransportAddress(
+						new InetSocketTransportAddress(eSConfig.getHost(), eSConfig.getPort()))));
         
         // Get and Print the Jar Version to the console for logging purposes
         Package objPackage = this.getClass().getPackage();

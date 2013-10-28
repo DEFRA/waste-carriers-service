@@ -36,6 +36,7 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.client.transport.NoNodeAvailableException;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -178,7 +179,16 @@ public class RegistrationsResource
 						.setQuery(qb2)
 						.setSize(this.elasticSearch.getSize());
 
-				MultiSearchResponse sr = esClient.prepareMultiSearch().add(srb0).add(srb1).add(srb2).execute().actionGet();
+				MultiSearchResponse sr = null;
+				try
+				{
+					sr = esClient.prepareMultiSearch().add(srb0).add(srb1).add(srb2).execute().actionGet();
+				}
+				catch (NoNodeAvailableException e)
+				{
+					log.warning("Elastic Search Not available, check the status of the service");
+					throw new WebApplicationException(Status.SERVICE_UNAVAILABLE);
+				}
 				
 				long totalHits = 0;
 				int count = 0;
@@ -291,13 +301,13 @@ public class RegistrationsResource
 			}
 			else
 			{
-				log.info("Database not available, check the database is running");
+				log.warning("Database not available, check the database is running");
 				throw new WebApplicationException(Status.SERVICE_UNAVAILABLE);
 			}
 		}
 		catch (MongoException e)
 		{
-			log.info("Database not found, check the database is running");
+			log.warning("Database not found, check the database is running");
 			throw new WebApplicationException(Status.SERVICE_UNAVAILABLE);
 		}
 
@@ -406,6 +416,7 @@ public class RegistrationsResource
 		}
 		else
 		{
+			log.warning("Database not found, check the database is running");
 			throw new WebApplicationException(Status.SERVICE_UNAVAILABLE);
 		}
 	}
