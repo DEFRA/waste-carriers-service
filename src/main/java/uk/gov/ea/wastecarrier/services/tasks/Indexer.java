@@ -62,9 +62,9 @@ public class Indexer extends Task
 	 * found in the mongo database
 	 * 
 	 * Usage: 
-	 * curl -X POST http://[SERVER]:[ADMINPORT]/tasks/reindex [OPTIONAL -d 'all']
+	 * curl -X POST http://[SERVER]:[ADMINPORT]/tasks/[this.getName()] [OPTIONAL -d 'all']
 	 * 
-	 * E.g. curl -X POST http://localhost:9091/tasks/reindex -d 'all'
+	 * E.g. curl -X POST http://localhost:9091/tasks/indexer -d 'all'
 	 * 
 	 * -d 'all' - Performs a delete all record operation, if not provided only the records currently 
 	 * found will be updated.
@@ -78,7 +78,7 @@ public class Indexer extends Task
 		// Determine if Delete All is required
 		boolean deleteAll = false;
 		/*
-		 * Use: curl -X POST http://localhost:9091/tasks/reindex -d 'all' to delete all records.
+		 * Use: curl -X POST http://localhost:9091/tasks/indexer -d 'all' to delete all records.
 		 */
 		for (String s : arg0.keys())
 		{
