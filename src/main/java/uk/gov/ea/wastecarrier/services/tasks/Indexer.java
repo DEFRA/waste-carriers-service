@@ -57,6 +57,19 @@ public class Indexer extends Task
 		this.elasticSearch = elasticSearch;
 	}
 
+	/**
+	 * Performs the ElasticSearch Indexing operation Used Via the administration ports to index all of the registrations
+	 * found in the mongo database
+	 * 
+	 * Usage: 
+	 * curl -X POST http://[SERVER]:[ADMINPORT]/tasks/reindex [OPTIONAL -d 'all']
+	 * 
+	 * E.g. curl -X POST http://localhost:9091/tasks/reindex -d 'all'
+	 * 
+	 * -d 'all' - Performs a delete all record operation, if not provided only the records currently 
+	 * found will be updated.
+	 * 
+	 */
 	@Override
 	public void execute(ImmutableMultimap<String, String> arg0, PrintWriter out) throws Exception
 	{
@@ -141,6 +154,14 @@ public class Indexer extends Task
 		out.append("Done\n");
 	}
 
+	/**
+	 * Performs a create index operation on the Elastic Search records for the provided registration
+	 * 
+	 * @param client, the ElasticSearch Client to connect with
+	 * @param reg, the Registration object to add to the records
+	 * @return a BulkResponse object, which contains the response from the server. This is returned directly 
+	 * as to enable different behavior to each calling client
+	 */
 	public static BulkResponse createElasticSearchIndex(Client client, Registration reg)
 	{
 		BulkRequestBuilder bulkRequest = client.prepareBulk();
@@ -161,6 +182,10 @@ public class Indexer extends Task
 		return bulkResponse;
 	}
 
+	/**
+	 * Performs a delete index operation on the Elastic Search records for the provided registration
+	 * @param reg
+	 */
 	private void deleteElasticSearchIndex(Registration reg)
 	{
 		// Delete Index after creation

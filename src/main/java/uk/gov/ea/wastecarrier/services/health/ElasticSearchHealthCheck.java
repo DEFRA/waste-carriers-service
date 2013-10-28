@@ -8,6 +8,12 @@ import uk.gov.ea.wastecarrier.services.core.Registration;
 
 import com.yammer.metrics.core.HealthCheck;
 
+/**
+ * HeathCheck Class for Monitoring the status of the ElasticSearch Service
+ * 
+ * @author Steve
+ *
+ */
 public class ElasticSearchHealthCheck extends HealthCheck {
     private Client esClient;
 

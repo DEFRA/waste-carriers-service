@@ -6,6 +6,12 @@ import com.mongodb.DB;
 import com.mongodb.MongoClient;
 import com.yammer.metrics.core.HealthCheck;
 
+/**
+ * HeathCheck Class for Monitoring the status of the Mongo Database
+ * 
+ * @author Steve
+ *
+ */
 public class MongoHealthCheck extends HealthCheck {
 
     private MongoClient mongo;
