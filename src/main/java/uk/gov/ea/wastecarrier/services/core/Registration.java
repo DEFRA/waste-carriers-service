@@ -102,7 +102,8 @@ public class Registration
 	/* Static not applicable value */
 	//private final static String NA = "n/a";
 	
-	public final static String COLLECTION_NAME = "registrations";
+	public final static String COLLECTION_SINGULAR_NAME = "registration";
+	public final static String COLLECTION_NAME = COLLECTION_SINGULAR_NAME +"s";
 	public final static String COUNTERS_COLLECTION_NAME = "counters";
 	
 	public final static String REGID_PREFIX = "CBD";

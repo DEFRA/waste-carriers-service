@@ -20,7 +20,7 @@ public class ElasticSearchHealthCheck extends HealthCheck {
     protected Result check() throws Exception {
     	try
     	{
-	    	GetResponse response = esClient.prepareGet(Registration.COLLECTION_NAME, "registration", "1")
+	    	GetResponse response = esClient.prepareGet(Registration.COLLECTION_NAME, Registration.COLLECTION_SINGULAR_NAME, "1")
 	    	        .execute()
 	    	        .actionGet();
 	    	response.getVersion();

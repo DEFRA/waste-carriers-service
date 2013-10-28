@@ -1,10 +1,12 @@
 package uk.gov.ea.wastecarrier.services.resources;
 
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
+import uk.gov.ea.wastecarrier.services.ElasticSearchConfiguration;
 import uk.gov.ea.wastecarrier.services.MessageQueueConfiguration;
 import uk.gov.ea.wastecarrier.services.core.MetaData;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
+import uk.gov.ea.wastecarrier.services.tasks.Indexer;
 
 import com.mongodb.DB;
 import com.yammer.metrics.annotation.Timed;
@@ -20,6 +22,10 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
+import org.elasticsearch.client.Client;
+import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.transport.InetSocketTransportAddress;
+
 import net.vz.mongodb.jackson.JacksonDBCollection;
 import net.vz.mongodb.jackson.WriteResult;
 
@@ -30,7 +36,7 @@ import java.util.logging.Logger;
  * Specifically serving the Edit and Update services
  *
  */
-@Path("/registrations/{id}.json")
+@Path("/"+Registration.COLLECTION_NAME+"/{id}.json")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class RegistrationReadEditResource
@@ -40,6 +46,7 @@ public class RegistrationReadEditResource
     private final String defaultName;
     private MessageQueueConfiguration messageQueue;
     private DatabaseHelper databaseHelper;
+    private Client esClient;
     
     // Standard logging declaration
     private Logger log = Logger.getLogger(RegistrationReadEditResource.class.getName());
@@ -52,7 +59,7 @@ public class RegistrationReadEditResource
      * @param database
      */
     public RegistrationReadEditResource(String template, String defaultName, MessageQueueConfiguration mQConfig,
-    		DatabaseConfiguration database)
+    		DatabaseConfiguration database, ElasticSearchConfiguration elasticSearch)
     {
         this.template = template;
         this.defaultName = defaultName;
@@ -63,6 +70,7 @@ public class RegistrationReadEditResource
     	log.fine("> messageQueue: " + this.messageQueue);
 
         this.databaseHelper = new DatabaseHelper(database);
+        this.esClient = new TransportClient().addTransportAddress(new InetSocketTransportAddress(elasticSearch.getHost(), elasticSearch.getPort()));
     }
 
     /**
@@ -174,6 +182,10 @@ public class RegistrationReadEditResource
 					// Make a second request for the updated full registration details to be returned
 					savedObject = registrations.findOneById(id);
 					log.fine("Found Updated Registration, Details include:- CompanyName:" + savedObject.getCompanyName());
+					
+					// Perform another create index operation which should override previous index information
+					Indexer.createElasticSearchIndex(esClient, savedObject);
+					
 					return savedObject;
 				}
 				catch (IllegalArgumentException e)

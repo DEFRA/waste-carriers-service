@@ -148,7 +148,7 @@ public class Indexer extends Task
 		// either use client#prepare, or use Requests# to directly build index/delete requests
 		try
 		{
-			bulkRequest.add(client.prepareIndex(Registration.COLLECTION_NAME, "registration", reg.getId()).setSource(
+			bulkRequest.add(client.prepareIndex(Registration.COLLECTION_NAME, Registration.COLLECTION_SINGULAR_NAME, reg.getId()).setSource(
 					asJson(reg)));
 		}
 		catch (IOException e1)
@@ -165,7 +165,7 @@ public class Indexer extends Task
 	{
 		// Delete Index after creation
 		DeleteResponse deleteResponse = esClient
-				.prepareDelete(Registration.COLLECTION_NAME, "registration", reg.getId()).setOperationThreaded(false)
+				.prepareDelete(Registration.COLLECTION_NAME, Registration.COLLECTION_SINGULAR_NAME, reg.getId()).setOperationThreaded(false)
 				.execute().actionGet();
 
 		log.info("deleted: " + deleteResponse.getId());

@@ -62,7 +62,7 @@ import java.util.logging.Logger;
  * registrations, and GETting the entire registration information, as well as specific search results
  * 
  */
-@Path("/registrations.json")
+@Path("/"+Registration.COLLECTION_NAME+".json")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class RegistrationsResource
@@ -155,7 +155,7 @@ public class RegistrationsResource
 				// First Priority - Exact Match to RegIdentifier
 				QueryBuilder qb0 = QueryBuilders.matchQuery("regIdentifier", qValue);
 				SearchRequestBuilder srb0 = esClient.prepareSearch(Registration.COLLECTION_NAME)
-						.setTypes("registration")
+						.setTypes(Registration.COLLECTION_SINGULAR_NAME)
 						.setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
 						.setQuery(qb0)
 						.setSize(1);
@@ -163,7 +163,7 @@ public class RegistrationsResource
 				// Second Priority - Exact match to any other value
 				QueryBuilder qb1 = QueryBuilders.queryString(qValue);
 				SearchRequestBuilder srb1 = esClient.prepareSearch(Registration.COLLECTION_NAME)
-						.setTypes("registration")
+						.setTypes(Registration.COLLECTION_SINGULAR_NAME)
 						.setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
 						.setQuery(qb1)
 						.setSize(this.elasticSearch.getSize());
@@ -174,7 +174,7 @@ public class RegistrationsResource
 						.likeText(qValue)
 						.maxQueryTerms(12);                             // Max num of Terms in generated queries
 				SearchRequestBuilder srb2 = esClient.prepareSearch(Registration.COLLECTION_NAME)
-						.setTypes("registration")
+						.setTypes(Registration.COLLECTION_SINGULAR_NAME)
 						.setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
 						.setQuery(qb2)
 						.setSize(this.elasticSearch.getSize());
