@@ -13,6 +13,7 @@ import com.yammer.metrics.annotation.Timed;
 
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -131,6 +132,7 @@ public class RegistrationReadEditResource
      * @return
      */
     @PUT
+    @Timed
 	public Registration update(@PathParam("id") String id, @Valid Registration reg)
 	{
     	log.info("PUT Update Registration, for ID:" + id);
@@ -204,4 +206,12 @@ public class RegistrationReadEditResource
 			throw new WebApplicationException(Status.SERVICE_UNAVAILABLE);
 		}
 	}
+    
+    @DELETE
+    @Timed
+    public Registration deleteRegistration(@PathParam("id") String id) 
+    {
+    	log.info("DELETE Registration, for ID:" + id);
+    	return null;
+    }
 }
