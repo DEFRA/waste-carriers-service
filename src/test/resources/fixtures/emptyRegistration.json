@@ -13,8 +13,10 @@
 	"address":null, 
 	"uprn":null,
 	"title":null, 
+	"otherTitle":null, 
 	"firstName":null, 
 	"lastName":null, 
+	"position":null, 
 	"phoneNumber":null, 
 	"email":null, 
 	"declaration":null

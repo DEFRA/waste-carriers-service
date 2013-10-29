@@ -12,9 +12,11 @@
 	"postcode":"BS3 3GE",
 	"address":null, 
 	"uprn":null,
-	"title":"Mr", 
+	"title":"Other", 
+	"otherTitle":"Lord", 
 	"firstName":"firstname", 
 	"lastName":"lastname", 
+	"position":"CEO", 
 	"phoneNumber":"34534654", 
 	"email":"email@you.com", 
 	"declaration":"on"

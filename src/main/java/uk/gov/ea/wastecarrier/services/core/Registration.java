@@ -76,12 +76,17 @@ public class Registration
 	@NotEmpty
 	@JsonProperty
 	private String title;
+	@JsonProperty
+	private String otherTitle;
 	@NotEmpty
 	@JsonProperty
 	private String firstName;
 	@NotEmpty
 	@JsonProperty
 	private String lastName;
+	@JsonProperty
+	private String position;
+
 	@NotEmpty
 	@JsonProperty
 	private String phoneNumber;
@@ -485,6 +490,22 @@ public class Registration
 	public void setDeclaration(String declaration)
 	{
 		this.declaration = declaration;
+	}
+
+	public String getOtherTitle() {
+		return otherTitle;
+	}
+
+	public void setOtherTitle(String otherTitle) {
+		this.otherTitle = otherTitle;
+	}
+
+	public String getPosition() {
+		return position;
+	}
+
+	public void setPosition(String position) {
+		this.position = position;
 	}
 	
 	/**

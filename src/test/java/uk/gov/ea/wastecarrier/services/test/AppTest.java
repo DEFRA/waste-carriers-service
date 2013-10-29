@@ -55,9 +55,11 @@ public class AppTest extends TestCase
 		reg.setIndividualsType("indivTypeVal");
 		reg.setHouseNumber("1");
 		reg.setPostcode("BS3 3GE");
-		reg.setTitle("Mr");
+		reg.setTitle("Other");
+		reg.setOtherTitle("Lord");
 		reg.setFirstName("firstname");
 		reg.setLastName("lastname");
+		reg.setPosition("CEO");
 		reg.setPhoneNumber("34534654");
 		reg.setEmail("email@you.com");
 		reg.setDeclaration("on");
