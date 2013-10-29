@@ -126,7 +126,7 @@ public class Indexer extends Task
 				// Update records only if not doing all records
 				if (!deleteAll)
 				{
-					deleteElasticSearchIndex(r);
+					deleteElasticSearchIndex(esClient, r);
 					out.append("deleted reg: " + r.getId() + "\n");
 				}
 				BulkResponse bulkResponse = createElasticSearchIndex(esClient, r);
@@ -186,13 +186,14 @@ public class Indexer extends Task
 	 * Performs a delete index operation on the Elastic Search records for the provided registration
 	 * @param reg
 	 */
-	private void deleteElasticSearchIndex(Registration reg)
+	public static DeleteResponse deleteElasticSearchIndex(Client client, Registration reg)
 	{
 		// Delete Index after creation
-		DeleteResponse deleteResponse = esClient
+		DeleteResponse deleteResponse = client
 				.prepareDelete(Registration.COLLECTION_NAME, Registration.COLLECTION_SINGULAR_NAME, reg.getId()).setOperationThreaded(false)
 				.execute().actionGet();
 
 		log.info("deleted: " + deleteResponse.getId());
+		return deleteResponse;
 	}
 }

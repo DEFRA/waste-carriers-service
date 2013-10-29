@@ -109,8 +109,18 @@ public class RegistrationReadEditResource
 					log.info("Found Registration, CompanyName:" + foundReg.getCompanyName());
 					return foundReg;
 				}
-				log.info("Valid ID format, but Cannot find Registration for ID: " + id);
-				throw new WebApplicationException(Status.NOT_FOUND);
+				else
+				{
+					// Remove Registration from Elastic search
+					Registration tmpReg = new Registration();
+					tmpReg.setId(id);
+					Indexer.deleteElasticSearchIndex(esClient, tmpReg);
+					log.info("Deleted:" + id + " from Elastic Search");
+					
+					log.info("Valid ID format, but Cannot find Registration for ID: " + id);
+					throw new WebApplicationException(Status.NOT_FOUND);
+				}
+				
 			}
 			catch (IllegalArgumentException e)
 			{
@@ -207,11 +217,72 @@ public class RegistrationReadEditResource
 		}
 	}
     
+    /**
+     * Delete Registration from the database and Elastic Search given the ID provided
+     * 
+     * @param id the ID of the registration to remove
+     * @return null, if completed successfully, otherwise throws an Exception
+     */
     @DELETE
     @Timed
     public Registration deleteRegistration(@PathParam("id") String id) 
     {
     	log.info("DELETE Registration, for ID:" + id);
-    	return null;
+    	
+    	// Use id to lookup record in database return registration details
+    	DB db = databaseHelper.getConnection();
+		if (db != null)
+		{	
+			if (!db.isAuthenticated())
+			{
+				throw new WebApplicationException(Status.FORBIDDEN);
+			}
+			
+			// Create MONGOJACK connection to the database
+			JacksonDBCollection<Registration, String> registrations = JacksonDBCollection.wrap(
+					db.getCollection(Registration.COLLECTION_NAME), Registration.class, String.class);
+			
+			log.info("Searching for ID: " + id);
+			try
+			{
+				Registration foundReg = registrations.findOneById(id);
+				WriteResult<Registration, String> result;
+				if (foundReg != null)
+				{
+					log.info("Found Registration, CompanyName:" + foundReg.getCompanyName());
+					
+					// Remove Found Registration from Database
+					result = registrations.remove(foundReg);
+					// If no errors detected, also removed from Search
+					if (result.getError() != null)
+					{
+						log.info("Deleted:" + foundReg.getId() + " from Mongo");
+						
+						// Remove Registration from Elastic search
+						Indexer.deleteElasticSearchIndex(esClient, foundReg);
+						log.info("Deleted:" + foundReg.getId() + " from Elastic Search");
+					}
+					// Operation completed
+					return null;
+				}
+				log.info("Valid ID format, but Cannot find Registration for ID: " + id);
+				
+				// Also Delete from Elastic Search if not found in database
+				Registration tmpReg = new Registration();
+				tmpReg.setId(id);
+				Indexer.deleteElasticSearchIndex(esClient, tmpReg);
+				log.info("Deleted:" + id + " from Elastic Search");
+				throw new WebApplicationException(Status.NOT_FOUND);
+			}
+			catch (IllegalArgumentException e)
+			{
+				log.warning("Cannot find Registration ID: " + id);
+				throw new WebApplicationException(Status.NOT_FOUND);
+			}
+		}
+		else
+		{
+			throw new WebApplicationException(Status.SERVICE_UNAVAILABLE);
+		}
     }
 }
