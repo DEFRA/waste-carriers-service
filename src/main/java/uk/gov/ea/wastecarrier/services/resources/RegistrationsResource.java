@@ -122,15 +122,27 @@ public class RegistrationsResource
 	@Timed
 	public List<Registration> getRegistrations(@QueryParam("companyName") Optional<String> name,
 			@QueryParam("businessType") Optional<String> businessType, 
-			@QueryParam("postcode") Optional<String> postcode, @QueryParam("q") Optional<String> q)
+			@QueryParam("postcode") Optional<String> postcode, @QueryParam("q") Optional<String> q,
+			@QueryParam("searchWithin") Optional<String> sw)
 	{
 		log.fine("Get Method Detected at /registrations");
 		ArrayList<Registration> returnlist = new ArrayList<Registration>();
 		
-		if(q.isPresent()){
+		if (q.isPresent())
+		{
 			String qValue = q.get();
-			if(!"".equals(qValue)){
+			if (!"".equals(qValue))
+			{
 				log.info("Param GET Method Detected - Return List of Registrations limited by ElasticSearch");
+				
+				boolean useAdvancedSearch = false;
+				String swValue = null;
+				if (sw.isPresent() && !"".equals(sw) && !"any".equals(sw.get()))
+				{
+					swValue = sw.get();
+					useAdvancedSearch = true;
+					log.info("Advanced Search, requested within only: " + swValue);
+				}
 				
 				/**
 				 * Search
@@ -162,6 +174,12 @@ public class RegistrationsResource
 				
 				// Second Priority - Exact match to any other value
 				QueryBuilder qb1 = QueryBuilders.queryString(qValue);
+				// Advanced/Alternate Second Priority - Exact Match, but limited to only within criteria specified
+				if (useAdvancedSearch)
+				{
+					// Limit Search to Just within the specified limit
+					qb1 = QueryBuilders.matchQuery(swValue, qValue);
+				}
 				SearchRequestBuilder srb1 = esClient.prepareSearch(Registration.COLLECTION_NAME)
 						.setTypes(Registration.COLLECTION_SINGULAR_NAME)
 						.setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
@@ -173,6 +191,12 @@ public class RegistrationsResource
 				QueryBuilder qb2 = QueryBuilders.fuzzyLikeThisQuery("companyName", "postcode", "firstName", "lastName")
 						.likeText(qValue)
 						.maxQueryTerms(12);                             // Max num of Terms in generated queries
+				// Advanced/Alternate Third Priority - Fuzzy Match, but limited to only within criteria specified
+				if (useAdvancedSearch)
+				{
+					// Limit Search to Just within the specified limit
+					qb2 = QueryBuilders.fuzzyQuery(swValue, qValue);	// Works as a fuzzy search but only on 1 field
+				}
 				SearchRequestBuilder srb2 = esClient.prepareSearch(Registration.COLLECTION_NAME)
 						.setTypes(Registration.COLLECTION_SINGULAR_NAME)
 						.setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
