@@ -92,7 +92,9 @@ public class Registration
 	private String phoneNumber;
 	@NotEmpty
 	@JsonProperty
-	private String email;
+	private String contactEmail;
+	@JsonProperty
+	private String accountEmail;
 	
 	/* 
 	 * These are the Declaration Details
@@ -315,9 +317,17 @@ public class Registration
 	/**
 	 * @return the email
 	 */
-	public String getEmail()
+	public String getContactEmail()
 	{
-		return email;
+		return contactEmail;
+	}
+	
+	/**
+	 * @return the accountEmail
+	 */
+	public String getAccountEmail()
+	{
+		return accountEmail;
 	}
 
 	/**
@@ -483,9 +493,17 @@ public class Registration
 	/**
 	 * @param email the email to set
 	 */
-	public void setEmail(String email)
+	public void setContactEmail(String contactEmail)
 	{
-		this.email = email;
+		this.contactEmail = contactEmail;
+	}
+
+	/**
+	 * @param accountEmail the accountEmail to set
+	 */
+	public void setAccountEmail(String accountEmail)
+	{
+		this.accountEmail = accountEmail;
 	}
 
 	/**
@@ -570,7 +588,7 @@ public class Registration
         res = checkString(this.getFirstName(), ((Registration) obj).getFirstName(), res);
         res = checkString(this.getLastName(), ((Registration) obj).getLastName(), res);
         res = checkString(this.getPhoneNumber(), ((Registration) obj).getPhoneNumber(), res);
-        res = checkString(this.getEmail(), ((Registration) obj).getEmail(), res);
+        res = checkString(this.getContactEmail(), ((Registration) obj).getContactEmail(), res);
         res = checkString(this.getDeclaration(), ((Registration) obj).getDeclaration(), res);
         log.finer("equals result: " + res);
         return res;
