@@ -103,10 +103,14 @@ public class Registration
 	
 	@JsonInclude(Include.NON_DEFAULT)
 	private String regIdentifier;
+
+	@JsonProperty
+	private String status;
 	
 	/* Static not applicable value */
 	//private final static String NA = "n/a";
 	
+
 	public final static String COLLECTION_SINGULAR_NAME = "registration";
 	public final static String COLLECTION_NAME = COLLECTION_SINGULAR_NAME +"s";
 	public final static String COUNTERS_COLLECTION_NAME = "counters";
@@ -522,6 +526,14 @@ public class Registration
 	public void setMetaData(MetaData metaData)
 	{
 		this.metaData = metaData;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 	
 	/**

@@ -19,5 +19,6 @@
 	"position":"CEO", 
 	"phoneNumber":"34534654", 
 	"email":"email@you.com", 
-	"declaration":"on"
+	"declaration":"on",
+	"status":null
 }

@@ -19,5 +19,6 @@
 	"position":null, 
 	"phoneNumber":null, 
 	"email":null, 
-	"declaration":null
+	"declaration":null,
+	"status":null
 }
