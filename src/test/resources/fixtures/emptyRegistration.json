@@ -18,6 +18,7 @@
 	"lastName":null, 
 	"position":null, 
 	"phoneNumber":null, 
-	"email":null, 
+	"contactEmail":null, 
+	"accountEmail":null, 
 	"declaration":null
 }

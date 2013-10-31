@@ -61,7 +61,8 @@ public class AppTest extends TestCase
 		reg.setLastName("lastname");
 		reg.setPosition("CEO");
 		reg.setPhoneNumber("34534654");
-		reg.setEmail("email@you.com");
+		reg.setContactEmail("email@you.com");
+		reg.setAccountEmail("account@you.com");
 		reg.setDeclaration("on");
 		return reg;
 	}

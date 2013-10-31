@@ -18,6 +18,7 @@
 	"lastName":"lastname", 
 	"position":"CEO", 
 	"phoneNumber":"34534654", 
-	"email":"email@you.com", 
+	"contactEmail":"email@you.com", 
+	"accountEmail":"account@you.com", 
 	"declaration":"on"
 }
