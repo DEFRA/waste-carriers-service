@@ -123,7 +123,7 @@ public class RegistrationsResource
 	public List<Registration> getRegistrations(@QueryParam("companyName") Optional<String> name,
 			@QueryParam("businessType") Optional<String> businessType, 
 			@QueryParam("postcode") Optional<String> postcode, @QueryParam("q") Optional<String> q,
-			@QueryParam("searchWithin") Optional<String> sw)
+			@QueryParam("searchWithin") Optional<String> sw, @QueryParam("ac") Optional<String> account)
 	{
 		log.fine("Get Method Detected at /registrations");
 		ArrayList<Registration> returnlist = new ArrayList<Registration>();
@@ -275,7 +275,7 @@ public class RegistrationsResource
 				}
 				
 				// Database available
-				if (name.isPresent() || businessType.isPresent() || postcode.isPresent())
+				if (name.isPresent() || businessType.isPresent() || postcode.isPresent() || account.isPresent())
 				{
 					log.info("Param GET Method Detected - Return List of Registrations limited by Search criteria");
 					
@@ -284,6 +284,7 @@ public class RegistrationsResource
 					myMap.put("companyName", name);
 					myMap.put("businessType", businessType);
 					myMap.put("postcode", postcode);
+					myMap.put("accountEmail", account);
 					
 					Query[] queryList = createConditionalSearchParams(myMap);
 					log.info("Number of search parameters provided: " + queryList.length);
