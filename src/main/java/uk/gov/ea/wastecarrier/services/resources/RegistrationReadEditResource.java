@@ -254,13 +254,18 @@ public class RegistrationReadEditResource
 					// Remove Found Registration from Database
 					result = registrations.remove(foundReg);
 					// If no errors detected, also removed from Search
-					if (result.getError() != null)
+					if (result.getError() == null)
 					{
 						log.info("Deleted:" + foundReg.getId() + " from Mongo");
 						
 						// Remove Registration from Elastic search
 						Indexer.deleteElasticSearchIndex(esClient, foundReg);
 						log.info("Deleted:" + foundReg.getId() + " from Elastic Search");
+					}
+					else
+					{
+						log.severe("ERROR: " + result.getError());
+						throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
 					}
 					// Operation completed
 					return null;
