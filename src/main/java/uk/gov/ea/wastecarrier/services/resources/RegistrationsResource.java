@@ -42,6 +42,8 @@ import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.sort.SortOrder;
+import org.mongojack.DBSort;
 
 import net.vz.mongodb.jackson.DBCursor;
 import net.vz.mongodb.jackson.DBQuery;
@@ -184,7 +186,8 @@ public class RegistrationsResource
 						.setTypes(Registration.COLLECTION_SINGULAR_NAME)
 						.setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
 						.setQuery(qb1)
-						.setSize(this.elasticSearch.getSize());
+						.setSize(this.elasticSearch.getSize())
+						.addSort("companyName", SortOrder.ASC);
 				
 				// Third Priority - Fuzzy match to certain fields
 				//QueryBuilder qb2 = QueryBuilders.fuzzyQuery("companyName", qValue);	// Works as a fuzzy search but only on 1 field
@@ -201,7 +204,8 @@ public class RegistrationsResource
 						.setTypes(Registration.COLLECTION_SINGULAR_NAME)
 						.setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
 						.setQuery(qb2)
-						.setSize(this.elasticSearch.getSize());
+						.setSize(this.elasticSearch.getSize())
+						.addSort("companyName", SortOrder.ASC);
 
 				MultiSearchResponse sr = null;
 				try
@@ -297,7 +301,7 @@ public class RegistrationsResource
 					JacksonDBCollection<Registration, String> registrations = JacksonDBCollection.wrap(
 							db.getCollection(Registration.COLLECTION_NAME), Registration.class, String.class);
 	
-					DBCursor<Registration> dbcur = registrations.find(totalQuery);
+					DBCursor<Registration> dbcur = registrations.find(totalQuery).sort(DBSort.asc("companyName"));
 					log.info("Found: " + dbcur.size() + " Matching criteria");
 	
 					for (Registration r : dbcur)
@@ -315,7 +319,7 @@ public class RegistrationsResource
 							db.getCollection(Registration.COLLECTION_NAME), Registration.class, String.class);
 	
 					// Attempt to retrieve all registrations
-					DBCursor<Registration> dbcur = registrations.find();
+					DBCursor<Registration> dbcur = registrations.find().sort(DBSort.asc("companyName"));
 					for (Registration r : dbcur)
 					{
 						log.fine("> search found registrations id: " + r.getId());
