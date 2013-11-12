@@ -4,8 +4,8 @@ defaultName: Stranger
 
 # messageQueue complex parameter to show class of different configuration types MessageQueueConfiguration
 messageQueue:
-  host: WESERVICES_MQ_HOST
-  port: WESERVICES_MQ_PORT
+  host: WCRS_SERVICES_MQ_HOST
+  port: WCRS_SERVICES_MQ_PORT
 
 # Added standard logging information
 logging:
@@ -21,15 +21,15 @@ logging:
 
 # added database connection properties, DatabaseConfiguration
 database:
-  host: WESERVICES_DB_HOST
-  port: WESERVICES_DB_PORT
-  name: WESERVICES_DB_NAME
-  username: WESERVICES_DB_USER
-  password: WESERVICES_DB_PASSWD
+  host: WCRS_SERVICES_DB_HOST
+  port: WCRS_SERVICES_DB_PORT
+  name: WCRS_SERVICES_DB_NAME
+  username: WCRS_SERVICES_DB_USER
+  password: WCRS_SERVICES_DB_PASSWD
   
 elasticSearch:
-  host: WESERVICES_ES_HOST
-  port: WESERVICES_ES_PORT
+  host: WCRS_SERVICES_ES_HOST
+  port: WCRS_SERVICES_ES_PORT
   # Can also specify a size for the maximum number of results to return in a given query
   # By default the 100 is used, but can be overridden here if specified
   #size: 100
@@ -39,12 +39,12 @@ http:
   # Because Java cannot drop privileges in a POSIX system, these
   # ports cannot be in the range 1-1024. A port value of 0 will
   # make the OS use an arbitrary unused port.
-  port: WESERVICES_PORT
+  port: WCRS_SERVICES_PORT
   
   # The port on which the HTTP server listens for administrative
   # requests. Subject to the same limitations as "port". If this is
   # set to the same value as port, the admin routes will be mounted
   # under /admin.
-  adminPort: WESERVICES_ADMIN_PORT
+  adminPort: WCRS_SERVICES_ADMIN_PORT
   
 # more properties go here
