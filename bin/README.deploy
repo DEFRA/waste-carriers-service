@@ -1,45 +1,47 @@
-The deploy.sh script will deploy the we-services application. The following
+The deploy.sh script will deploy the wcrs-services application. The following
 environment variables should be set in the shell of the user who owns this
 process:
 
-WESERVICES_JAVA_HOME  <= java home
-WESERVICES_HOME  <= base destination dir for deploy
-WESERVICES_SOURCE  <= location of files to be deployed
-WESERVICES_PORT  <= port to run the we-services on
-WESERVICES_ADMIN_PORT  <= port to run the we-services admin on
-WESERVICES_MQ_HOST  <= hostname of message queue server
-WESERVICES_MQ_PORT  <= message queue port
-WESERVICES_DB_HOST  <= hostname of database server
-WESERVICES_DB_PORT  <= database port
-WESERVICES_DB_NAME  <= database name
-WESERVICES_DB_USER  <= database user name
-WESERVICES_DB_PASSWD  <= database password
-WESERVICES_ES_HOST  <= hostname of elasticsearch server
-WESERVICES_ES_PORT=9300  <= port for Elasticsearch transport protocol
+WCRS_SERVICES_JAVA_HOME  <= java home
+WCRS_SERVICES_HOME  <= base destination dir for deploy
+WCRS_SERVICES_SOURCE  <= location of files to be deployed
+WCRS_SERVICES_PORT  <= port to run the wcrs-services on
+WCRS_SERVICES_ADMIN_PORT  <= port to run the wcrs-services admin on
+WCRS_SERVICES_MQ_HOST  <= hostname of message queue server
+WCRS_SERVICES_MQ_PORT  <= message queue port
+WCRS_SERVICES_DB_HOST  <= hostname of database server
+WCRS_SERVICES_DB_PORT  <= database port
+WCRS_SERVICES_DB_NAME  <= database name
+WCRS_SERVICES_DB_USER  <= database user name
+WCRS_SERVICES_DB_PASSWD  <= database password
+WCRS_SERVICES_ES_HOST  <= hostname of elasticsearch server
+WCRS_SERVICES_ES_PORT=9300  <= port for Elasticsearch transport protocol
 
 Example:
 >>>>> Add to ~/.bashrc and ~/.bash_profile <<<<<
-if [ -f ~/.bash_we-services_config ]; then
-  . ~/.bash_we-services_config
+if [ -f ~/.bash_wcrs-services_config ]; then
+  . ~/.bash_wcrs-services_config
 fi
 
 >>>>> Secure the file <<<<<
-chmod 600 ~/.bash_we-services_config
+chmod 600 ~/.bash_wcrs-services_config
 
->>>>> Content of ~/.bash_we-services_config <<<<<
-export WESERVICES_JAVA_HOME="/path/to/java"
-export WESERVICES_HOME="/path/to/we-services"
-export WESERVICES_SOURCE="/path/to/jenkins/jobs/waste-exemplar-services/workspace"
-export WESERVICES_PORT=9090
-export WESERVICES_ADMIN_PORT=9091
-export WESERVICES_MQ_HOST="mqserver.com"
-export WESERVICES_MQ_PORT=5673
-export WESERVICES_DB_HOST= "db.com"
-export WESERVICES_DB_PORT=27017
-export WESERVICES_DB_NAME="waste-carriers"
-export WESERVICES_DB_USER="username"
-export WESERVICES_DB_PASSWD="password"
-export WESERVICES_ES_HOST="ea-dev"
+>>>>> Content of ~/.bash_wcrs-services_config <<<<<
+## Local configuration settings for the dropwizard application.
+## This file should not be readable by any other users.
+export WCRS_SERVICES_JAVA_HOME="/path/to/java"
+export WCRS_SERVICES_HOME="/path/to/wcrs-services"
+export WCRS_SERVICES_SOURCE="/path/to/jenkins/jobs/waste-exemplar-services/workspace"
+export WCRS_SERVICES_PORT=9090
+export WCRS_SERVICES_ADMIN_PORT=9091
+export WCRS_SERVICES_MQ_HOST="mqserver.com"
+export WCRS_SERVICES_MQ_PORT=5673
+export WCRS_SERVICES_DB_HOST= "db.com"
+export WCRS_SERVICES_DB_PORT=27017
+export WCRS_SERVICES_DB_NAME="waste-carriers"
+export WCRS_SERVICES_DB_USER="username"
+export WCRS_SERVICES_DB_PASSWD="password"
+export WCRS_SERVICES_ES_HOST="ea-dev"
 ## Port for Elasticsearch transport protocol.
-export WESERVICES_ES_PORT=9300
+export WCRS_SERVICES_ES_PORT=9300
 

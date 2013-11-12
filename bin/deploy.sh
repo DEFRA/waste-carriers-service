@@ -1,7 +1,7 @@
 #!/bin/bash
 #set -x
 
-## This script will deploy and start the we-services application.
+## This script will deploy and start the wcrs-services application.
 ## Please refer to README.deploy for futher details.
 
 function env_alert() {
@@ -15,150 +15,150 @@ function env_alert() {
 echo ""
 
 ## Ensure required environment variables have been set.
-if [[ -z "${WESERVICES_JAVA_HOME}" ]]; then env_alert WESERVICES_JAVA_HOME; fi
-if [[ -z "${WESERVICES_HOME}" ]]; then env_alert WESERVICES_HOME; fi
-if [[ -z "${WESERVICES_SOURCE}" ]]; then env_alert WESERVICES_SOURCE; fi
-if [[ -z "${WESERVICES_PORT}" ]]; then env_alert WESERVICES_PORT; fi
-if [[ -z "${WESERVICES_ADMIN_PORT}" ]]; then env_alert WESERVICES_ADMIN_PORT; fi
-if [[ -z "${WESERVICES_MQ_HOST}" ]]; then env_alert WESERVICES_MQ_HOST; fi
-if [[ -z "${WESERVICES_MQ_PORT}" ]]; then env_alert WESERVICES_MQ_PORT; fi
-if [[ -z "${WESERVICES_DB_HOST}" ]]; then env_alert WESERVICES_DB_HOST; fi
-if [[ -z "${WESERVICES_DB_PORT}" ]]; then env_alert WESERVICES_DB_PORT; fi
-if [[ -z "${WESERVICES_DB_NAME}" ]]; then env_alert WESERVICES_DB_NAME; fi
-if [[ -z "${WESERVICES_DB_USER}" ]]; then env_alert WESERVICES_DB_USER; fi
-if [[ -z "${WESERVICES_DB_PASSWD}" ]]; then env_alert WESERVICES_DB_PASSWD; fi
-if [[ -z "${WESERVICES_ES_HOST}" ]]; then env_alert WESERVICES_ES_HOST; fi
-if [[ -z "${WESERVICES_ES_PORT}" ]]; then env_alert WESERVICES_ES_PORT; fi
+if [[ -z "${WCRS_SERVICES_JAVA_HOME}" ]]; then env_alert WCRS_SERVICES_JAVA_HOME; fi
+if [[ -z "${WCRS_SERVICES_HOME}" ]]; then env_alert WCRS_SERVICES_HOME; fi
+if [[ -z "${WCRS_SERVICES_SOURCE}" ]]; then env_alert WCRS_SERVICES_SOURCE; fi
+if [[ -z "${WCRS_SERVICES_PORT}" ]]; then env_alert WCRS_SERVICES_PORT; fi
+if [[ -z "${WCRS_SERVICES_ADMIN_PORT}" ]]; then env_alert WCRS_SERVICES_ADMIN_PORT; fi
+if [[ -z "${WCRS_SERVICES_MQ_HOST}" ]]; then env_alert WCRS_SERVICES_MQ_HOST; fi
+if [[ -z "${WCRS_SERVICES_MQ_PORT}" ]]; then env_alert WCRS_SERVICES_MQ_PORT; fi
+if [[ -z "${WCRS_SERVICES_DB_HOST}" ]]; then env_alert WCRS_SERVICES_DB_HOST; fi
+if [[ -z "${WCRS_SERVICES_DB_PORT}" ]]; then env_alert WCRS_SERVICES_DB_PORT; fi
+if [[ -z "${WCRS_SERVICES_DB_NAME}" ]]; then env_alert WCRS_SERVICES_DB_NAME; fi
+if [[ -z "${WCRS_SERVICES_DB_USER}" ]]; then env_alert WCRS_SERVICES_DB_USER; fi
+if [[ -z "${WCRS_SERVICES_DB_PASSWD}" ]]; then env_alert WCRS_SERVICES_DB_PASSWD; fi
+if [[ -z "${WCRS_SERVICES_ES_HOST}" ]]; then env_alert WCRS_SERVICES_ES_HOST; fi
+if [[ -z "${WCRS_SERVICES_ES_PORT}" ]]; then env_alert WCRS_SERVICES_ES_PORT; fi
 
 
-## Stop previously running we-services.
-echo "Stopping old we-services."
-if [ -f "${WESERVICES_HOME}/live/logs/pid" ]; then
-  WESERVICES_PID=`cat "${WESERVICES_HOME}/live/logs/pid"`
-  kill -0 ${WESERVICES_PID} > /dev/null 2>&1
+## Stop previously running wcrs-services.
+echo "Stopping old wcrs-services."
+if [ -f "${WCRS_SERVICES_HOME}/live/logs/pid" ]; then
+  WCRS_SERVICES_PID=`cat "${WCRS_SERVICES_HOME}/live/logs/pid"`
+  kill -0 ${WCRS_SERVICES_PID} > /dev/null 2>&1
   if [ $? -eq 0 ]; then
-    kill ${WESERVICES_PID} > /dev/null 2>&1
+    kill ${WCRS_SERVICES_PID} > /dev/null 2>&1
   fi
-  rm "${WESERVICES_HOME}/live/logs/pid"
+  rm "${WCRS_SERVICES_HOME}/live/logs/pid"
 fi
 ## A second check in case the pid file was out of date.
-WESERVICES_PID=`ps -ef | grep java | grep ${WESERVICES_PORT} | awk '{print $2}'`
-if [[ ! -z "${WESERVICES_PID}" ]]; then
-  kill ${WESERVICES_PID} 
+WCRS_SERVICES_PID=`ps -ef | grep java | grep ${WCRS_SERVICES_PORT} | awk '{print $2}'`
+if [[ ! -z "${WCRS_SERVICES_PID}" ]]; then
+  kill ${WCRS_SERVICES_PID} 
 fi
 
 
 ## Create a new release directory.
 DATESTAMP=`date +%Y.%m.%d-%H.%M`
-RELEASE_DIR="we-services-${DATESTAMP}"
+RELEASE_DIR="wcrs-services-${DATESTAMP}"
 echo "Creating new release directory ${RELEASE_DIR}"
-mkdir "${WESERVICES_HOME}/${RELEASE_DIR}"
-cd "${WESERVICES_HOME}"
-if [ -d "${WESERVICES_HOME}/live" ]; then
+mkdir "${WCRS_SERVICES_HOME}/${RELEASE_DIR}"
+cd "${WCRS_SERVICES_HOME}"
+if [ -d "${WCRS_SERVICES_HOME}/live" ]; then
   rm live
 fi
 ln -s "${RELEASE_DIR}" live
 
 
 ## Create sub-directories to deploy into.
-if [ -d "${WESERVICES_HOME}" ]; then
-  if [ -w "${WESERVICES_HOME}" ]; then
+if [ -d "${WCRS_SERVICES_HOME}" ]; then
+  if [ -w "${WCRS_SERVICES_HOME}" ]; then
     for DIR in bin conf logs webapps; do
-      if [ ! -d "${WESERVICES_HOME}/${RELEASE_DIR}/${DIR}" ]; then
-        echo "Creating directory: ${WESERVICES_HOME}/${RELEASE_DIR}/${DIR}" 
-        mkdir "${WESERVICES_HOME}/${RELEASE_DIR}/${DIR}" 
+      if [ ! -d "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/${DIR}" ]; then
+        echo "Creating directory: ${WCRS_SERVICES_HOME}/${RELEASE_DIR}/${DIR}" 
+        mkdir "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/${DIR}" 
       fi
     done
   else
-    echo "ERROR: Unable to write to ${WESERVICES_HOME}. Exiting now."
+    echo "ERROR: Unable to write to ${WCRS_SERVICES_HOME}. Exiting now."
     exit 1
   fi
 else
-  echo "ERROR: ${WESERVICES_HOME} does not exist."
+  echo "ERROR: ${WCRS_SERVICES_HOME} does not exist."
   exit 1
 fi
 
 
 ## Deploy the bin scripts.
-if [ ! -d "${WESERVICES_SOURCE}/bin" ]; then
-  echo "ERROR: Unable to locate ${WESERVICES_SOURCE}/bin"
+if [ ! -d "${WCRS_SERVICES_SOURCE}/bin" ]; then
+  echo "ERROR: Unable to locate ${WCRS_SERVICES_SOURCE}/bin"
   echo "       Exiting now."
   echo ""
   exit 1
 fi
-cp "${WESERVICES_SOURCE}/bin/README.deploy" "${WESERVICES_HOME}/${RELEASE_DIR}/bin/"
-cp "${WESERVICES_SOURCE}/bin/stop.sh" "${WESERVICES_HOME}/${RELEASE_DIR}/bin/stop.sh"
-chmod 744 "${WESERVICES_HOME}/${RELEASE_DIR}/bin/stop.sh"
-cp "${WESERVICES_SOURCE}/bin/start.sh" "${WESERVICES_HOME}/${RELEASE_DIR}/bin/start.sh"
-chmod 744 "${WESERVICES_HOME}/${RELEASE_DIR}/bin/start.sh"
-cp "${WESERVICES_SOURCE}/bin/deploy.sh" "${WESERVICES_HOME}/${RELEASE_DIR}/bin/deploy.sh"
-chmod 744 "${WESERVICES_HOME}/${RELEASE_DIR}/bin/deploy.sh"
+cp "${WCRS_SERVICES_SOURCE}/bin/README.deploy" "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/bin/"
+cp "${WCRS_SERVICES_SOURCE}/bin/stop.sh" "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/bin/stop.sh"
+chmod 744 "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/bin/stop.sh"
+cp "${WCRS_SERVICES_SOURCE}/bin/start.sh" "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/bin/start.sh"
+chmod 744 "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/bin/start.sh"
+cp "${WCRS_SERVICES_SOURCE}/bin/deploy.sh" "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/bin/deploy.sh"
+chmod 744 "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/bin/deploy.sh"
 
 
 ## Deploy the most recent jar file.
-WESERVICES_JAR=`ls -tr "${WESERVICES_SOURCE}/target" | grep '\<waste-exemplar-services.*jar\>' | tail -1`
-if [[ -z "${WESERVICES_JAR}" ]]; then
-  echo "ERROR: Unable to locate waste-exemplar-services jar file in ${WESERVICES_SOURCE}/target"
+WCRS_SERVICES_JAR=`ls -tr "${WCRS_SERVICES_SOURCE}/target" | grep '\<waste-exemplar-services.*jar\>' | tail -1`
+if [[ -z "${WCRS_SERVICES_JAR}" ]]; then
+  echo "ERROR: Unable to locate waste-exemplar-services jar file in ${WCRS_SERVICES_SOURCE}/target"
   echo "       Exiting now."
   echo ""
   exit 1
 fi
-echo "Copying ${WESERVICES_JAR} to ${WESERVICES_HOME}/${RELEASE_DIR}/webapps/"
-cp "${WESERVICES_SOURCE}/target/${WESERVICES_JAR}" "${WESERVICES_HOME}/${RELEASE_DIR}/webapps/"
+echo "Copying ${WCRS_SERVICES_JAR} to ${WCRS_SERVICES_HOME}/${RELEASE_DIR}/webapps/"
+cp "${WCRS_SERVICES_SOURCE}/target/${WCRS_SERVICES_JAR}" "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/webapps/"
 
 
 ## Deploy the configuration file and set environment variables.
-if [[ ! -f "${WESERVICES_SOURCE}/configuration.yml" ]]; then
-  echo "ERROR: Unable to locate ${WESERVICES_SOURCE}/configuration.yml"
+if [[ ! -f "${WCRS_SERVICES_SOURCE}/configuration.yml" ]]; then
+  echo "ERROR: Unable to locate ${WCRS_SERVICES_SOURCE}/configuration.yml"
   echo "       Exiting now."
   echo ""
   exit 1
 fi
-cp "${WESERVICES_SOURCE}/configuration.yml" "${WESERVICES_HOME}/${RELEASE_DIR}/conf/"
-echo "Setting environment variables in ${WESERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
-sed -i "s/WESERVICES_PORT/${WESERVICES_PORT}/g" \
-       "${WESERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
-sed -i "s/WESERVICES_ADMIN_PORT/${WESERVICES_ADMIN_PORT}/g" \
-       "${WESERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
-sed -i "s/WESERVICES_MQ_HOST/${WESERVICES_MQ_HOST}/g" \
-       "${WESERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
-sed -i "s/WESERVICES_MQ_PORT/${WESERVICES_MQ_PORT}/g" \
-       "${WESERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
-sed -i "s/WESERVICES_DB_HOST/${WESERVICES_DB_HOST}/g" \
-       "${WESERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
-sed -i "s/WESERVICES_DB_PORT/${WESERVICES_DB_PORT}/g" \
-       "${WESERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
-sed -i "s/WESERVICES_DB_NAME/${WESERVICES_DB_NAME}/g" \
-       "${WESERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
-sed -i "s/WESERVICES_DB_USER/${WESERVICES_DB_USER}/g" \
-       "${WESERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
-sed -i "s/WESERVICES_DB_PASSWD/${WESERVICES_DB_PASSWD}/g" \
-       "${WESERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
-sed -i "s/WESERVICES_ES_HOST/${WESERVICES_ES_HOST}/g" \
-       "${WESERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
-sed -i "s/WESERVICES_ES_PORT/${WESERVICES_ES_PORT}/g" \
-       "${WESERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
+cp "${WCRS_SERVICES_SOURCE}/configuration.yml" "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/"
+echo "Setting environment variables in ${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
+sed -i "s/WCRS_SERVICES_PORT/${WCRS_SERVICES_PORT}/g" \
+       "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
+sed -i "s/WCRS_SERVICES_ADMIN_PORT/${WCRS_SERVICES_ADMIN_PORT}/g" \
+       "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
+sed -i "s/WCRS_SERVICES_MQ_HOST/${WCRS_SERVICES_MQ_HOST}/g" \
+       "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
+sed -i "s/WCRS_SERVICES_MQ_PORT/${WCRS_SERVICES_MQ_PORT}/g" \
+       "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
+sed -i "s/WCRS_SERVICES_DB_HOST/${WCRS_SERVICES_DB_HOST}/g" \
+       "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
+sed -i "s/WCRS_SERVICES_DB_PORT/${WCRS_SERVICES_DB_PORT}/g" \
+       "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
+sed -i "s/WCRS_SERVICES_DB_NAME/${WCRS_SERVICES_DB_NAME}/g" \
+       "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
+sed -i "s/WCRS_SERVICES_DB_USER/${WCRS_SERVICES_DB_USER}/g" \
+       "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
+sed -i "s/WCRS_SERVICES_DB_PASSWD/${WCRS_SERVICES_DB_PASSWD}/g" \
+       "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
+sed -i "s/WCRS_SERVICES_ES_HOST/${WCRS_SERVICES_ES_HOST}/g" \
+       "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
+sed -i "s/WCRS_SERVICES_ES_PORT/${WCRS_SERVICES_ES_PORT}/g" \
+       "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
 
 
 ## Create live symlink.
-echo "Creating symlink: ${WESERVICES_HOME}/live"
-cd "${WESERVICES_HOME}"
-if [ -d "${WESERVICES_HOME}/live" ]; then
+echo "Creating symlink: ${WCRS_SERVICES_HOME}/live"
+cd "${WCRS_SERVICES_HOME}"
+if [ -d "${WCRS_SERVICES_HOME}/live" ]; then
   rm live
 fi
 ln -s "${RELEASE_DIR}" live
 
 
-## Start we-services.
-echo "Starting we-services on port ${WESERVICES_PORT}."
-cd "${WESERVICES_HOME}/live/logs"
-if [ -f "${WESERVICES_HOME}/live/logs/we-services.log" ]; then
-  mv we-services.log we-services.log.${DATESTAMP}
+## Start wcrs-services.
+echo "Starting wcrs-services on port ${WCRS_SERVICES_PORT}."
+cd "${WCRS_SERVICES_HOME}/live/logs"
+if [ -f "${WCRS_SERVICES_HOME}/live/logs/wcrs-services.log" ]; then
+  mv wcrs-services.log wcrs-services.log.${DATESTAMP}
 fi
-nohup "${WESERVICES_JAVA_HOME}/bin/java" -Ddw.http.port=${WESERVICES_PORT} \
-      -jar "${WESERVICES_HOME}/live/webapps/${WESERVICES_JAR}" \
-      server "${WESERVICES_HOME}/live/conf/configuration.yml" > "${WESERVICES_HOME}/live/logs/we-services.log" &
-echo $! > "${WESERVICES_HOME}/live/logs/pid"
+nohup "${WCRS_SERVICES_JAVA_HOME}/bin/java" -Ddw.http.port=${WCRS_SERVICES_PORT} \
+      -jar "${WCRS_SERVICES_HOME}/live/webapps/${WCRS_SERVICES_JAR}" \
+      server "${WCRS_SERVICES_HOME}/live/conf/configuration.yml" > "${WCRS_SERVICES_HOME}/live/logs/wcrs-services.log" &
+echo $! > "${WCRS_SERVICES_HOME}/live/logs/pid"
 
 
 echo "Deploy complete."
