@@ -18,6 +18,14 @@ public class MetaData {
     private String anotherString;
 
 	private String lastModified;
+	
+	private RegistrationStatus status;
+	
+	private String revokedReason;
+
+	public enum RegistrationStatus {
+	    ACTIVE, REVOKED, DELETED
+	}
     
     /**
      * Other possible meta data values include the following:
@@ -46,6 +54,7 @@ public class MetaData {
         this.dateRegistered = dateRegistered;
         this.anotherString = anotherString;
         this.lastModified = dateRegistered;
+        this.status = RegistrationStatus.ACTIVE;
     }
 
     public String getDateRegistered() {
@@ -62,6 +71,22 @@ public class MetaData {
 	public String getLastModified()
 	{
 		return lastModified;
+	}
+	
+	/**
+	 * @return the status
+	 */
+	public RegistrationStatus getStatus()
+	{
+		return status;
+	}
+	
+	/**
+	 * @return the revokedReason
+	 */
+	public String getRevokedReason()
+	{
+		return revokedReason;
 	}
 	
 	public static String getCurrentDateTime()
@@ -93,6 +118,22 @@ public class MetaData {
 	public void setLastModified(String lastModified)
 	{
 		this.lastModified = lastModified;
+	}
+	
+	/**
+	 * @param status the status to set
+	 */
+	public void setStatus(RegistrationStatus status)
+	{
+		this.status = status;
+	}
+	
+	/**
+	 * @param revokedReason the revokedReason to set
+	 */
+	public void setRevokedReason(String revokedReason)
+	{
+		this.revokedReason = revokedReason;
 	}
 
 }

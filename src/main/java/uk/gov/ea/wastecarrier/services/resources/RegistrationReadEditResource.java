@@ -161,22 +161,22 @@ public class RegistrationReadEditResource
 					db.getCollection(Registration.COLLECTION_NAME), Registration.class, String.class);
 			
 			// Get and check if ID exist
-			Registration foundReg = null;
+//			Registration foundReg = null;
 			try
 			{
-				foundReg = registrations.findOneById(id);
-				if (foundReg != null)
-				{
+//				foundReg = registrations.findOneById(id);
+//				if (foundReg != null)
+//				{
 					// Update Registration MetaData last Modified Time
-					MetaData md = foundReg.getMetaData();
+					MetaData md = reg.getMetaData();
 					md.setLastModified(MetaData.getCurrentDateTime());
 					reg.setMetaData(md);
-				}
+/*				}
 				else
 				{
 					throw new Exception("Registration not Found in Database");
 				}
-			}
+*/			}
 			catch (Exception e)
 			{
 				log.severe("Cannot find Registration ID: " + id + ". Error: " + e.getMessage() );
@@ -195,8 +195,16 @@ public class RegistrationReadEditResource
 					savedObject = registrations.findOneById(id);
 					log.fine("Found Updated Registration, Details include:- CompanyName:" + savedObject.getCompanyName());
 					
-					// Perform another create index operation which should override previous index information
-					Indexer.createElasticSearchIndex(esClient, savedObject);
+/*					if (savedObject.getMetaData().getStatus().equals(RegistrationStatus.REVOKED))
+					{
+						// Delete registration from elastic search as registration has been revoked
+						Indexer.deleteElasticSearchIndex(esClient, savedObject);
+					}
+					else
+					{*/
+						// Perform another create index operation which should override previous index information
+						Indexer.createElasticSearchIndex(esClient, savedObject);
+//					}
 					
 					return savedObject;
 				}

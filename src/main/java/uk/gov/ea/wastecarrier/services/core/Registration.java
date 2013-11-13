@@ -106,8 +106,8 @@ public class Registration
 	@JsonInclude(Include.NON_DEFAULT)
 	private String regIdentifier;
 
-	@JsonProperty
-	private String status;
+	//@JsonProperty
+	//private String status;
 	
 	/* Static not applicable value */
 	//private final static String NA = "n/a";
@@ -545,14 +545,14 @@ public class Registration
 	{
 		this.metaData = metaData;
 	}
-
+/*
 	public String getStatus() {
 		return status;
 	}
 
 	public void setStatus(String status) {
 		this.status = status;
-	}
+	}*/
 	
 	/**
 	 * Custom comparison method for comparing the contents of the user entered fields 
