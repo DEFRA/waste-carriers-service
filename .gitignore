@@ -18,3 +18,5 @@ dependency-reduced-pom.xml
 
 # Individual developer configuration files
 configuration_*.yml
+
+run.sh
