@@ -20,5 +20,6 @@
 	"phoneNumber":null, 
 	"contactEmail":null, 
 	"accountEmail":null, 
-	"declaration":null
+	"declaration":null,
+	"accessCode":null
 }

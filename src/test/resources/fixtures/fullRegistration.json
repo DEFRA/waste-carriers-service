@@ -20,5 +20,6 @@
 	"phoneNumber":"34534654", 
 	"contactEmail":"email@you.com", 
 	"accountEmail":"account@you.com", 
-	"declaration":"on"
+	"declaration":"on",
+	"accessCode":"ABCDEF"
 }
