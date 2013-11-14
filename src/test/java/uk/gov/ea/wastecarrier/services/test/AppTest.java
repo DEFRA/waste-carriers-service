@@ -64,6 +64,7 @@ public class AppTest extends TestCase
 		reg.setContactEmail("email@you.com");
 		reg.setAccountEmail("account@you.com");
 		reg.setDeclaration("on");
+		reg.setAccessCode("ABCDEF");
 		return reg;
 	}
 	
