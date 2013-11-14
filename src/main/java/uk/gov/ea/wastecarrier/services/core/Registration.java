@@ -108,6 +108,11 @@ public class Registration
 	@JsonInclude(Include.NON_DEFAULT)
 	private String regIdentifier;
 
+	/*
+	 * Random access code - generated for Assisted Digital users
+	 */
+	@JsonProperty
+	private String accessCode;
 	
 	/* Static not applicable value */
 	//private final static String NA = "n/a";
@@ -538,6 +543,14 @@ public class Registration
 	public void setRegIdentifier(String regIdentifier)
 	{
 		this.regIdentifier = regIdentifier;
+	}
+
+	public String getAccessCode() {
+		return accessCode;
+	}
+
+	public void setAccessCode(String accessCode) {
+		this.accessCode = accessCode;
 	}
 
 	/**
