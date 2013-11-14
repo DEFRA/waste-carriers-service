@@ -486,7 +486,7 @@ public class RegistrationsResource
 		{
 			int sequentialNumber = (Integer) dbObj.get("seq");
 			// Set the formatted identifier in the registration document
-			reg.setRegIdentifier(getFormattedRegIdentifier(sequentialNumber));	
+			reg.setRegIdentifier(getFormattedRegIdentifier(sequentialNumber, true, false));	
 		}
 		else
 		{
@@ -500,16 +500,30 @@ public class RegistrationsResource
 	 * Returns a formated unique string representing the registration identifier.
 	 * NOTE: THis is NOT the ID for the registration
 	 * @param sequentialNumber sequential integer of the registration counter
+	 * @param lowerTier boolean provide true if lower tier, false for upper tier format
+	 * @param padToLength boolean provide true to pad numeric format to max of Registration.REGID_LENGTH, or false to not pad value.
 	 * @return String of the formatted registration, prefixed with Registration.REGID_PREFIX
 	 */
-	private String getFormattedRegIdentifier(int sequentialNumber)
+	private String getFormattedRegIdentifier(int sequentialNumber, boolean lowerTier, boolean padToLength)
 	{
 		String numberAsString = Integer.toString(sequentialNumber);
-		while (numberAsString.length() < Registration.REGID_LENGTH)
+		if (padToLength) 
 		{
-			numberAsString = "0" + numberAsString;
+			while (numberAsString.length() < Registration.REGID_LENGTH)
+			{
+				numberAsString = "0" + numberAsString;
+			}
 		}
-		return Registration.REGID_PREFIX + numberAsString;
+		String prefix = Registration.REGID_PREFIX;
+		if (lowerTier) 
+		{
+			prefix = prefix + Registration.REGID_PREFIX_LOWER;
+		}
+		else
+		{
+			prefix = prefix + Registration.REGID_PREFIX_UPPER;
+		}
+		return prefix + numberAsString;
 	}
 
 }

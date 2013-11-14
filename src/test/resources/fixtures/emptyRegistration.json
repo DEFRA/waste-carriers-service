@@ -20,6 +20,5 @@
 	"phoneNumber":null, 
 	"contactEmail":null, 
 	"accountEmail":null, 
-	"declaration":null,
-	"status":null
+	"declaration":null
 }

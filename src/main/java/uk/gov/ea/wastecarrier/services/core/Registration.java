@@ -7,6 +7,7 @@ import javax.validation.Valid;
 import net.vz.mongodb.jackson.Id;
 import net.vz.mongodb.jackson.ObjectId;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -18,6 +19,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Ideally the models details could be split into subclasses for each distinct type of details (page)
  *
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Registration
 {
 	/*
@@ -106,8 +108,6 @@ public class Registration
 	@JsonInclude(Include.NON_DEFAULT)
 	private String regIdentifier;
 
-	//@JsonProperty
-	//private String status;
 	
 	/* Static not applicable value */
 	//private final static String NA = "n/a";
@@ -119,6 +119,8 @@ public class Registration
 	
 	public final static String REGID_PREFIX = "CBD";
 	public final static int REGID_LENGTH = 10;
+	public final static String REGID_PREFIX_LOWER = "L";
+	public final static String REGID_PREFIX_UPPER = "U";
 	
 	@JsonInclude(Include.NON_DEFAULT)	/*TEST: This should not be generated in the JSON */
 	private MetaData metaData;
@@ -545,14 +547,6 @@ public class Registration
 	{
 		this.metaData = metaData;
 	}
-/*
-	public String getStatus() {
-		return status;
-	}
-
-	public void setStatus(String status) {
-		this.status = status;
-	}*/
 	
 	/**
 	 * Custom comparison method for comparing the contents of the user entered fields 

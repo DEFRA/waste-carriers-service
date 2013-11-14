@@ -22,9 +22,15 @@ public class MetaData {
 	private RegistrationStatus status;
 	
 	private String revokedReason;
+	
+	private RouteType route;
 
 	public enum RegistrationStatus {
 	    ACTIVE, REVOKED, DELETED
+	}
+	
+	public enum RouteType {
+	    DIGITAL, ASSISTED_DIGITAL
 	}
     
     /**
@@ -55,6 +61,7 @@ public class MetaData {
         this.anotherString = anotherString;
         this.lastModified = dateRegistered;
         this.status = RegistrationStatus.ACTIVE;
+        this.route = RouteType.DIGITAL;
     }
 
     public String getDateRegistered() {
@@ -87,6 +94,14 @@ public class MetaData {
 	public String getRevokedReason()
 	{
 		return revokedReason;
+	}
+	
+	/**
+	 * @return the route
+	 */
+	public RouteType getRoute()
+	{
+		return route;
 	}
 	
 	public static String getCurrentDateTime()
@@ -134,6 +149,14 @@ public class MetaData {
 	public void setRevokedReason(String revokedReason)
 	{
 		this.revokedReason = revokedReason;
+	}
+	
+	/**
+	 * @param route the route to set
+	 */
+	public void setRoute(RouteType route)
+	{
+		this.route = route;
 	}
 
 }
