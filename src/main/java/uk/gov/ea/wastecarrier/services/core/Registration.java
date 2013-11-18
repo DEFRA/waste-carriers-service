@@ -92,7 +92,6 @@ public class Registration
 	@NotEmpty
 	@JsonProperty
 	private String phoneNumber;
-	@NotEmpty
 	@JsonProperty
 	private String contactEmail;
 	@JsonProperty
