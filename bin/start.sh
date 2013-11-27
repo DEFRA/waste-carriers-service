@@ -41,7 +41,7 @@ fi
 
 
 ## Use the jar file with the most recent timestamp.
-WESERVICES_JAR=`ls -tr "${WCRS_SERVICES_HOME}/live/webapps/" | grep '\<waste-exemplar-services.*jar\>' | tail -1`
+WCRS_SERVICES_JAR=`ls -tr "${WCRS_SERVICES_HOME}/live/webapps/" | grep '\<waste-exemplar-services.*jar\>' | tail -1`
 
 
 ## Start we-services.
