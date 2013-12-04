@@ -11,6 +11,7 @@ import uk.gov.ea.wastecarrier.services.health.TemplateHealthCheck;
 import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.MongoManaged;
 import uk.gov.ea.wastecarrier.services.resources.RegistrationReadEditResource;
+import uk.gov.ea.wastecarrier.services.resources.RegistrationVersionResource;
 import uk.gov.ea.wastecarrier.services.resources.RegistrationsResource;
 import uk.gov.ea.wastecarrier.services.tasks.Indexer;
 
@@ -57,6 +58,8 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration> {
         environment.addResource(new RegistrationsResource(template, defaultName, mQConfig, dbConfig, eSConfig));
         // Add Read Resource
         environment.addResource(new RegistrationReadEditResource(template, defaultName, mQConfig, dbConfig, eSConfig));
+        // Add Version Resource
+        environment.addResource(new RegistrationVersionResource());
         
         /**
          * Note: using environment.addProvider(new RegistrationCreateResource(template, defaultName, mQConfig));
