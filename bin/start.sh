@@ -32,7 +32,7 @@ fi
 
 
 ## Verify that we-services isn't currently running.
-WESERVICES_PID=`ps -ef | grep java | grep ${WCRS_SERVICES_PORT} | awk '{print $2}'`
+WCRS_SERVICES_PID=`ps -ef | grep java | grep ${WCRS_SERVICES_PORT} | awk '{print $2}'`
 if [[ ! -z "${WCRS_SERVICES_PID}" ]]; then
   echo "wcrs-services is already running or some other daemon is already using port ${WCRS_SERVICES_PORT}."
   echo ""
@@ -40,8 +40,8 @@ if [[ ! -z "${WCRS_SERVICES_PID}" ]]; then
 fi
 
 
-## Use the jar file with the most recent timestamp.
-WCRS_SERVICES_JAR=`ls -tr "${WCRS_SERVICES_HOME}/live/webapps/" | grep '\<waste-exemplar-services.*jar\>' | tail -1`
+## Use the jar file with the highest version number.
+WESERVICES_JAR=`ls -tr ${WCRS_SERVICES_HOME}/live/webapps/waste-exemplar-services-*.jar | sort | tail -1`
 
 
 ## Start we-services.
@@ -51,7 +51,7 @@ if [ -f "${WCRS_SERVICES_HOME}/live/logs/nohup.out" ]; then
   DATESTAMP=`date +%Y.%m.%d-%H.%M`
   mv nohup.out nohup.out.${DATESTAMP}
 fi
-nohup "${WCRS_SERVICES_JAVA_HOME}/bin/java" -Ddw.http.port=${WCRS_SERVICES_PORT} -jar "${WCRS_SERVICES_HOME}/live/webapps/${WCRS_SERVICES_JAR}" server "${WCRS_SERVICES_HOME}/live/conf/configuration.yml" &
+nohup "${WCRS_SERVICES_JAVA_HOME}/bin/java" -Ddw.http.port=${WCRS_SERVICES_PORT} -jar "${WCRS_SERVICES_JAR}" server "${WCRS_SERVICES_HOME}/live/conf/configuration.yml" &
 echo $! > "${WCRS_SERVICES_HOME}/live/logs/pid"
 
 echo ""
