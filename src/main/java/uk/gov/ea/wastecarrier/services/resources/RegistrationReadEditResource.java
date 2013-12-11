@@ -170,6 +170,14 @@ public class RegistrationReadEditResource
 					// Update Registration MetaData last Modified Time
 					MetaData md = reg.getMetaData();
 					md.setLastModified(MetaData.getCurrentDateTime());
+					
+					// Update Activation status and time
+					if (md.getStatus().equals(MetaData.RegistrationStatus.ACTIVATE))
+					{
+						md.setDateActivated(MetaData.getCurrentDateTime());
+						md.setStatus(MetaData.RegistrationStatus.ACTIVE);
+					}
+					
 					reg.setMetaData(md);
 /*				}
 				else

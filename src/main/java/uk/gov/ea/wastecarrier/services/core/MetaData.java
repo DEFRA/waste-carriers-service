@@ -19,6 +19,8 @@ public class MetaData {
 
 	private String lastModified;
 	
+	private String dateActivated;
+	
 	private RegistrationStatus status;
 	
 	private String revokedReason;
@@ -26,7 +28,7 @@ public class MetaData {
 	private RouteType route;
 
 	public enum RegistrationStatus {
-	    ACTIVE, REVOKED, DELETED
+	    PENDING, ACTIVATE, ACTIVE, REVOKED, DELETED
 	}
 	
 	public enum RouteType {
@@ -60,6 +62,7 @@ public class MetaData {
         this.dateRegistered = dateRegistered;
         this.anotherString = anotherString;
         this.lastModified = dateRegistered;
+        this.dateActivated = "";
         this.status = RegistrationStatus.ACTIVE;
         this.route = RouteType.DIGITAL;
     }
@@ -78,6 +81,14 @@ public class MetaData {
 	public String getLastModified()
 	{
 		return lastModified;
+	}
+	
+	/**
+	 * @return the dateActivated
+	 */
+	public String getDateActivated()
+	{
+		return dateActivated;
 	}
 	
 	/**
@@ -133,6 +144,14 @@ public class MetaData {
 	public void setLastModified(String lastModified)
 	{
 		this.lastModified = lastModified;
+	}
+	
+	/**
+	 * @param dateActivated the dateActivated to set
+	 */
+	public void setDateActivated(String dateActivated)
+	{
+		this.dateActivated = dateActivated;
 	}
 	
 	/**
