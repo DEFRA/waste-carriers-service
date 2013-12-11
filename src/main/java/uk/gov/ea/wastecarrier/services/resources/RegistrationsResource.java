@@ -39,8 +39,11 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.NoNodeAvailableException;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.index.query.BoolFilterBuilder;
+import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.TermFilterBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.sort.SortOrder;
 import org.mongojack.DBSort;
@@ -125,7 +128,8 @@ public class RegistrationsResource
 	public List<Registration> getRegistrations(@QueryParam("companyName") Optional<String> name,
 			@QueryParam("businessType") Optional<String> businessType, 
 			@QueryParam("postcode") Optional<String> postcode, @QueryParam("q") Optional<String> q,
-			@QueryParam("searchWithin") Optional<String> sw, @QueryParam("ac") Optional<String> account)
+			@QueryParam("searchWithin") Optional<String> sw, @QueryParam("ac") Optional<String> account,
+			@QueryParam("activeOnly") Optional<Boolean> activeOnly)
 	{
 		log.fine("Get Method Detected at /registrations");
 		ArrayList<Registration> returnlist = new ArrayList<Registration>();
@@ -144,6 +148,19 @@ public class RegistrationsResource
 					swValue = sw.get();
 					useAdvancedSearch = true;
 					log.info("Advanced Search, requested within only: " + swValue);
+				}
+				
+				// Create a filter to only show ACTIVE records
+				BoolFilterBuilder fbBoolFilter = null;
+				if (activeOnly.isPresent())
+				{
+					boolean pValue = activeOnly.get();
+					if (pValue)
+					{
+						TermFilterBuilder fbTermFilter = FilterBuilders.termFilter("metaData.status", "active");
+						fbBoolFilter = FilterBuilders.boolFilter().must(fbTermFilter);
+						log.info("Filtered Search, showing only active registrations: " + pValue);
+					}
 				}
 				
 				/**
@@ -173,6 +190,7 @@ public class RegistrationsResource
 						.setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
 						.setQuery(qb0)
 						.setSize(1);
+				if (fbBoolFilter != null) srb0.setFilter(fbBoolFilter);
 				
 				// Second Priority - Exact match to any other value
 				QueryBuilder qb1 = QueryBuilders.queryString(qValue);
@@ -188,6 +206,7 @@ public class RegistrationsResource
 						.setQuery(qb1)
 						.setSize(this.elasticSearch.getSize())
 						.addSort("companyName", SortOrder.ASC);
+				if (fbBoolFilter != null) srb1.setFilter(fbBoolFilter);
 				
 				// Third Priority - Fuzzy match to certain fields
 				//QueryBuilder qb2 = QueryBuilders.fuzzyQuery("companyName", qValue);	// Works as a fuzzy search but only on 1 field
@@ -206,6 +225,7 @@ public class RegistrationsResource
 						.setQuery(qb2)
 						.setSize(this.elasticSearch.getSize())
 						.addSort("companyName", SortOrder.ASC);
+				if (fbBoolFilter != null) srb2.setFilter(fbBoolFilter);
 
 				MultiSearchResponse sr = null;
 				try
