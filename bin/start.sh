@@ -41,7 +41,7 @@ fi
 
 
 ## Use the jar file with the highest version number.
-WESERVICES_JAR=`ls -tr ${WCRS_SERVICES_HOME}/live/webapps/waste-exemplar-services-*.jar | sort | tail -1`
+WCRS_SERVICES_JAR=`ls -tr ${WCRS_SERVICES_HOME}/live/webapps/waste-exemplar-services-*.jar | sort | tail -1`
 
 
 ## Start we-services.
