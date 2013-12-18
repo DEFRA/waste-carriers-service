@@ -14,6 +14,7 @@ import uk.gov.ea.wastecarrier.services.resources.RegistrationReadEditResource;
 import uk.gov.ea.wastecarrier.services.resources.RegistrationVersionResource;
 import uk.gov.ea.wastecarrier.services.resources.RegistrationsResource;
 import uk.gov.ea.wastecarrier.services.tasks.Indexer;
+import uk.gov.ea.wastecarrier.services.tasks.LocationPopulator;
 
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
@@ -53,9 +54,10 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration> {
         final MessageQueueConfiguration mQConfig = configuration.getMessageQueueConfiguration();
         final DatabaseConfiguration dbConfig = configuration.getDatabase();
         final ElasticSearchConfiguration eSConfig = configuration.getElasticSearch();
+        final String postcodeFilePath = configuration.getPostcodeFilePath();
         
         // Add Create Resource
-        environment.addResource(new RegistrationsResource(template, defaultName, mQConfig, dbConfig, eSConfig));
+        environment.addResource(new RegistrationsResource(template, defaultName, mQConfig, dbConfig, eSConfig, postcodeFilePath));
         // Add Read Resource
         environment.addResource(new RegistrationReadEditResource(template, defaultName, mQConfig, dbConfig, eSConfig));
         // Add Version Resource
@@ -94,6 +96,10 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration> {
         // Add Indexing functionality to clean Elastic Search Indexes and perform re-index of all data
         Indexer task = new Indexer("indexer", dbConfig, eSConfig);
 		environment.addTask(task);
+		
+		// Add Location Population functionality to create location indexes for all provided addresses of all data
+        LocationPopulator locationPop = new LocationPopulator("location", dbConfig, postcodeFilePath);
+		environment.addTask(locationPop);
 		
 		// Add Heath Check to indexing Service
 		environment.addHealthCheck(

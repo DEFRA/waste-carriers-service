@@ -129,6 +129,9 @@ public class Registration
 	@JsonInclude(Include.NON_DEFAULT)	/*TEST: This should not be generated in the JSON */
 	private MetaData metaData;
 	
+	@JsonInclude(Include.NON_DEFAULT)	/*TEST: This should not be generated in the JSON */
+	private Location location;
+	
 	// Standard logging declaration
 	private Logger log = Logger.getLogger(Registration.class.getName());
 	
@@ -361,6 +364,14 @@ public class Registration
 	}
 	
 	/**
+	 * @return the location
+	 */
+	public Location getLocation()
+	{
+		return location;
+	}
+	
+	/**
 	 * @param id the id to set
 	 */
 	public void setId(String id)
@@ -558,6 +569,14 @@ public class Registration
 	public void setMetaData(MetaData metaData)
 	{
 		this.metaData = metaData;
+	}
+	
+	/**
+	 * @param location the location to set
+	 */
+	public void setLocation(Location location)
+	{
+		this.location = location;
 	}
 	
 	/**

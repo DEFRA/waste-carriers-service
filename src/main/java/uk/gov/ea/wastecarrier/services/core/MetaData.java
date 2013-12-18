@@ -26,6 +26,8 @@ public class MetaData {
 	private String revokedReason;
 	
 	private RouteType route;
+	
+	private String distance = "n/a";
 
 	public enum RegistrationStatus {
 	    PENDING, ACTIVATE, ACTIVE, REVOKED, DELETED
@@ -115,6 +117,14 @@ public class MetaData {
 		return route;
 	}
 	
+	/**
+	 * @return the distance
+	 */
+	public String getDistance()
+	{
+		return distance;
+	}
+	
 	public static String getCurrentDateTime()
     {
     	DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
@@ -176,6 +186,14 @@ public class MetaData {
 	public void setRoute(RouteType route)
 	{
 		this.route = route;
+	}
+
+	/**
+	 * @param distance the distance to set
+	 */
+	public void setDistance(String distance)
+	{
+		this.distance = distance;
 	}
 
 }

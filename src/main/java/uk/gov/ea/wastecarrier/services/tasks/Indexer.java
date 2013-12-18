@@ -77,6 +77,8 @@ public class Indexer extends Task
 
 		// Determine if Delete All is required
 		boolean deleteAll = false;
+		// Determine if re-index is required
+		boolean reIndex = true;
 		/*
 		 * Use: curl -X POST http://localhost:9091/tasks/indexer -d 'all' to delete all records.
 		 */
@@ -87,6 +89,13 @@ public class Indexer extends Task
 				deleteAll = true;
 				log.info("Performing Delete All operation");
 				out.append("Performing Delete All operation\n");
+			}
+			else if (s.equals("deleteAll"))
+			{
+				deleteAll = true;
+				reIndex = false;
+				log.info("Only performing Delete All operation");
+				out.append("Only performing Delete All operation\n");
 			}
 		}
 
@@ -129,23 +138,27 @@ public class Indexer extends Task
 					deleteElasticSearchIndex(esClient, r);
 					out.append("deleted reg: " + r.getId() + "\n");
 				}
-				BulkResponse bulkResponse = createElasticSearchIndex(esClient, r);
-				if (bulkResponse.hasFailures())
+				// Update records if reIndex is true
+				if (reIndex) 
 				{
-					// process failures by iterating through each bulk response item
-					log.severe(bulkResponse.buildFailureMessage());
-					throw new RuntimeException("Error: Could not create index in ElasticSearch: "
-							+ bulkResponse.buildFailureMessage());
+					BulkResponse bulkResponse = createElasticSearchIndex(esClient, r);
+					if (bulkResponse.hasFailures())
+					{
+						// process failures by iterating through each bulk response item
+						log.severe(bulkResponse.buildFailureMessage());
+						throw new RuntimeException("Error: Could not create index in ElasticSearch: "
+								+ bulkResponse.buildFailureMessage());
+					}
+					else
+					{
+						log.info("createdIndex for: " + r.getId());
+					}
+					out.append("indexed new: " + r.getId() + "\n");
 				}
-				else
-				{
-					log.info("createdIndex for: " + r.getId());
-				}
-				out.append("indexed new: " + r.getId() + "\n");
 			}
 
 			// Supposed to do this after records re-added
-			if (deleteAll)
+			if (deleteAll && reIndex)
 			{
 				esClient.admin().indices().flush(new FlushRequest(Registration.COLLECTION_NAME).refresh(true))
 						.actionGet();

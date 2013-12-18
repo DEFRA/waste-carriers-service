@@ -3,10 +3,12 @@ package uk.gov.ea.wastecarrier.services.resources;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.ElasticSearchConfiguration;
 import uk.gov.ea.wastecarrier.services.MessageQueueConfiguration;
+import uk.gov.ea.wastecarrier.services.core.Location;
 import uk.gov.ea.wastecarrier.services.core.MetaData;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
 import uk.gov.ea.wastecarrier.services.tasks.Indexer;
+import uk.gov.ea.wastecarrier.services.tasks.PostcodeRegistry;
 
 import com.google.common.base.Optional;
 import com.mongodb.BasicDBObject;
@@ -38,14 +40,18 @@ import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.NoNodeAvailableException;
 import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.geo.GeoDistance;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.unit.DistanceUnit;
 import org.elasticsearch.index.query.BoolFilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.index.query.GeoDistanceFilterBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.TermFilterBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.sort.SortOrder;
+import org.elasticsearch.search.sort.GeoDistanceSortBuilder;
 import org.mongojack.DBSort;
 
 import net.vz.mongodb.jackson.DBCursor;
@@ -78,6 +84,7 @@ public class RegistrationsResource
 	private final MessageQueueConfiguration messageQueue;
 	private final DatabaseHelper databaseHelper;
 	private final ElasticSearchConfiguration elasticSearch;
+	private final PostcodeRegistry postcodeRegistry;
 
 	// Standard logging declaration
 	private Logger log = Logger.getLogger(RegistrationsResource.class.getName());
@@ -92,7 +99,7 @@ public class RegistrationsResource
 	 * @param database
 	 */
 	public RegistrationsResource(String template, String defaultName, MessageQueueConfiguration mQConfig,
-			DatabaseConfiguration database, ElasticSearchConfiguration elasticSearch)
+			DatabaseConfiguration database, ElasticSearchConfiguration elasticSearch, String postcodeFilePath)
 	{
 		this.template = template;
 		this.defaultName = defaultName;
@@ -103,6 +110,7 @@ public class RegistrationsResource
 		
 		this.databaseHelper = new DatabaseHelper(database);
 		this.elasticSearch = elasticSearch;
+		this.postcodeRegistry = new PostcodeRegistry(PostcodeRegistry.POSTCODE_FROM.FILE, postcodeFilePath);
 		
 		esClient = new TransportClient().addTransportAddress(new InetSocketTransportAddress(this.elasticSearch.getHost(), this.elasticSearch.getPort()));
 	}
@@ -126,7 +134,7 @@ public class RegistrationsResource
 	@GET
 	@Timed
 	public List<Registration> getRegistrations(@QueryParam("companyName") Optional<String> name,
-			@QueryParam("businessType") Optional<String> businessType, 
+			@QueryParam("distance") Optional<String> distance, 
 			@QueryParam("postcode") Optional<String> postcode, @QueryParam("q") Optional<String> q,
 			@QueryParam("searchWithin") Optional<String> sw, @QueryParam("ac") Optional<String> account,
 			@QueryParam("activeOnly") Optional<Boolean> activeOnly)
@@ -152,13 +160,46 @@ public class RegistrationsResource
 				
 				// Create a filter to only show ACTIVE records
 				BoolFilterBuilder fbBoolFilter = null;
+				GeoDistanceSortBuilder gsb = null;
+				boolean useDistanceFilter = false;
 				if (activeOnly.isPresent())
 				{
+					GeoDistanceFilterBuilder geoFilter = null;
+					if (postcode.isPresent() && postcode.get() != ""  
+							&& distance.isPresent() && distance.get() != "")
+					{
+						log.info("Filtered Search, postcode: " + postcode.get());
+						Double[] xyCoords = postcodeRegistry.getXYCoords(postcode.get());
+
+						if (!distance.get().equalsIgnoreCase("any"))
+						{
+							log.info("Using GEO FILTER search for X: " + xyCoords[0] + " Y: " + xyCoords[1]);
+							// Geo Filter Search
+							geoFilter = FilterBuilders.geoDistanceFilter("registration.location")
+								.point(xyCoords[0], xyCoords[1])
+								.distance(Double.valueOf(distance.get()), DistanceUnit.MILES)
+								.optimizeBbox("memory")                    // Can be also "indexed" or "none"
+								.geoDistance(GeoDistance.ARC);             // Or GeoDistance.PLANE
+							
+							// Add a GeoDistance sort, to enable the specific distance for each site to be returned.
+							gsb = new GeoDistanceSortBuilder ("location");
+							gsb.point(xyCoords[0], xyCoords[1]);
+							gsb.order(SortOrder.ASC);
+							gsb.unit(DistanceUnit.MILES);
+							
+							useDistanceFilter = true;
+						}
+					}
+					
 					boolean pValue = activeOnly.get();
 					if (pValue)
 					{
 						TermFilterBuilder fbTermFilter = FilterBuilders.termFilter("metaData.status", "active");
 						fbBoolFilter = FilterBuilders.boolFilter().must(fbTermFilter);
+						if (useDistanceFilter)
+						{
+							fbBoolFilter = FilterBuilders.boolFilter().must(fbTermFilter).must(geoFilter);
+						}
 						log.info("Filtered Search, showing only active registrations: " + pValue);
 					}
 				}
@@ -200,12 +241,24 @@ public class RegistrationsResource
 					// Limit Search to Just within the specified limit
 					qb1 = QueryBuilders.matchQuery(swValue, qValue);
 				}
-				SearchRequestBuilder srb1 = esClient.prepareSearch(Registration.COLLECTION_NAME)
-						.setTypes(Registration.COLLECTION_SINGULAR_NAME)
-						.setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-						.setQuery(qb1)
-						.setSize(this.elasticSearch.getSize())
-						.addSort("companyName", SortOrder.ASC);
+				SearchRequestBuilder srb1;
+				if (gsb != null)
+				{
+					log.fine("Using GEO sort 1");
+					srb1 = esClient.prepareSearch(Registration.COLLECTION_NAME)
+							.setTypes(Registration.COLLECTION_SINGULAR_NAME)
+							.setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+							.setQuery(qb1)
+							.setSize(this.elasticSearch.getSize())
+							.addSort(gsb);
+				} else {
+					srb1 = esClient.prepareSearch(Registration.COLLECTION_NAME)
+							.setTypes(Registration.COLLECTION_SINGULAR_NAME)
+							.setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+							.setQuery(qb1)
+							.setSize(this.elasticSearch.getSize())
+							.addSort("companyName", SortOrder.ASC);
+				}
 				if (fbBoolFilter != null) srb1.setFilter(fbBoolFilter);
 				
 				// Third Priority - Fuzzy match to certain fields
@@ -219,12 +272,24 @@ public class RegistrationsResource
 					// Limit Search to Just within the specified limit
 					qb2 = QueryBuilders.fuzzyQuery(swValue, qValue);	// Works as a fuzzy search but only on 1 field
 				}
-				SearchRequestBuilder srb2 = esClient.prepareSearch(Registration.COLLECTION_NAME)
-						.setTypes(Registration.COLLECTION_SINGULAR_NAME)
-						.setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-						.setQuery(qb2)
-						.setSize(this.elasticSearch.getSize())
-						.addSort("companyName", SortOrder.ASC);
+				SearchRequestBuilder srb2;
+				if (gsb != null)
+				{
+					log.fine("Using GEO sort 2");
+					srb2 = esClient.prepareSearch(Registration.COLLECTION_NAME)
+							.setTypes(Registration.COLLECTION_SINGULAR_NAME)
+							.setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+							.setQuery(qb2)
+							.setSize(this.elasticSearch.getSize())
+							.addSort(gsb);
+				} else {
+					srb2 = esClient.prepareSearch(Registration.COLLECTION_NAME)
+							.setTypes(Registration.COLLECTION_SINGULAR_NAME)
+							.setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+							.setQuery(qb2)
+							.setSize(this.elasticSearch.getSize())
+							.addSort("companyName", SortOrder.ASC);
+				}
 				if (fbBoolFilter != null) srb2.setFilter(fbBoolFilter);
 
 				MultiSearchResponse sr = null;
@@ -254,6 +319,16 @@ public class RegistrationsResource
 							Registration r;
 							try {
 								r = mapper.readValue(hit.getSourceAsString(), Registration.class);
+								for (Object obj : hit.getSortValues()) {
+									if (useDistanceFilter)
+									{
+										int milesToSite = Double.valueOf(obj.toString()).intValue();
+										log.fine("Distance to Registration: " + milesToSite );
+										MetaData rMeta = r.getMetaData();
+										rMeta.setDistance(milesToSite + "");
+										r.setMetaData(rMeta);
+									}
+								}
 							} catch (JsonParseException e) {
 								throw new RuntimeException(e);
 							} catch (JsonMappingException e) {
@@ -299,14 +374,13 @@ public class RegistrationsResource
 				}
 				
 				// Database available
-				if (name.isPresent() || businessType.isPresent() || postcode.isPresent() || account.isPresent())
+				if (name.isPresent() || postcode.isPresent() || account.isPresent())
 				{
 					log.info("Param GET Method Detected - Return List of Registrations limited by Search criteria");
 					
 					// Determine which/what combination of parameters have been provided
 					Map <String, Optional<String>> myMap= new HashMap<String, Optional<String>>();
 					myMap.put("companyName", name);
-					myMap.put("businessType", businessType);
 					myMap.put("postcode", postcode);
 					myMap.put("accountEmail", account);
 					
@@ -429,6 +503,10 @@ public class RegistrationsResource
 			 */
 			// Update Registration MetaData to include current time
 			reg.setMetaData(new MetaData(MetaData.getCurrentDateTime(), "userDetailAddedAtRegistration"));
+			
+			// Update Registration Location to include location, derived from postcode
+			Double[] xyCoords = postcodeRegistry.getXYCoords(reg.getPostcode());
+			reg.setLocation( new Location( xyCoords[0], xyCoords[1]));
 			
 			// Update Registration to include sequential identifier
 			updateRegistrationIdentifier(reg, db);

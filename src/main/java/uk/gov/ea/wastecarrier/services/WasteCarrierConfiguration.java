@@ -35,6 +35,11 @@ public class WasteCarrierConfiguration extends Configuration {
     @NotNull
     @JsonProperty
     private ElasticSearchConfiguration elasticSearch = new ElasticSearchConfiguration();
+    
+    @Valid
+    @NotEmpty
+    @JsonProperty
+    private String postcodeFilePath = "src/main/resources/postcodes.csv";
 
     public String getTemplate() {
         return template;
@@ -54,5 +59,9 @@ public class WasteCarrierConfiguration extends Configuration {
     
     public ElasticSearchConfiguration getElasticSearch() {
         return elasticSearch;
+    }
+    
+    public String getPostcodeFilePath() {
+        return postcodeFilePath;
     }
 }
