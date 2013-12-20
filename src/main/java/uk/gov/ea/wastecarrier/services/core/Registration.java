@@ -56,9 +56,30 @@ public class Registration
 	@JsonProperty
 	private String streetLine2;
 	@JsonProperty
+	private String streetLine3;
+	@JsonProperty
+	private String streetLine4;
+	@JsonProperty
 	private String townCity;
 	@JsonProperty
 	private String postcode;
+	@JsonProperty
+	private String country;
+
+	@JsonProperty
+	private String easting;
+
+	@JsonProperty
+	private String northing;
+
+	@JsonProperty
+	private String dependentLocality;
+
+	@JsonProperty
+	private String dependentThroughfare;
+
+	@JsonProperty
+	private String administrativeArea;
 	
 	/**
 	 * TODO: Determine if still need address added from rails?
@@ -443,6 +464,30 @@ public class Registration
 		this.streetLine2 = streetLineTwo;
 	}
 	
+	public String getStreetLine3() {
+		return streetLine3;
+	}
+
+	public void setStreetLine3(String streetLine3) {
+		this.streetLine3 = streetLine3;
+	}
+
+	public String getStreetLine4() {
+		return streetLine4;
+	}
+
+	public void setStreetLine4(String streetLine4) {
+		this.streetLine4 = streetLine4;
+	}
+
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
 	/**
 	 * @param townCity the townCity to set
 	 */
@@ -571,6 +616,46 @@ public class Registration
 		this.metaData = metaData;
 	}
 	
+	public String getEasting() {
+		return easting;
+	}
+
+	public void setEasting(String easting) {
+		this.easting = easting;
+	}
+
+	public String getNorthing() {
+		return northing;
+	}
+
+	public void setNorthing(String northing) {
+		this.northing = northing;
+	}
+
+	public String getDependentLocality() {
+		return dependentLocality;
+	}
+
+	public void setDependentLocality(String dependentLocality) {
+		this.dependentLocality = dependentLocality;
+	}
+
+	public String getDependentThroughfare() {
+		return dependentThroughfare;
+	}
+
+	public void setDependentThroughfare(String dependentThroughfare) {
+		this.dependentThroughfare = dependentThroughfare;
+	}
+
+	public String getAdministrativeArea() {
+		return administrativeArea;
+	}
+
+	public void setAdministrativeArea(String administrativeArea) {
+		this.administrativeArea = administrativeArea;
+	}
+
 	/**
 	 * @param location the location to set
 	 */
