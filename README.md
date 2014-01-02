@@ -37,21 +37,11 @@ Clone the repository, copying the project into a working directory:
 
 You may want or need to set the following environment variables, e.g. in your ~/.bash_profile (if you are a Mac or Linux user):
 
-	## Sendgrid configuration
-	export WCRS_FRONTEND_EMAIL_USERNAME="<your sendgrid username here>"
-	export WCRS_FRONTEND_EMAIL_PASSWORD="<your sendgrid password here>"
-	export WCRS_FRONTEND_EMAIL_HOST="smtp.sendgrid.net"
-	export WCRS_FRONTEND_EMAIL_PORT=25
+TODO - list environment variables used by services
+
 	export WCRS_FRONTEND_WCRS_SERVICES_URL="http://localhost:9090"
 	export WCRS_FRONTEND_PUBLIC_APP_DOMAIN="www.local.wastecarriersregistration.service.gov.uk"
 	export WCRS_FRONTEND_ADMIN_APP_DOMAIN="admin.local.wastecarriersregistration.service.gov.uk"
-	export WCRS_FRONTEND_USERSDB_NAME="waste-carriers"
-	export WCRS_FRONTEND_USERSDB_USERNAME=mongoUser
-	export WCRS_FRONTEND_USERSDB_PASSWORD=<your mongo password here>
-	export WCRS_FRONTEND_USERSDB_URL=localhost:27017
-	export WCRS_FRONTEND_USERSDB_URL2=localhost:28017
-	export WCRS_FRONTEND_USERSDB_URL3=localhost:29017
-
 
 
 ##Build and Deploy
