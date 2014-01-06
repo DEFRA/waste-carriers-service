@@ -505,8 +505,16 @@ public class RegistrationsResource
 			reg.setMetaData(new MetaData(MetaData.getCurrentDateTime(), "userDetailAddedAtRegistration"));
 			
 			// Update Registration Location to include location, derived from postcode
-			Double[] xyCoords = postcodeRegistry.getXYCoords(reg.getPostcode());
-			reg.setLocation( new Location( xyCoords[0], xyCoords[1]));
+			if (reg.getPostcode() != null)
+			{
+				Double[] xyCoords = postcodeRegistry.getXYCoords(reg.getPostcode());
+				reg.setLocation( new Location( xyCoords[0], xyCoords[1]));
+			}
+			else
+			{
+				log.severe("INVALID REGISTRATION: Postcode is not found in registration, So cannot add location information for use in public registration search. Postcode should be populated." );
+				throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+			}
 			
 			// Update Registration to include sequential identifier
 			updateRegistrationIdentifier(reg, db);
