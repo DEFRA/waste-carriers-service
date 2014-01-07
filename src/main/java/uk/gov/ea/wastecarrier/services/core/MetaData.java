@@ -29,6 +29,16 @@ public class MetaData {
 	
 	private String distance = "n/a";
 
+	/**
+	 * Statuses and their meaning:
+	 * 
+	 * PENDING: Initial State
+	 * ACTIVATE: 
+	 * ACTIVE: Registration has been Verified and should appear on the register
+	 * REVOKED: Registration has been removed from the register by the EA
+	 * DELETED: Registration has been deleted from the register by the registrant
+	 *
+	 */
 	public enum RegistrationStatus {
 	    PENDING, ACTIVATE, ACTIVE, REVOKED, DELETED
 	}
