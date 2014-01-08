@@ -101,6 +101,14 @@ public class RegistrationReadEditResource
 					db.getCollection(Registration.COLLECTION_NAME), Registration.class, String.class);
 			
 			log.info("Searching for Registration ID: " + id);
+			if (id.equalsIgnoreCase("new"))
+			{
+				// Return an empty registration object
+				log.info("Returning an empty registration object.");
+				Registration r = new Registration();
+				r.setMetaData(new MetaData());
+				return r;
+			}
 			try
 			{
 				Registration foundReg = registrations.findOneById(id);
@@ -172,7 +180,7 @@ public class RegistrationReadEditResource
 					md.setLastModified(MetaData.getCurrentDateTime());
 					
 					// Update Activation status and time
-					if (md.getStatus().equals(MetaData.RegistrationStatus.ACTIVATE))
+					if (MetaData.RegistrationStatus.ACTIVATE.equals(md.getStatus()))
 					{
 						md.setDateActivated(MetaData.getCurrentDateTime());
 						md.setStatus(MetaData.RegistrationStatus.ACTIVE);
@@ -187,6 +195,7 @@ public class RegistrationReadEditResource
 */			}
 			catch (Exception e)
 			{
+				e.printStackTrace();
 				log.severe("Cannot find Registration ID: " + id + ". Error: " + e.getMessage() );
 				throw new WebApplicationException(Status.NOT_FOUND);
 			}
