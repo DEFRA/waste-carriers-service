@@ -131,6 +131,10 @@ public class PostcodeRegistry
 				}
 			}
 		}
+		else
+		{
+			log.severe("Error: cannot find any postcodes in list. Reterning default values");
+		}
 		return xyCoords;
 	}
 }
