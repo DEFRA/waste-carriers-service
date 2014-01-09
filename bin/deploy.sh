@@ -55,7 +55,7 @@ else
   JENKINS_BUILD_NUMBER="j"
 fi
 DATESTAMP=`date +%Y.%m.%d-%H.%M`
-RELEASE_DIR="wcrs-services-${DATESTAMP}"
+RELEASE_DIR="wcrs-services-${JENKINS_BUILD_NUMBER}-${DATESTAMP}"
 echo "Creating new release directory ${RELEASE_DIR}"
 mkdir "${WCRS_SERVICES_HOME}/${RELEASE_DIR}"
 cd "${WCRS_SERVICES_HOME}"
