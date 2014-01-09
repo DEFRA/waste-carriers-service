@@ -49,6 +49,11 @@ fi
 
 
 ## Create a new release directory.
+if [ -f ${WCRS_SERVICES_SOURCE}/jenkins_build_number ]; then
+  JENKINS_BUILD_NUMBER=`cat ${WCRS_SERVICES_SOURCE}/jenkins_build_number`
+else
+  JENKINS_BUILD_NUMBER="j"
+fi
 DATESTAMP=`date +%Y.%m.%d-%H.%M`
 RELEASE_DIR="wcrs-services-${DATESTAMP}"
 echo "Creating new release directory ${RELEASE_DIR}"
@@ -115,6 +120,8 @@ if [[ ! -f "${WCRS_SERVICES_SOURCE}/configuration.yml" ]]; then
   echo ""
   exit 1
 fi
+## Keep a copy of the original config, before variable names have been changed.
+cp "${WCRS_SERVICES_SOURCE}/configuration.yml" "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml.orig"
 cp "${WCRS_SERVICES_SOURCE}/configuration.yml" "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/"
 echo "Setting environment variables in ${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
 sed -i "s/WCRS_SERVICES_PORT/${WCRS_SERVICES_PORT}/g" \
@@ -141,6 +148,12 @@ sed -i "s/WCRS_SERVICES_ES_PORT/${WCRS_SERVICES_ES_PORT}/g" \
        "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
 
 
+## Preserve the jenkins build number file.
+if [ -f ${WCRS_SERVICES_SOURCE}/jenkins_build_number ]; then
+  cp "${WCRS_SERVICES_SOURCE}/jenkins_build_number" "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/"
+fi
+
+
 ## Create live symlink.
 echo "Creating symlink: ${WCRS_SERVICES_HOME}/live"
 cd "${WCRS_SERVICES_HOME}"
@@ -148,6 +161,18 @@ if [ -d "${WCRS_SERVICES_HOME}/live" ]; then
   rm live
 fi
 ln -s "${RELEASE_DIR}" live
+
+
+## Create a backup of the codedrop if on the dev server.
+if [ ! -d "${WCRS_SERVICES_HOME}/baselines" ]; then
+  mkdir "${WCRS_SERVICES_HOME}/baselines"
+fi
+if [ `uname -n` == "ea-dev" ]; then
+  echo "Tarring up this codedrop for deploys to other servers. You can find it here:"
+  echo "    ${WCRS_SERVICES_HOME}/baselines/codedrop-wcrs-services-${JENKINS_BUILD_NUMBER}-${DATESTAMP}.tgz"
+  cd "${WCRS_SERVICES_SOURCE}"
+  tar -zcf "${WCRS_SERVICES_HOME}/baselines/codedrop-wcrs-services-${JENKINS_BUILD_NUMBER}-${DATESTAMP}.tgz" *
+fi
 
 
 ## Start wcrs-services.
