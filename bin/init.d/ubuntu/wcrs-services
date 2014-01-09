@@ -1,0 +1,31 @@
+#!/bin/sh
+#
+# /etc/init.d/wcrs-services -- startup script for wcrs-services
+#
+# Written by Rob Hoffman <rhoffman@caci.co.uk>
+#
+### BEGIN INIT INFO
+# Provides:          wcrs-services
+# Required-Start:    $network $remote_fs $named
+# Required-Stop:     $network $remote_fs $named
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Starts wcrs-services
+# Description:       Starts wcrs-services using start-stop-daemon
+### END INIT INFO
+
+case $1 in
+    start)
+        su - wcrs-services /caci/deploys/wcrs-services/live/bin/start.sh
+    ;;
+    stop)
+        su - wcrs-services /caci/deploys/wcrs-services/live/bin/stop.sh
+    ;;
+    restart)
+        su - wcrs-services /caci/deploys/wcrs-services/live/bin/stop.sh
+        su - wcrs-services /caci/deploys/wcrs-services/live/bin/start.sh
+    ;;
+esac
+
+exit 0
+
