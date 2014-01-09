@@ -66,6 +66,7 @@ public class PostcodeRegistry
 		try
 		{
 			br = new BufferedReader(new FileReader(csvFile));
+			log.fine("Attempting to read file: " + csvFile);
 			while ((line = br.readLine()) != null)
 			{
 				// use comma as separator
@@ -77,6 +78,11 @@ public class PostcodeRegistry
 						" , Y: " + postcodeRow[3] + "]");
 				
 				this.postcodes.add(postcodeRow);
+			}
+			log.info("Read: " + postcodes.size() + " postcodes from postcode file.");
+			if (postcodes.size() == 0)
+			{
+				log.severe("Error: Could not find any postcodes to calculate XY coordinates. Location Population will not function correctly.");
 			}
 		}
 		catch (FileNotFoundException e)
