@@ -1,7 +1,7 @@
 # Default parameters defined in WasteCarrierConfiguration
 template: Hello, %s, %s!
 defaultName: Stranger
-postcodeFilePath: "postcodes.csv";
+postcodeFilePath: postcodes.csv
 
 # messageQueue complex parameter to show class of different configuration types MessageQueueConfiguration
 messageQueue:
