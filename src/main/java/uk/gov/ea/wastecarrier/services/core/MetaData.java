@@ -75,7 +75,8 @@ public class MetaData {
         this.anotherString = anotherString;
         this.lastModified = dateRegistered;
         this.dateActivated = "";
-        this.status = RegistrationStatus.ACTIVE;
+        //The initial status is PENDING for most new registrations.
+        this.status = RegistrationStatus.PENDING;
         this.route = RouteType.DIGITAL;
     }
 
