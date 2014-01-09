@@ -2,8 +2,10 @@ package uk.gov.ea.wastecarrier.services.tasks;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
+//import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
@@ -67,7 +69,11 @@ public class PostcodeRegistry
 		try
 		{
 			log.info("Try to read from: " + csvFile);
-			br = new BufferedReader(new FileReader(csvFile));
+			InputStream is = PostcodeRegistry.class.getResourceAsStream(csvFile);
+			InputStreamReader isr = new InputStreamReader(is);
+			br = new BufferedReader(isr);
+			
+			//br = new BufferedReader(new FileReader(csvFile));
 			log.fine("Attempting to read file: " + csvFile);
 			while ((line = br.readLine()) != null)
 			{

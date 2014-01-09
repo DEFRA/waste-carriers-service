@@ -39,7 +39,7 @@ public class WasteCarrierConfiguration extends Configuration {
     @Valid
     @NotEmpty
     @JsonProperty
-    private String postcodeFilePath = "src/main/resources/postcodes.csv";
+    private String postcodeFilePath = "/postcodes.csv";
 
     public String getTemplate() {
         return template;
