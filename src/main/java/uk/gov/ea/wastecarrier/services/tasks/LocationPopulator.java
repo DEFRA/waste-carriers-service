@@ -83,6 +83,10 @@ public class LocationPopulator extends Task
 				
 				// Update location
 				Location l = r.getLocation();
+				if (l == null)
+				{
+					l = new Location();
+				}
 				l.setLat(xyCoords[0]);
 				l.setLon(xyCoords[1]);
 				r.setLocation(l);
