@@ -41,6 +41,7 @@ public class PostcodeRegistry
 			case FILE:
 				// Setup Postcode lookup from postcode list in csv file
 				setupPostcodesFromFile(csvFile);
+				log.info("Lookup MODE FILE.");
 				break;
 			case LOOKUP:
 				// Alternative Setup for future use?
@@ -65,6 +66,7 @@ public class PostcodeRegistry
 
 		try
 		{
+			log.info("Try to read from: " + csvFile);
 			br = new BufferedReader(new FileReader(csvFile));
 			log.fine("Attempting to read file: " + csvFile);
 			while ((line = br.readLine()) != null)
@@ -87,10 +89,12 @@ public class PostcodeRegistry
 		}
 		catch (FileNotFoundException e)
 		{
+			log.info("File not Found: " + e.getMessage());
 			e.printStackTrace();
 		}
 		catch (IOException e)
 		{
+			log.info("IO Exception: " + e.getMessage());
 			e.printStackTrace();
 		}
 		finally
