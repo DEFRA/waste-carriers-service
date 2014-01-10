@@ -129,7 +129,11 @@ public class PostcodeRegistry
 	public Double[] getXYCoords(String postcode) 
 	{
 		// Covert postcode to Out Code
-		String outCode = postcode.split(" ")[0];
+		String outCode = "";
+		if (postcode != null)
+		{
+			outCode = postcode.split(" ")[0];
+		}
 		
 		// Setup Default XY in-case postcode doesn't exist
 		Double[] xyCoords = new Double[2];
