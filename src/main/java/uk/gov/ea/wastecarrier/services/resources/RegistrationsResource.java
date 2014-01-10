@@ -512,8 +512,13 @@ public class RegistrationsResource
 			}
 			else
 			{
-				log.severe("INVALID REGISTRATION: Postcode is not found in registration, So cannot add location information for use in public registration search. Postcode should be populated." );
-				throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+				log.warning("Non-UK Address assumed as Postcode could not be found in the registration, Using default location of X:1, Y:1");
+				reg.setLocation( new Location(1, 1));
+				
+				// Update MetaData to include a message to state location information set to default
+				MetaData tmpMD = reg.getMetaData();
+				tmpMD.setAnotherString("Non-UK Address Assumed");
+				reg.setMetaData(tmpMD);
 			}
 			
 			// Update Registration to include sequential identifier
@@ -543,7 +548,7 @@ public class RegistrationsResource
 			}
 			else
 			{
-				log.info("createdIndex for: " + reg.getId());
+				log.info("Created Elastic Search Index for: " + savedObject.getId());
 			}
 			
 			// Return saved object to user (returned as JSON)
