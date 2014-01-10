@@ -50,6 +50,8 @@ public class Registration
 	 * These are the Trading Address Details
 	 */
 	@JsonProperty
+	private String addressMode;
+	@JsonProperty
 	private String houseNumber;
 	@JsonProperty
 	private String streetLine1;
@@ -80,6 +82,12 @@ public class Registration
 
 	@JsonProperty
 	private String administrativeArea;
+	
+	@JsonProperty
+	private String localAuthorityUpdateDate;
+
+	@JsonProperty
+	private String royalMailUpdateDate;
 	
 	/**
 	 * TODO: Determine if still need address added from rails?
@@ -440,6 +448,14 @@ public class Registration
 		this.publicBodyTypeOther = publicBodyTypeOther;
 	}
 
+	public String getAddressMode() {
+		return addressMode;
+	}
+
+	public void setAddressMode(String addressMode) {
+		this.addressMode = addressMode;
+	}
+
 	/**
 	 * @param houseNumber the houseNumber to set
 	 */
@@ -664,6 +680,22 @@ public class Registration
 		this.location = location;
 	}
 	
+	public String getLocalAuthorityUpdateDate() {
+		return localAuthorityUpdateDate;
+	}
+
+	public void setLocalAuthorityUpdateDate(String localAuthorityUpdateDate) {
+		this.localAuthorityUpdateDate = localAuthorityUpdateDate;
+	}
+
+	public String getRoyalMailUpdateDate() {
+		return royalMailUpdateDate;
+	}
+
+	public void setRoyalMailUpdateDate(String royalMailUpdateDate) {
+		this.royalMailUpdateDate = royalMailUpdateDate;
+	}
+
 	/**
 	 * Custom comparison method for comparing the contents of the user entered fields 
 	 * to ensure objects are the same.
