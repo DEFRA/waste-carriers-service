@@ -123,6 +123,7 @@ fi
 ## Keep a copy of the original config, before variable names have been changed.
 cp "${WCRS_SERVICES_SOURCE}/configuration.yml" "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml.orig"
 cp "${WCRS_SERVICES_SOURCE}/configuration.yml" "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/"
+chmod 600 "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
 echo "Setting environment variables in ${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
 sed -i "s/WCRS_SERVICES_PORT/${WCRS_SERVICES_PORT}/g" \
        "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
