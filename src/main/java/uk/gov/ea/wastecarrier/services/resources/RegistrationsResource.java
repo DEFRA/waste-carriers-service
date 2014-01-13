@@ -137,7 +137,7 @@ public class RegistrationsResource
 			@QueryParam("distance") Optional<String> distance, 
 			@QueryParam("postcode") Optional<String> postcode, @QueryParam("q") Optional<String> q,
 			@QueryParam("searchWithin") Optional<String> sw, @QueryParam("ac") Optional<String> account,
-			@QueryParam("activeOnly") Optional<Boolean> activeOnly)
+			@QueryParam("activeOnly") Optional<Boolean> activeOnly, @QueryParam("excludeRegId") Optional<Boolean> excludeRegId)
 	{
 		log.fine("Get Method Detected at /registrations");
 		ArrayList<Registration> returnlist = new ArrayList<Registration>();
@@ -162,6 +162,7 @@ public class RegistrationsResource
 				BoolFilterBuilder fbBoolFilter = null;
 				GeoDistanceSortBuilder gsb = null;
 				boolean useDistanceFilter = false;
+				boolean excludeId = false;
 				if (activeOnly.isPresent())
 				{
 					GeoDistanceFilterBuilder geoFilter = null;
@@ -295,7 +296,14 @@ public class RegistrationsResource
 				MultiSearchResponse sr = null;
 				try
 				{
-					sr = esClient.prepareMultiSearch().add(srb0).add(srb1).add(srb2).execute().actionGet();
+					if (excludeRegId.isPresent() && excludeRegId.get().booleanValue())
+					{
+						sr = esClient.prepareMultiSearch().add(srb1).add(srb2).execute().actionGet();
+					}
+					else
+					{
+						sr = esClient.prepareMultiSearch().add(srb0).add(srb1).add(srb2).execute().actionGet();
+					}
 				}
 				catch (NoNodeAvailableException e)
 				{
