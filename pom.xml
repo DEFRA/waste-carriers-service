@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>uk.gov.ea.wastecarrier</groupId>
 	<artifactId>waste-exemplar-services</artifactId>
-	<version>1.1.0-SNAPSHOT</version>
+	<version>1.1.0</version>
 	<name>wastecarrier</name>
 	<description>Provides a RESTful API for the Waste Carrier registrations</description>
 	<dependencies>
