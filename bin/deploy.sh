@@ -101,7 +101,7 @@ chmod 744 "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/bin/deploy.sh"
 
 
 ## Deploy the most recent jar file.
-WCRS_SERVICES_JAR=`ls ${WCRS_SERVICES_SOURCE}/target/waste-exemplar-services-*.jar | sort | tail -1`
+WCRS_SERVICES_JAR=`ls ${WCRS_SERVICES_SOURCE}/target/waste-exemplar-services-*.jar | grep -v SNAPSHOT | sort | tail -1`
 WCRS_SERVICES_JAR=$(basename ${WCRS_SERVICES_JAR})
 if [[ -z "${WCRS_SERVICES_JAR}" ]]; then
   echo "ERROR: Unable to locate waste-exemplar-services jar file in ${WCRS_SERVICES_SOURCE}/target"
