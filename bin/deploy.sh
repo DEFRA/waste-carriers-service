@@ -101,7 +101,7 @@ chmod 744 "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/bin/deploy.sh"
 
 
 ## Deploy the most recent jar file.
-WCRS_SERVICES_JAR=`ls ${WCRS_SERVICES_SOURCE}/target/waste-exemplar-services-*.jar | grep -v SNAPSHOT | sort | tail -1`
+WCRS_SERVICES_JAR=`ls ${WCRS_SERVICES_SOURCE}/target/waste-exemplar-services-*.jar | sort | tail -1`
 WCRS_SERVICES_JAR=$(basename ${WCRS_SERVICES_JAR})
 if [[ -z "${WCRS_SERVICES_JAR}" ]]; then
   echo "ERROR: Unable to locate waste-exemplar-services jar file in ${WCRS_SERVICES_SOURCE}/target"
@@ -114,13 +114,13 @@ cp "${WCRS_SERVICES_SOURCE}/target/${WCRS_SERVICES_JAR}" "${WCRS_SERVICES_HOME}/
 
 
 ## Deploy the configuration file and set environment variables.
+## Keep a copy of the original config, before variable names have been changed.
 if [[ ! -f "${WCRS_SERVICES_SOURCE}/configuration.yml" ]]; then
   echo "ERROR: Unable to locate ${WCRS_SERVICES_SOURCE}/configuration.yml"
   echo "       Exiting now."
   echo ""
   exit 1
 fi
-## Keep a copy of the original config, before variable names have been changed.
 cp "${WCRS_SERVICES_SOURCE}/configuration.yml" "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml.orig"
 cp "${WCRS_SERVICES_SOURCE}/configuration.yml" "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/"
 chmod 600 "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
@@ -154,6 +154,9 @@ if [ -f ${WCRS_SERVICES_SOURCE}/jenkins_build_number ]; then
   cp "${WCRS_SERVICES_SOURCE}/jenkins_build_number" "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/"
 fi
 
+## Preserve the license and readme files.
+cp "${WCRS_SERVICES_SOURCE}/LICENSE" "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/" 
+cp "${WCRS_SERVICES_SOURCE}/README.md" "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/" 
 
 ## Create live symlink.
 echo "Creating symlink: ${WCRS_SERVICES_HOME}/live"
@@ -162,19 +165,6 @@ if [ -d "${WCRS_SERVICES_HOME}/live" ]; then
   rm live
 fi
 ln -s "${RELEASE_DIR}" live
-
-
-## Create a backup of the codedrop if on the dev server.
-if [ ! -d "${WCRS_SERVICES_HOME}/baselines" ]; then
-  mkdir "${WCRS_SERVICES_HOME}/baselines"
-fi
-if [ `uname -n` == "ea-dev" ]; then
-  echo "Tarring up this codedrop for deploys to other servers. You can find it here:"
-  echo "    ${WCRS_SERVICES_HOME}/baselines/codedrop-wcrs-services-${JENKINS_BUILD_NUMBER}-${DATESTAMP}.tgz"
-  cd "${WCRS_SERVICES_SOURCE}"
-  tar -zcf "${WCRS_SERVICES_HOME}/baselines/codedrop-wcrs-services-${JENKINS_BUILD_NUMBER}-${DATESTAMP}.tgz" *
-fi
-
 
 ## Start wcrs-services.
 echo "Starting wcrs-services on port ${WCRS_SERVICES_PORT}."
@@ -186,7 +176,6 @@ nohup "${WCRS_SERVICES_JAVA_HOME}/bin/java" -Ddw.http.port=${WCRS_SERVICES_PORT}
       -jar "${WCRS_SERVICES_HOME}/live/webapps/${WCRS_SERVICES_JAR}" \
       server "${WCRS_SERVICES_HOME}/live/conf/configuration.yml" > "${WCRS_SERVICES_HOME}/live/logs/wcrs-services.log" &
 echo $! > "${WCRS_SERVICES_HOME}/live/logs/pid"
-
 
 echo "Deploy complete."
 echo ""
