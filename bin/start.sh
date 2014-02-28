@@ -52,7 +52,7 @@ if [ -f "${WCRS_SERVICES_HOME}/live/logs/nohup.out" ]; then
   mv nohup.out nohup.out.${DATESTAMP}
 fi
 nohup "${WCRS_SERVICES_JAVA_HOME}/bin/java" -Ddw.http.port=${WCRS_SERVICES_PORT} \
-      -jar "${WCRS_SERVICES_JAR}" server "${WCRS_SERVICES_HOME}/live/conf/configuration.yml" \ 
+      -jar "${WCRS_SERVICES_JAR}" server "${WCRS_SERVICES_HOME}/live/conf/configuration.yml" \
       > "${WCRS_SERVICES_HOME}/live/logs/wcrs-services.log" &
 echo $! > "${WCRS_SERVICES_HOME}/live/logs/pid"
 
