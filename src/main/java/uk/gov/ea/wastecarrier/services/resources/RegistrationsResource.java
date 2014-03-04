@@ -135,9 +135,12 @@ public class RegistrationsResource
 	@Timed
 	public List<Registration> getRegistrations(@QueryParam("companyName") Optional<String> name,
 			@QueryParam("distance") Optional<String> distance, 
-			@QueryParam("postcode") Optional<String> postcode, @QueryParam("q") Optional<String> q,
-			@QueryParam("searchWithin") Optional<String> sw, @QueryParam("ac") Optional<String> account,
-			@QueryParam("activeOnly") Optional<Boolean> activeOnly, @QueryParam("excludeRegId") Optional<Boolean> excludeRegId)
+			@QueryParam("postcode") Optional<String> postcode, 
+			@QueryParam("q") Optional<String> q,
+			@QueryParam("searchWithin") Optional<String> sw, 
+			@QueryParam("ac") Optional<String> account,
+			@QueryParam("activeOnly") Optional<Boolean> activeOnly, 
+			@QueryParam("excludeRegId") Optional<Boolean> excludeRegId)
 	{
 		log.fine("Get Method Detected at /registrations");
 		ArrayList<Registration> returnlist = new ArrayList<Registration>();
@@ -148,6 +151,7 @@ public class RegistrationsResource
 			if (!"".equals(qValue))
 			{
 				log.info("Param GET Method Detected - Return List of Registrations limited by ElasticSearch");
+				log.info("The 'q' search parameter is present: searching for: " + qValue);
 				
 				boolean useAdvancedSearch = false;
 				String swValue = null;
@@ -232,7 +236,9 @@ public class RegistrationsResource
 						.setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
 						.setQuery(qb0)
 						.setSize(1);
-				if (fbBoolFilter != null) srb0.setFilter(fbBoolFilter);
+				if (fbBoolFilter != null) {
+					srb0.setFilter(fbBoolFilter);
+				}
 				
 				// Second Priority - Exact match to any other value
 				QueryBuilder qb1 = QueryBuilders.queryString(qValue);
@@ -291,7 +297,9 @@ public class RegistrationsResource
 							.setSize(this.elasticSearch.getSize())
 							.addSort("companyName", SortOrder.ASC);
 				}
-				if (fbBoolFilter != null) srb2.setFilter(fbBoolFilter);
+				if (fbBoolFilter != null) {
+					srb2.setFilter(fbBoolFilter);
+				}
 
 				MultiSearchResponse sr = null;
 				try
