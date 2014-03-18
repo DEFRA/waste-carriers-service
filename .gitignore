@@ -20,3 +20,7 @@ dependency-reduced-pom.xml
 configuration_*.yml
 
 run.sh
+
+runConfig/WasteCarrierService.launch
+
+.README.md.html
