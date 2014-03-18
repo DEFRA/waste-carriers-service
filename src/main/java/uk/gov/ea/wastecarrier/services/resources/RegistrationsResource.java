@@ -264,6 +264,7 @@ public class RegistrationsResource
 							.setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
 							.setQuery(qb1)
 							.setSize(this.elasticSearch.getSize())
+							.addSort("_score", SortOrder.DESC)
 							.addSort("companyName", SortOrder.ASC);
 				}
 				if (fbBoolFilter != null) srb1.setFilter(fbBoolFilter);
