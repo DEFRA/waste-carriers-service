@@ -4,6 +4,13 @@
 ## This script will deploy and start the wcrs-services application.
 ## Please refer to README.deploy for futher details.
 
+## This script should only be started by the user wcrs-services.
+USER=`/usr/bin/whoami`
+if [ "$USER" != "wcrs-services" ]; then
+    echo "ERROR: This script should only be run by the user wcrs-services."
+    exit 1
+fi
+
 function env_alert() {
     echo "Environment variable $1 is not set."
     echo "Refer to the README.deploy file for more details."
@@ -98,6 +105,8 @@ cp "${WCRS_SERVICES_SOURCE}/bin/start.sh" "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/
 chmod 744 "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/bin/start.sh"
 cp "${WCRS_SERVICES_SOURCE}/bin/deploy.sh" "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/bin/deploy.sh"
 chmod 744 "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/bin/deploy.sh"
+cp "${WCRS_SERVICES_SOURCE}/bin/reindex_elasticsearch.sh" "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/bin/"
+chmod 744 "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/bin/reindex_elasticsearch.sh"
 
 
 ## Deploy the most recent jar file.
