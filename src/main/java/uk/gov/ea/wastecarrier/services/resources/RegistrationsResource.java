@@ -560,8 +560,10 @@ public class RegistrationsResource
 			BulkResponse bulkResponse = Indexer.createElasticSearchIndex(esClient, savedObject);
 			if (bulkResponse.hasFailures()) {
 			    // process failures by iterating through each bulk response item
-				log.severe( bulkResponse.buildFailureMessage());
-				throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+				log.severe("Failure while inserting registration into ElasticSearch: " + bulkResponse.buildFailureMessage());
+				log.severe("The registration may not be in ElasticSearch - We may need to re-index. Registration id: " + savedObject.getRegIdentifier());
+				//TODO: Should we throw an exception here?
+				//throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
 			}
 			else
 			{

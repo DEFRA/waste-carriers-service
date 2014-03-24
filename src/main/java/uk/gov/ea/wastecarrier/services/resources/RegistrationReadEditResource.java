@@ -195,6 +195,7 @@ public class RegistrationReadEditResource
 */			}
 			catch (Exception e)
 			{
+				log.severe("Caught exception while updating registration: " + e.getMessage());
 				e.printStackTrace();
 				log.severe("Cannot find Registration ID: " + id + ". Error: " + e.getMessage() );
 				throw new WebApplicationException(Status.NOT_FOUND);
@@ -227,6 +228,7 @@ public class RegistrationReadEditResource
 				}
 				catch (IllegalArgumentException e)
 				{
+					log.warning("Catching exception while trying to update registration: " + e.getMessage());
 					log.warning("Cannot find Registration ID: " + id);
 					throw new WebApplicationException(Status.NOT_FOUND);
 				}
