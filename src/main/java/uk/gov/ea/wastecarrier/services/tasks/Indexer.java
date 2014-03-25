@@ -177,21 +177,26 @@ public class Indexer extends Task
 	 */
 	public static BulkResponse createElasticSearchIndex(Client client, Registration reg)
 	{
+		log.info("Entering createElasticSearchIndex() - preparing bulk request. Registration ID = " + reg.getId());
 		BulkRequestBuilder bulkRequest = client.prepareBulk();
 
 		// either use client#prepare, or use Requests# to directly build index/delete requests
 		try
 		{
+			log.info("Adding a prepareIndex request.");
 			bulkRequest.add(client.prepareIndex(Registration.COLLECTION_NAME, Registration.COLLECTION_SINGULAR_NAME, reg.getId()).setSource(
 					asJson(reg)));
 		}
 		catch (IOException e1)
 		{
+			log.severe("Caught IOException while adding to bulk request: " + e1.getMessage());
 			e1.printStackTrace();
 			log.severe("Error in creating reg from object: " + e1.getMessage());
 		}
 
+		log.info("Executing the bulk request.");
 		BulkResponse bulkResponse = bulkRequest.execute().actionGet();
+		log.info("Returning the bulk response.");
 		return bulkResponse;
 	}
 
