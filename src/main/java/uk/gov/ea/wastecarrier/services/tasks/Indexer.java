@@ -12,6 +12,7 @@ import net.vz.mongodb.jackson.JacksonDBCollection;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
 import org.elasticsearch.action.admin.indices.flush.FlushRequest;
+import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteResponse;
@@ -158,8 +159,13 @@ public class Indexer extends Task
 			// Supposed to do this after records re-added
 			if (deleteAll && reIndex)
 			{
-				esClient.admin().indices().flush(new FlushRequest(Registration.COLLECTION_NAME).refresh(true))
-						.actionGet();
+				//Note: As of version 0.90.5, flushing should be performed separately from refreshing. 
+				//See https://github.com/elasticsearch/elasticsearch/issues/3689
+				log.info("Delete and Re-Index: Flushing the ElasticSearch registrations index.");
+				esClient.admin().indices().flush(new FlushRequest(Registration.COLLECTION_NAME)).actionGet();
+				log.info("Flushed the index. Now refreshing the index.");
+				esClient.admin().indices().refresh(new RefreshRequest(Registration.COLLECTION_NAME)).actionGet();
+				log.info("The index has been refreshed.");
 			}
 		}
 		out.append("Done\n");
