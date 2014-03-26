@@ -16,12 +16,11 @@ import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
 
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.ElasticSearchConfiguration;
 import uk.gov.ea.wastecarrier.services.core.Registration;
+import uk.gov.ea.wastecarrier.services.elasticsearch.ElasticSearchUtils;
 import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
 
 import com.google.common.collect.ImmutableMultimap;
@@ -109,8 +108,7 @@ public class Indexer extends Task
 			}
 
 			// Create Elastic Search Connection
-			esClient = new TransportClient().addTransportAddress(new InetSocketTransportAddress(this.elasticSearch
-					.getHost(), this.elasticSearch.getPort()));
+			esClient = ElasticSearchUtils.getNewTransportClient(elasticSearch);
 
 			// If requested, Delete all Registration indexes
 			if (deleteAll)

@@ -6,6 +6,7 @@ import uk.gov.ea.wastecarrier.services.MessageQueueConfiguration;
 import uk.gov.ea.wastecarrier.services.core.Location;
 import uk.gov.ea.wastecarrier.services.core.MetaData;
 import uk.gov.ea.wastecarrier.services.core.Registration;
+import uk.gov.ea.wastecarrier.services.elasticsearch.ElasticSearchUtils;
 import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
 import uk.gov.ea.wastecarrier.services.tasks.Indexer;
 import uk.gov.ea.wastecarrier.services.tasks.PostcodeRegistry;
@@ -39,9 +40,7 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.NoNodeAvailableException;
-import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.geo.GeoDistance;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.unit.DistanceUnit;
 import org.elasticsearch.index.query.BoolFilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
@@ -112,7 +111,7 @@ public class RegistrationsResource
 		this.elasticSearch = elasticSearch;
 		this.postcodeRegistry = new PostcodeRegistry(PostcodeRegistry.POSTCODE_FROM.FILE, postcodeFilePath);
 		
-		esClient = new TransportClient().addTransportAddress(new InetSocketTransportAddress(this.elasticSearch.getHost(), this.elasticSearch.getPort()));
+		esClient = ElasticSearchUtils.getNewTransportClient(elasticSearch);
 	}
 	
 	protected void finalize() throws Throwable {

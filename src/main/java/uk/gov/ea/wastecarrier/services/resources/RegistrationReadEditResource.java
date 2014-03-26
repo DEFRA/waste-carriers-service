@@ -5,6 +5,7 @@ import uk.gov.ea.wastecarrier.services.ElasticSearchConfiguration;
 import uk.gov.ea.wastecarrier.services.MessageQueueConfiguration;
 import uk.gov.ea.wastecarrier.services.core.MetaData;
 import uk.gov.ea.wastecarrier.services.core.Registration;
+import uk.gov.ea.wastecarrier.services.elasticsearch.ElasticSearchUtils;
 import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
 import uk.gov.ea.wastecarrier.services.tasks.Indexer;
 
@@ -25,8 +26,6 @@ import javax.ws.rs.core.Response.Status;
 
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.NoNodeAvailableException;
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
 
 import net.vz.mongodb.jackson.JacksonDBCollection;
 import net.vz.mongodb.jackson.WriteResult;
@@ -72,7 +71,7 @@ public class RegistrationReadEditResource
     	log.fine("> messageQueue: " + this.messageQueue);
 
         this.databaseHelper = new DatabaseHelper(database);
-        this.esClient = new TransportClient().addTransportAddress(new InetSocketTransportAddress(elasticSearch.getHost(), elasticSearch.getPort()));
+        this.esClient = ElasticSearchUtils.getNewTransportClient(elasticSearch);
     }
 
     /**

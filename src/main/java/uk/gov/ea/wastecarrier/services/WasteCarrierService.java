@@ -2,9 +2,7 @@ package uk.gov.ea.wastecarrier.services;
 
 import java.util.logging.Logger;
 
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
-
+import uk.gov.ea.wastecarrier.services.elasticsearch.ElasticSearchUtils;
 import uk.gov.ea.wastecarrier.services.health.ElasticSearchHealthCheck;
 import uk.gov.ea.wastecarrier.services.health.MongoHealthCheck;
 import uk.gov.ea.wastecarrier.services.health.TemplateHealthCheck;
@@ -103,8 +101,7 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration> {
 		
 		// Add Heath Check to indexing Service
 		environment.addHealthCheck(
-				new ElasticSearchHealthCheck(new TransportClient().addTransportAddress(
-						new InetSocketTransportAddress(eSConfig.getHost(), eSConfig.getPort()))));
+				new ElasticSearchHealthCheck(ElasticSearchUtils.getNewTransportClient(eSConfig)));
         
         // Get and Print the Jar Version to the console for logging purposes
         Package objPackage = this.getClass().getPackage();
