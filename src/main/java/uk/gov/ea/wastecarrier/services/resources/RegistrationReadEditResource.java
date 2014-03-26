@@ -24,6 +24,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
 import org.elasticsearch.client.Client;
+import org.elasticsearch.client.transport.NoNodeAvailableException;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 
@@ -93,6 +94,7 @@ public class RegistrationReadEditResource
 		{	
 			if (!db.isAuthenticated())
 			{
+				log.severe("Get registration - Could not authenticate against MongoDB!");
 				throw new WebApplicationException(Status.FORBIDDEN);
 			}
 			
@@ -132,12 +134,13 @@ public class RegistrationReadEditResource
 			}
 			catch (IllegalArgumentException e)
 			{
-				log.warning("Cannot find Registration ID: " + id);
+				log.warning("Caught exception: " + e.getMessage() + " - Cannot find Registration ID: " + id);
 				throw new WebApplicationException(Status.NOT_FOUND);
 			}
 		}
 		else
 		{
+			log.severe("Get registration - Could not obtain connection to MongoDB!");
 			throw new WebApplicationException(Status.SERVICE_UNAVAILABLE);
 		}
     }
@@ -161,6 +164,7 @@ public class RegistrationReadEditResource
 		{
 			if (!db.isAuthenticated())
 			{
+				log.severe("Updating registration - Could not authenticate against MongoDB!");
 				throw new WebApplicationException(Status.FORBIDDEN);
 			}
 			
@@ -195,9 +199,9 @@ public class RegistrationReadEditResource
 */			}
 			catch (Exception e)
 			{
-				log.severe("Caught exception while updating registration: " + e.getMessage());
+				log.severe("Caught exception while updating registration with id: " + id + "Exception: " + e.getMessage());
 				e.printStackTrace();
-				log.severe("Cannot find Registration ID: " + id + ". Error: " + e.getMessage() );
+				//log.severe("Cannot find Registration ID: " + id + ". Error: " + e.getMessage() );
 				throw new WebApplicationException(Status.NOT_FOUND);
 			}
 			// If object found
@@ -206,13 +210,13 @@ public class RegistrationReadEditResource
 			
 			if (!String.valueOf("").equals(result.getError()))
 			{
-				log.info("Registration Updated for ID:" + id);
+				log.info("Registration updated successfully in MongoDB for ID:" + id);
 				try
 				{
 					// Make a second request for the updated full registration details to be returned
 					savedObject = registrations.findOneById(id);
 					log.fine("Found Updated Registration, Details include:- CompanyName:" + savedObject.getCompanyName());
-					
+					// Revoked registrations remain the ElasticSearch - therefore not deleting them here.
 /*					if (savedObject.getMetaData().getStatus().equals(RegistrationStatus.REVOKED))
 					{
 						// Delete registration from elastic search as registration has been revoked
@@ -221,7 +225,14 @@ public class RegistrationReadEditResource
 					else
 					{*/
 						// Perform another create index operation which should override previous index information
-						Indexer.createElasticSearchIndex(esClient, savedObject);
+						try {
+							log.info("Indexing the updated registration in ElasticSearch...");
+							Indexer.createElasticSearchIndex(esClient, savedObject);
+							log.info("Created index in ElasticSearch for registration id = " + id);
+						} catch (NoNodeAvailableException nnae) {
+							//Purposely swallowing this exception. We don't want to user to fall over if ElasticSearch (temporarily?) is not available.
+							log.severe("Could not index the updated registration in ElasticSearch. May need to re-index. Exception: " + nnae.getMessage());
+						}
 //					}
 					
 					return savedObject;
@@ -235,11 +246,13 @@ public class RegistrationReadEditResource
 			}
 			else
 			{
+				log.severe("Error while updating registration with ID " + id + " in MongoDB. Result error:" + result.getError());
 				throw new WebApplicationException(Status.NOT_MODIFIED);
 			}
 		}
 		else
 		{
+			log.severe("Could not obtain a connection to MongoDB! Cannot update registration in the database!");
 			throw new WebApplicationException(Status.SERVICE_UNAVAILABLE);
 		}
 	}
@@ -262,6 +275,7 @@ public class RegistrationReadEditResource
 		{	
 			if (!db.isAuthenticated())
 			{
+				log.severe("Could not authenticate against MongoDB!");
 				throw new WebApplicationException(Status.FORBIDDEN);
 			}
 			
@@ -283,15 +297,16 @@ public class RegistrationReadEditResource
 					// If no errors detected, also removed from Search
 					if (result.getError() == null)
 					{
-						log.info("Deleted:" + foundReg.getId() + " from Mongo");
+						log.info("Deleted registration with ID:" + foundReg.getId() + " from MongoDB");
 						
 						// Remove Registration from Elastic search
+						//TODO - Guard against NoNodeAvailableException here as well?
 						Indexer.deleteElasticSearchIndex(esClient, foundReg);
-						log.info("Deleted:" + foundReg.getId() + " from Elastic Search");
+						log.info("Deleted registration with ID:" + foundReg.getId() + " from Elastic Search");
 					}
 					else
 					{
-						log.severe("ERROR: " + result.getError());
+						log.severe("ERROR: Could not delete registration from MongoDB: Error:" + result.getError());
 						throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
 					}
 					// Operation completed
@@ -302,18 +317,20 @@ public class RegistrationReadEditResource
 				// Also Delete from Elastic Search if not found in database
 				Registration tmpReg = new Registration();
 				tmpReg.setId(id);
+				//TODO: Guard against NoNodeAvailableException here as well?
 				Indexer.deleteElasticSearchIndex(esClient, tmpReg);
 				log.info("Deleted:" + id + " from Elastic Search");
 				throw new WebApplicationException(Status.NOT_FOUND);
 			}
 			catch (IllegalArgumentException e)
 			{
-				log.warning("Cannot find Registration ID: " + id);
+				log.warning("Caught exception: " + e.getMessage() + " Cannot find Registration ID: " + id);
 				throw new WebApplicationException(Status.NOT_FOUND);
 			}
 		}
 		else
 		{
+			log.severe("Could not obtain connection to MongoDB. Cannot delete registration with id = " + id);
 			throw new WebApplicationException(Status.SERVICE_UNAVAILABLE);
 		}
     }

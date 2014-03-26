@@ -562,7 +562,7 @@ public class RegistrationsResource
 			    // process failures by iterating through each bulk response item
 				log.severe("Failure while inserting registration into ElasticSearch: " + bulkResponse.buildFailureMessage());
 				log.severe("The registration may not be in ElasticSearch - We may need to re-index. Registration id: " + savedObject.getRegIdentifier());
-				//TODO: Should we throw an exception here?
+				// Note: We are not throw an exception here, in order for the user to be able to continue, even if the registration is not inserted into ElasticSearch.
 				//throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
 			}
 			else
@@ -575,7 +575,7 @@ public class RegistrationsResource
 		}
 		else
 		{
-			log.warning("Database not found, check the database is running");
+			log.severe("Could not establish database connection to MongoDB! Check the database is running");
 			throw new WebApplicationException(Status.SERVICE_UNAVAILABLE);
 		}
 	}
