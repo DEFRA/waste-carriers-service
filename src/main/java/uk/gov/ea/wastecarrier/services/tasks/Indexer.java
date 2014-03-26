@@ -32,12 +32,12 @@ import com.yammer.dropwizard.tasks.Task;
  * The Indexer class enables a reset/refresh of the data contained with the Elastic search records, it does this by
  * performing a entire purge of the registration data and recreating it from the mongoDB
  * 
- * E.g. curl -X POST http://localhost:9091/tasks/reindex 
+ * E.g. curl -X POST http://localhost:9091/tasks/indexer 
  * Which performs a partial delete/recreate for entries currently
  * in the database
  * 
  * Also can use Optional parameters of -d 'all' 
- * E.g. curl -X POST http://localhost:9091/tasks/reindex -d 'all' 
+ * E.g. curl -X POST http://localhost:9091/tasks/indexer -d 'all' 
  * Which performs a full system wipe and recreate
  * 
  * @author Steve
