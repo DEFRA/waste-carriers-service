@@ -60,7 +60,7 @@ public class RegistrationReadEditResource
      * @param database
      */
     public RegistrationReadEditResource(String template, String defaultName, MessageQueueConfiguration mQConfig,
-    		DatabaseConfiguration database, ElasticSearchConfiguration elasticSearch)
+    		DatabaseConfiguration database, ElasticSearchConfiguration elasticSearch, Client esClient)
     {
         this.template = template;
         this.defaultName = defaultName;
@@ -71,7 +71,7 @@ public class RegistrationReadEditResource
     	log.fine("> messageQueue: " + this.messageQueue);
 
         this.databaseHelper = new DatabaseHelper(database);
-        this.esClient = ElasticSearchUtils.getNewTransportClient(elasticSearch);
+        this.esClient = esClient;
     }
 
     /**

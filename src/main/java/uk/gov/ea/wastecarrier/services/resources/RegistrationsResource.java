@@ -83,12 +83,11 @@ public class RegistrationsResource
 	private final MessageQueueConfiguration messageQueue;
 	private final DatabaseHelper databaseHelper;
 	private final ElasticSearchConfiguration elasticSearch;
+	private final Client esClient;
 	private final PostcodeRegistry postcodeRegistry;
 
 	// Standard logging declaration
 	private Logger log = Logger.getLogger(RegistrationsResource.class.getName());
-
-	private Client esClient;
 	
 	/**
 	 * 
@@ -98,7 +97,7 @@ public class RegistrationsResource
 	 * @param database
 	 */
 	public RegistrationsResource(String template, String defaultName, MessageQueueConfiguration mQConfig,
-			DatabaseConfiguration database, ElasticSearchConfiguration elasticSearch, String postcodeFilePath)
+			DatabaseConfiguration database, ElasticSearchConfiguration elasticSearch, Client esClient, String postcodeFilePath)
 	{
 		this.template = template;
 		this.defaultName = defaultName;
@@ -111,7 +110,7 @@ public class RegistrationsResource
 		this.elasticSearch = elasticSearch;
 		this.postcodeRegistry = new PostcodeRegistry(PostcodeRegistry.POSTCODE_FROM.FILE, postcodeFilePath);
 		
-		esClient = ElasticSearchUtils.getNewTransportClient(elasticSearch);
+		this.esClient = esClient;
 	}
 	
 	protected void finalize() throws Throwable {

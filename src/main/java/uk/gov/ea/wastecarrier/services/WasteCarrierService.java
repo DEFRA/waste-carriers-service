@@ -2,6 +2,10 @@ package uk.gov.ea.wastecarrier.services;
 
 import java.util.logging.Logger;
 
+import org.elasticsearch.client.Client;
+import org.elasticsearch.discovery.zen.elect.ElectMasterService;
+
+import uk.gov.ea.wastecarrier.services.elasticsearch.ElasticSearchManaged;
 import uk.gov.ea.wastecarrier.services.elasticsearch.ElasticSearchUtils;
 import uk.gov.ea.wastecarrier.services.health.ElasticSearchHealthCheck;
 import uk.gov.ea.wastecarrier.services.health.MongoHealthCheck;
@@ -32,6 +36,9 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration> {
 	
 	private MongoClient mongoClient;
 	
+	//The client used to talk to ElasticSearch
+	private Client esClient;
+	
 	// Standard logging declaration
 	private Logger log = Logger.getLogger(WasteCarrierService.class.getName());
 	
@@ -51,13 +58,16 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration> {
         final String defaultName = configuration.getDefaultName();
         final MessageQueueConfiguration mQConfig = configuration.getMessageQueueConfiguration();
         final DatabaseConfiguration dbConfig = configuration.getDatabase();
-        final ElasticSearchConfiguration eSConfig = configuration.getElasticSearch();
+        final ElasticSearchConfiguration esConfig = configuration.getElasticSearch();
         final String postcodeFilePath = configuration.getPostcodeFilePath();
         
+        //Create a singleton instance of the ElasticSearch TransportClient. Client to be closed on shutdown.
+        esClient = ElasticSearchUtils.getNewTransportClient(esConfig);
+
         // Add Create Resource
-        environment.addResource(new RegistrationsResource(template, defaultName, mQConfig, dbConfig, eSConfig, postcodeFilePath));
+        environment.addResource(new RegistrationsResource(template, defaultName, mQConfig, dbConfig, esConfig, esClient, postcodeFilePath));
         // Add Read Resource
-        environment.addResource(new RegistrationReadEditResource(template, defaultName, mQConfig, dbConfig, eSConfig));
+        environment.addResource(new RegistrationReadEditResource(template, defaultName, mQConfig, dbConfig, esConfig, esClient));
         // Add Version Resource
         environment.addResource(new RegistrationVersionResource());
         
@@ -91,8 +101,11 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration> {
         MongoManaged mongoManaged = new MongoManaged(mongoClient);
         environment.manage(mongoManaged);
         
+        ElasticSearchManaged esManaged = new ElasticSearchManaged(esClient);
+        environment.manage(esManaged);
+        
         // Add Indexing functionality to clean Elastic Search Indexes and perform re-index of all data
-        Indexer task = new Indexer("indexer", dbConfig, eSConfig);
+        Indexer task = new Indexer("indexer", dbConfig, esConfig, esClient);
 		environment.addTask(task);
 		
 		// Add Location Population functionality to create location indexes for all provided addresses of all data
@@ -101,7 +114,7 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration> {
 		
 		// Add Heath Check to indexing Service
 		environment.addHealthCheck(
-				new ElasticSearchHealthCheck(ElasticSearchUtils.getNewTransportClient(eSConfig)));
+				new ElasticSearchHealthCheck(ElasticSearchUtils.getNewTransportClient(esConfig)));
         
         // Get and Print the Jar Version to the console for logging purposes
         Package objPackage = this.getClass().getPackage();
@@ -121,7 +134,8 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration> {
             	/*
 				 * my shutdown code here
 				 */
-            	mongoClient.close();	
+            	mongoClient.close();
+            	esClient.close();
             }
          });
         

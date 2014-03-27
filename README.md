@@ -48,7 +48,7 @@ TODO - list environment variables used by services
 
 Using Maven...
 
-mvn clean package
+	$ mvn clean package
 
 
 ##Startup
@@ -66,13 +66,15 @@ TODO - Set up MongoDB database users and database(s) for local development
 
 Start MongoDB with authentication:
 
-mongod --auth
+	$ mongod --auth
 
 ###Setting up ElasticSearch
 
 TODO
 
 Startup ElasticSearch for local development:
+
+	$ bin/elasticsearch -f
 
 ##User Guide
 
@@ -90,7 +92,7 @@ MongoDB: http://www.mongodb.org
 
 ElasticSearch: http://www.elasticsearch.org
 
-Apache Maven: http://www.elasticsearch.org
+Apache Maven: http://maven.apache.org/
 
 
 ##License

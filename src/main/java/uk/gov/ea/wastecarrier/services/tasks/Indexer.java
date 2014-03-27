@@ -17,6 +17,7 @@ import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.client.transport.TransportClient;
 
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.ElasticSearchConfiguration;
@@ -46,15 +47,26 @@ import com.yammer.dropwizard.tasks.Task;
 public class Indexer extends Task
 {
 	private final DatabaseHelper databaseHelper;
+
+	/**
+	 * @deprecated
+	 * Note: this may be obsolete if we now pass in the ES transport client.
+	 */
 	private final ElasticSearchConfiguration elasticSearch;
-	private Client esClient;
+	
+	/**
+	 * The ElasticSearch Client (TransportClient to connect to the cluster; shared, singleton)
+	 */
+	private final Client esClient;
+	
 	private static Logger log = Logger.getLogger(Indexer.class.getName());
 
-	public Indexer(String name, DatabaseConfiguration database, ElasticSearchConfiguration elasticSearch)
+	public Indexer(String name, DatabaseConfiguration database, ElasticSearchConfiguration elasticSearch, Client esClient)
 	{
 		super(name);
 		this.databaseHelper = new DatabaseHelper(database);
 		this.elasticSearch = elasticSearch;
+		this.esClient = esClient;
 	}
 
 	/**
@@ -107,9 +119,6 @@ public class Indexer extends Task
 			{
 				throw new RuntimeException("Error: Could not authenticate user");
 			}
-
-			// Create Elastic Search Connection
-			esClient = ElasticSearchUtils.getNewTransportClient(elasticSearch);
 
 			// If requested, Delete all Registration indexes
 			if (deleteAll)

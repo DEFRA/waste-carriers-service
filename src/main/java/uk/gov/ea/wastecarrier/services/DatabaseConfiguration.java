@@ -26,6 +26,26 @@ public class DatabaseConfiguration {
 	@JsonProperty
     private String password;
 
+	public DatabaseConfiguration() {
+		//empty constructor
+	}
+	
+	/**
+	 * Constructor with arguments.
+	 * @param host
+	 * @param port
+	 * @param name
+	 * @param username
+	 * @param password
+	 */
+	public DatabaseConfiguration(String host, int port, String name, String username, String password) {
+		this.host = host;
+		this.port = port;
+		this.name = name;
+		this.username = username;
+		this.password = password;
+	}
+	
     public String getHost() {
         return host;
     }
