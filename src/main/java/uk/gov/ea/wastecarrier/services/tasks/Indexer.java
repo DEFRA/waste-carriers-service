@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import net.vz.mongodb.jackson.DBCursor;
 import net.vz.mongodb.jackson.JacksonDBCollection;
 
+import org.elasticsearch.ElasticSearchException;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
 import org.elasticsearch.action.admin.indices.flush.FlushRequest;
@@ -16,6 +17,7 @@ import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteResponse;
+import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 
@@ -192,7 +194,7 @@ public class Indexer extends Task
 	{
 		log.info("Entering createElasticSearchIndex() - preparing bulk request. Registration ID = " + reg.getId());
 		BulkRequestBuilder bulkRequest = client.prepareBulk();
-
+		
 		// either use client#prepare, or use Requests# to directly build index/delete requests
 		try
 		{
@@ -211,6 +213,24 @@ public class Indexer extends Task
 		BulkResponse bulkResponse = bulkRequest.execute().actionGet();
 		log.info("Returning the bulk response.");
 		return bulkResponse;
+	}
+	
+	public static void indexRegistration(Client client, Registration reg) {
+		log.info("Entering indexRegistration: Registration id = " + reg.getId());
+		IndexResponse indexResponse = null;
+		try {
+			indexResponse = client.prepareIndex(Registration.COLLECTION_NAME, Registration.COLLECTION_SINGULAR_NAME, reg.getId())
+					.setSource(asJson(reg)).execute().actionGet();
+			log.info("indexResponse: id = " + indexResponse.getId());
+			log.info("indexResponse: version = " + indexResponse.getVersion());
+		} catch (ElasticSearchException e) {
+			log.severe("Encountered exception while indexing registration: " + e.getMessage());
+			e.printStackTrace();
+		} catch (IOException e) {
+			log.severe("Encountered exception while indexing registration: " + e.getMessage());
+			e.printStackTrace();
+		}
+		log.info("Index request completed: " + indexResponse);
 	}
 
 	/**

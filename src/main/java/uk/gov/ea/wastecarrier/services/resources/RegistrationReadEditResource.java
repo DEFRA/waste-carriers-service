@@ -226,7 +226,7 @@ public class RegistrationReadEditResource
 						// Perform another create index operation which should override previous index information
 						try {
 							log.info("Indexing the updated registration in ElasticSearch...");
-							Indexer.createElasticSearchIndex(esClient, savedObject);
+							Indexer.indexRegistration(esClient, savedObject);
 							log.info("Created index in ElasticSearch for registration id = " + id);
 						} catch (NoNodeAvailableException nnae) {
 							//Purposely swallowing this exception. We don't want to user to fall over if ElasticSearch (temporarily?) is not available.

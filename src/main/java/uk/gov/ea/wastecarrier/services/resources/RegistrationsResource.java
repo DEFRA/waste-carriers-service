@@ -555,19 +555,22 @@ public class RegistrationsResource
 			/*
 			 * Add same record to Elastic Search
 			 */
-			BulkResponse bulkResponse = Indexer.createElasticSearchIndex(esClient, savedObject);
-			if (bulkResponse.hasFailures()) {
-			    // process failures by iterating through each bulk response item
-				log.severe("Failure while inserting registration into ElasticSearch: " + bulkResponse.buildFailureMessage());
-				log.severe("The registration may not be in ElasticSearch - We may need to re-index. Registration id: " + savedObject.getRegIdentifier());
-				// Note: We are not throw an exception here, in order for the user to be able to continue, even if the registration is not inserted into ElasticSearch.
-				//throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
-			}
-			else
-			{
-				log.info("Created Elastic Search Index for: " + savedObject.getId());
-			}
-			
+			//TODO Is there an issue with BulkRequests in 0.90.5? - Trying plain index API instead
+			//BulkResponse bulkResponse = Indexer.createElasticSearchIndex(esClient, savedObject);
+			//if (bulkResponse.hasFailures()) {
+			//    // process failures by iterating through each bulk response item
+			//	log.severe("Failure while inserting registration into ElasticSearch: " + bulkResponse.buildFailureMessage());
+			//	log.severe("The registration may not be in ElasticSearch - We may need to re-index. Registration id: " + savedObject.getRegIdentifier());
+			//	// Note: We are not throw an exception here, in order for the user to be able to continue, even if the registration is not inserted into ElasticSearch.
+			//	//throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+			//}
+			//else
+			//{
+			//	log.info("Created Elastic Search Index for: " + savedObject.getId());
+			//}
+			log.info("About to index the new registration in ElasticSearch. ID = " + savedObject.getId());
+			Indexer.indexRegistration(esClient, savedObject);
+			log.info("Returned from indexing.");
 			// Return saved object to user (returned as JSON)
 			return savedObject;
 		}
