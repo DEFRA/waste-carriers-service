@@ -42,7 +42,7 @@ EOF
 echo "target/$jar_file" >> $workspace_dir/bin/codedrop_include 
 
 ## Tar up a deployable codedrop.
-tarball_name="codedrop-wcrs-services-${jenkins_build_number}-${datestamp}.tgz"
+tarball_name="codedrop-wcrs-services-j${jenkins_build_number}-${datestamp}.tgz"
 echo "Tarring up this codedrop for deploys to other servers. You can find it here:"
 echo "    $local_baseline_dir/$tarball_name" 
 cd $workspace_dir
