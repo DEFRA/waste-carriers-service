@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 import net.vz.mongodb.jackson.DBCursor;
 import net.vz.mongodb.jackson.JacksonDBCollection;
 
-import org.elasticsearch.ElasticSearchException;
+import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
 import org.elasticsearch.action.admin.indices.flush.FlushRequest;
@@ -223,7 +223,7 @@ public class Indexer extends Task
 					.setSource(asJson(reg)).execute().actionGet();
 			log.info("indexResponse: id = " + indexResponse.getId());
 			log.info("indexResponse: version = " + indexResponse.getVersion());
-		} catch (ElasticSearchException e) {
+		} catch (ElasticsearchException e) {
 			log.severe("Encountered exception while indexing registration: " + e.getMessage());
 			e.printStackTrace();
 		} catch (IOException e) {
