@@ -569,7 +569,7 @@ public class RegistrationsResource
 			//	log.info("Created Elastic Search Index for: " + savedObject.getId());
 			//}
 			log.info("About to index the new registration in ElasticSearch. ID = " + savedObject.getId());
-			Indexer.indexRegistration(esClient, savedObject);
+			Indexer.indexRegistration(elasticSearch, esClient, savedObject);
 			log.info("Returned from indexing.");
 			// Return saved object to user (returned as JSON)
 			return savedObject;

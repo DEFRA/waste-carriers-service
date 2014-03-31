@@ -215,11 +215,15 @@ public class Indexer extends Task
 		return bulkResponse;
 	}
 	
-	public static void indexRegistration(Client client, Registration reg) {
+	public static void indexRegistration(ElasticSearchConfiguration esConfig, Client client, Registration reg) {
 		log.info("Entering indexRegistration: Registration id = " + reg.getId());
+		
 		IndexResponse indexResponse = null;
+		TransportClient newClient = null;
 		try {
-			indexResponse = client.prepareIndex(Registration.COLLECTION_NAME, Registration.COLLECTION_SINGULAR_NAME, reg.getId())
+			//TODO - Should we create new clients???
+			newClient = ElasticSearchUtils.getNewTransportClient(esConfig);
+			indexResponse = newClient.prepareIndex(Registration.COLLECTION_NAME, Registration.COLLECTION_SINGULAR_NAME, reg.getId())
 					.setSource(asJson(reg)).execute().actionGet();
 			log.info("indexResponse: id = " + indexResponse.getId());
 			log.info("indexResponse: version = " + indexResponse.getVersion());
@@ -229,6 +233,8 @@ public class Indexer extends Task
 		} catch (IOException e) {
 			log.severe("Encountered exception while indexing registration: " + e.getMessage());
 			e.printStackTrace();
+		} finally {
+			newClient.close();
 		}
 		log.info("Index request completed: " + indexResponse);
 	}
