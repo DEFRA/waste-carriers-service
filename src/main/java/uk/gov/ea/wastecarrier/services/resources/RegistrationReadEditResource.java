@@ -24,8 +24,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
 import org.elasticsearch.client.Client;
-import org.elasticsearch.client.transport.NoNodeAvailableException;
-
 import net.vz.mongodb.jackson.JacksonDBCollection;
 import net.vz.mongodb.jackson.WriteResult;
 
@@ -46,7 +44,8 @@ public class RegistrationReadEditResource
     private final String defaultName;
     private MessageQueueConfiguration messageQueue;
     private DatabaseHelper databaseHelper;
-    private Client esClient;
+    //Note: not re-using Clients, instantiating fresh clients instead.
+    //private Client esClient;
     private ElasticSearchConfiguration esConfig;
     
     // Standard logging declaration
@@ -72,7 +71,7 @@ public class RegistrationReadEditResource
 
         this.databaseHelper = new DatabaseHelper(database);
         this.esConfig = elasticSearch;
-        this.esClient = esClient;
+        //this.esClient = esClient;
     }
 
     /**
