@@ -50,16 +50,12 @@ public class Indexer extends Task
 {
 	private final DatabaseHelper databaseHelper;
 
-	/**
-	 * @deprecated
-	 * Note: this may be obsolete if we now pass in the ES transport client.
-	 */
 	private final ElasticSearchConfiguration elasticSearch;
 	
 	/**
 	 * The ElasticSearch Client (TransportClient to connect to the cluster; shared, singleton)
 	 */
-	private final Client esClient;
+	//private final Client esClient;
 	
 	private static Logger log = Logger.getLogger(Indexer.class.getName());
 
@@ -68,7 +64,7 @@ public class Indexer extends Task
 		super(name);
 		this.databaseHelper = new DatabaseHelper(database);
 		this.elasticSearch = elasticSearch;
-		this.esClient = esClient;
+		//this.esClient = esClient;
 	}
 
 	/**
@@ -122,10 +118,11 @@ public class Indexer extends Task
 				throw new RuntimeException("Error: Could not authenticate user");
 			}
 
+			TransportClient newClient = ElasticSearchUtils.getNewTransportClient(elasticSearch);
 			// If requested, Delete all Registration indexes
 			if (deleteAll)
 			{
-				DeleteIndexResponse delete = esClient.admin().indices()
+				DeleteIndexResponse delete = newClient.admin().indices()
 						.delete(new DeleteIndexRequest(Registration.COLLECTION_NAME)).actionGet();
 				if (!delete.isAcknowledged())
 				{
@@ -145,13 +142,13 @@ public class Indexer extends Task
 				// Update records only if not doing all records
 				if (!deleteAll)
 				{
-					deleteElasticSearchIndex(esClient, r);
+					deleteElasticSearchIndex(elasticSearch, r);
 					out.append("deleted reg: " + r.getId() + "\n");
 				}
 				// Update records if reIndex is true
 				if (reIndex) 
 				{
-					BulkResponse bulkResponse = createElasticSearchIndex(esClient, r);
+					BulkResponse bulkResponse = createElasticSearchIndex(newClient, r);
 					if (bulkResponse.hasFailures())
 					{
 						// process failures by iterating through each bulk response item
@@ -173,11 +170,17 @@ public class Indexer extends Task
 				//Note: As of version 0.90.5, flushing should be performed separately from refreshing. 
 				//See https://github.com/elasticsearch/elasticsearch/issues/3689
 				log.info("Delete and Re-Index: Flushing the ElasticSearch registrations index.");
-				esClient.admin().indices().flush(new FlushRequest(Registration.COLLECTION_NAME)).actionGet();
+				newClient.admin().indices().flush(new FlushRequest(Registration.COLLECTION_NAME)).actionGet();
 				log.info("Flushed the index. Now refreshing the index.");
-				esClient.admin().indices().refresh(new RefreshRequest(Registration.COLLECTION_NAME)).actionGet();
+				newClient.admin().indices().refresh(new RefreshRequest(Registration.COLLECTION_NAME)).actionGet();
 				log.info("The index has been refreshed.");
 			}
+			
+			log.info("Closing the ElasticSearch Client after use.");
+			newClient.close();
+		} else {
+			//No database connection...
+			log.severe("No MongoDB database connection available - could not index!");
 		}
 		out.append("Done\n");
 	}
@@ -215,42 +218,77 @@ public class Indexer extends Task
 		return bulkResponse;
 	}
 	
-	public static void indexRegistration(ElasticSearchConfiguration esConfig, Client client, Registration reg) {
+	/**
+	 * Index (i.e. insert or update) the registration into ElasticSearch,
+	 * using a fresh new ElasticSearch Client (TransportClient)
+	 * @param esConfig the ElasticSearchConfiguration
+	 * @param reg the Registration
+	 */
+	public static void indexRegistration(ElasticSearchConfiguration esConfig, Registration reg) {
+		TransportClient newClient = null;
+		try {
+			log.info("Creating new ElasticSearch TransportClient for indexing.");
+			newClient = ElasticSearchUtils.getNewTransportClient(esConfig);
+			indexRegistration(esConfig, newClient, reg);
+		} catch (ElasticSearchException e) {
+			log.severe("Encountered ElasticSearch Exception while indexing: " + e.getDetailedMessage());
+		}
+		finally {
+			log.info("Closing the ElasticSearch Client after use.");
+			newClient.close();
+		}
+	}
+
+
+	/**
+	 * Index (i.e. insert) the registration into ElasticSearch, using the given ElasticSearch Client (TransportClient)
+	 * @param esConfig the ElasticSearch Configuration
+	 * @param client the ElasticSearch Client (TransportClient)
+	 * @param reg the Registration
+	 */
+	private static void indexRegistration(ElasticSearchConfiguration esConfig, Client client, Registration reg) {
 		log.info("Entering indexRegistration: Registration id = " + reg.getId());
 		
 		IndexResponse indexResponse = null;
-		TransportClient newClient = null;
 		try {
-			//TODO - Should we create new clients???
-			newClient = ElasticSearchUtils.getNewTransportClient(esConfig);
-			indexResponse = newClient.prepareIndex(Registration.COLLECTION_NAME, Registration.COLLECTION_SINGULAR_NAME, reg.getId())
+			indexResponse = client.prepareIndex(Registration.COLLECTION_NAME, Registration.COLLECTION_SINGULAR_NAME, reg.getId())
 					.setSource(asJson(reg)).execute().actionGet();
 			log.info("indexResponse: id = " + indexResponse.getId());
 			log.info("indexResponse: version = " + indexResponse.getVersion());
 		} catch (ElasticSearchException e) {
-			log.severe("Encountered exception while indexing registration: " + e.getMessage());
+			log.severe("Encountered ElasticSearch exception while indexing registration: " + e.getDetailedMessage());
 			e.printStackTrace();
+			throw e;
 		} catch (IOException e) {
 			log.severe("Encountered exception while indexing registration: " + e.getMessage());
 			e.printStackTrace();
-		} finally {
-			newClient.close();
 		}
 		log.info("Index request completed: " + indexResponse);
 	}
 
+	
 	/**
 	 * Performs a delete index operation on the Elastic Search records for the provided registration
 	 * @param reg
 	 */
-	public static DeleteResponse deleteElasticSearchIndex(Client client, Registration reg)
+	public static DeleteResponse deleteElasticSearchIndex(ElasticSearchConfiguration esConfig, Registration reg)
 	{
-		// Delete Index after creation
-		DeleteResponse deleteResponse = client
-				.prepareDelete(Registration.COLLECTION_NAME, Registration.COLLECTION_SINGULAR_NAME, reg.getId()).setOperationThreaded(false)
-				.execute().actionGet();
-
-		log.info("deleted: " + deleteResponse.getId());
+		TransportClient client = null;
+		DeleteResponse deleteResponse = null;
+		try {
+			client = ElasticSearchUtils.getNewTransportClient(esConfig);
+			// Delete Index after creation
+			deleteResponse = client
+					.prepareDelete(Registration.COLLECTION_NAME, Registration.COLLECTION_SINGULAR_NAME, reg.getId()).setOperationThreaded(false)
+					.execute().actionGet();
+			log.info("deleted: " + deleteResponse.getId());
+		} catch (ElasticSearchException e) {
+			log.severe("Encountered Exception while deleting from ElasticSearch: " + e.getDetailedMessage());
+		} finally {
+			log.info("Closing ElasticSearchClient after use");
+			client.close();
+		}
+		
 		return deleteResponse;
 	}
 }

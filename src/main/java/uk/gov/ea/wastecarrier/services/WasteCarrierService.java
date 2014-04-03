@@ -3,8 +3,6 @@ package uk.gov.ea.wastecarrier.services;
 import java.util.logging.Logger;
 
 import org.elasticsearch.client.Client;
-import org.elasticsearch.discovery.zen.elect.ElectMasterService;
-
 import uk.gov.ea.wastecarrier.services.elasticsearch.ElasticSearchManaged;
 import uk.gov.ea.wastecarrier.services.elasticsearch.ElasticSearchUtils;
 import uk.gov.ea.wastecarrier.services.health.ElasticSearchHealthCheck;
@@ -134,8 +132,14 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration> {
             	/*
 				 * my shutdown code here
 				 */
-            	mongoClient.close();
-            	esClient.close();
+            	if (mongoClient != null)
+            	{ 
+            		mongoClient.close();
+            	}
+            	if (esClient != null)
+            	{
+            		esClient.close();
+            	}
             }
          });
         

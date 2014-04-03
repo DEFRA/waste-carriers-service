@@ -33,13 +33,14 @@ import javax.ws.rs.core.Response.Status;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.elasticsearch.action.bulk.BulkResponse;
+import org.elasticsearch.ElasticSearchException;
 import org.elasticsearch.action.search.MultiSearchResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.NoNodeAvailableException;
+import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.geo.GeoDistance;
 import org.elasticsearch.common.unit.DistanceUnit;
 import org.elasticsearch.index.query.BoolFilterBuilder;
@@ -83,7 +84,11 @@ public class RegistrationsResource
 	private final MessageQueueConfiguration messageQueue;
 	private final DatabaseHelper databaseHelper;
 	private final ElasticSearchConfiguration elasticSearch;
-	private final Client esClient;
+	/* Note: We are not using the shared ES TransportClient for the time being,
+	 * due to stale connections becoming stale and NoNodeAvailableExceptions being thrown as a result.
+	 * Always using fresh new clients instead - although the ElasticSearch documentation suggests otherwise. 
+	 */
+	//private final Client esClient;
 	private final PostcodeRegistry postcodeRegistry;
 
 	// Standard logging declaration
@@ -110,11 +115,13 @@ public class RegistrationsResource
 		this.elasticSearch = elasticSearch;
 		this.postcodeRegistry = new PostcodeRegistry(PostcodeRegistry.POSTCODE_FROM.FILE, postcodeFilePath);
 		
-		this.esClient = esClient;
+		//Note: We are not re-using the joint singleton ES Client due to timeout issues
+		//this.esClient = esClient;
+		esClient = null;
 	}
 	
 	protected void finalize() throws Throwable {
-		esClient.close();
+		//esClient.close();
 	};
 	
 	
@@ -142,6 +149,8 @@ public class RegistrationsResource
 	{
 		log.fine("Get Method Detected at /registrations");
 		ArrayList<Registration> returnlist = new ArrayList<Registration>();
+		
+		//TODO Re-factor, restructure and simplify this method...
 		
 		if (q.isPresent())
 		{
@@ -227,6 +236,7 @@ public class RegistrationsResource
 				 * 
 				 */
 				
+				TransportClient esClient = ElasticSearchUtils.getNewTransportClient(elasticSearch);
 				// First Priority - Exact Match to RegIdentifier
 				QueryBuilder qb0 = QueryBuilders.matchQuery("regIdentifier", qValue);
 				SearchRequestBuilder srb0 = esClient.prepareSearch(Registration.COLLECTION_NAME)
@@ -314,7 +324,10 @@ public class RegistrationsResource
 				}
 				catch (NoNodeAvailableException e)
 				{
-					log.warning("Elastic Search Not available, check the status of the service");
+					log.severe("ElasticSearch not available, please check the status of the service. Exception: " + e.getDetailedMessage());
+					log.severe("Closing ElasticSearch Client");
+					esClient.close();
+					log.severe("Throwing WebApplicationException - Service unavailable");
 					throw new WebApplicationException(Status.SERVICE_UNAVAILABLE);
 				}
 				
@@ -330,7 +343,7 @@ public class RegistrationsResource
 						while(hit_it.hasNext()){
 							SearchHit hit = hit_it.next();
 							ObjectMapper mapper = new ObjectMapper();
-							System.out.println(hit.getSourceAsString());
+							log.info(hit.getSourceAsString());
 							Registration r;
 							try {
 								r = mapper.readValue(hit.getSourceAsString(), Registration.class);
@@ -373,9 +386,12 @@ public class RegistrationsResource
 				}
 				log.info("Found " + totalHits + " matching " + matchType 
 						+ "records in ElasticSearch, but returning up to: "+this.elasticSearch.getSize());
+				log.info("Closing the ElasticSearch Client after use");
+				esClient.close();
+				log.info("Returning the list of found registrations.");
 				return returnlist;
-			}
-		}
+			} // qValue not empty
+		}  // q.isPresent()
 
 		try
 		{
@@ -439,19 +455,21 @@ public class RegistrationsResource
 			}
 			else
 			{
-				log.warning("Database not available, check the database is running");
+				//Database connection is null - not available???
+				log.severe("Database not available, check the database is running");
 				throw new WebApplicationException(Status.SERVICE_UNAVAILABLE);
 			}
 		}
 		catch (MongoException e)
 		{
-			log.warning("Database not found, check the database is running");
+			log.severe("Database not found, check the database is running");
 			throw new WebApplicationException(Status.SERVICE_UNAVAILABLE);
 		}
 
 		if (returnlist.size() == 0)
 		{
-			// TODO: Any Special handling if an empty result is found, currently return an empty list
+			// TODO: Any Special handling if an empty result is found, currently return an empty list\
+			log.info("No results found - returning empty list");
 		}
 		return returnlist;
 	}
@@ -569,7 +587,7 @@ public class RegistrationsResource
 			//	log.info("Created Elastic Search Index for: " + savedObject.getId());
 			//}
 			log.info("About to index the new registration in ElasticSearch. ID = " + savedObject.getId());
-			Indexer.indexRegistration(elasticSearch, esClient, savedObject);
+			Indexer.indexRegistration(elasticSearch, savedObject);
 			log.info("Returned from indexing.");
 			// Return saved object to user (returned as JSON)
 			return savedObject;

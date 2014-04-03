@@ -5,7 +5,6 @@ import uk.gov.ea.wastecarrier.services.ElasticSearchConfiguration;
 import uk.gov.ea.wastecarrier.services.MessageQueueConfiguration;
 import uk.gov.ea.wastecarrier.services.core.MetaData;
 import uk.gov.ea.wastecarrier.services.core.Registration;
-import uk.gov.ea.wastecarrier.services.elasticsearch.ElasticSearchUtils;
 import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
 import uk.gov.ea.wastecarrier.services.tasks.Indexer;
 
@@ -125,7 +124,7 @@ public class RegistrationReadEditResource
 					// Remove Registration from Elastic search
 					Registration tmpReg = new Registration();
 					tmpReg.setId(id);
-					Indexer.deleteElasticSearchIndex(esClient, tmpReg);
+					Indexer.deleteElasticSearchIndex(esConfig, tmpReg);
 					log.info("Deleted:" + id + " from Elastic Search");
 					
 					log.info("Valid ID format, but Cannot find Registration for ID: " + id);
@@ -226,14 +225,8 @@ public class RegistrationReadEditResource
 					else
 					{*/
 						// Perform another create index operation which should override previous index information
-						try {
-							log.info("Indexing the updated registration in ElasticSearch...");
-							Indexer.indexRegistration(esConfig, esClient, savedObject);
-							log.info("Created index in ElasticSearch for registration id = " + id);
-						} catch (NoNodeAvailableException nnae) {
-							//Purposely swallowing this exception. We don't want to user to fall over if ElasticSearch (temporarily?) is not available.
-							log.severe("Could not index the updated registration in ElasticSearch. May need to re-index. Exception: " + nnae.getMessage());
-						}
+						log.info("Indexing the updated registration in ElasticSearch...");
+						Indexer.indexRegistration(esConfig, savedObject);
 //					}
 					
 					return savedObject;
@@ -301,8 +294,7 @@ public class RegistrationReadEditResource
 						log.info("Deleted registration with ID:" + foundReg.getId() + " from MongoDB");
 						
 						// Remove Registration from Elastic search
-						//TODO - Guard against NoNodeAvailableException here as well?
-						Indexer.deleteElasticSearchIndex(esClient, foundReg);
+						Indexer.deleteElasticSearchIndex(esConfig, foundReg);
 						log.info("Deleted registration with ID:" + foundReg.getId() + " from Elastic Search");
 					}
 					else
@@ -318,8 +310,7 @@ public class RegistrationReadEditResource
 				// Also Delete from Elastic Search if not found in database
 				Registration tmpReg = new Registration();
 				tmpReg.setId(id);
-				//TODO: Guard against NoNodeAvailableException here as well?
-				Indexer.deleteElasticSearchIndex(esClient, tmpReg);
+				Indexer.deleteElasticSearchIndex(esConfig, tmpReg);
 				log.info("Deleted:" + id + " from Elastic Search");
 				throw new WebApplicationException(Status.NOT_FOUND);
 			}
