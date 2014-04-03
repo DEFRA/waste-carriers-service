@@ -48,6 +48,7 @@ public class RegistrationReadEditResource
     private MessageQueueConfiguration messageQueue;
     private DatabaseHelper databaseHelper;
     private Client esClient;
+    private ElasticSearchConfiguration esConfig;
     
     // Standard logging declaration
     private Logger log = Logger.getLogger(RegistrationReadEditResource.class.getName());
@@ -71,6 +72,7 @@ public class RegistrationReadEditResource
     	log.fine("> messageQueue: " + this.messageQueue);
 
         this.databaseHelper = new DatabaseHelper(database);
+        this.esConfig = elasticSearch;
         this.esClient = esClient;
     }
 
@@ -226,7 +228,7 @@ public class RegistrationReadEditResource
 						// Perform another create index operation which should override previous index information
 						try {
 							log.info("Indexing the updated registration in ElasticSearch...");
-							Indexer.indexRegistration(esClient, savedObject);
+							Indexer.indexRegistration(esConfig, esClient, savedObject);
 							log.info("Created index in ElasticSearch for registration id = " + id);
 						} catch (NoNodeAvailableException nnae) {
 							//Purposely swallowing this exception. We don't want to user to fall over if ElasticSearch (temporarily?) is not available.

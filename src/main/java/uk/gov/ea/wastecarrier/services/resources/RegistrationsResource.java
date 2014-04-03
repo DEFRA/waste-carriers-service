@@ -235,7 +235,7 @@ public class RegistrationsResource
 						.setQuery(qb0)
 						.setSize(1);
 				if (fbBoolFilter != null) {
-					srb0.setFilter(fbBoolFilter);
+					srb0.setPostFilter(fbBoolFilter);
 				}
 				
 				// Second Priority - Exact match to any other value
@@ -265,7 +265,7 @@ public class RegistrationsResource
 							.addSort("_score", SortOrder.DESC)
 							.addSort("companyName", SortOrder.ASC);
 				}
-				if (fbBoolFilter != null) srb1.setFilter(fbBoolFilter);
+				if (fbBoolFilter != null) srb1.setPostFilter(fbBoolFilter);
 				
 				// Third Priority - Fuzzy match to certain fields
 				//QueryBuilder qb2 = QueryBuilders.fuzzyQuery("companyName", qValue);	// Works as a fuzzy search but only on 1 field
@@ -297,7 +297,7 @@ public class RegistrationsResource
 							.addSort("companyName", SortOrder.ASC);
 				}
 				if (fbBoolFilter != null) {
-					srb2.setFilter(fbBoolFilter);
+					srb2.setPostFilter(fbBoolFilter);
 				}
 
 				MultiSearchResponse sr = null;
@@ -569,7 +569,7 @@ public class RegistrationsResource
 			//	log.info("Created Elastic Search Index for: " + savedObject.getId());
 			//}
 			log.info("About to index the new registration in ElasticSearch. ID = " + savedObject.getId());
-			Indexer.indexRegistration(esClient, savedObject);
+			Indexer.indexRegistration(elasticSearch, esClient, savedObject);
 			log.info("Returned from indexing.");
 			// Return saved object to user (returned as JSON)
 			return savedObject;
