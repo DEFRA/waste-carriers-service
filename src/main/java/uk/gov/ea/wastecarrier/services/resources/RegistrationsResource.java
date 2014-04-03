@@ -235,7 +235,7 @@ public class RegistrationsResource
 						.setQuery(qb0)
 						.setSize(1);
 				if (fbBoolFilter != null) {
-					srb0.setPostFilter(fbBoolFilter);
+					srb0.setFilter(fbBoolFilter);
 				}
 				
 				// Second Priority - Exact match to any other value
@@ -265,7 +265,7 @@ public class RegistrationsResource
 							.addSort("_score", SortOrder.DESC)
 							.addSort("companyName", SortOrder.ASC);
 				}
-				if (fbBoolFilter != null) srb1.setPostFilter(fbBoolFilter);
+				if (fbBoolFilter != null) srb1.setFilter(fbBoolFilter);
 				
 				// Third Priority - Fuzzy match to certain fields
 				//QueryBuilder qb2 = QueryBuilders.fuzzyQuery("companyName", qValue);	// Works as a fuzzy search but only on 1 field
@@ -297,7 +297,7 @@ public class RegistrationsResource
 							.addSort("companyName", SortOrder.ASC);
 				}
 				if (fbBoolFilter != null) {
-					srb2.setPostFilter(fbBoolFilter);
+					srb2.setFilter(fbBoolFilter);
 				}
 
 				MultiSearchResponse sr = null;
