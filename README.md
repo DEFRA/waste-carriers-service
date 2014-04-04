@@ -72,9 +72,14 @@ Start MongoDB with authentication:
 
 TODO
 
-Startup ElasticSearch for local development:
+Startup ElasticSearch (0.90.5) for local development:
 
 	$ bin/elasticsearch -f
+
+Note: more recent versions of ElasticSearch are started without the '-f' parameter.
+
+However, always make sure that when the ElasticSearch server version is upgraded, also upgrade the client libraries 
+as well to use the same version.
 
 ##User Guide
 
