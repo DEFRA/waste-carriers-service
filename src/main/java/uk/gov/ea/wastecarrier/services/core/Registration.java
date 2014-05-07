@@ -30,6 +30,15 @@ public class Registration
 	@ObjectId
     private String id;
 
+	/**
+	 * A unique identifier assigned by the client in order to make creation of registrations
+	 * i.e. inserts (and the corresponding HTTP POST request)
+	 * idempotent, and thus not suffer from accidental message re-sends.
+	 */
+	@JsonProperty
+	@NotEmpty
+	private String uuid;
+	
 	/* 
 	 * These are the Business Details
 	 */
@@ -225,6 +234,14 @@ public class Registration
 	}
 
 	/**
+	 * @return the uuid
+	 */
+	public String getUuid()
+	{
+		return uuid;
+	}
+
+	/**
 	 * @return the businessType
 	 */
 	public String getBusinessType()
@@ -406,6 +423,14 @@ public class Registration
 	public void setId(String id)
 	{
 		this.id = id;
+	}
+
+	/**
+	 * @param id the id to set
+	 */
+	public void setUuid(String uuid)
+	{
+		this.uuid = uuid;
 	}
 
 	/**
