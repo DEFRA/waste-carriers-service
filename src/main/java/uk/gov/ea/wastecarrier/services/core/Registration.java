@@ -34,9 +34,11 @@ public class Registration
 	 * A unique identifier assigned by the client in order to make creation of registrations
 	 * i.e. inserts (and the corresponding HTTP POST request)
 	 * idempotent, and thus not suffer from accidental message re-sends.
+	 * Note: We are not using the @NotEmpty annotation to validate - only validating on insert
+	 * and we want to avoid issues with pre-existing data which did not set this during insert
 	 */
 	@JsonProperty
-	@NotEmpty
+	//@NotEmpty
 	private String uuid;
 	
 	/* 
@@ -721,6 +723,12 @@ public class Registration
 		this.royalMailUpdateDate = royalMailUpdateDate;
 	}
 
+	public boolean isValidUuid()
+	{
+		//TODO May want to use Apache Commons StringUtils or the like
+		return this.uuid != null && !this.uuid.isEmpty();
+	}
+	
 	/**
 	 * Custom comparison method for comparing the contents of the user entered fields 
 	 * to ensure objects are the same.
