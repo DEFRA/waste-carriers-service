@@ -530,7 +530,7 @@ public class RegistrationsResource
 				throw new WebApplicationException(Status.FORBIDDEN);
 			}
 			
-			if (!reg.isValidUuid())
+			if (!reg.validateUuid())
 			{
 				log.warning("New registration to be inserted is missing a uuid - preventing accidental duplicate inserts.");
 				throw new WebApplicationException(Status.PRECONDITION_FAILED);
