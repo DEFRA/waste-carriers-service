@@ -726,7 +726,10 @@ public class Registration
 	public boolean validateUuid()
 	{
 		//TODO May want to use Apache Commons StringUtils or the like
-		return this.uuid != null && !this.uuid.isEmpty();
+		
+		//TODO Temporarily removing check
+		//return this.uuid != null && !this.uuid.isEmpty();
+		return true;
 	}
 	
 	/**
