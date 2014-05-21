@@ -104,7 +104,8 @@ public class Registration
 	/* 
 	 * These are the Contact Details
 	 */
-	@NotEmpty
+	//TODO - Temporarily making the title property optional
+	//@NotEmpty
 	@JsonProperty
 	private String title;
 	@JsonProperty
