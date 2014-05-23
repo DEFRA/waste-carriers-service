@@ -77,7 +77,7 @@ public class AppTest extends TestCase
 	{
 	    final Registration reg = new Registration();
 	    String asJson = asJson(reg);
-	    System.out.println(asJson);
+	    //System.out.println(asJson);
 	    assertEquals("a Registration can be serialized to JSON",
 	               asJson,
 	               jsonFixture("fixtures/emptyRegistration.json") );
@@ -92,7 +92,7 @@ public class AppTest extends TestCase
 	{
 	    final Registration reg = getFullRegistrationDetails(new Registration());
 	    String asJson = asJson(reg);
-	    System.out.println(asJson);
+	    //System.out.println(asJson);
 	    assertEquals("a Registration can be serialized to JSON",
 	               asJson,
 	               jsonFixture("fixtures/fullRegistration.json") );
