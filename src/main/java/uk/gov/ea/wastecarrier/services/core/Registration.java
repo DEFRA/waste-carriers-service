@@ -29,14 +29,26 @@ public class Registration
 	@Id
 	@ObjectId
     private String id;
-
-	/* 
-	 * These are the Business Details
+	
+	/*
+	 * These are the recorded smart answers
 	 */
 	@Valid
 	@NotEmpty
 	@JsonProperty
 	private String businessType;
+	@JsonProperty
+	private String otherBusinesses;
+	@JsonProperty
+	private String isMainService;
+	@JsonProperty
+	private String constructionWaste;
+	@JsonProperty
+	private String onlyAMF;
+
+	/* 
+	 * These are the Business Details
+	 */
 	@JsonProperty
 	private String companyName;
 	@JsonProperty
