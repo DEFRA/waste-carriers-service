@@ -1,6 +1,10 @@
 {
 	"id":null,
 	"businessType":null, 
+	"otherBusinesses":null,
+	"isMainService":null,
+	"constructionWaste":null,
+	"onlyAMF":null,
 	"companyName":null, 
 	"individualsType":null, 
 	"publicBodyType":null, 
