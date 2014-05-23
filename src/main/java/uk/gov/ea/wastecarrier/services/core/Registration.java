@@ -19,6 +19,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Ideally the models details could be split into subclasses for each distinct type of details (page)
  *
  */
+/**
+ * @author alancruikshanks
+ *
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Registration
 {
@@ -244,6 +248,34 @@ public class Registration
 	{
 		return businessType;
 	}
+	
+	/**
+	 * @return the otherBusinesses
+	 */
+	public String getOtherBusinesses() {
+		return otherBusinesses;
+	}
+
+	/**
+	 * @return the isMainService
+	 */
+	public String getIsMainService() {
+		return isMainService;
+	}
+
+	/**
+	 * @return the constructionsWaste
+	 */
+	public String getConstructionWaste() {
+		return constructionWaste;
+	}
+
+	/**
+	 * @return the onlyAMF
+	 */
+	public String getOnlyAMF() {
+		return onlyAMF;
+	}
 
 	/**
 	 * @return the companyName
@@ -427,6 +459,34 @@ public class Registration
 	public void setBusinessType(String businessType)
 	{
 		this.businessType = businessType;
+	}
+	
+	/**
+	 * @param otherBusinesses
+	 */
+	public void setOtherBusinesses(String otherBusinesses) {
+		this.otherBusinesses = otherBusinesses;
+	}
+	
+	/**
+	 * @param isMainService
+	 */
+	public void setIsMainService(String isMainService) {
+		this.isMainService = isMainService;
+	}
+	
+	/**
+	 * @param constructionWaste
+	 */
+	public void setConstructionWaste(String constructionWaste) {
+		this.constructionWaste = constructionWaste;
+	}
+	
+	/**
+	 * @param onlyAMF
+	 */
+	public void setOnlyAMF(String onlyAMF) {
+		this.onlyAMF = onlyAMF;
 	}
 
 	/**
