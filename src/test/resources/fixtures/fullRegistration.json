@@ -1,6 +1,10 @@
 {
 	"id":null,
 	"businessType":"businessTypeVal", 
+  "otherBusinesses":null,
+  "isMainService":null,
+  "constructionWaste":null,
+  "onlyAMF":null,
 	"companyName":"testJSONcompanyName", 
 	"individualsType":"indivTypeVal", 
 	"publicBodyType":null, 
