@@ -19,10 +19,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Ideally the models details could be split into subclasses for each distinct type of details (page)
  *
  */
-/**
- * @author alancruikshanks
- *
- */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Registration
 {
