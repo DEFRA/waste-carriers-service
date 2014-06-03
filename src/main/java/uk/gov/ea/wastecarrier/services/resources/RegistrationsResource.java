@@ -8,6 +8,7 @@ import uk.gov.ea.wastecarrier.services.core.MetaData;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.elasticsearch.ElasticSearchUtils;
 import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
+import uk.gov.ea.wastecarrier.services.mongoDb.ReportingHelper;
 import uk.gov.ea.wastecarrier.services.tasks.Indexer;
 import uk.gov.ea.wastecarrier.services.tasks.PostcodeRegistry;
 
@@ -65,6 +66,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 /**
@@ -100,8 +102,14 @@ public class RegistrationsResource
 	 * @param mQConfig
 	 * @param database
 	 */
-	public RegistrationsResource(String template, String defaultName, MessageQueueConfiguration mQConfig,
-			DatabaseConfiguration database, ElasticSearchConfiguration elasticSearch, Client esClient, String postcodeFilePath)
+	public RegistrationsResource(
+			String template, 
+			String defaultName, 
+			MessageQueueConfiguration mQConfig,
+			DatabaseConfiguration database, 
+			ElasticSearchConfiguration elasticSearch, 
+			Client esClient, 
+			String postcodeFilePath)
 	{
 		this.template = template;
 		this.defaultName = defaultName;
@@ -144,12 +152,39 @@ public class RegistrationsResource
 			@QueryParam("searchWithin") Optional<String> sw, 
 			@QueryParam("ac") Optional<String> account,
 			@QueryParam("activeOnly") Optional<Boolean> activeOnly, 
-			@QueryParam("excludeRegId") Optional<Boolean> excludeRegId)
+			@QueryParam("excludeRegId") Optional<Boolean> excludeRegId,
+			@QueryParam("from") Optional<String> from,
+			@QueryParam("until") Optional<String> until,
+			@QueryParam("route[]") Set<String> route,
+			@QueryParam("status[]") Set<String> status,
+			@QueryParam("businessType[]") Set<String> businessType)
 	{
 		log.fine("Get Method Detected at /registrations");
 		ArrayList<Registration> returnlist = new ArrayList<Registration>();
 		
 		//TODO Re-factor, restructure and simplify this method...
+		
+		// TODO This was quickly added in to support reporting. Also needs to be re-factored out
+		try {
+			if (from.isPresent() && until.isPresent()) {
+				ReportingHelper helper = new ReportingHelper(this.databaseHelper);
+				helper.fromDate = from.get();
+				helper.toDate = until.get();
+				helper.route = route;
+				helper.status = status;
+				helper.businessType = businessType;
+				
+				List<Registration> reportResults = helper.getRegistrations();
+				
+				if (reportResults.size() == 0) {
+					log.info("No results found - returning empty list");
+				}
+				return reportResults;
+			}
+		} catch (MongoException e) {
+			log.severe("Database not found, check the database is running");
+			throw new WebApplicationException(Status.SERVICE_UNAVAILABLE);
+		}
 		
 		if (q.isPresent())
 		{
