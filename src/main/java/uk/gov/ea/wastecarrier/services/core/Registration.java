@@ -35,9 +35,6 @@ public class Registration
     private String id;
 	
 	
-	/**
-	 * This tells us whether the registration is upper or lower tier
-	 */
 	@JsonProperty
 	private String registrationType;
 	
