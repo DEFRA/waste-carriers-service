@@ -175,7 +175,7 @@ public class Registration
 	/*
 	 * The expiry date (only applicable for upper tier registrations)
 	 */
-	@JsonProperty
+	@JsonProperty("expires_on")
 	@Valid
 	private Date expiresOn;
 	

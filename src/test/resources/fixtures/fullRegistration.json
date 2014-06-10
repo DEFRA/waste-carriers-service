@@ -38,5 +38,5 @@
 	"accountEmail":"account@you.com", 
 	"declaration":"on",
 	"accessCode":"ABCDEF",
-	"expiresOn":61472822400000
+	"expires_on":61472822400000
 }
