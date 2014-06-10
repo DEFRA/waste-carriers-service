@@ -1,5 +1,6 @@
 {
 	"id":null,
+	"tier":"UPPER",
 	"businessType":"businessTypeVal", 
   "otherBusinesses":null,
   "isMainService":null,
@@ -36,5 +37,6 @@
 	"contactEmail":"email@you.com", 
 	"accountEmail":"account@you.com", 
 	"declaration":"on",
-	"accessCode":"ABCDEF"
+	"accessCode":"ABCDEF",
+	"expiresOn":61472822400000
 }

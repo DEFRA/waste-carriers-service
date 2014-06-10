@@ -1,10 +1,13 @@
 package uk.gov.ea.wastecarrier.services.test;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import uk.gov.ea.wastecarrier.services.core.Registration;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
 import static com.yammer.dropwizard.testing.JsonHelpers.*;
 
 /**
@@ -36,6 +39,7 @@ public class AppTest extends TestCase
 	 */
 	public void testApp()
 	{
+		//TODO What test?
 		assertTrue(true);
 	}
 	
@@ -44,12 +48,14 @@ public class AppTest extends TestCase
 	 */
 	public void testService()
 	{
+		//TODO What test?
 		assertTrue(true);
 	}
 	
 	private Registration getFullRegistrationDetails(final Registration reg)
 	{
 		// Setup Matching Registration object to match full File defined in JSON
+		reg.setTier(Registration.RegistrationTier.UPPER);
 		reg.setBusinessType("businessTypeVal");
 		reg.setCompanyName("testJSONcompanyName");
 		reg.setIndividualsType("indivTypeVal");
@@ -65,6 +71,7 @@ public class AppTest extends TestCase
 		reg.setAccountEmail("account@you.com");
 		reg.setDeclaration("on");
 		reg.setAccessCode("ABCDEF");
+		reg.setExpiresOn(new Date(2017, 11, 31));
 		return reg;
 	}
 	
@@ -77,7 +84,7 @@ public class AppTest extends TestCase
 	{
 	    final Registration reg = new Registration();
 	    String asJson = asJson(reg);
-	    //System.out.println(asJson);
+	    System.out.println(asJson);
 	    assertEquals("a Registration can be serialized to JSON",
 	               asJson,
 	               jsonFixture("fixtures/emptyRegistration.json") );
@@ -92,7 +99,7 @@ public class AppTest extends TestCase
 	{
 	    final Registration reg = getFullRegistrationDetails(new Registration());
 	    String asJson = asJson(reg);
-	    //System.out.println(asJson);
+	    System.out.println(asJson);
 	    assertEquals("a Registration can be serialized to JSON",
 	               asJson,
 	               jsonFixture("fixtures/fullRegistration.json") );

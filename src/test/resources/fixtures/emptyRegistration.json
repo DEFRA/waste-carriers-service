@@ -1,5 +1,6 @@
 {
 	"id":null,
+	"tier":null,
 	"businessType":null, 
 	"otherBusinesses":null,
 	"isMainService":null,
@@ -36,5 +37,6 @@
 	"contactEmail":null, 
 	"accountEmail":null, 
 	"declaration":null,
-	"accessCode":null
+	"accessCode":null,
+	"expiresOn":null
 }
