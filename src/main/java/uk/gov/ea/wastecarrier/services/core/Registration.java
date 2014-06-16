@@ -1,5 +1,6 @@
 package uk.gov.ea.wastecarrier.services.core;
 
+import java.util.Date;
 import java.util.logging.Logger;
 
 import javax.validation.Valid;
@@ -37,6 +38,21 @@ public class Registration
 	
 	@JsonProperty
 	private String registrationType;
+
+	/**
+	 * The tier - 'UPPER' or 'LOWER'
+	 */
+	
+	public enum RegistrationTier {
+		LOWER, UPPER
+	}
+	
+	/**
+	 * The registration tier
+	 */
+	@Valid
+	@JsonProperty
+	private RegistrationTier tier;
 	
 	/*
 	 * These are the recorded smart answers
@@ -198,6 +214,14 @@ public class Registration
 	 */
 	@JsonProperty
 	private String accessCode;
+	
+	
+	/*
+	 * The expiry date (only applicable for upper tier registrations)
+	 */
+	@JsonProperty("expires_on")
+	@Valid
+	private Date expiresOn;
 	
 	/* Static not applicable value */
 	//private final static String NA = "n/a";
@@ -574,6 +598,20 @@ public class Registration
 	}
 
 	/**
+	 * @return the tier
+	 */
+	public RegistrationTier getTier() {
+		return tier;
+	}
+
+	/**
+	 * @param tier the tier to set
+	 */
+	public void setTier(RegistrationTier tier) {
+		this.tier = tier;
+	}
+
+	/**
 	 * @param businessType the businessType to set
 	 */
 	public void setBusinessType(String businessType)
@@ -871,6 +909,20 @@ public class Registration
 
 	public void setAccessCode(String accessCode) {
 		this.accessCode = accessCode;
+	}
+
+	/**
+	 * @return the expiresOn
+	 */
+	public Date getExpiresOn() {
+		return expiresOn;
+	}
+
+	/**
+	 * @param expiresOn the expiresOn to set
+	 */
+	public void setExpiresOn(Date expiresOn) {
+		this.expiresOn = expiresOn;
 	}
 
 	/**
