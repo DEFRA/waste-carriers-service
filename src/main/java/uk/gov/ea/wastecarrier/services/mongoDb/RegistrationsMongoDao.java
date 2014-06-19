@@ -5,6 +5,7 @@ package uk.gov.ea.wastecarrier.services.mongoDb;
 
 import java.util.logging.Logger;
 
+import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
@@ -66,6 +67,24 @@ public class RegistrationsMongoDao {
 		long count = getRegistrationsCollection().getCount(query);
 		log.info("The number of pending registrations is: " + count);
 		return count;
+	}
+	
+	/**
+	 * Ensure that the indexes have been defined.
+	 * 
+	 * To prevent duplicate inserts we use a unique (but sparse) index on the uuid property.
+	 * The index is sparse to support pre-existing data whose uuid has not been set upon insert.
+	 * <code>
+	 *   db.registrations.ensureIndex({uuid:1},{unique:true, sparse:true});
+	 * </code>
+	 */
+	public void ensureIndexes() {
+		log.info("Ensuring registration indexes...");
+		DBObject keys = new BasicDBObject("uuid", 1);
+		DBObject options = new BasicDBObject("unique", true).append("sparse", true);
+
+		getRegistrationsCollection().ensureIndex(keys, options);
+		log.info("Ensured registration indexes.");
 	}
 	
 	private DB getDatabase() {

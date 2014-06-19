@@ -76,8 +76,11 @@ public class AppTest extends TestCase
 	public void testSerializesToEmptyJSON() throws Exception 
 	{
 	    final Registration reg = new Registration();
+	    String asJson = asJson(reg);
+	    //System.out.println("Actual  :" + asJson);
+	    //System.out.println("Expected:" + jsonFixture("fixtures/emptyRegistration.json"));
 	    assertEquals("a Registration can be serialized to JSON",
-	               asJson(reg),
+	               asJson,
 	               jsonFixture("fixtures/emptyRegistration.json") );
 	}
 	
