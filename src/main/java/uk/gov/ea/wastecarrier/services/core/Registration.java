@@ -28,24 +28,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Registration
 {
 	/**
+	 * The tier - 'UPPER' or 'LOWER'
+	 */
+	public enum RegistrationTier {
+		LOWER, UPPER
+	}
+	
+	/**
 	 * This is the Key for the Registration details
 	 */
 	@JsonProperty 
 	@Id
 	@ObjectId
     private String id;
-	
-	
-	@JsonProperty
-	private String registrationType;
-
-	/**
-	 * The tier - 'UPPER' or 'LOWER'
-	 */
-	
-	public enum RegistrationTier {
-		LOWER, UPPER
-	}
 	
 	/**
 	 * The registration tier
@@ -54,6 +49,9 @@ public class Registration
 	@JsonProperty
 	private RegistrationTier tier;
 	
+	@JsonProperty
+	private String registrationType;
+
 	/*
 	 * These are the recorded smart answers
 	 */
@@ -81,10 +79,8 @@ public class Registration
 	private String publicBodyType;
 	@JsonProperty
 	private String publicBodyTypeOther;
-	@JsonProperty
+	@JsonProperty("company_no")
 	private String companyNo;
-	@JsonProperty
-	private String companyHouseNo;
 
 	/* 
 	 * These are the Trading Address Details
@@ -163,37 +159,17 @@ public class Registration
 	private String phoneNumber;
 	@JsonProperty
 	private String contactEmail;
-	@JsonProperty
-	private String altFirstName;
-	@JsonProperty
-	private String altLastName;
-	@JsonProperty
-	private String altJobTitle;
-	@JsonProperty
-	private String altTelephoneNumber;
-	@JsonProperty
-	private String altEmailAddress;
-	@JsonProperty
-	private String primaryFirstName;
-	@JsonProperty
-	private String primaryLastName;
-	@JsonProperty
-	private String primaryJobTitle;
-	@JsonProperty
-	private String primaryTelephoneNumber;
-	@JsonProperty
-	private String primaryEmailAddress;
 	
 	/*
 	 * Payment values
 	 */
-	@JsonProperty
+	@JsonProperty("total_fee")
 	private String totalFee;
-	@JsonProperty
+	@JsonProperty("registration_fee")
 	private String registrationFee;
-	@JsonProperty
+	@JsonProperty("copy_card_fee")
 	private String copyCardFee;
-	@JsonProperty
+	@JsonProperty("copy_cards")
 	private String copyCards;
 	
 	@JsonProperty
@@ -381,10 +357,6 @@ public class Registration
 		return this.companyNo;
 	}
 
-	public String getCompanyHouseNo() {
-		return this.companyHouseNo;
-	}
-
 	/**
 	 * @return the houseNumber
 	 */
@@ -487,46 +459,6 @@ public class Registration
 	public String getContactEmail()
 	{
 		return contactEmail;
-	}
-	
-	public String getAltFirstName() {
-		return this.altFirstName;
-	}
-
-	public String getAltLastName() {
-		return this.altLastName;
-	}
-
-	public String getAltJobTitle() {
-		return this.altJobTitle;
-	}
-
-	public String getAltTelephoneNumber() {
-		return this.altTelephoneNumber;
-	}
-
-	public String getAltEmailAddress() {
-		return this.altEmailAddress;
-	}
-
-	public String getPrimaryFirstName() {
-		return this.primaryFirstName;
-	}
-
-	public String getPrimaryLastName() {
-		return this.primaryLastName;
-	}
-
-	public String getPrimaryJobTitle() {
-		return this.primaryJobTitle;
-	}
-
-	public String getPrimaryTelephoneNumber() {
-		return this.primaryTelephoneNumber;
-	}
-	
-	public String getPrimaryEmailAddress() {
-		return this.primaryEmailAddress;
 	}
 
 	public String getTotalFee() {
@@ -683,10 +615,6 @@ public class Registration
 		this.companyNo = companyNo;
 	}
 
-	public void setCompanyHouseNo(String companyHouseNo) {
-		this.companyHouseNo = companyHouseNo;
-	}
-
 	public String getAddressMode() {
 		return addressMode;
 	}
@@ -813,46 +741,6 @@ public class Registration
 	public void setContactEmail(String contactEmail)
 	{
 		this.contactEmail = contactEmail;
-	}
-	
-	public void setAltFirstName(String altFirstName) {
-		this.altFirstName = altFirstName;
-	}
-
-	public void setAltLastName(String altLastName) {
-		this.altLastName = altLastName;
-	}
-	
-	public void setAltJobTitle(String altJobTitle) {
-		this.altJobTitle = altJobTitle;
-	}
-	
-	public void setAltTelephoneNumber(String altTelephoneNumber) {
-		this.altTelephoneNumber = altTelephoneNumber;
-	}
-	
-	public void setAltEmailAddress(String altEmailAddress) {
-		this.altEmailAddress = altEmailAddress;
-	}
-	
-	public void setPrimaryFirstName(String primaryFirstName) {
-		this.primaryFirstName = primaryFirstName;
-	}
-	
-	public void setPrimaryLastName(String primaryLastName) {
-		this.primaryLastName = primaryLastName;
-	}
-	
-	public void setPrimaryJobTitle(String primaryJobTitle) {
-		this.primaryJobTitle = primaryJobTitle;
-	}
-	
-	public void setPrimaryTelephoneNumber(String primaryTelephoneNumber) {
-		this.primaryTelephoneNumber = primaryTelephoneNumber;
-	}
-	
-	public void setPrimaryEmailAddress(String primaryEmailAddress) {
-		this.primaryEmailAddress = primaryEmailAddress;
 	}
 	
 	public void setTotalFee(String totalFee) {
@@ -1006,57 +894,55 @@ public class Registration
 	@Override
     public boolean equals(Object obj) {
 		log.finer("Start equals()");
-        if (this == obj) 
+        
+		if (this == obj) 
         {
             return true;
         }
+        
         if(obj == null || getClass() != obj.getClass()) 
         {
             return false;
         }
+        
         boolean res = true; // default to true, and if any field is not null, reset to false
-        res = checkString(this.getBusinessType(), ((Registration) obj).getBusinessType(), res);
-        res = checkString(this.getOtherBusinesses(), ((Registration) obj).getOtherBusinesses(), res);
-        res = checkString(this.getIsMainService(), ((Registration) obj).getIsMainService(), res);
-        res = checkString(this.getConstructionWaste(), ((Registration) obj).getConstructionWaste(), res);
-        res = checkString(this.getOnlyAMF(), ((Registration) obj).getOnlyAMF(), res);
-        res = checkString(this.getCompanyName(), ((Registration) obj).getCompanyName(), res);
-        res = checkString(this.getIndividualsType(), ((Registration) obj).getIndividualsType(), res);
-        res = checkString(this.getPublicBodyType(), ((Registration) obj).getPublicBodyType(), res);
-        res = checkString(this.getPublicBodyTypeOther(), ((Registration) obj).getPublicBodyTypeOther(), res);
-        res = checkString(this.getHouseNumber(), ((Registration) obj).getHouseNumber(), res);
-        res = checkString(this.getStreetLine1(), ((Registration) obj).getStreetLine1(), res);
-        res = checkString(this.getStreetLine2(), ((Registration) obj).getStreetLine2(), res);
-        res = checkString(this.getStreetLine3(), ((Registration) obj).getStreetLine3(), res);
-        res = checkString(this.getStreetLine4(), ((Registration) obj).getStreetLine4(), res);
-        res = checkString(this.getTownCity(), ((Registration) obj).getTownCity(), res);
-        res = checkString(this.getPostcode(), ((Registration) obj).getPostcode(), res);
-        res = checkString(this.getCountry(), ((Registration) obj).getCountry(), res);
-        res = checkString(this.getAddress(), ((Registration) obj).getAddress(), res);
-        res = checkString(this.getUprn(), ((Registration) obj).getUprn(), res);
-        res = checkString(this.getTitle(), ((Registration) obj).getTitle(), res);
-        res = checkString(this.getOtherTitle(), ((Registration) obj).getOtherTitle(), res);
-        res = checkString(this.getFirstName(), ((Registration) obj).getFirstName(), res);
-        res = checkString(this.getLastName(), ((Registration) obj).getLastName(), res);
-        res = checkString(this.getPosition(), ((Registration) obj).getPosition(), res);
-        res = checkString(this.getPhoneNumber(), ((Registration) obj).getPhoneNumber(), res);
-        res = checkString(this.getContactEmail(), ((Registration) obj).getContactEmail(), res);
-        res = checkString(this.getAltFirstName(), ((Registration) obj).getAltFirstName(), res);
-        res = checkString(this.getAltLastName(), ((Registration) obj).getAltLastName(), res);
-        res = checkString(this.getAltJobTitle(), ((Registration) obj).getAltJobTitle(), res);
-        res = checkString(this.getAltTelephoneNumber(), ((Registration) obj).getAltTelephoneNumber(), res);
-        res = checkString(this.getAltEmailAddress(), ((Registration) obj).getAltEmailAddress(), res);
-        res = checkString(this.getPrimaryFirstName(), ((Registration) obj).getPrimaryFirstName(), res);
-        res = checkString(this.getPrimaryLastName(), ((Registration) obj).getPrimaryLastName(), res);
-        res = checkString(this.getPrimaryJobTitle(), ((Registration) obj).getPrimaryJobTitle(), res);
-        res = checkString(this.getPrimaryTelephoneNumber(), ((Registration) obj).getPrimaryTelephoneNumber(), res);
-        res = checkString(this.getPrimaryEmailAddress(), ((Registration) obj).getPrimaryEmailAddress(), res);
-        res = checkString(this.getTotalFee(), ((Registration) obj).getTotalFee(), res);
-        res = checkString(this.getRegistrationFee(), ((Registration) obj).getRegistrationFee(), res);
-        res = checkString(this.getCopyCardFee(), ((Registration) obj).getCopyCardFee(), res);
-        res = checkString(this.getCopyCards(), ((Registration) obj).getCopyCards(), res);
-        res = checkString(this.getAccountEmail(), ((Registration) obj).getAccountEmail(), res);
-        res = checkString(this.getDeclaration(), ((Registration) obj).getDeclaration(), res);
+        Registration otherReg = ((Registration) obj);
+
+        res = this.getTier() == otherReg.getTier() ? true : false;
+        res = checkString(this.getRegistrationType(), otherReg.getRegistrationType(), res);
+        res = checkString(this.getBusinessType(), otherReg.getBusinessType(), res);
+        res = checkString(this.getOtherBusinesses(), otherReg.getOtherBusinesses(), res);
+        res = checkString(this.getIsMainService(), otherReg.getIsMainService(), res);
+        res = checkString(this.getConstructionWaste(), otherReg.getConstructionWaste(), res);
+        res = checkString(this.getOnlyAMF(), otherReg.getOnlyAMF(), res);
+        res = checkString(this.getCompanyName(), otherReg.getCompanyName(), res);
+        res = checkString(this.getIndividualsType(), otherReg.getIndividualsType(), res);
+        res = checkString(this.getPublicBodyType(), otherReg.getPublicBodyType(), res);
+        res = checkString(this.getPublicBodyTypeOther(), otherReg.getPublicBodyTypeOther(), res);
+        res = checkString(this.getCompanyNo(), otherReg.getCompanyNo(), res);
+        res = checkString(this.getHouseNumber(), otherReg.getHouseNumber(), res);
+        res = checkString(this.getStreetLine1(), otherReg.getStreetLine1(), res);
+        res = checkString(this.getStreetLine2(), otherReg.getStreetLine2(), res);
+        res = checkString(this.getStreetLine3(), otherReg.getStreetLine3(), res);
+        res = checkString(this.getStreetLine4(), otherReg.getStreetLine4(), res);
+        res = checkString(this.getTownCity(), otherReg.getTownCity(), res);
+        res = checkString(this.getPostcode(), otherReg.getPostcode(), res);
+        res = checkString(this.getCountry(), otherReg.getCountry(), res);
+        res = checkString(this.getAddress(), otherReg.getAddress(), res);
+        res = checkString(this.getUprn(), otherReg.getUprn(), res);
+        res = checkString(this.getTitle(), otherReg.getTitle(), res);
+        res = checkString(this.getOtherTitle(), otherReg.getOtherTitle(), res);
+        res = checkString(this.getFirstName(), otherReg.getFirstName(), res);
+        res = checkString(this.getLastName(), otherReg.getLastName(), res);
+        res = checkString(this.getPosition(), otherReg.getPosition(), res);
+        res = checkString(this.getPhoneNumber(), otherReg.getPhoneNumber(), res);
+        res = checkString(this.getContactEmail(), otherReg.getContactEmail(), res);
+        res = checkString(this.getTotalFee(), otherReg.getTotalFee(), res);
+        res = checkString(this.getRegistrationFee(), otherReg.getRegistrationFee(), res);
+        res = checkString(this.getCopyCardFee(), otherReg.getCopyCardFee(), res);
+        res = checkString(this.getCopyCards(), otherReg.getCopyCards(), res);
+        res = checkString(this.getAccountEmail(), otherReg.getAccountEmail(), res);
+        res = checkString(this.getDeclaration(), otherReg.getDeclaration(), res);
         log.finer("equals result: " + res);
         return res;
     }

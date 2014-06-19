@@ -56,21 +56,27 @@ public class AppTest extends TestCase
 	{
 		// Setup Matching Registration object to match full File defined in JSON
 		reg.setTier(Registration.RegistrationTier.UPPER);
-		reg.setBusinessType("businessTypeVal");
-		reg.setCompanyName("testJSONcompanyName");
-		reg.setIndividualsType("indivTypeVal");
+		reg.setRegistrationType("carrier_dealer");
+		reg.setBusinessType("soleTrader");
+		reg.setOtherBusinesses("no");
+		reg.setConstructionWaste("yes");
+		reg.setCompanyName("Acme Waste");
 		reg.setHouseNumber("1");
-		reg.setPostcode("BS3 3GE");
-		reg.setTitle("Other");
-		reg.setOtherTitle("Lord");
-		reg.setFirstName("firstname");
-		reg.setLastName("lastname");
-		reg.setPosition("CEO");
-		reg.setPhoneNumber("34534654");
-		reg.setContactEmail("email@you.com");
-		reg.setAccountEmail("account@you.com");
-		reg.setDeclaration("on");
+		reg.setStreetLine1("Deanery Road");
+		reg.setStreetLine2("Bristol");
+		reg.setPostcode("BS1 5AH");
+		reg.setFirstName("Jane");
+		reg.setLastName("Smith");
+		reg.setPosition("Owner");
+		reg.setPhoneNumber("01179345400");
+		reg.setContactEmail("info@example.com");
 		reg.setAccessCode("ABCDEF");
+		reg.setTotalFee("164");
+		reg.setRegistrationFee("154");
+		reg.setCopyCardFee("5");
+		reg.setCopyCards("2");
+		reg.setAccountEmail("jane@example.com");
+		reg.setDeclaration("on");
 		reg.setExpiresOn(new Date(2017, 11, 31));
 		return reg;
 	}
@@ -85,6 +91,7 @@ public class AppTest extends TestCase
 	    final Registration reg = new Registration();
 	    String asJson = asJson(reg);
 	    System.out.println(asJson);
+	    System.out.println(jsonFixture("fixtures/fullRegistration.json"));
 	    assertEquals("a Registration can be serialized to JSON",
 	               asJson,
 	               jsonFixture("fixtures/emptyRegistration.json") );
@@ -100,6 +107,7 @@ public class AppTest extends TestCase
 	    final Registration reg = getFullRegistrationDetails(new Registration());
 	    String asJson = asJson(reg);
 	    System.out.println(asJson);
+	    System.out.println(jsonFixture("fixtures/fullRegistration.json"));
 	    assertEquals("a Registration can be serialized to JSON",
 	               asJson,
 	               jsonFixture("fixtures/fullRegistration.json") );
