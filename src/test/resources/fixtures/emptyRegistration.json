@@ -1,6 +1,7 @@
 {
 	"id":null,
 	"tier":null,
+	"registrationType":null,
 	"businessType":null, 
 	"otherBusinesses":null,
 	"isMainService":null,
@@ -34,9 +35,14 @@
 	"lastName":null, 
 	"position":null, 
 	"phoneNumber":null, 
-	"contactEmail":null, 
+	"contactEmail":null,
 	"accountEmail":null, 
 	"declaration":null,
 	"accessCode":null,
+	"company_no":null,
+	"total_fee":null,
+    "registration_fee":null,
+    "copy_card_fee":null,
+    "copy_cards":null,
 	"expires_on":null
 }

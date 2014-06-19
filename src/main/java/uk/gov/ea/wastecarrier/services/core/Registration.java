@@ -20,10 +20,21 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Ideally the models details could be split into subclasses for each distinct type of details (page)
  *
  */
+/**
+ * @author alancruikshanks
+ *
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Registration
 {
-	/*
+	/**
+	 * The tier - 'UPPER' or 'LOWER'
+	 */
+	public enum RegistrationTier {
+		LOWER, UPPER
+	}
+	
+	/**
 	 * This is the Key for the Registration details
 	 */
 	@JsonProperty 
@@ -32,20 +43,15 @@ public class Registration
     private String id;
 	
 	/**
-	 * The tier - 'UPPER' or 'LOWER'
-	 */
-	
-	public enum RegistrationTier {
-		LOWER, UPPER
-	}
-	
-	/**
 	 * The registration tier
 	 */
 	@Valid
 	@JsonProperty
 	private RegistrationTier tier;
 	
+	@JsonProperty
+	private String registrationType;
+
 	/*
 	 * These are the recorded smart answers
 	 */
@@ -73,6 +79,8 @@ public class Registration
 	private String publicBodyType;
 	@JsonProperty
 	private String publicBodyTypeOther;
+	@JsonProperty("company_no")
+	private String companyNo;
 
 	/* 
 	 * These are the Trading Address Details
@@ -122,7 +130,7 @@ public class Registration
 	 */
 	@JsonProperty
 	private String address;
-	
+
 	/**
 	 * TODO: Determine if still need UPRN? added from rails?
 	 */
@@ -146,12 +154,24 @@ public class Registration
 	private String lastName;
 	@JsonProperty
 	private String position;
-
 	@NotEmpty
 	@JsonProperty
 	private String phoneNumber;
 	@JsonProperty
 	private String contactEmail;
+	
+	/*
+	 * Payment values
+	 */
+	@JsonProperty("total_fee")
+	private String totalFee;
+	@JsonProperty("registration_fee")
+	private String registrationFee;
+	@JsonProperty("copy_card_fee")
+	private String copyCardFee;
+	@JsonProperty("copy_cards")
+	private String copyCards;
+	
 	@JsonProperty
 	private String accountEmail;
 	
@@ -260,6 +280,10 @@ public class Registration
 	{
 		return id;
 	}
+	
+	public String getRegistrationType() {
+		return this.registrationType;
+	}
 
 	/**
 	 * @return the businessType
@@ -328,6 +352,10 @@ public class Registration
 	{
 		return publicBodyTypeOther;
 	}
+	
+	public String getCompanyNo() {
+		return this.companyNo;
+	}
 
 	/**
 	 * @return the houseNumber
@@ -392,6 +420,10 @@ public class Registration
 	{
 		return title;
 	}
+	
+	public String getOtherTitle() {
+		return otherTitle;
+	}
 
 	/**
 	 * @return the firstName
@@ -408,6 +440,10 @@ public class Registration
 	{
 		return lastName;
 	}
+	
+	public String getPosition() {
+		return position;
+	}
 
 	/**
 	 * @return the phoneNumber
@@ -423,6 +459,22 @@ public class Registration
 	public String getContactEmail()
 	{
 		return contactEmail;
+	}
+
+	public String getTotalFee() {
+		return this.totalFee;
+	}
+
+	public String getRegistrationFee() {
+		return this.registrationFee;
+	}
+
+	public String getCopyCardFee() {
+		return this.copyCardFee;
+	}
+
+	public String getCopyCards() {
+		return this.copyCards;
 	}
 	
 	/**
@@ -471,6 +523,10 @@ public class Registration
 	public void setId(String id)
 	{
 		this.id = id;
+	}
+	
+	public void setRegistrationType(String registrationType) {
+		this.registrationType = registrationType;
 	}
 
 	/**
@@ -553,6 +609,10 @@ public class Registration
 	public void setPublicBodyTypeOther(String publicBodyTypeOther)
 	{
 		this.publicBodyTypeOther = publicBodyTypeOther;
+	}
+	
+	public void setCompanyNo(String companyNo) {
+		this.companyNo = companyNo;
 	}
 
 	public String getAddressMode() {
@@ -682,6 +742,22 @@ public class Registration
 	{
 		this.contactEmail = contactEmail;
 	}
+	
+	public void setTotalFee(String totalFee) {
+		this.totalFee = totalFee;
+	}
+	
+	public void setRegistrationFee(String registrationFee) {
+		this.registrationFee = registrationFee;
+	}
+	
+	public void setCopyCardFee(String copyCardFee) {
+		this.copyCardFee = copyCardFee;
+	}
+	
+	public void setCopyCards(String copyCards) {
+		this.copyCards = copyCards;
+	}
 
 	/**
 	 * @param accountEmail the accountEmail to set
@@ -699,16 +775,8 @@ public class Registration
 		this.declaration = declaration;
 	}
 
-	public String getOtherTitle() {
-		return otherTitle;
-	}
-
 	public void setOtherTitle(String otherTitle) {
 		this.otherTitle = otherTitle;
-	}
-
-	public String getPosition() {
-		return position;
 	}
 
 	public void setPosition(String position) {
@@ -826,33 +894,55 @@ public class Registration
 	@Override
     public boolean equals(Object obj) {
 		log.finer("Start equals()");
-        if (this == obj) 
+        
+		if (this == obj) 
         {
             return true;
         }
+        
         if(obj == null || getClass() != obj.getClass()) 
         {
             return false;
         }
+        
         boolean res = true; // default to true, and if any field is not null, reset to false
-        res = checkString(this.getBusinessType(), ((Registration) obj).getBusinessType(), res);
-        res = checkString(this.getCompanyName(), ((Registration) obj).getCompanyName(), res);
-        res = checkString(this.getIndividualsType(), ((Registration) obj).getIndividualsType(), res);
-        res = checkString(this.getPublicBodyType(), ((Registration) obj).getPublicBodyType(), res);
-        res = checkString(this.getPublicBodyTypeOther(), ((Registration) obj).getPublicBodyTypeOther(), res);
-        res = checkString(this.getHouseNumber(), ((Registration) obj).getHouseNumber(), res);
-        res = checkString(this.getStreetLine1(), ((Registration) obj).getStreetLine1(), res);
-        res = checkString(this.getStreetLine2(), ((Registration) obj).getStreetLine2(), res);
-        res = checkString(this.getTownCity(), ((Registration) obj).getTownCity(), res);
-        res = checkString(this.getPostcode(), ((Registration) obj).getPostcode(), res);
-        res = checkString(this.getAddress(), ((Registration) obj).getAddress(), res);
-        res = checkString(this.getUprn(), ((Registration) obj).getUprn(), res);
-        res = checkString(this.getTitle(), ((Registration) obj).getTitle(), res);
-        res = checkString(this.getFirstName(), ((Registration) obj).getFirstName(), res);
-        res = checkString(this.getLastName(), ((Registration) obj).getLastName(), res);
-        res = checkString(this.getPhoneNumber(), ((Registration) obj).getPhoneNumber(), res);
-        res = checkString(this.getContactEmail(), ((Registration) obj).getContactEmail(), res);
-        res = checkString(this.getDeclaration(), ((Registration) obj).getDeclaration(), res);
+        Registration otherReg = ((Registration) obj);
+
+        res = this.getTier() == otherReg.getTier() ? true : false;
+        res = checkString(this.getRegistrationType(), otherReg.getRegistrationType(), res);
+        res = checkString(this.getBusinessType(), otherReg.getBusinessType(), res);
+        res = checkString(this.getOtherBusinesses(), otherReg.getOtherBusinesses(), res);
+        res = checkString(this.getIsMainService(), otherReg.getIsMainService(), res);
+        res = checkString(this.getConstructionWaste(), otherReg.getConstructionWaste(), res);
+        res = checkString(this.getOnlyAMF(), otherReg.getOnlyAMF(), res);
+        res = checkString(this.getCompanyName(), otherReg.getCompanyName(), res);
+        res = checkString(this.getIndividualsType(), otherReg.getIndividualsType(), res);
+        res = checkString(this.getPublicBodyType(), otherReg.getPublicBodyType(), res);
+        res = checkString(this.getPublicBodyTypeOther(), otherReg.getPublicBodyTypeOther(), res);
+        res = checkString(this.getCompanyNo(), otherReg.getCompanyNo(), res);
+        res = checkString(this.getHouseNumber(), otherReg.getHouseNumber(), res);
+        res = checkString(this.getStreetLine1(), otherReg.getStreetLine1(), res);
+        res = checkString(this.getStreetLine2(), otherReg.getStreetLine2(), res);
+        res = checkString(this.getStreetLine3(), otherReg.getStreetLine3(), res);
+        res = checkString(this.getStreetLine4(), otherReg.getStreetLine4(), res);
+        res = checkString(this.getTownCity(), otherReg.getTownCity(), res);
+        res = checkString(this.getPostcode(), otherReg.getPostcode(), res);
+        res = checkString(this.getCountry(), otherReg.getCountry(), res);
+        res = checkString(this.getAddress(), otherReg.getAddress(), res);
+        res = checkString(this.getUprn(), otherReg.getUprn(), res);
+        res = checkString(this.getTitle(), otherReg.getTitle(), res);
+        res = checkString(this.getOtherTitle(), otherReg.getOtherTitle(), res);
+        res = checkString(this.getFirstName(), otherReg.getFirstName(), res);
+        res = checkString(this.getLastName(), otherReg.getLastName(), res);
+        res = checkString(this.getPosition(), otherReg.getPosition(), res);
+        res = checkString(this.getPhoneNumber(), otherReg.getPhoneNumber(), res);
+        res = checkString(this.getContactEmail(), otherReg.getContactEmail(), res);
+        res = checkString(this.getTotalFee(), otherReg.getTotalFee(), res);
+        res = checkString(this.getRegistrationFee(), otherReg.getRegistrationFee(), res);
+        res = checkString(this.getCopyCardFee(), otherReg.getCopyCardFee(), res);
+        res = checkString(this.getCopyCards(), otherReg.getCopyCards(), res);
+        res = checkString(this.getAccountEmail(), otherReg.getAccountEmail(), res);
+        res = checkString(this.getDeclaration(), otherReg.getDeclaration(), res);
         log.finer("equals result: " + res);
         return res;
     }
