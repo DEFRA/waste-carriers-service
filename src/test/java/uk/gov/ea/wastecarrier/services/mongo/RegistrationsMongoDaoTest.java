@@ -24,7 +24,7 @@ public class RegistrationsMongoDaoTest extends TestCase {
 		super.setUp();
 		
 		//TODO Get config from config files
-		DatabaseConfiguration dbConfig = new DatabaseConfiguration("127.0.0.1", 27017, "waste-carriers", "mongoUser", "password123");
+		DatabaseConfiguration dbConfig = new DatabaseConfiguration("127.0.0.1", 27017, "waste-carriers", "mongoUser", "yourpasswordhere");
 		DatabaseHelper databaseHelper = new DatabaseHelper(dbConfig);
 		dao = new RegistrationsMongoDao(databaseHelper);
 	}
