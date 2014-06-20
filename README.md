@@ -38,11 +38,17 @@ Clone the repository, copying the project into a working directory:
 The service uses a Dropwizard configuration file (configuration.yml) which in turn refers to environment variables. 
 You may want or need to set the following environment variables, e.g. in your ~/.bash_profile (if you are a Mac or Linux user):
 
+export WCRS_SERVICES_DB_HOST="localhost"
+export WCRS_SERVICES_DB_PORT=27017
+export WCRS_SERVICES_DB_NAME="waste-carriers"
+export WCRS_SERVICES_DB_USER="mongoUser"
+export WCRS_SERVICES_DB_PASSWD="<your-mongo-password>"
+
 Alternatively, you can create another local configuration file with your values in it, and refer to this file when starting up the service.
 
 ##Build and Deploy
 
-Using Maven...
+Using Maven:
 
 	$ mvn clean package
 
@@ -90,7 +96,7 @@ as well to use the same version.
 
 ##Run Tests
 
-See JUnit tests in src/test/java (more to follow).
+See JUnit tests in src/test/java (more to follow in phase 2).
 
 ##Postcode data
 
