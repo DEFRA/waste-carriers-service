@@ -23,8 +23,13 @@ public class RegistrationsMongoDaoTest extends TestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		
-		//TODO Get config from config files
-		DatabaseConfiguration dbConfig = new DatabaseConfiguration("127.0.0.1", 27017, "waste-carriers", "mongoUser", "yourpasswordhere");
+		//TODO Get config from DW config files
+		String dbHost = System.getenv("WCRS_SERVICES_DB_HOST");
+		int dbPort = Integer.valueOf(System.getenv("WCRS_SERVICES_DB_PORT"));
+		String dbName = System.getenv("WCRS_SERVICES_DB_NAME");
+		String dbUser = System.getenv("WCRS_SERVICES_DB_USER");
+		String dbPassword = System.getenv("WCRS_SERVICES_DB_PASSWD");
+		DatabaseConfiguration dbConfig = new DatabaseConfiguration(dbHost, dbPort, dbName, dbUser, dbPassword);
 		DatabaseHelper databaseHelper = new DatabaseHelper(dbConfig);
 		dao = new RegistrationsMongoDao(databaseHelper);
 	}
