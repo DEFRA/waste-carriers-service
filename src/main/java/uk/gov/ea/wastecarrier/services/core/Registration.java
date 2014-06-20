@@ -107,7 +107,7 @@ public class Registration
 	private String address;
 	
 	/**
-	 * TODO: Determine if still need UPRN? added from rails?
+	 * The UPRN (Unique Property Reference Number), as returned from the address lookup service
 	 */
 	@JsonProperty
 	private String uprn;

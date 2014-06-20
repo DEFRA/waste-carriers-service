@@ -10,8 +10,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 public class WasteCarrierConfiguration extends Configuration {
 	
 	/**
-	 * This is an example parameter, which is not used, but has been left as an example
-	 * for when genuine parameters are required
+	 * @deprecated - obsolete parameter, not used anymore
 	 */
     @NotEmpty
     @JsonProperty

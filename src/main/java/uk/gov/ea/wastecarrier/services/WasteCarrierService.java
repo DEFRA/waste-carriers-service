@@ -141,7 +141,7 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration> {
         }
         
         /*
-         * Don't know if this is needed, but seemed reasonable
+         * Last-ditch cleanup
          */
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() { 

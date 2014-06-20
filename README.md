@@ -29,20 +29,16 @@ Clone the repository, copying the project into a working directory:
 * MongoDB (version 2.4.6 or above) - to store registrations and user accounts
 * ElasticSearch (version 0.90.5 or above) - for full-text search
 
-##Dependencies
+##Dependents
 
 * The waste-exemplar-frontend application, which is implemented in Ruby on Rails, is the client of the services exposed by this application. 
 
 ##Configuration
 
+The service uses a Dropwizard configuration file (configuration.yml) which in turn refers to environment variables. 
 You may want or need to set the following environment variables, e.g. in your ~/.bash_profile (if you are a Mac or Linux user):
 
-TODO - list environment variables used by services
-
-	export WCRS_FRONTEND_WCRS_SERVICES_URL="http://localhost:9090"
-	export WCRS_FRONTEND_PUBLIC_APP_DOMAIN="www.local.wastecarriersregistration.service.gov.uk"
-	export WCRS_FRONTEND_ADMIN_APP_DOMAIN="admin.local.wastecarriersregistration.service.gov.uk"
-
+Alternatively, you can create another local configuration file with your values in it, and refer to this file when starting up the service.
 
 ##Build and Deploy
 
@@ -52,17 +48,26 @@ Using Maven...
 
 
 ##Startup
+
+Start the service by providing the name of the jar file, the command 'server', and the name of the configuration file. 
+You can also override parameters such as https port numbers using the Java '-D' option. Example:
+
+    $ java -Ddw.http.port=9090 -Ddw.http.adminPort=9091 -jar target/waste-exemplar-services-1.1.2.jar server configuration_gmueller.yml
+
+For more details on how to start a Dropwizard service and configuration and startup options, please see the Dropwizard documentation.
+
 Once the application server is started you should be able to access the services application in your browser on
 
 	http://localhost:9090/registrations.json
 
-TODO - Healthchecks
 
 ##Setting up prerequisites
 
 ###Setting up the MongoDB database
 
-TODO - Set up MongoDB database users and database(s) for local development
+The service uses a MongoDB database to be set up with authentication. Please see See http://docs.mongodb.org/manual/tutorial/enable-authentication/ for details.
+
+To set up a Mongo administrator, follow http://docs.mongodb.org/manual/tutorial/add-user-administrator/.
 
 Start MongoDB with authentication:
 
@@ -70,7 +75,7 @@ Start MongoDB with authentication:
 
 ###Setting up ElasticSearch
 
-TODO
+The service uses an ElasticSearch database for complex and flexible search operations.
 
 Startup ElasticSearch (0.90.5) for local development:
 
@@ -81,13 +86,23 @@ Note: more recent versions of ElasticSearch are started without the '-f' paramet
 However, always make sure that when the ElasticSearch server version is upgraded, also upgrade the client libraries 
 as well to use the same version.
 
-##User Guide
 
-TODO - document the API using Swagger or similar
 
 ##Run Tests
 
-TODO
+See JUnit tests in src/test/java (more to follow).
+
+##Postcode data
+
+The service uses postcode data with associated latitude and longitude coordinates, uploaded from a postcodes CSV file available here:
+http://www.freemaptools.com/download/outcode-postcodes/postcodes.csv
+
+Contains Ordnance Survey data © Crown copyright and database right 2013
+
+Contains Royal Mail data © Royal Mail copyright and database right 2013
+
+Contains National Statistics data © Crown copyright and database right 2013
+
 
 ##Related Resources
 
@@ -102,4 +117,4 @@ Apache Maven: http://maven.apache.org/
 
 ##License
 
-TBD - MIT License
+MIT License

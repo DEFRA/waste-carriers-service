@@ -33,11 +33,6 @@ public class DatabaseHelper
 		// Save configuration
 		this.dbConfig = database;
 		
-		/*
-		 * TODO: Determine if we should attempt a DB connection when Java starts or not?
-		 */
-		// Get initial database connection
-		//getConnection();
 	}
 	
 	/**
