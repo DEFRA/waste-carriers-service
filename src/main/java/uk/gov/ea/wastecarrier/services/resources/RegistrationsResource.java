@@ -669,7 +669,7 @@ public class RegistrationsResource
 		{
 			int sequentialNumber = (Integer) dbObj.get("seq");
 			// Set the formatted identifier in the registration document
-			reg.setRegIdentifier(getFormattedRegIdentifier(sequentialNumber, true, false));	
+			reg.setRegIdentifier(getFormattedRegIdentifier(sequentialNumber, reg.getTier(), false));
 		}
 		else
 		{
@@ -683,11 +683,11 @@ public class RegistrationsResource
 	 * Returns a formated unique string representing the registration identifier.
 	 * NOTE: THis is NOT the ID for the registration
 	 * @param sequentialNumber sequential integer of the registration counter
-	 * @param lowerTier boolean provide true if lower tier, false for upper tier format
+	 * @param tier RegistrationTier enum for tier
 	 * @param padToLength boolean provide true to pad numeric format to max of Registration.REGID_LENGTH, or false to not pad value.
 	 * @return String of the formatted registration, prefixed with Registration.REGID_PREFIX
 	 */
-	private String getFormattedRegIdentifier(int sequentialNumber, boolean lowerTier, boolean padToLength)
+	private String getFormattedRegIdentifier(int sequentialNumber, Registration.RegistrationTier tier, boolean padToLength)
 	{
 		String numberAsString = Integer.toString(sequentialNumber);
 		if (padToLength) 
@@ -697,16 +697,19 @@ public class RegistrationsResource
 				numberAsString = "0" + numberAsString;
 			}
 		}
-		String prefix = Registration.REGID_PREFIX;
-		if (lowerTier) 
-		{
-			prefix = prefix + Registration.REGID_PREFIX_LOWER;
-		}
-		else
-		{
-			prefix = prefix + Registration.REGID_PREFIX_UPPER;
-		}
-		return prefix + numberAsString;
+
+        String tierRepresentation = "";
+
+        switch(tier) {
+            case LOWER:
+                tierRepresentation = Registration.REGID_PREFIX_LOWER;
+                break;
+            case UPPER:
+                tierRepresentation = Registration.REGID_PREFIX_UPPER;
+                break;
+        }
+
+        return Registration.REGID_PREFIX + tierRepresentation + numberAsString;
 	}
 
 }
