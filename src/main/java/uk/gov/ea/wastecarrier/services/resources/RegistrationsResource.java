@@ -698,18 +698,7 @@ public class RegistrationsResource
 			}
 		}
 
-        String tierRepresentation = "";
-
-        switch(tier) {
-            case LOWER:
-                tierRepresentation = Registration.REGID_PREFIX_LOWER;
-                break;
-            case UPPER:
-                tierRepresentation = Registration.REGID_PREFIX_UPPER;
-                break;
-        }
-
-        return Registration.REGID_PREFIX + tierRepresentation + numberAsString;
+        return Registration.REGID_PREFIX + tier.getPrefix() + numberAsString;
 	}
 
 }

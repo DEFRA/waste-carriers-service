@@ -31,7 +31,18 @@ public class Registration
 	 * The tier - 'UPPER' or 'LOWER'
 	 */
 	public enum RegistrationTier {
-		LOWER, UPPER
+		LOWER(Registration.REGID_PREFIX_LOWER),
+        UPPER(Registration.REGID_PREFIX_UPPER);
+
+        private String prefix;
+
+        RegistrationTier(String prefix) {
+            this.prefix = prefix;
+        }
+
+        public String getPrefix() {
+            return prefix;
+        }
 	}
 	
 	/**
