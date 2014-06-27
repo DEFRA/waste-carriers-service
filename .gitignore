@@ -13,6 +13,18 @@ target
 .settings
 .project
 
+# Intellij project files #
+.idea/
+*.iml
+*.iws
+
+# Mac
+.DS_Store
+
+# Maven
+log/
+target/
+
 # Ignore dependency reduced POM #
 dependency-reduced-pom.xml
 
