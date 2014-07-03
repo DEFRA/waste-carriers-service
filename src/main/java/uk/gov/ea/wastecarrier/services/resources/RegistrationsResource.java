@@ -669,7 +669,7 @@ public class RegistrationsResource
 		{
 			int sequentialNumber = (Integer) dbObj.get("seq");
 			// Set the formatted identifier in the registration document
-			reg.setRegIdentifier(getFormattedRegIdentifier(sequentialNumber, reg.getTier(), false));
+			reg.setRegIdentifier(getFormattedRegIdentifier(sequentialNumber, reg.getTier()));
 		}
 		else
 		{
@@ -684,21 +684,11 @@ public class RegistrationsResource
 	 * NOTE: THis is NOT the ID for the registration
 	 * @param sequentialNumber sequential integer of the registration counter
 	 * @param tier RegistrationTier enum for tier
-	 * @param padToLength boolean provide true to pad numeric format to max of Registration.REGID_LENGTH, or false to not pad value.
 	 * @return String of the formatted registration, prefixed with Registration.REGID_PREFIX
 	 */
-	private String getFormattedRegIdentifier(int sequentialNumber, Registration.RegistrationTier tier, boolean padToLength)
+	private String getFormattedRegIdentifier(int sequentialNumber, Registration.RegistrationTier tier)
 	{
-		String numberAsString = Integer.toString(sequentialNumber);
-		if (padToLength) 
-		{
-			while (numberAsString.length() < Registration.REGID_LENGTH)
-			{
-				numberAsString = "0" + numberAsString;
-			}
-		}
-
-        return Registration.REGID_PREFIX + tier.getPrefix() + numberAsString;
+        return Registration.REGID_PREFIX + tier.getPrefix() + Integer.toString(sequentialNumber);
 	}
 
 }
