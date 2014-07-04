@@ -10,6 +10,10 @@ import uk.gov.ea.wastecarrier.services.health.MongoHealthCheck;
 import uk.gov.ea.wastecarrier.services.health.TemplateHealthCheck;
 import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.MongoManaged;
+import uk.gov.ea.wastecarrier.services.resources.NewOrderResource;
+import uk.gov.ea.wastecarrier.services.resources.NewPaymentResource;
+import uk.gov.ea.wastecarrier.services.resources.OrderResource;
+import uk.gov.ea.wastecarrier.services.resources.PaymentResource;
 import uk.gov.ea.wastecarrier.services.resources.RegistrationReadEditResource;
 import uk.gov.ea.wastecarrier.services.resources.RegistrationVersionResource;
 import uk.gov.ea.wastecarrier.services.resources.RegistrationsResource;
@@ -68,6 +72,13 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration> {
         environment.addResource(new RegistrationReadEditResource(template, defaultName, mQConfig, dbConfig, esConfig, esClient));
         // Add Version Resource
         environment.addResource(new RegistrationVersionResource());
+        
+        // Add Payment Resource, testing new URL for get payment details
+        environment.addResource(new NewPaymentResource());
+        environment.addResource(new PaymentResource(dbConfig));
+        // Add Order Resource
+        environment.addResource(new NewOrderResource());
+        environment.addResource(new OrderResource(dbConfig));
         
         /**
          * Note: using environment.addProvider(new RegistrationCreateResource(template, defaultName, mQConfig));

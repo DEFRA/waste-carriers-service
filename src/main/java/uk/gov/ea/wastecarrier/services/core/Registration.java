@@ -229,6 +229,9 @@ public class Registration
 	@JsonInclude(Include.NON_DEFAULT)	/*TEST: This should not be generated in the JSON */
 	private Location location;
 	
+	@JsonInclude(Include.NON_DEFAULT)
+	private FinanceDetails financeDetails;
+	
 	// Standard logging declaration
 	private Logger log = Logger.getLogger(Registration.class.getName());
 	
@@ -989,4 +992,20 @@ public class Registration
 		return validSoFar;
 	}
 
+	/**
+	 * @return the financeDetails
+	 */
+	public FinanceDetails getFinanceDetails()
+	{
+		return financeDetails;
+	}
+
+	/**
+	 * @param financeDetails the financeDetails to set
+	 */
+	public void setFinanceDetails(FinanceDetails financeDetails)
+	{
+		this.financeDetails = financeDetails;
+	}
+	
 }
