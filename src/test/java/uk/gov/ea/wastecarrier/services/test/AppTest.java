@@ -2,8 +2,12 @@ package uk.gov.ea.wastecarrier.services.test;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import org.joda.time.DateTime;
+import uk.gov.ea.wastecarrier.services.core.Director;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -78,6 +82,11 @@ public class AppTest extends TestCase
 		reg.setAccountEmail("jane@example.com");
 		reg.setDeclaration("on");
 		reg.setExpiresOn(new Date(2017, 11, 31));
+
+        List<Director> directors = new ArrayList<Director>();
+        directors.add(new Director("John", "Smith", new DateTime(1970, 1, 1, 0, 0).toDate()));
+        reg.setDirectors(directors);
+
 		return reg;
 	}
 	

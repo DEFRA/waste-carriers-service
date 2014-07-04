@@ -1,6 +1,7 @@
 package uk.gov.ea.wastecarrier.services.core;
 
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Logger;
 
 import javax.validation.Valid;
@@ -170,6 +171,9 @@ public class Registration
 	private String phoneNumber;
 	@JsonProperty
 	private String contactEmail;
+
+    @JsonProperty("Directors")
+    private List<Director> directors;
 	
 	/*
 	 * Payment values
@@ -895,6 +899,14 @@ public class Registration
 	public void setRoyalMailUpdateDate(String royalMailUpdateDate) {
 		this.royalMailUpdateDate = royalMailUpdateDate;
 	}
+
+    public List<Director> getDirectors() {
+        return directors;
+    }
+
+    public void setDirectors(List<Director> directors) {
+        this.directors = directors;
+    }
 
 	/**
 	 * Custom comparison method for comparing the contents of the user entered fields 
