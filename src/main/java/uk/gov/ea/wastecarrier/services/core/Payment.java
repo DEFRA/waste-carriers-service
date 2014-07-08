@@ -9,18 +9,23 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class Payment
 {
+	@JsonProperty
 	private String orderKey;
 	@JsonProperty
 	private int amount;
 	@JsonProperty
 	private String currency;
+	@JsonProperty
 	private String mac_code;
 	@JsonProperty
 	private String dateReceived; /*Date provided on payment details*/
+	@JsonProperty
 	private String dateEntered;  /*Date entered into the system*/
 	@JsonProperty
 	private String registrationReference;
+	@JsonProperty
 	private String worldPayPaymentStatus;
+	@JsonProperty
 	private String updatedByUser;
 	@JsonProperty
 	private String comment;
