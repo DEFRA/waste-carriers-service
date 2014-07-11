@@ -25,17 +25,17 @@ import java.util.logging.Logger;
 @Path("/"+Registration.COLLECTION_NAME+"/{id}/"+Order.COLLECTION_NAME+".json")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class OrderResource
+public class OrdersResource
 {	
 	private OrdersMongoDao dao;
 	
-	private Logger log = Logger.getLogger(OrderResource.class.getName());
+	private Logger log = Logger.getLogger(OrdersResource.class.getName());
 	
 	/**
 	 * 
 	 * @param database
 	 */
-	public OrderResource(DatabaseConfiguration database)
+	public OrdersResource(DatabaseConfiguration database)
 	{
 		dao = new OrdersMongoDao(database);
 	}

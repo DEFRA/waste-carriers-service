@@ -3,9 +3,12 @@ package uk.gov.ea.wastecarrier.services.resources;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.ElasticSearchConfiguration;
 import uk.gov.ea.wastecarrier.services.MessageQueueConfiguration;
+import uk.gov.ea.wastecarrier.services.core.FinanceDetails;
 import uk.gov.ea.wastecarrier.services.core.Location;
 import uk.gov.ea.wastecarrier.services.core.MetaData;
+import uk.gov.ea.wastecarrier.services.core.Order;
 import uk.gov.ea.wastecarrier.services.core.Registration;
+import uk.gov.ea.wastecarrier.services.core.Registration.RegistrationTier;
 import uk.gov.ea.wastecarrier.services.elasticsearch.ElasticSearchUtils;
 import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.ReportingHelper;
@@ -586,6 +589,20 @@ public class RegistrationsResource
 				MetaData tmpMD = reg.getMetaData();
 				tmpMD.setAnotherString("Non-UK Address Assumed");
 				reg.setMetaData(tmpMD);
+			}
+			
+			// If upper tier, create an initial Order to represent fees/charges the user has to pay
+			if (RegistrationTier.UPPER.equals(reg.getTier()))
+			{
+				FinanceDetails financeDetails = new FinanceDetails();
+				reg.setFinanceDetails(financeDetails);
+				Order order = new Order();
+				//TODO Get total amount from registration
+				order.setTotalAmount(15400);
+				//TODO Add the new Order here vs. later?
+				List<Order> orders = new ArrayList<Order>();
+				orders.add(order);
+				reg.getFinanceDetails().setOrders(orders);
 			}
 			
 			// Update Registration to include sequential identifier

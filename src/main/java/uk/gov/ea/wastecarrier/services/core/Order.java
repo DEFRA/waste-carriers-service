@@ -4,6 +4,17 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * Represents something to be paid for together either via online payment or offline payment.
+ * For example, a new upper tier registration or a renewal 
+ * with or without copy cards requested represents one such order. 
+ * A later request for more copy cards leads to another order.
+ * <p>
+ * Each registration maintains a list of orders that have been made for the registration,
+ * e.g. the initial registration, separately requested copy cards, registration changes 
+ * (if these changes are chargeable), or renewals.
+ *
+ */
 public class Order
 {
 	@JsonProperty
@@ -12,19 +23,27 @@ public class Order
 	@JsonProperty
 	private String orderCode;
 	
+	@JsonProperty
 	private String merchantId;
+	
 	@JsonProperty
 	private int totalAmount;
+	
 	@JsonProperty
 	private String currency;
 	
+	@JsonProperty
 	private String dateCreated;
+	
 	@JsonProperty
 	private String worldPayStatus;
 	
+	@JsonProperty
 	private String dateLastUpdated;
 	
+	@JsonProperty
 	private String updatedByUser;
+	
 	@JsonProperty
 	private String description;
 	

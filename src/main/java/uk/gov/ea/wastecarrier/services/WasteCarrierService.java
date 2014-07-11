@@ -12,7 +12,7 @@ import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.MongoManaged;
 import uk.gov.ea.wastecarrier.services.resources.NewOrderResource;
 import uk.gov.ea.wastecarrier.services.resources.NewPaymentResource;
-import uk.gov.ea.wastecarrier.services.resources.OrderResource;
+import uk.gov.ea.wastecarrier.services.resources.OrdersResource;
 import uk.gov.ea.wastecarrier.services.resources.PaymentResource;
 import uk.gov.ea.wastecarrier.services.resources.RegistrationReadEditResource;
 import uk.gov.ea.wastecarrier.services.resources.RegistrationVersionResource;
@@ -78,7 +78,7 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration> {
         environment.addResource(new PaymentResource(dbConfig));
         // Add Order Resource
         environment.addResource(new NewOrderResource());
-        environment.addResource(new OrderResource(dbConfig));
+        environment.addResource(new OrdersResource(dbConfig));
         
         /**
          * Note: using environment.addProvider(new RegistrationCreateResource(template, defaultName, mQConfig));
