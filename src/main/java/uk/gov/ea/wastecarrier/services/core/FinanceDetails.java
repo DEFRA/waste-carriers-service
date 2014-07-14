@@ -107,6 +107,10 @@ public class FinanceDetails
 		{
 			return null;
 		}
+		if (getPayments() == null)
+		{
+			return null;
+		}
 		for (Payment payment: getPayments())
 		{
 			if (orderCode.equals(payment.getOrderKey()))
