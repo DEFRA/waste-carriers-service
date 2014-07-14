@@ -75,8 +75,8 @@ public class RegistrationsMongoDaoTest extends TestCase {
 	 */
 	//TODO Re-enable tests
 	public void doNotTestGetNumberOfRegistrationsPending() {
-		long total = dao.getNumberOfRegistrationsPending();
-		System.out.println("total = " + total);
+		//long total = dao.getNumberOfRegistrationsPending();
+		//System.out.println("total = " + total);
 	}
 	
 	//TODO Re-enable tests
