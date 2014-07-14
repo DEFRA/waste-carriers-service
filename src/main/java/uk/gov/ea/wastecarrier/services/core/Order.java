@@ -1,6 +1,12 @@
 package uk.gov.ea.wastecarrier.services.core;
 
+import java.util.Date;
 import java.util.List;
+
+import javax.annotation.Nonnull;
+
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.hibernate.validator.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -15,13 +21,25 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * (if these changes are chargeable), or renewals.
  *
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Order
 {
-	@JsonProperty
-	private List<OrderItem> orderItems;
+	public enum PaymentMethod {
+		ONLINE,
+		OFFLINE,
+		UNKNOWN
+	}
 	
 	@JsonProperty
+	private List<OrderItem> orderItems;
+
+	@NotBlank
+	@JsonProperty
 	private String orderCode;
+	
+	@Nonnull
+	@JsonProperty
+	private PaymentMethod paymentMethod;
 	
 	@JsonProperty
 	private String merchantId;
@@ -33,13 +51,13 @@ public class Order
 	private String currency;
 	
 	@JsonProperty
-	private String dateCreated;
+	private Date dateCreated;
 	
 	@JsonProperty
 	private String worldPayStatus;
 	
 	@JsonProperty
-	private String dateLastUpdated;
+	private Date dateLastUpdated;
 	
 	@JsonProperty
 	private String updatedByUser;
@@ -48,7 +66,7 @@ public class Order
 	private String description;
 	
 	public final static String COLLECTION_SINGULAR_NAME = "order";
-	public final static String COLLECTION_NAME = COLLECTION_SINGULAR_NAME +"s";
+	public final static String COLLECTION_NAME = "orders";
 	
 	public Order()
 	{
@@ -86,6 +104,20 @@ public class Order
 	public void setOrderCode(String orderCode)
 	{
 		this.orderCode = orderCode;
+	}
+
+	/**
+	 * @return the paymentMethod
+	 */
+	public PaymentMethod getPaymentMethod() {
+		return paymentMethod;
+	}
+
+	/**
+	 * @param paymentMethod the paymentMethod to set
+	 */
+	public void setPaymentMethod(PaymentMethod paymentMethod) {
+		this.paymentMethod = paymentMethod;
 	}
 
 	/**
@@ -139,7 +171,7 @@ public class Order
 	/**
 	 * @return the dateCreated
 	 */
-	public String getDateCreated()
+	public Date getDateCreated()
 	{
 		return dateCreated;
 	}
@@ -147,7 +179,7 @@ public class Order
 	/**
 	 * @param dateCreated the dateCreated to set
 	 */
-	public void setDateCreated(String dateCreated)
+	public void setDateCreated(Date dateCreated)
 	{
 		this.dateCreated = dateCreated;
 	}
@@ -171,7 +203,7 @@ public class Order
 	/**
 	 * @return the dateLastUpdated
 	 */
-	public String getDateLastUpdated()
+	public Date getDateLastUpdated()
 	{
 		return dateLastUpdated;
 	}
@@ -179,7 +211,7 @@ public class Order
 	/**
 	 * @param dateLastUpdated the dateLastUpdated to set
 	 */
-	public void setDateLastUpdated(String dateLastUpdated)
+	public void setDateLastUpdated(Date dateLastUpdated)
 	{
 		this.dateLastUpdated = dateLastUpdated;
 	}

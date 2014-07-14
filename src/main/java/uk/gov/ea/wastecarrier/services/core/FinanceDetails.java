@@ -1,5 +1,6 @@
 package uk.gov.ea.wastecarrier.services.core;
 
+import java.util.Iterator;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -96,4 +97,23 @@ public class FinanceDetails
 		this.balance = balance;
 	}
 	
+	/**
+	 * @param orderCode
+	 * @return the Payment with the given orderCode, or null if it does not exist
+	 */
+	public Payment getPaymentForOrderCode(String orderCode)
+	{
+		if (orderCode == null)
+		{
+			return null;
+		}
+		for (Payment payment: getPayments())
+		{
+			if (orderCode.equals(payment.getOrderKey()))
+			{
+				return payment;
+			}
+		}
+		return null;
+	}
 }
