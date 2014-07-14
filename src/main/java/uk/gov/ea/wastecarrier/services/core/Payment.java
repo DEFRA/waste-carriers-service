@@ -71,6 +71,8 @@ public class Payment
 	
 	public enum PaymentType {
 		WORLDPAY, 
+		WRITEOFFSMALL, 
+		WRITEOFFLARGE, 
 		CASH,
 		CHEQUE,
 		POSTALORDER,
