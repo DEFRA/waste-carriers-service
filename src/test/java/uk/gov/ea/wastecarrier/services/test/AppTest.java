@@ -100,7 +100,7 @@ public class AppTest extends TestCase
 	    final Registration reg = new Registration();
 	    String asJson = asJson(reg);
 	    System.out.println(asJson);
-	    System.out.println(jsonFixture("fixtures/fullRegistration.json"));
+	    System.out.println(jsonFixture("fixtures/emptyRegistration.json"));
 	    assertEquals("a Registration can be serialized to JSON",
 	               asJson,
 	               jsonFixture("fixtures/emptyRegistration.json") );
@@ -143,6 +143,9 @@ public class AppTest extends TestCase
 	public void testDeserializesFromFullJSON() throws Exception 
 	{
 		final Registration reg = getFullRegistrationDetails(new Registration());
+        String asJson = asJson(reg);
+        System.out.println(asJson);
+        System.out.println(jsonFixture("fixtures/fullRegistration.json"));
 	    assertEquals("a Registration can be deserialized from JSON",
 	               fromJson(jsonFixture("fixtures/fullRegistration.json"), Registration.class),
 	               reg);
@@ -157,6 +160,11 @@ public class AppTest extends TestCase
 	{
 		Registration reg = getFullRegistrationDetails(new Registration());
 		reg.setBusinessType("changedBusinessName");
+        String asJson = asJson(reg);
+        System.out.println(asJson);
+        System.out.println(jsonFixture("fixtures/fullRegistration.json"));
+        Registration test = fromJson(jsonFixture("fixtures/fullRegistration.json"), Registration.class);
+        System.out.println(test.equals(reg));
 		assertFalse("a Registration can be deserialized from JSON", 
 				fromJson(jsonFixture("fixtures/fullRegistration.json"), Registration.class).equals(reg));
 	}

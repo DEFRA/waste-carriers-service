@@ -172,7 +172,7 @@ public class Registration
 	@JsonProperty
 	private String contactEmail;
 
-    @JsonProperty("Directors")
+    @JsonProperty("directors")
     private List<Director> directors;
 	
 	/*
@@ -969,6 +969,9 @@ public class Registration
         res = checkString(this.getCopyCards(), otherReg.getCopyCards(), res);
         res = checkString(this.getAccountEmail(), otherReg.getAccountEmail(), res);
         res = checkString(this.getDeclaration(), otherReg.getDeclaration(), res);
+        if (res && this.getExpiresOn() != null) {
+            res = this.getExpiresOn().compareTo(otherReg.getExpiresOn()) == 0 ? true : false;
+        }
         log.finer("equals result: " + res);
         return res;
     }
