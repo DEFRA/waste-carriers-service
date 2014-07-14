@@ -172,7 +172,7 @@ public class Registration
 	@JsonProperty
 	private String contactEmail;
 
-    @JsonProperty("Directors")
+    @JsonProperty("directors")
     private List<Director> directors;
 	
 	/*
