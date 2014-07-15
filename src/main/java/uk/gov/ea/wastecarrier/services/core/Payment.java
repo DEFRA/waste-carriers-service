@@ -73,6 +73,7 @@ public class Payment
 		WORLDPAY, 
 		WRITEOFFSMALL, 
 		WRITEOFFLARGE, 
+		REFUND,
 		CASH,
 		CHEQUE,
 		POSTALORDER,
