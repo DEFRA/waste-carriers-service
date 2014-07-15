@@ -52,7 +52,7 @@ public class PaymentResource
 	 * @throws WebApplicationException INTERNAL_SERVER_ERROR - If an error has occurred
 	 */
 	@POST
-	public Payment submitPayment(@PathParam("id") String registrationId, @Valid Payment payment)
+	public Payment submitPayment(@PathParam("id") String registrationId, Payment payment)
 	{
 		log.info("POST METHOD detected in submitPayment() method for payment creation");
 		

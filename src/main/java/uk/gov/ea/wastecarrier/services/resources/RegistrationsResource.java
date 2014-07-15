@@ -618,8 +618,12 @@ public class RegistrationsResource
 				FinanceDetails financeDetails = new FinanceDetails();
 				reg.setFinanceDetails(financeDetails);
 				Order order = new Order();
-				//TODO Get total amount from registration
+				//TODO Get total amount etc. from registration
 				order.setTotalAmount(15400);
+				order.setCurrency("GBP");
+				order.setDescription("Initial Registration");
+				order.setOrderCode(String.valueOf(System.currentTimeMillis()));
+				order.setPaymentMethod(Order.PaymentMethod.UNKNOWN);
 				//TODO Add the new Order here vs. later?
 				List<Order> orders = new ArrayList<Order>();
 				orders.add(order);
