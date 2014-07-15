@@ -36,11 +36,11 @@ public class MetaData {
 	 * ACTIVATE: 
 	 * ACTIVE: Registration has been Verified and should appear on the register
 	 * REVOKED: Registration has been removed from the register by the EA
-	 * DELETED: Registration has been deleted from the register by the registrant
+	 * INACTIVE: Registration has been deleted from the register by the registrant
 	 *
 	 */
 	public enum RegistrationStatus {
-	    PENDING, ACTIVATE, ACTIVE, REVOKED, DELETED
+	    PENDING, ACTIVATE, ACTIVE, REVOKED, INACTIVE
 	}
 	
 	public enum RouteType {

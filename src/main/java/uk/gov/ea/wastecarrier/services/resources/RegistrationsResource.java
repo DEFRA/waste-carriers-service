@@ -10,7 +10,9 @@ import uk.gov.ea.wastecarrier.services.core.Order;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.core.Registration.RegistrationTier;
 import uk.gov.ea.wastecarrier.services.elasticsearch.ElasticSearchUtils;
+import uk.gov.ea.wastecarrier.services.mongoDb.AccountHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
+import uk.gov.ea.wastecarrier.services.mongoDb.QueryHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.ReportingHelper;
 import uk.gov.ea.wastecarrier.services.tasks.Indexer;
 import uk.gov.ea.wastecarrier.services.tasks.PostcodeRegistry;
@@ -188,6 +190,25 @@ public class RegistrationsResource
 			log.severe("Database not found, check the database is running");
 			throw new WebApplicationException(Status.SERVICE_UNAVAILABLE);
 		}
+
+        // TODO This was quickly added in to support soft deleting registrations. Also needs to be re-factored out
+        try {
+            if (account.isPresent()) {
+                AccountHelper helper = new AccountHelper(new QueryHelper(this.databaseHelper));
+                helper.accountEmail = account.get();
+                helper.status = status;
+
+                List<Registration> results = helper.getRegistrations();
+
+                if (results.size() == 0) {
+                    log.info("No results found - returning empty list");
+                }
+                return results;
+            }
+        } catch (MongoException e) {
+            log.severe("Database not found, check the database is running");
+            throw new WebApplicationException(Status.SERVICE_UNAVAILABLE);
+        }
 		
 		if (q.isPresent())
 		{
