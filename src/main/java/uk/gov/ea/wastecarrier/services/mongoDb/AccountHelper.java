@@ -57,6 +57,7 @@ public class AccountHelper {
 
         Map<String, Object> queryProps = new HashMap<String, Object>();
         Collection<String> accountEmailProp = new ArrayList<String>();
+        accountEmailProp.add(accountEmail);
 
         queryHelper.addOptionalQueryProperty("accountEmail", accountEmailProp, queryProps);
         queryHelper.addOptionalQueryProperty("metaData.status", this.status, queryProps);
