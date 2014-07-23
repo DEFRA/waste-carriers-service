@@ -17,6 +17,7 @@ import uk.gov.ea.wastecarrier.services.resources.PaymentResource;
 import uk.gov.ea.wastecarrier.services.resources.RegistrationReadEditResource;
 import uk.gov.ea.wastecarrier.services.resources.RegistrationVersionResource;
 import uk.gov.ea.wastecarrier.services.resources.RegistrationsResource;
+import uk.gov.ea.wastecarrier.services.resources.SettingsResource;
 import uk.gov.ea.wastecarrier.services.tasks.Indexer;
 import uk.gov.ea.wastecarrier.services.tasks.LocationPopulator;
 
@@ -79,6 +80,9 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration> {
         // Add Order Resource
         environment.addResource(new OrderResource(dbConfig));
         environment.addResource(new OrdersResource(dbConfig));
+        
+        // Add Settings resource
+        environment.addResource(new SettingsResource(configuration.getSettings()));
         
         /**
          * Note: using environment.addProvider(new RegistrationCreateResource(template, defaultName, mQConfig));
