@@ -189,6 +189,9 @@ public class Registration
 	
 	@JsonProperty
 	private String accountEmail;
+
+    @JsonProperty
+    private String declaredConvictions;
 	
 	/* 
 	 * These are the Declaration Details
@@ -503,6 +506,13 @@ public class Registration
 		return accountEmail;
 	}
 
+    /**
+     * @return the declaredConvictions
+     */
+    public String getDeclaredConvictions() {
+        return declaredConvictions;
+    }
+
 	/**
 	 * @return the confrimDeclaration
 	 */
@@ -785,6 +795,13 @@ public class Registration
 		this.accountEmail = accountEmail;
 	}
 
+    /**
+     * @param declaredConvictions
+     */
+    public void setDeclaredConvictions(String declaredConvictions) {
+        this.declaredConvictions = declaredConvictions;
+    }
+
 	/**
 	 * @param confirmDeclaration the confirmDeclaration to set
 	 */
@@ -968,6 +985,7 @@ public class Registration
         res = checkString(this.getCopyCardFee(), otherReg.getCopyCardFee(), res);
         res = checkString(this.getCopyCards(), otherReg.getCopyCards(), res);
         res = checkString(this.getAccountEmail(), otherReg.getAccountEmail(), res);
+        res = checkString(this.getDeclaredConvictions(), otherReg.getDeclaredConvictions(), res);
         res = checkString(this.getDeclaration(), otherReg.getDeclaration(), res);
         if (res && this.getExpiresOn() != null) {
             res = this.getExpiresOn().compareTo(otherReg.getExpiresOn()) == 0 ? true : false;

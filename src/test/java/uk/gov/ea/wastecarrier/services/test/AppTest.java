@@ -80,6 +80,7 @@ public class AppTest extends TestCase
 		reg.setCopyCardFee("5");
 		reg.setCopyCards("2");
 		reg.setAccountEmail("jane@example.com");
+        reg.setDeclaredConvictions("no");
 		reg.setDeclaration("on");
 		reg.setExpiresOn(new Date(2017, 11, 31));
 

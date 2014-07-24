@@ -159,6 +159,7 @@ public class RegistrationsMongoDaoTest extends TestCase {
 		reg.setPosition("Chief Waster");
 		reg.setPhoneNumber("0123 456 789");
 		reg.setRegIdentifier("CBDU" + System.currentTimeMillis());
+        reg.setDeclaredConvictions("no");
 		reg.setDeclaration("1");
 		reg.setAccountEmail("upper@example.com");
 		reg.setFinanceDetails(new FinanceDetails());
