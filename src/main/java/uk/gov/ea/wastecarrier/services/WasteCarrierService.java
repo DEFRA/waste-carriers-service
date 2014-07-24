@@ -3,6 +3,7 @@ package uk.gov.ea.wastecarrier.services;
 import java.util.logging.Logger;
 
 import org.elasticsearch.client.Client;
+
 import uk.gov.ea.wastecarrier.services.elasticsearch.ElasticSearchManaged;
 import uk.gov.ea.wastecarrier.services.elasticsearch.ElasticSearchUtils;
 import uk.gov.ea.wastecarrier.services.health.ElasticSearchHealthCheck;
@@ -10,9 +11,11 @@ import uk.gov.ea.wastecarrier.services.health.MongoHealthCheck;
 import uk.gov.ea.wastecarrier.services.health.TemplateHealthCheck;
 import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.MongoManaged;
+import uk.gov.ea.wastecarrier.services.resources.IndividualConvictionCheckResource;
 import uk.gov.ea.wastecarrier.services.resources.OrderResource;
 import uk.gov.ea.wastecarrier.services.resources.NewPaymentResource;
 import uk.gov.ea.wastecarrier.services.resources.OrdersResource;
+import uk.gov.ea.wastecarrier.services.resources.OrganisationConvictionCheckResource;
 import uk.gov.ea.wastecarrier.services.resources.PaymentResource;
 import uk.gov.ea.wastecarrier.services.resources.RegistrationReadEditResource;
 import uk.gov.ea.wastecarrier.services.resources.RegistrationVersionResource;
@@ -84,12 +87,16 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration> {
         // Add Settings resource
         environment.addResource(new SettingsResource(configuration.getSettings()));
         
+        //Add convictions resource
+        environment.addResource(new IndividualConvictionCheckResource(esConfig));
+        environment.addResource(new OrganisationConvictionCheckResource(esConfig));
+        
         /**
          * Note: using environment.addProvider(new RegistrationCreateResource(template, defaultName, mQConfig));
          * Seems to perform a similar feature to addResources, need to research the difference?
          */
         
-        // Add Service Heath checks
+        // Add Service Health checks
         environment.addHealthCheck(new TemplateHealthCheck(template));
         
         // Add Database Heath checks
