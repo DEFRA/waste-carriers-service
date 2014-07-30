@@ -174,6 +174,9 @@ public class Registration
 
     @JsonProperty("directors")
     private List<Director> directors;
+
+    @JsonProperty("key_persons")
+    private List<KeyPerson> keyPersons;
 	
 	/*
 	 * Payment values
@@ -926,6 +929,14 @@ public class Registration
 
     public void setDirectors(List<Director> directors) {
         this.directors = directors;
+    }
+
+    public List<KeyPerson> getKeyPersons() {
+        return keyPersons;
+    }
+
+    public void setKeyPersons(List<KeyPerson> keyPersons) {
+        this.keyPersons = keyPersons;
     }
 
 	/**

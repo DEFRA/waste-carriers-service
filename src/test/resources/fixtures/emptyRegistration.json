@@ -42,6 +42,7 @@
 	"declaration":null,
 	"accessCode":null,
 	"company_no":null,
+	"key_persons":null,
 	"total_fee":null,
     "registration_fee":null,
     "copy_card_fee":null,

@@ -42,6 +42,7 @@
     "declaration":"on", 
 	"accessCode":"ABCDEF",
 	"company_no":null,
+	"key_persons":[{"position":"Director","first_name":"John","last_name":"Smith","dob":-3600000,"person_type":"KEY"}],
 	"total_fee":"164",
     "registration_fee":"154",
     "copy_card_fee":"5",

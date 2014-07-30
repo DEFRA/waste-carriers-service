@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.joda.time.DateTime;
 import uk.gov.ea.wastecarrier.services.core.Director;
+import uk.gov.ea.wastecarrier.services.core.KeyPerson;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -85,8 +86,24 @@ public class AppTest extends TestCase
 		reg.setExpiresOn(new Date(2017, 11, 31));
 
         List<Director> directors = new ArrayList<Director>();
-        directors.add(new Director("John", "Smith", new DateTime(1970, 1, 1, 0, 0).toDate()));
+        directors.add(
+                new Director(
+                        "John",
+                        "Smith",
+                        new DateTime(1970, 1, 1, 0, 0).toDate())
+        );
         reg.setDirectors(directors);
+
+        List<KeyPerson> keyPersons = new ArrayList<KeyPerson>();
+        keyPersons.add(
+                new KeyPerson(
+                        "John",
+                        "Smith",
+                        new DateTime(1970, 1, 1, 0, 0).toDate(),
+                        "Director",
+                        KeyPerson.PersonType.KEY)
+        );
+        reg.setKeyPersons(keyPersons);
 
 		return reg;
 	}
