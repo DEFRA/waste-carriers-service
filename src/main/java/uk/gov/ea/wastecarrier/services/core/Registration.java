@@ -172,11 +172,8 @@ public class Registration
 	@JsonProperty
 	private String contactEmail;
 
-    @JsonProperty("directors")
-    private List<Director> directors;
-
-    @JsonProperty("key_persons")
-    private List<KeyPerson> keyPersons;
+    @JsonProperty("key_people")
+    private List<KeyPerson> keyPeople;
 	
 	/*
 	 * Payment values
@@ -767,7 +764,7 @@ public class Registration
 	}
 
 	/**
-	 * @param email the email to set
+	 * @param contactEmail the email to set
 	 */
 	public void setContactEmail(String contactEmail)
 	{
@@ -806,7 +803,7 @@ public class Registration
     }
 
 	/**
-	 * @param confirmDeclaration the confirmDeclaration to set
+	 * @param declaration the confirmDeclaration to set
 	 */
 	public void setDeclaration(String declaration)
 	{
@@ -923,20 +920,12 @@ public class Registration
 		this.royalMailUpdateDate = royalMailUpdateDate;
 	}
 
-    public List<Director> getDirectors() {
-        return directors;
+    public List<KeyPerson> getKeyPeople() {
+        return keyPeople;
     }
 
-    public void setDirectors(List<Director> directors) {
-        this.directors = directors;
-    }
-
-    public List<KeyPerson> getKeyPersons() {
-        return keyPersons;
-    }
-
-    public void setKeyPersons(List<KeyPerson> keyPersons) {
-        this.keyPersons = keyPersons;
+    public void setKeyPeople(List<KeyPerson> keyPeople) {
+        this.keyPeople = keyPeople;
     }
 
 	/**
