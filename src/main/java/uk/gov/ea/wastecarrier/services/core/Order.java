@@ -31,12 +31,30 @@ public class Order
 	}
 	
 	@JsonProperty
+	@NotBlank
+	private String id;
+	
+	@JsonProperty
 	private List<OrderItem> orderItems;
 
 	@NotBlank
 	@JsonProperty
 	private String orderCode;
 	
+	/**
+	 * @return the id
+	 */
+	public String getId() {
+		return id;
+	}
+
+	/**
+	 * @param id the id to set
+	 */
+	public void setId(String id) {
+		this.id = id;
+	}
+
 	@Nonnull
 	@JsonProperty
 	private PaymentMethod paymentMethod;

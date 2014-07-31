@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  * orders
  * 
  */
-@Path("/"+Registration.COLLECTION_NAME+"/{id}/"+Order.COLLECTION_NAME+".json")
+@Path("/"+Registration.COLLECTION_NAME+"/{registrationId}/"+Order.COLLECTION_NAME+".json")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class OrdersResource
@@ -51,18 +51,9 @@ public class OrdersResource
 	 * @throws WebApplicationException INTERNAL_SERVER_ERROR - If an error has occurred
 	 */
 	@POST
-	public Order submitOrder(@PathParam("id") String registrationId, @Valid Order order)
+	public Order submitOrder(@PathParam("registrationId") String registrationId, @Valid Order order)
 	{
-		log.info("POST METHOD detected in submitOrder() method for order creation");
-		
-		/*
-		 * Sample Update order request with information
-		 */
-		//order.setProperty(sampleValueToSet);
-		
-		/*
-		 * Add payment to database
-		 */
+		log.info("POST METHOD detected in submitOrder() method. Creating/adding order in database.");
 		return dao.addOrder(registrationId, order);
 	}
 }

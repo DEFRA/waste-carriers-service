@@ -7,6 +7,7 @@ import uk.gov.ea.wastecarrier.services.core.FinanceDetails;
 import uk.gov.ea.wastecarrier.services.core.Location;
 import uk.gov.ea.wastecarrier.services.core.MetaData;
 import uk.gov.ea.wastecarrier.services.core.Order;
+import uk.gov.ea.wastecarrier.services.core.OrderItem;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.core.Registration.RegistrationTier;
 import uk.gov.ea.wastecarrier.services.elasticsearch.ElasticSearchUtils;
@@ -67,6 +68,7 @@ import net.vz.mongodb.jackson.WriteResult;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -618,13 +620,29 @@ public class RegistrationsResource
 				FinanceDetails financeDetails = new FinanceDetails();
 				reg.setFinanceDetails(financeDetails);
 				Order order = new Order();
-				//TODO Get total amount etc. from registration
+				order.setId("1");
+				Date now = new Date();
+				//The total amount will be updated when the user confirms on the payment page
 				order.setTotalAmount(15400);
 				order.setCurrency("GBP");
-				order.setDescription("Initial Registration");
-				order.setOrderCode(String.valueOf(System.currentTimeMillis()));
+				order.setDescription("default order");
+				order.setOrderCode("NNN");
 				order.setPaymentMethod(Order.PaymentMethod.UNKNOWN);
-				//TODO Add the new Order here vs. later?
+				order.setWorldPayStatus("NEW");
+				order.setDateCreated(now);
+				order.setDateLastUpdated(now);
+				
+				// Order Item dummy
+				OrderItem item = new OrderItem();
+				item.setAmount(0);
+				item.setCurrency("GBP");
+				item.setLastUpdated("");
+				item.setDescription("default item");
+				item.setReference("");
+				List<OrderItem> orderItems = new ArrayList<OrderItem>();
+				orderItems.add(item);
+				order.setOrderItems(orderItems);
+				
 				List<Order> orders = new ArrayList<Order>();
 				orders.add(order);
 				reg.getFinanceDetails().setOrders(orders);

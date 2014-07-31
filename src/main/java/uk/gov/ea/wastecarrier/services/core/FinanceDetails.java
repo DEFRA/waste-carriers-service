@@ -1,6 +1,5 @@
 package uk.gov.ea.wastecarrier.services.core;
 
-import java.util.Iterator;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;

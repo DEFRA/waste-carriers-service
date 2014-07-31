@@ -16,6 +16,7 @@ import com.mongodb.DBObject;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.core.FinanceDetails;
 import uk.gov.ea.wastecarrier.services.core.Order;
+import uk.gov.ea.wastecarrier.services.core.OrderItem;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 
 public class OrdersMongoDao
@@ -111,17 +112,35 @@ public class OrdersMongoDao
 		
 		DBObject query = new BasicDBObject();
 		query.put("regIdentifier", registration.getRegIdentifier());
-		query.put("financeDetails.orders.orderCode", order.getOrderCode());
+		query.put("financeDetails.orders.id", orderId);
 		
 		WriteResult<Registration, String> result;
 		
-		//TODO This works with updating individual properties, but updating the whole Order is still TBD
+		//Note: This works with updating individual properties, but updating the whole Order is still TBD
 		DBObject update = new BasicDBObject();
 		DBObject updates = new BasicDBObject();
-		updates.put("financeDetails.orders.$.worldPayStatus", order.getWorldPayStatus());
+		updates.put("financeDetails.orders.$.orderCode", order.getOrderCode());
 		updates.put("financeDetails.orders.$.paymentMethod", order.getPaymentMethod().toString());
-		//update.put("$set", new BasicDBObject("financeDetails.orders.$.worldPayStatus", order.getWorldPayStatus()));
-		//update.put("$set", new BasicDBObject("financeDetails.orders.$.paymentMethod", order.getPaymentMethod().toString()));
+		updates.put("financeDetails.orders.$.merchantId", order.getMerchantId());
+		updates.put("financeDetails.orders.$.totalAmount", order.getTotalAmount());
+		updates.put("financeDetails.orders.$.currency", order.getCurrency());
+		// We never want to update the creation date
+		//updates.put("financeDetails.orders.$.dateCreated", order.getDateCreated());
+		updates.put("financeDetails.orders.$.worldPayStatus", order.getWorldPayStatus());
+		updates.put("financeDetails.orders.$.dateLastUpdated", order.getDateLastUpdated());
+		updates.put("financeDetails.orders.$.updatedByUser", order.getUpdatedByUser());
+		updates.put("financeDetails.orders.$.description", order.getDescription());
+		
+		// Add Order item updating
+		int orderCount = 0;
+		for (OrderItem o : order.getOrderItems())
+		{
+			updates.put("financeDetails.orders.$.orderItems."+orderCount+".amount", o.getAmount());
+			updates.put("financeDetails.orders.$.orderItems."+orderCount+".description", o.getDescription());
+			updates.put("financeDetails.orders.$.orderItems."+orderCount+".currency", o.getCurrency());
+			orderCount++;
+		}
+		
 		update.put("$set", updates);
 		result = registrations.update(query, update);
 		
