@@ -112,7 +112,7 @@ public class OrdersMongoDao
 		
 		DBObject query = new BasicDBObject();
 		query.put("regIdentifier", registration.getRegIdentifier());
-		query.put("financeDetails.orders.id", orderId);
+		query.put("financeDetails.orders.orderId", orderId);
 		
 		WriteResult<Registration, String> result;
 		

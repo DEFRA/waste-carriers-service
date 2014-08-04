@@ -32,7 +32,7 @@ public class Order
 	
 	@JsonProperty
 	@NotBlank
-	private String id;
+	private String orderId;
 	
 	@JsonProperty
 	private List<OrderItem> orderItems;
@@ -42,17 +42,17 @@ public class Order
 	private String orderCode;
 	
 	/**
-	 * @return the id
+	 * @return the orderId
 	 */
-	public String getId() {
-		return id;
+	public String getOrderId() {
+		return orderId;
 	}
 
 	/**
-	 * @param id the id to set
+	 * @param orderId the orderId to set
 	 */
-	public void setId(String id) {
-		this.id = id;
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
 	}
 
 	@Nonnull

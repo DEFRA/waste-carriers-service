@@ -74,6 +74,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 /**
@@ -620,7 +621,7 @@ public class RegistrationsResource
 				FinanceDetails financeDetails = new FinanceDetails();
 				reg.setFinanceDetails(financeDetails);
 				Order order = new Order();
-				order.setId("1");
+				order.setOrderId(UUID.randomUUID().toString());
 				Date now = new Date();
 				//The total amount will be updated when the user confirms on the payment page
 				order.setTotalAmount(15400);
