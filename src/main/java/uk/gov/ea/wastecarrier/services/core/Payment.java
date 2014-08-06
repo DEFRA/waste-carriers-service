@@ -77,8 +77,8 @@ public class Payment
 		CASH,
 		CHEQUE,
 		POSTALORDER,
-		OTHERONLINEPAYMENT,
-		OTHER
+		BANKTRANSFER,
+		REVERSAL
 	}
 	
 	/**
