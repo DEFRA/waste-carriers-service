@@ -38,7 +38,7 @@
 	"contactEmail":"info@example.com",
 	"accountEmail":"jane@example.com",
 	"declaredConvictions":"no",
-    "declaration":"on", 
+    "declaration":"on",
 	"accessCode":"ABCDEF",
 	"company_no":null,
 	"key_people":[{"position":"Director","first_name":"John","last_name":"Smith","dob":-3600000,"person_type":"KEY"}],
@@ -46,5 +46,7 @@
     "registration_fee":"154",
     "copy_card_fee":"5",
     "copy_cards":"2",
+    "convictions_check_indicates_suspect": true,
+    "criminally_suspect": true,
 	"expires_on":61472822400000
 }

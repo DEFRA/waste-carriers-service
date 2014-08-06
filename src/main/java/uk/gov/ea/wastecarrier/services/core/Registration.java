@@ -2,6 +2,7 @@ package uk.gov.ea.wastecarrier.services.core;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Logger;
 
 import javax.validation.Valid;
@@ -192,6 +193,12 @@ public class Registration
 
     @JsonProperty
     private String declaredConvictions;
+
+    @JsonProperty("convictions_check_indicates_suspect")
+    private Boolean convictionsCheckIndicatesSuspect;
+
+    @JsonProperty("criminally_suspect")
+    private Boolean criminallySuspect;
 	
 	/* 
 	 * These are the Declaration Details
@@ -513,6 +520,20 @@ public class Registration
         return declaredConvictions;
     }
 
+    /**
+     * @return the criminallySuspect
+     */
+    public Boolean getCriminallySuspect() {
+        return criminallySuspect;
+    }
+
+    /**
+     * @return the convictionsCheckIndicatesSuspect
+     */
+    public Boolean getConvictionsCheckIndicatesSuspect() {
+        return convictionsCheckIndicatesSuspect;
+    }
+
 	/**
 	 * @return the confrimDeclaration
 	 */
@@ -802,6 +823,20 @@ public class Registration
         this.declaredConvictions = declaredConvictions;
     }
 
+    /**
+     * @param convictionsCheckIndicatesSuspect
+     */
+    public void setConvictionsCheckIndicatesSuspect(Boolean convictionsCheckIndicatesSuspect) {
+        this.convictionsCheckIndicatesSuspect = convictionsCheckIndicatesSuspect;
+    }
+
+    /**
+     * @param criminallySuspect
+     */
+    public void setCriminallySuspect(Boolean criminallySuspect) {
+        this.criminallySuspect = criminallySuspect;
+    }
+
 	/**
 	 * @param declaration the confirmDeclaration to set
 	 */
@@ -936,73 +971,64 @@ public class Registration
 	 */
 	@Override
     public boolean equals(Object obj) {
-		log.finer("Start equals()");
-        
-		if (this == obj) 
-        {
-            return true;
-        }
-        
-        if(obj == null || getClass() != obj.getClass()) 
-        {
+        if (obj == null) {
             return false;
         }
-        
-        boolean res = true; // default to true, and if any field is not null, reset to false
-        Registration otherReg = ((Registration) obj);
-
-        res = this.getTier() == otherReg.getTier() ? true : false;
-        res = checkString(this.getRegistrationType(), otherReg.getRegistrationType(), res);
-        res = checkString(this.getBusinessType(), otherReg.getBusinessType(), res);
-        res = checkString(this.getOtherBusinesses(), otherReg.getOtherBusinesses(), res);
-        res = checkString(this.getIsMainService(), otherReg.getIsMainService(), res);
-        res = checkString(this.getConstructionWaste(), otherReg.getConstructionWaste(), res);
-        res = checkString(this.getOnlyAMF(), otherReg.getOnlyAMF(), res);
-        res = checkString(this.getCompanyName(), otherReg.getCompanyName(), res);
-        res = checkString(this.getIndividualsType(), otherReg.getIndividualsType(), res);
-        res = checkString(this.getPublicBodyType(), otherReg.getPublicBodyType(), res);
-        res = checkString(this.getPublicBodyTypeOther(), otherReg.getPublicBodyTypeOther(), res);
-        res = checkString(this.getCompanyNo(), otherReg.getCompanyNo(), res);
-        res = checkString(this.getHouseNumber(), otherReg.getHouseNumber(), res);
-        res = checkString(this.getStreetLine1(), otherReg.getStreetLine1(), res);
-        res = checkString(this.getStreetLine2(), otherReg.getStreetLine2(), res);
-        res = checkString(this.getStreetLine3(), otherReg.getStreetLine3(), res);
-        res = checkString(this.getStreetLine4(), otherReg.getStreetLine4(), res);
-        res = checkString(this.getTownCity(), otherReg.getTownCity(), res);
-        res = checkString(this.getPostcode(), otherReg.getPostcode(), res);
-        res = checkString(this.getCountry(), otherReg.getCountry(), res);
-        res = checkString(this.getAddress(), otherReg.getAddress(), res);
-        res = checkString(this.getUprn(), otherReg.getUprn(), res);
-        res = checkString(this.getTitle(), otherReg.getTitle(), res);
-        res = checkString(this.getOtherTitle(), otherReg.getOtherTitle(), res);
-        res = checkString(this.getFirstName(), otherReg.getFirstName(), res);
-        res = checkString(this.getLastName(), otherReg.getLastName(), res);
-        res = checkString(this.getPosition(), otherReg.getPosition(), res);
-        res = checkString(this.getPhoneNumber(), otherReg.getPhoneNumber(), res);
-        res = checkString(this.getContactEmail(), otherReg.getContactEmail(), res);
-        res = checkString(this.getTotalFee(), otherReg.getTotalFee(), res);
-        res = checkString(this.getRegistrationFee(), otherReg.getRegistrationFee(), res);
-        res = checkString(this.getCopyCardFee(), otherReg.getCopyCardFee(), res);
-        res = checkString(this.getCopyCards(), otherReg.getCopyCards(), res);
-        res = checkString(this.getAccountEmail(), otherReg.getAccountEmail(), res);
-        res = checkString(this.getDeclaredConvictions(), otherReg.getDeclaredConvictions(), res);
-        res = checkString(this.getDeclaration(), otherReg.getDeclaration(), res);
-        if (res && this.getExpiresOn() != null) {
-            res = this.getExpiresOn().compareTo(otherReg.getExpiresOn()) == 0 ? true : false;
+        if (getClass() != obj.getClass()) {
+            return false;
         }
-        log.finer("equals result: " + res);
-        return res;
+        final Registration other = (Registration) obj;
+        return Objects.equals(this.tier, other.tier)
+                && Objects.equals(this.registrationType, other.registrationType)
+                && Objects.equals(this.businessType, other.businessType)
+                && Objects.equals(this.otherBusinesses, other.otherBusinesses)
+                && Objects.equals(this.isMainService, other.isMainService)
+                && Objects.equals(this.constructionWaste, other.constructionWaste)
+                && Objects.equals(this.onlyAMF, other.onlyAMF)
+                && Objects.equals(this.companyName, other.companyName)
+                && Objects.equals(this.individualsType, other.individualsType)
+                && Objects.equals(this.publicBodyType, other.publicBodyType)
+                && Objects.equals(this.publicBodyTypeOther, other.publicBodyTypeOther)
+                && Objects.equals(this.companyNo, other.companyNo)
+                && Objects.equals(this.houseNumber, other.houseNumber)
+                && Objects.equals(this.streetLine1, other.streetLine1)
+                && Objects.equals(this.streetLine2, other.streetLine2)
+                && Objects.equals(this.streetLine3, other.streetLine3)
+                && Objects.equals(this.streetLine4, other.streetLine4)
+                && Objects.equals(this.townCity, other.townCity)
+                && Objects.equals(this.postcode, other.postcode)
+                && Objects.equals(this.country, other.country)
+                && Objects.equals(this.address, other.address)
+                && Objects.equals(this.uprn, other.uprn)
+                && Objects.equals(this.title, other.title)
+                && Objects.equals(this.otherTitle, other.otherTitle)
+                && Objects.equals(this.firstName, other.firstName)
+                && Objects.equals(this.lastName, other.lastName)
+                && Objects.equals(this.position, other.position)
+                && Objects.equals(this.phoneNumber, other.phoneNumber)
+                && Objects.equals(this.contactEmail, other.contactEmail)
+                && Objects.equals(this.totalFee, other.totalFee)
+                && Objects.equals(this.registrationFee, other.registrationFee)
+                && Objects.equals(this.copyCardFee, other.copyCardFee)
+                && Objects.equals(this.copyCards, other.copyCards)
+                && Objects.equals(this.accountEmail, other.accountEmail)
+                && Objects.equals(this.declaredConvictions, other.declaredConvictions)
+                && Objects.equals(this.convictionsCheckIndicatesSuspect, other.convictionsCheckIndicatesSuspect)
+                && Objects.equals(this.criminallySuspect, other.criminallySuspect)
+                && Objects.equals(this.declaration, other.declaration)
+                && Objects.equals(this.expiresOn, other.expiresOn);
     }
-	
-	/**
-	 * Added a hashCode function, as the equals was overridden, and standards say this should 
-	 * also be overridden, but this should not be being used.
-	 */
+
 	@Override
 	public int hashCode()
 	{
-		assert false : "hashcode not designed";
-		return 42; // any arbitrary constant will do
+        return Objects.hash(tier, registrationType, businessType, otherBusinesses, isMainService, constructionWaste,
+                onlyAMF, companyName, individualsType, publicBodyType, publicBodyTypeOther, companyNo, houseNumber,
+                streetLine1, streetLine2, streetLine3, streetLine4, townCity, postcode, country, address, uprn,
+                title, otherTitle, firstName, lastName, position, phoneNumber, contactEmail, totalFee, registrationFee,
+                copyCardFee, copyCards, accountEmail, declaredConvictions, convictionsCheckIndicatesSuspect,
+                criminallySuspect, declaration, expiresOn
+            );
 	}
 	
 	/**
