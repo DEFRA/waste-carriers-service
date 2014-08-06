@@ -2,6 +2,7 @@ package uk.gov.ea.wastecarrier.services.core;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Logger;
 
 import javax.validation.Valid;
@@ -970,64 +971,52 @@ public class Registration
 	 */
 	@Override
     public boolean equals(Object obj) {
-		log.finer("Start equals()");
-        
-		if (this == obj) 
-        {
-            return true;
-        }
-        
-        if(obj == null || getClass() != obj.getClass()) 
-        {
+        if (obj == null) {
             return false;
         }
-        
-        boolean res = true; // default to true, and if any field is not null, reset to false
-        Registration otherReg = ((Registration) obj);
-
-        res = this.getTier() == otherReg.getTier() ? true : false;
-        res = checkString(this.getRegistrationType(), otherReg.getRegistrationType(), res);
-        res = checkString(this.getBusinessType(), otherReg.getBusinessType(), res);
-        res = checkString(this.getOtherBusinesses(), otherReg.getOtherBusinesses(), res);
-        res = checkString(this.getIsMainService(), otherReg.getIsMainService(), res);
-        res = checkString(this.getConstructionWaste(), otherReg.getConstructionWaste(), res);
-        res = checkString(this.getOnlyAMF(), otherReg.getOnlyAMF(), res);
-        res = checkString(this.getCompanyName(), otherReg.getCompanyName(), res);
-        res = checkString(this.getIndividualsType(), otherReg.getIndividualsType(), res);
-        res = checkString(this.getPublicBodyType(), otherReg.getPublicBodyType(), res);
-        res = checkString(this.getPublicBodyTypeOther(), otherReg.getPublicBodyTypeOther(), res);
-        res = checkString(this.getCompanyNo(), otherReg.getCompanyNo(), res);
-        res = checkString(this.getHouseNumber(), otherReg.getHouseNumber(), res);
-        res = checkString(this.getStreetLine1(), otherReg.getStreetLine1(), res);
-        res = checkString(this.getStreetLine2(), otherReg.getStreetLine2(), res);
-        res = checkString(this.getStreetLine3(), otherReg.getStreetLine3(), res);
-        res = checkString(this.getStreetLine4(), otherReg.getStreetLine4(), res);
-        res = checkString(this.getTownCity(), otherReg.getTownCity(), res);
-        res = checkString(this.getPostcode(), otherReg.getPostcode(), res);
-        res = checkString(this.getCountry(), otherReg.getCountry(), res);
-        res = checkString(this.getAddress(), otherReg.getAddress(), res);
-        res = checkString(this.getUprn(), otherReg.getUprn(), res);
-        res = checkString(this.getTitle(), otherReg.getTitle(), res);
-        res = checkString(this.getOtherTitle(), otherReg.getOtherTitle(), res);
-        res = checkString(this.getFirstName(), otherReg.getFirstName(), res);
-        res = checkString(this.getLastName(), otherReg.getLastName(), res);
-        res = checkString(this.getPosition(), otherReg.getPosition(), res);
-        res = checkString(this.getPhoneNumber(), otherReg.getPhoneNumber(), res);
-        res = checkString(this.getContactEmail(), otherReg.getContactEmail(), res);
-        res = checkString(this.getTotalFee(), otherReg.getTotalFee(), res);
-        res = checkString(this.getRegistrationFee(), otherReg.getRegistrationFee(), res);
-        res = checkString(this.getCopyCardFee(), otherReg.getCopyCardFee(), res);
-        res = checkString(this.getCopyCards(), otherReg.getCopyCards(), res);
-        res = checkString(this.getAccountEmail(), otherReg.getAccountEmail(), res);
-        res = checkString(this.getDeclaredConvictions(), otherReg.getDeclaredConvictions(), res);
-        res = checkString(this.getConvictionsCheckIndicatesSuspect().toString(), otherReg.getConvictionsCheckIndicatesSuspect().toString(), res);
-        res = checkString(this.getCriminallySuspect().toString(), otherReg.getCriminallySuspect().toString(), res);
-        res = checkString(this.getDeclaration(), otherReg.getDeclaration(), res);
-        if (res && this.getExpiresOn() != null) {
-            res = this.getExpiresOn().compareTo(otherReg.getExpiresOn()) == 0 ? true : false;
+        if (getClass() != obj.getClass()) {
+            return false;
         }
-        log.finer("equals result: " + res);
-        return res;
+        final Registration other = (Registration) obj;
+        return Objects.equals(this.getTier(), other.getTier())
+                && Objects.equals(this.getRegistrationType(), other.getRegistrationType())
+                && Objects.equals(this.getBusinessType(), other.getBusinessType())
+                && Objects.equals(this.getOtherBusinesses(), other.getOtherBusinesses())
+                && Objects.equals(this.getIsMainService(), other.getIsMainService())
+                && Objects.equals(this.getConstructionWaste(), other.getConstructionWaste())
+                && Objects.equals(this.getOnlyAMF(), other.getOnlyAMF())
+                && Objects.equals(this.getCompanyName(), other.getCompanyName())
+                && Objects.equals(this.getIndividualsType(), other.getIndividualsType())
+                && Objects.equals(this.getPublicBodyType(), other.getPublicBodyType())
+                && Objects.equals(this.getPublicBodyTypeOther(), other.getPublicBodyTypeOther())
+                && Objects.equals(this.getCompanyNo(), other.getCompanyNo())
+                && Objects.equals(this.getHouseNumber(), other.getHouseNumber())
+                && Objects.equals(this.getStreetLine1(), other.getStreetLine1())
+                && Objects.equals(this.getStreetLine2(), other.getStreetLine2())
+                && Objects.equals(this.getStreetLine3(), other.getStreetLine3())
+                && Objects.equals(this.getStreetLine4(), other.getStreetLine4())
+                && Objects.equals(this.getTownCity(), other.getTownCity())
+                && Objects.equals(this.getPostcode(), other.getPostcode())
+                && Objects.equals(this.getCountry(), other.getCountry())
+                && Objects.equals(this.getAddress(), other.getAddress())
+                && Objects.equals(this.getUprn(), other.getUprn())
+                && Objects.equals(this.getTitle(), other.getTitle())
+                && Objects.equals(this.getOtherTitle(), other.getOtherTitle())
+                && Objects.equals(this.getFirstName(), other.getFirstName())
+                && Objects.equals(this.getLastName(), other.getLastName())
+                && Objects.equals(this.getPosition(), other.getPosition())
+                && Objects.equals(this.getPhoneNumber(), other.getPhoneNumber())
+                && Objects.equals(this.getContactEmail(), other.getContactEmail())
+                && Objects.equals(this.getTotalFee(), other.getTotalFee())
+                && Objects.equals(this.getRegistrationFee(), other.getRegistrationFee())
+                && Objects.equals(this.getCopyCardFee(), other.getCopyCardFee())
+                && Objects.equals(this.getCopyCards(), other.getCopyCards())
+                && Objects.equals(this.getAccountEmail(), other.getAccountEmail())
+                && Objects.equals(this.getDeclaredConvictions(), other.getDeclaredConvictions())
+                && Objects.equals(this.getConvictionsCheckIndicatesSuspect(), other.getConvictionsCheckIndicatesSuspect())
+                && Objects.equals(this.getCriminallySuspect(), other.getCriminallySuspect())
+                && Objects.equals(this.getDeclaration(), other.getDeclaration())
+                && Objects.equals(this.getExpiresOn(), other.getExpiresOn());
     }
 	
 	/**
