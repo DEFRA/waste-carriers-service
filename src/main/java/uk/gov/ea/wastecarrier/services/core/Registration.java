@@ -1018,16 +1018,17 @@ public class Registration
                 && Objects.equals(this.getDeclaration(), other.getDeclaration())
                 && Objects.equals(this.getExpiresOn(), other.getExpiresOn());
     }
-	
-	/**
-	 * Added a hashCode function, as the equals was overridden, and standards say this should 
-	 * also be overridden, but this should not be being used.
-	 */
+
 	@Override
 	public int hashCode()
 	{
-		assert false : "hashcode not designed";
-		return 42; // any arbitrary constant will do
+        return Objects.hash(tier, registrationType, businessType, otherBusinesses, isMainService, constructionWaste,
+                onlyAMF, companyName, individualsType, publicBodyType, publicBodyTypeOther, companyNo, houseNumber,
+                streetLine1, streetLine2, streetLine3, streetLine4, townCity, postcode, country, address, uprn,
+                title, otherTitle, firstName, lastName, position, phoneNumber, contactEmail, totalFee, registrationFee,
+                copyCardFee, copyCards, accountEmail, declaredConvictions, convictionsCheckIndicatesSuspect,
+                criminallySuspect, declaration, expiresOn
+            );
 	}
 	
 	/**
