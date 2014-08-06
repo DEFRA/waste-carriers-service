@@ -160,6 +160,8 @@ public class RegistrationsMongoDaoTest extends TestCase {
 		reg.setPhoneNumber("0123 456 789");
 		reg.setRegIdentifier("CBDU" + System.currentTimeMillis());
         reg.setDeclaredConvictions("no");
+        reg.setConvictionsCheckIndicatesSuspect(Boolean.TRUE);
+        reg.setCriminallySuspect(Boolean.TRUE);
 		reg.setDeclaration("1");
 		reg.setAccountEmail("upper@example.com");
 		reg.setFinanceDetails(new FinanceDetails());

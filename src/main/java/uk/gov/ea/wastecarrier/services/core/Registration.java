@@ -192,6 +192,12 @@ public class Registration
 
     @JsonProperty
     private String declaredConvictions;
+
+    @JsonProperty("convictions_check_indicates_suspect")
+    private Boolean convictionsCheckIndicatesSuspect;
+
+    @JsonProperty("criminally_suspect")
+    private Boolean criminallySuspect;
 	
 	/* 
 	 * These are the Declaration Details
@@ -513,6 +519,20 @@ public class Registration
         return declaredConvictions;
     }
 
+    /**
+     * @return the criminallySuspect
+     */
+    public Boolean getCriminallySuspect() {
+        return criminallySuspect;
+    }
+
+    /**
+     * @return the convictionsCheckIndicatesSuspect
+     */
+    public Boolean getConvictionsCheckIndicatesSuspect() {
+        return convictionsCheckIndicatesSuspect;
+    }
+
 	/**
 	 * @return the confrimDeclaration
 	 */
@@ -802,6 +822,20 @@ public class Registration
         this.declaredConvictions = declaredConvictions;
     }
 
+    /**
+     * @param convictionsCheckIndicatesSuspect
+     */
+    public void setConvictionsCheckIndicatesSuspect(Boolean convictionsCheckIndicatesSuspect) {
+        this.convictionsCheckIndicatesSuspect = convictionsCheckIndicatesSuspect;
+    }
+
+    /**
+     * @param criminallySuspect
+     */
+    public void setCriminallySuspect(Boolean criminallySuspect) {
+        this.criminallySuspect = criminallySuspect;
+    }
+
 	/**
 	 * @param declaration the confirmDeclaration to set
 	 */
@@ -986,6 +1020,8 @@ public class Registration
         res = checkString(this.getCopyCards(), otherReg.getCopyCards(), res);
         res = checkString(this.getAccountEmail(), otherReg.getAccountEmail(), res);
         res = checkString(this.getDeclaredConvictions(), otherReg.getDeclaredConvictions(), res);
+        res = checkString(this.getConvictionsCheckIndicatesSuspect().toString(), otherReg.getConvictionsCheckIndicatesSuspect().toString(), res);
+        res = checkString(this.getCriminallySuspect().toString(), otherReg.getCriminallySuspect().toString(), res);
         res = checkString(this.getDeclaration(), otherReg.getDeclaration(), res);
         if (res && this.getExpiresOn() != null) {
             res = this.getExpiresOn().compareTo(otherReg.getExpiresOn()) == 0 ? true : false;

@@ -38,6 +38,8 @@
 	"contactEmail":"info@example.com",
 	"accountEmail":"jane@example.com",
 	"declaredConvictions":"no",
+	"convictionsCheckIndicatesSuspect": true,
+	"criminallySuspect": true,
     "declaration":"on", 
 	"accessCode":"ABCDEF",
 	"company_no":null,

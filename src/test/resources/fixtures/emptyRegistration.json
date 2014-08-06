@@ -38,6 +38,8 @@
 	"contactEmail":null,
 	"accountEmail":null,
 	"declaredConvictions":null,
+	"convictionsCheckIndicatesSuspect":null,
+	"criminallySuspect":null,
 	"declaration":null,
 	"accessCode":null,
 	"company_no":null,
