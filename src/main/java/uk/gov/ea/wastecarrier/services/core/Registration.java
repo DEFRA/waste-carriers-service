@@ -1030,26 +1030,6 @@ public class Registration
                 criminallySuspect, declaration, expiresOn
             );
 	}
-	
-	/**
-	 * Helper method for comparing strings, and returning status boolean
-	 * @param val1
-	 * @param val2
-	 * @param validSoFar
-	 * @return
-	 */
-	private boolean checkString(String val1, String val2, boolean validSoFar)
-	{
-		if (val1 != null && validSoFar)
-	    {
-			validSoFar = false;
-	    	if (val1.compareTo(val2) == 0)
-	    	{
-	    		validSoFar = true;
-	    	}
-	    }
-		return validSoFar;
-	}
 
 	/**
 	 * @return the financeDetails
