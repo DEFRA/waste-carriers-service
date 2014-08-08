@@ -71,6 +71,7 @@ public class Payment
 	
 	public enum PaymentType {
 		WORLDPAY, 
+		WORLDPAY_MISSED,
 		WRITEOFFSMALL, 
 		WRITEOFFLARGE, 
 		REFUND,
