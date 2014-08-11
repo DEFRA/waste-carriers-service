@@ -62,7 +62,18 @@ public class OrdersMongoDao
 			
 			if (result.getError() == null)
 			{
-				return order;
+				// Find registration after adding order
+				Registration foundReg = registrations.findOneById(registrationId);
+				result = registrations.updateById(registrationId, foundReg);
+				if (result.getError() == null)
+				{
+					return order;
+				}
+				else
+				{
+					log.severe("Error occured while updating registration after orders placed, " + result.getError());
+					throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+				}
 			}
 			else
 			{
@@ -152,7 +163,18 @@ public class OrdersMongoDao
 		
 		if (result.getError() == null)
 		{
-			return order;
+			// Find registration after adding order
+			Registration foundReg = registrations.findOneById(registrationId);
+			result = registrations.updateById(registrationId, foundReg);
+			if (result.getError() == null)
+			{
+				return order;
+			}
+			else
+			{
+				log.severe("Error occured while updating registration after updating order, " + result.getError());
+				throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+			}
 		}
 		else
 		{
