@@ -51,7 +51,7 @@ public class OrderResource
 	 */
 	@PUT
 	@Timed
-    public Order updateOrder(@PathParam("registrationId") String registrationId, @PathParam("id") String id, Order order)
+    public Order updateOrder(@PathParam("registrationId") String registrationId, @PathParam("id") String id, @Valid Order order)
     {
 		log.info("PUT method on the order. Updating the Order in the database.");
 		order.setDateLastUpdated(new Date());
