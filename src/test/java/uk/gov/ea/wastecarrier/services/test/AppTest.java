@@ -8,7 +8,6 @@ import uk.gov.ea.wastecarrier.services.core.KeyPerson;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import static com.yammer.dropwizard.testing.JsonHelpers.*;
@@ -83,7 +82,7 @@ public class AppTest extends TestCase
         reg.setConvictionsCheckIndicatesSuspect(Boolean.TRUE);
         reg.setCriminallySuspect(Boolean.TRUE);
 		reg.setDeclaration("on");
-		reg.setExpiresOn(new Date(2017, 11, 31));
+		reg.setExpiresOn(new DateTime(2017, 11, 30, 0, 0).toDate());
 
         List<KeyPerson> keyPeople = new ArrayList<KeyPerson>();
         keyPeople.add(

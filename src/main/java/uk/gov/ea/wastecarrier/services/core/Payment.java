@@ -1,5 +1,7 @@
 package uk.gov.ea.wastecarrier.services.core;
 
+import java.util.Date;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -18,9 +20,9 @@ public class Payment
 	@JsonProperty
 	private String mac_code;
 	@JsonProperty
-	private String dateReceived; /*Date provided on payment details*/
+	private Date dateReceived; /*Date provided on payment details*/
 	@JsonProperty
-	private String dateEntered;  /*Date entered into the system*/
+	private Date dateEntered;  /*Date entered into the system*/
 	@JsonProperty
 	private String registrationReference;
 	@JsonProperty
@@ -39,7 +41,7 @@ public class Payment
 	{
 	}
 	
-	public Payment(int amount, String currency, String dateReceived,
+	public Payment(int amount, String currency, Date dateReceived,
 			String updatedByUser, String comment, PaymentType paymentType)
 	{
 		super();
@@ -51,8 +53,8 @@ public class Payment
 		this.paymentType = paymentType;
 	}
 	
-	public Payment(String orderKey, int amount, String currency, String mac_code, String dateReceived,
-			String dateEntered, String registrationReference, String worldPayPaymentStatus, String updatedByUser,
+	public Payment(String orderKey, int amount, String currency, String mac_code, Date dateReceived,
+			Date dateEntered, String registrationReference, String worldPayPaymentStatus, String updatedByUser,
 			String comment, PaymentType paymentType)
 	{
 		super();
@@ -149,7 +151,7 @@ public class Payment
 	/**
 	 * @return the dateReceived
 	 */
-	public String getDateReceived()
+	public Date getDateReceived()
 	{
 		return dateReceived;
 	}
@@ -157,7 +159,7 @@ public class Payment
 	/**
 	 * @param dateReceived the dateReceived to set
 	 */
-	public void setDateReceived(String dateReceived)
+	public void setDateReceived(Date dateReceived)
 	{
 		this.dateReceived = dateReceived;
 	}
@@ -165,7 +167,7 @@ public class Payment
 	/**
 	 * @return the dateEntered
 	 */
-	public String getDateEntered()
+	public Date getDateEntered()
 	{
 		return dateEntered;
 	}
@@ -175,7 +177,7 @@ public class Payment
 	 * was entered into the system.
 	 * @param dateEntered the dateEntered to set
 	 */
-	public void setDateEntered(String dateEntered)
+	public void setDateEntered(Date dateEntered)
 	{
 		this.dateEntered = dateEntered;
 	}

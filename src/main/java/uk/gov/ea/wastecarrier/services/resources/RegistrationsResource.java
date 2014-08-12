@@ -637,7 +637,7 @@ public class RegistrationsResource
 				OrderItem item = new OrderItem();
 				item.setAmount(0);
 				item.setCurrency("GBP");
-				item.setLastUpdated("");
+				item.setLastUpdated(now);
 				item.setDescription("default item");
 				item.setReference("");
 				List<OrderItem> orderItems = new ArrayList<OrderItem>();

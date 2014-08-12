@@ -1,7 +1,6 @@
 package uk.gov.ea.wastecarrier.services.resources;
 
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
-import uk.gov.ea.wastecarrier.services.core.MetaData;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.core.Payment;
 
@@ -16,6 +15,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 
+import java.util.Date;
 import java.util.logging.Logger;
 
 /**
@@ -59,7 +59,7 @@ public class PaymentResource
 		/*
 		 * Update payment request with the payment entered date
 		 */
-		payment.setDateEntered(MetaData.getCurrentDateTime());
+		payment.setDateEntered(new Date());
 		
 		/*
 		 * Add payment to database

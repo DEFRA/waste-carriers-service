@@ -1,5 +1,7 @@
 package uk.gov.ea.wastecarrier.services.core;
 
+import java.util.Date;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -13,7 +15,7 @@ public class OrderItem
 	private int amount;
 	@JsonProperty
 	private String currency;
-	private String lastUpdated;
+	private Date lastUpdated;
 	private String description;
 	private String reference;
 	
@@ -24,7 +26,7 @@ public class OrderItem
 	{
 	}
 	
-	public OrderItem(int amount, String currency, String lastUpdated, String description, 
+	public OrderItem(int amount, String currency, Date lastUpdated, String description, 
 			String reference)
 	{
 		super();
@@ -66,14 +68,14 @@ public class OrderItem
 	/**
 	 * @return the lastUpdated
 	 */
-	public String getLastUpdated()
+	public Date getLastUpdated()
 	{
 		return lastUpdated;
 	}
 	/**
 	 * @param lastUpdated the lastUpdated to set
 	 */
-	public void setLastUpdated(String lastUpdated)
+	public void setLastUpdated(Date lastUpdated)
 	{
 		this.lastUpdated = lastUpdated;
 	}
