@@ -175,7 +175,7 @@ public class RegistrationsResource
 		// TODO This was quickly added in to support reporting. Also needs to be re-factored out
 		try {
 			if (from.isPresent() && until.isPresent()) {
-				ReportingHelper helper = new ReportingHelper(this.databaseHelper);
+				ReportingHelper helper = new ReportingHelper(new QueryHelper(this.databaseHelper));
 				helper.fromDate = from.get();
 				helper.toDate = until.get();
 				helper.route = route;

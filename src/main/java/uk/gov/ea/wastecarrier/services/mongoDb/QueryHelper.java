@@ -9,10 +9,7 @@ import uk.gov.ea.wastecarrier.services.core.Registration;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 
 public class QueryHelper {
@@ -89,5 +86,88 @@ public class QueryHelper {
             throw new WebApplicationException(Response.Status.UNAUTHORIZED);
         }
         return db;
+    }
+
+    public static String timeToDateTimeString(long time) {
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(time);
+        StringBuilder dateBuilder = new StringBuilder();
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH) + 1;
+        int day = cal.get(Calendar.DAY_OF_MONTH);
+        int hour = cal.get(Calendar.HOUR_OF_DAY);
+        int minute = cal.get(Calendar.MINUTE);
+        int second = cal.get(Calendar.SECOND);
+
+        dateBuilder.append(year + "/");
+        if (month < 10) {
+            dateBuilder.append("0");
+        }
+        dateBuilder.append(month + "/");
+        if (day < 10) {
+            dateBuilder.append("0");
+        }
+        dateBuilder.append(day + " ");
+        if (hour < 10) {
+            dateBuilder.append("0");
+        }
+        dateBuilder.append(hour + ":");
+        if (minute < 10) {
+            dateBuilder.append("0");
+        }
+        dateBuilder.append(minute + ":");
+        if (second < 10) {
+            dateBuilder.append("0");
+        }
+        dateBuilder.append(second);
+
+        return dateBuilder.toString();
+    }
+
+    /**
+     * Returns the time in milliseconds for a date in ddmmyyyy format.
+     *
+     * @param date
+     *            The date in ddmmyyyy or dd/mm/yyyy format.
+     * @param end
+     *            Whether the returned time should be for the end of the day.
+     * @return The time in milliseconds for a date in ddmmyyyy or dd/mm/yyyy
+     *         format.
+     */
+    public static long dateStringToLong(String date, boolean end) {
+
+        if (date == null || (date.length() != 8 && date.length() != 10)) {
+            throw new IllegalArgumentException("Invalid date string: " + date);
+        }
+        int day = Integer.parseInt(date.substring(0, 2));
+        int start = 2;
+        if (date.charAt(start) == '/') {
+            start++;
+        }
+        int month = Integer.parseInt(date.substring(start, start + 2)) - 1;
+        start += 2;
+        if (date.charAt(start) == '/') {
+            start++;
+        }
+        int year = Integer.parseInt(date.substring(start, start + 4));
+        Calendar cal = Calendar.getInstance();
+
+        if (end) {
+            cal.set(Calendar.MILLISECOND, 999);
+            cal.set(Calendar.SECOND, 59);
+            cal.set(Calendar.MINUTE, 59);
+            cal.set(Calendar.HOUR_OF_DAY, 23);
+        } else {
+            cal.set(Calendar.MILLISECOND, 0);
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MINUTE, 0);
+            cal.set(Calendar.HOUR_OF_DAY, 0);
+        }
+        cal.set(Calendar.DAY_OF_MONTH, day);
+        cal.set(Calendar.MONTH, month);
+        cal.set(Calendar.YEAR, year);
+
+        return cal.getTimeInMillis();
     }
 }
