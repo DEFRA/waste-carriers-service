@@ -4,7 +4,6 @@ import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import net.vz.mongodb.jackson.JacksonDBCollection;
-import uk.gov.ea.wastecarrier.services.WasteCarrierService;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 
 import javax.ws.rs.WebApplicationException;

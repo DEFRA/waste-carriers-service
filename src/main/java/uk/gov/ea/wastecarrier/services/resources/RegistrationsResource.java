@@ -234,7 +234,7 @@ public class RegistrationsResource
 				BoolFilterBuilder fbBoolFilter = null;
 				GeoDistanceSortBuilder gsb = null;
 				boolean useDistanceFilter = false;
-				boolean excludeId = false;
+				//boolean excludeId = false;
 				if (activeOnly.isPresent())
 				{
 					GeoDistanceFilterBuilder geoFilter = null;
