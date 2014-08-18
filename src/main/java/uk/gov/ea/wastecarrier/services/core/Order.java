@@ -31,7 +31,6 @@ public class Order
 	}
 	
 	@JsonProperty
-	@NotBlank
 	private String orderId;
 	
 	@JsonProperty

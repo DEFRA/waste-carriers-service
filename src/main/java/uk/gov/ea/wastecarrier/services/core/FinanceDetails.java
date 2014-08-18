@@ -119,4 +119,28 @@ public class FinanceDetails
 		}
 		return null;
 	}
+	
+	/**
+	 * @param orderCode
+	 * @return the Payment with the given orderCode, or null if it does not exist
+	 */
+	public Order getOrderForOrderCode(String orderCode)
+	{
+		if (orderCode == null)
+		{
+			return null;
+		}
+		if (getOrders() == null)
+		{
+			return null;
+		}
+		for (Order order: getOrders())
+		{
+			if (orderCode.equals(order.getOrderCode()))
+			{
+				return order;
+			}
+		}
+		return null;
+	}
 }

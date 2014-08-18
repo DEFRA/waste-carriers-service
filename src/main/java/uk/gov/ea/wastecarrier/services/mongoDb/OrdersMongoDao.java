@@ -1,5 +1,6 @@
 package uk.gov.ea.wastecarrier.services.mongoDb;
 
+import java.util.UUID;
 import java.util.logging.Logger;
 
 import javax.ws.rs.WebApplicationException;
@@ -48,11 +49,27 @@ public class OrdersMongoDao
 				throw new WebApplicationException(Status.FORBIDDEN);
 			}
 			
+			// Generate order id
+			order.setOrderId(UUID.randomUUID().toString());
+			
 			/*
 			 * Create MONGOJACK connection to the database
 			 */
 			JacksonDBCollection<Registration, String> registrations = JacksonDBCollection.wrap(
 					db.getCollection(Registration.COLLECTION_NAME), Registration.class, String.class);
+			
+			/*
+			 * Before adding the order, verify that this order (identified by its orderCode) 
+			 * has not already been received.
+			 */
+			
+			Registration registration = registrations.findOneById(registrationId);
+			Order existingOrder = registration.getFinanceDetails().getOrderForOrderCode(order.getOrderCode());
+			if (existingOrder != null)
+			{
+				log.info("The registration already has a order for order code " + order.getOrderCode() + ". Not adding order again.");
+				return order;
+			}
 			
 			/*
 			 * Update registration with order information into the database
@@ -62,7 +79,7 @@ public class OrdersMongoDao
 			
 			if (result.getError() == null)
 			{
-				// Find registration after adding order
+				// Find registration after adding order, This updates the balance in the database
 				Registration foundReg = registrations.findOneById(registrationId);
 				result = registrations.updateById(registrationId, foundReg);
 				if (result.getError() == null)
