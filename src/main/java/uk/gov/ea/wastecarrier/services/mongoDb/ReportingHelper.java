@@ -22,6 +22,7 @@ public class ReportingHelper {
 	public Set<String> route;
 	public Set<String> status;
 	public Set<String> businessType;
+    public Set<String> tier;
 
     public ReportingHelper(QueryHelper queryHelper) {
 
@@ -87,6 +88,7 @@ public class ReportingHelper {
 		queryHelper.addOptionalQueryProperty("metaData.status", this.status, queryProps);
         queryHelper.addOptionalQueryProperty("metaData.route", this.route, queryProps);
         queryHelper.addOptionalQueryProperty("businessType", this.businessType, queryProps);
+        queryHelper.addOptionalQueryProperty("tier", this.tier, queryProps);
 
 		return queryProps;
 	}

@@ -165,7 +165,8 @@ public class RegistrationsResource
 			@QueryParam("until") Optional<String> until,
 			@QueryParam("route[]") Set<String> route,
 			@QueryParam("status[]") Set<String> status,
-			@QueryParam("businessType[]") Set<String> businessType)
+			@QueryParam("businessType[]") Set<String> businessType,
+            @QueryParam("tier[]") Set<String> tier)
 	{
 		log.fine("Get Method Detected at /registrations");
 		ArrayList<Registration> returnlist = new ArrayList<Registration>();
@@ -181,6 +182,7 @@ public class RegistrationsResource
 				helper.route = route;
 				helper.status = status;
 				helper.businessType = businessType;
+                helper.tier = tier;
 				
 				List<Registration> reportResults = helper.getRegistrations();
 				
