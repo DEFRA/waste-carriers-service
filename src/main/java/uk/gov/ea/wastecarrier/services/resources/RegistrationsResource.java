@@ -166,7 +166,9 @@ public class RegistrationsResource
 			@QueryParam("route[]") Set<String> route,
 			@QueryParam("status[]") Set<String> status,
 			@QueryParam("businessType[]") Set<String> businessType,
-            @QueryParam("tier[]") Set<String> tier)
+            @QueryParam("tier[]") Set<String> tier,
+            @QueryParam("declaredConvictions") Optional<String> declaredConvictions,
+            @QueryParam("criminallySuspect") Optional<Boolean> criminallySuspect)
 	{
 		log.fine("Get Method Detected at /registrations");
 		ArrayList<Registration> returnlist = new ArrayList<Registration>();
@@ -183,8 +185,10 @@ public class RegistrationsResource
 				helper.status = status;
 				helper.businessType = businessType;
                 helper.tier = tier;
-				
-				List<Registration> reportResults = helper.getRegistrations();
+                helper.declaredConvictions = declaredConvictions.get();
+                helper.criminallySuspect = criminallySuspect.get();
+
+                List<Registration> reportResults = helper.getRegistrations();
 				
 				if (reportResults.size() == 0) {
 					log.info("No results found - returning empty list");
