@@ -5,10 +5,7 @@ import com.mongodb.DBCursor;
 import uk.gov.ea.wastecarrier.services.WasteCarrierService;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,6 +20,8 @@ public class ReportingHelper {
 	public Set<String> status;
 	public Set<String> businessType;
     public Set<String> tier;
+    public String declaredConvictions;
+    public Boolean criminallySuspect;
 
     public ReportingHelper(QueryHelper queryHelper) {
 
@@ -85,6 +84,8 @@ public class ReportingHelper {
 		
 		Map<String, Object> queryProps = new HashMap<String, Object>();
 
+        queryHelper.addOptionalQueryProperty("declaredConvictions", this.declaredConvictions, queryProps);
+        queryHelper.addOptionalQueryProperty("criminallySuspect", this.criminallySuspect, queryProps);
 		queryHelper.addOptionalQueryProperty("metaData.status", this.status, queryProps);
         queryHelper.addOptionalQueryProperty("metaData.route", this.route, queryProps);
         queryHelper.addOptionalQueryProperty("businessType", this.businessType, queryProps);
