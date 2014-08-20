@@ -63,6 +63,23 @@ public class QueryHelper {
         queryProps.put(propertyName, processed);
     }
 
+    protected void addOptionalQueryProperty(
+            String propertyName,
+            Object propertyValue,
+            Map<String, Object> queryProps) {
+
+        if (propertyValue == null || "".equals(propertyValue)) {
+            return;
+        }
+
+        if (propertyValue instanceof String) {
+            queryProps.put(propertyName, processQueryValue((String) propertyValue));
+        } else {
+            queryProps.put(propertyName, propertyValue);
+        }
+
+    }
+
     private String processQueryValue(String value) {
         return "NULL".equals(value) ? null : value;
     }

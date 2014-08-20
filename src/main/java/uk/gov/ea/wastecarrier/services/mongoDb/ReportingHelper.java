@@ -84,14 +84,8 @@ public class ReportingHelper {
 		
 		Map<String, Object> queryProps = new HashMap<String, Object>();
 
-        Set<String> declared = new HashSet<String>();
-        declared.add(this.declaredConvictions);
-
-        Set<Boolean> suspect = new HashSet<Boolean>();
-        suspect.add(this.criminallySuspect);
-
-        queryHelper.addOptionalQueryProperty("declaredConvictions", declared, queryProps);
-//        queryHelper.addOptionalQueryProperty("criminallySuspect", suspect, queryProps);
+        queryHelper.addOptionalQueryProperty("declaredConvictions", this.declaredConvictions, queryProps);
+        queryHelper.addOptionalQueryProperty("criminallySuspect", this.criminallySuspect, queryProps);
 		queryHelper.addOptionalQueryProperty("metaData.status", this.status, queryProps);
         queryHelper.addOptionalQueryProperty("metaData.route", this.route, queryProps);
         queryHelper.addOptionalQueryProperty("businessType", this.businessType, queryProps);
