@@ -40,7 +40,7 @@ public class MetaData {
 	 *
 	 */
 	public enum RegistrationStatus {
-	    PENDING, ACTIVATE, ACTIVE, REVOKED, INACTIVE
+	    PENDING, ACTIVATE, ACTIVE, REVOKED, EXPIRED, INACTIVE
 	}
 	
 	public enum RouteType {
