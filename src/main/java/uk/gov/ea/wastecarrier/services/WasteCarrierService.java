@@ -11,16 +11,7 @@ import uk.gov.ea.wastecarrier.services.health.MongoHealthCheck;
 import uk.gov.ea.wastecarrier.services.health.TemplateHealthCheck;
 import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.MongoManaged;
-import uk.gov.ea.wastecarrier.services.resources.IndividualConvictionCheckResource;
-import uk.gov.ea.wastecarrier.services.resources.OrderResource;
-import uk.gov.ea.wastecarrier.services.resources.NewPaymentResource;
-import uk.gov.ea.wastecarrier.services.resources.OrdersResource;
-import uk.gov.ea.wastecarrier.services.resources.OrganisationConvictionCheckResource;
-import uk.gov.ea.wastecarrier.services.resources.PaymentResource;
-import uk.gov.ea.wastecarrier.services.resources.RegistrationReadEditResource;
-import uk.gov.ea.wastecarrier.services.resources.RegistrationVersionResource;
-import uk.gov.ea.wastecarrier.services.resources.RegistrationsResource;
-import uk.gov.ea.wastecarrier.services.resources.SettingsResource;
+import uk.gov.ea.wastecarrier.services.resources.*;
 import uk.gov.ea.wastecarrier.services.tasks.Indexer;
 import uk.gov.ea.wastecarrier.services.tasks.LocationPopulator;
 
@@ -86,6 +77,9 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration> {
         
         // Add Settings resource
         environment.addResource(new SettingsResource(configuration.getSettings()));
+
+        // Add query resource
+        environment.addResource(new QueryResource(dbConfig));
         
         //Add convictions resource
         environment.addResource(new IndividualConvictionCheckResource(esConfig));

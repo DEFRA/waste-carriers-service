@@ -161,44 +161,12 @@ public class RegistrationsResource
 			@QueryParam("ac") Optional<String> account,
 			@QueryParam("activeOnly") Optional<Boolean> activeOnly, 
 			@QueryParam("excludeRegId") Optional<Boolean> excludeRegId,
-			@QueryParam("from") Optional<String> from,
-			@QueryParam("until") Optional<String> until,
-			@QueryParam("route[]") Set<String> route,
-			@QueryParam("status[]") Set<String> status,
-			@QueryParam("businessType[]") Set<String> businessType,
-            @QueryParam("tier[]") Set<String> tier,
-            @QueryParam("declaredConvictions") Optional<String> declaredConvictions,
-            @QueryParam("criminallySuspect") Optional<Boolean> criminallySuspect)
+            @QueryParam("status[]") Set<String> status)
 	{
 		log.fine("Get Method Detected at /registrations");
 		ArrayList<Registration> returnlist = new ArrayList<Registration>();
 		
 		//TODO Re-factor, restructure and simplify this method...
-		
-		// TODO This was quickly added in to support reporting. Also needs to be re-factored out
-		try {
-			if (from.isPresent() && until.isPresent()) {
-				ReportingHelper helper = new ReportingHelper(new QueryHelper(this.databaseHelper));
-				helper.fromDate = from.get();
-				helper.toDate = until.get();
-				helper.route = route;
-				helper.status = status;
-				helper.businessType = businessType;
-                helper.tier = tier;
-                helper.declaredConvictions = declaredConvictions.get();
-                helper.criminallySuspect = criminallySuspect.get();
-
-                List<Registration> reportResults = helper.getRegistrations();
-				
-				if (reportResults.size() == 0) {
-					log.info("No results found - returning empty list");
-				}
-				return reportResults;
-			}
-		} catch (MongoException e) {
-			log.severe("Database not found, check the database is running");
-			throw new WebApplicationException(Status.SERVICE_UNAVAILABLE);
-		}
 
         // TODO This was quickly added in to support soft deleting registrations. Also needs to be re-factored out
         try {
