@@ -37,8 +37,7 @@ public class ReportingHelper {
 
         BasicDBObject query = new BasicDBObject();
 
-        applyFromFilter(query);
-        applyToDateFilter(query);
+        applyDateFilters(query);
 
         if (queryProps != null) {
             for (Map.Entry<String, Object> entry : queryProps.entrySet()) {
@@ -61,31 +60,29 @@ public class ReportingHelper {
 		return queryHelper.toRegistrationList(cursor);
 	}
 
-    protected void applyFromFilter(BasicDBObject query) {
+    protected void applyDateFilters(BasicDBObject query) {
+
+        String fromString = null;
+        String untilString = null;
 
         if (fromDate.isPresent()) {
             Long from = QueryHelper.dateStringToLong(fromDate.get(), false);
-            String fromString = QueryHelper.timeToDateTimeString(from);
-            query.append(DATE_FILTER_PROPERTY, new BasicDBObject("$gt", fromString));
+            fromString = QueryHelper.timeToDateTimeString(from);
         }
-    }
-
-    protected void applyToDateFilter(BasicDBObject query) {
 
         if (toDate.isPresent()) {
             Long until = QueryHelper.dateStringToLong(toDate.get(), true);
+            untilString = QueryHelper.timeToDateTimeString(until);
+        }
 
-            Long from = 0L;
-            if (fromDate.isPresent()){
-                from = QueryHelper.dateStringToLong(fromDate.get(), false);
-            }
-
-            if (from > 0 && from > until) {
-                throw new IllegalArgumentException(
-                        "from must not be greater than until");
-            }
-
-            String untilString = QueryHelper.timeToDateTimeString(until);
+        if (fromString != null && untilString != null) {
+            query.append(
+                    DATE_FILTER_PROPERTY,
+                    new BasicDBObject("$gt", fromString)
+                            .append("$lte", untilString));
+        } else if (fromString != null) {
+            query.append(DATE_FILTER_PROPERTY, new BasicDBObject("$gt", fromString));
+        } else if (untilString != null) {
             query.append(DATE_FILTER_PROPERTY, new BasicDBObject("$lte", untilString));
         }
 
@@ -114,6 +111,5 @@ public class ReportingHelper {
 
 		return queryProps;
 	}
-	
 
 }
