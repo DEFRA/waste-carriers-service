@@ -38,6 +38,43 @@ public class PaymentsMongoDao
 	}
 	
 	/**
+	 * Before adding the payment, verify that this payment (identified by its orderCode) 
+	 * has not already been received.
+	 * 
+	 * @param registrationId
+	 * @param payment
+	 * @return true if payment valid, false otherwise
+	 */
+	public boolean validatePayment(String registrationId, Payment payment)
+	{
+		DB db = databaseHelper.getConnection();
+		if (db == null)
+		{
+			log.severe("Could not establish database connection to MongoDB! Check the database is running");
+			throw new WebApplicationException(Status.SERVICE_UNAVAILABLE);
+		}
+		if (!db.isAuthenticated())
+		{
+			throw new WebApplicationException(Status.FORBIDDEN);
+		}
+		
+		/*
+		 * Create MONGOJACK connection to the database
+		 */
+		JacksonDBCollection<Registration, String> registrations = JacksonDBCollection.wrap(
+				db.getCollection(Registration.COLLECTION_NAME), Registration.class, String.class);
+		
+		Registration registration = registrations.findOneById(registrationId);
+		Payment existingPayment = registration.getFinanceDetails().getPaymentForOrderCode(payment.getOrderKey());
+		if (existingPayment != null)
+		{
+			log.info("The registration already has a payment for order code " + payment.getOrderKey() + ". Not adding payment again.");
+			return false;
+		}
+		return true;
+	}
+	
+	/**
 	 * Insert payment into registration details into the database
 	 * 
 	 * @param registrationId the registration with which to add the payment
@@ -67,16 +104,10 @@ public class PaymentsMongoDao
 		 * Before adding the payment, verify that this payment (identified by its orderCode) 
 		 * has not already been received.
 		 */
-		
-		Registration registration = registrations.findOneById(registrationId);
-		Payment existingPayment = registration.getFinanceDetails().getPaymentForOrderCode(payment.getOrderKey());
-		if (existingPayment != null)
+		if (!this.validatePayment(registrationId, payment))
 		{
-			log.info("The registration already has a payment for order code " + payment.getOrderKey() + ". Not adding payment again.");
-			return payment;
+			throw new WebApplicationException(Status.NOT_MODIFIED);
 		}
-
-		//TODO also update the order status
 		
 		/*
 		 * Update registration with payment information into database

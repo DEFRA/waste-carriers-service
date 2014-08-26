@@ -70,7 +70,7 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration> {
         
         // Add Payment Resource, testing new URL for get payment details
         environment.addResource(new NewPaymentResource());
-        environment.addResource(new PaymentResource(dbConfig));
+        environment.addResource(new PaymentResource(dbConfig, configuration.getSettings()));
         // Add Order Resource
         environment.addResource(new OrderResource(dbConfig));
         environment.addResource(new OrdersResource(dbConfig));
