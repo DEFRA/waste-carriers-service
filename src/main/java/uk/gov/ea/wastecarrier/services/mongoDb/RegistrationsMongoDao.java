@@ -134,6 +134,64 @@ public class RegistrationsMongoDao
 		}
 	}
 	
+	/**
+	 * Return the registration with the given id
+	 * @param id
+	 * @return
+	 */
+	public Registration updateRegistration(Registration reg)
+	{
+		
+    	log.info("Updating registration  with id = " + reg.getId());
+    	
+    	// Use id to lookup record in database return registration details
+    	DB db = databaseHelper.getConnection();
+		if (db != null)
+		{	
+			if (!db.isAuthenticated())
+			{
+				log.severe("Update registration - Could not authenticate against MongoDB!");
+				throw new WebApplicationException(Status.FORBIDDEN);
+			}
+			
+			// Create MONGOJACK connection to the database
+			JacksonDBCollection<Registration, String> registrations = JacksonDBCollection.wrap(
+					db.getCollection(Registration.COLLECTION_NAME), Registration.class, String.class);
+			
+			// If object found
+			WriteResult<Registration, String> result = registrations.updateById(reg.getId(), reg);
+			log.fine("Found result: '" + result + "' " );
+			
+			if (!String.valueOf("").equals(result.getError()))
+			{
+				// did not error, so continue
+				try
+				{
+					// Make a second request for the updated full registration details to be returned
+					Registration savedObject = registrations.findOneById(reg.getId());
+					
+					return savedObject;
+				}
+				catch (IllegalArgumentException e)
+				{
+					log.warning("Caught exception: " + e.getMessage() + " - Cannot find Registration ID: " + reg.getId());
+					throw new WebApplicationException(Status.NOT_FOUND);
+				}
+			}
+			else
+			{
+				log.severe("Error while updating registration with ID " + reg.getId() + " in MongoDB. Result error:" + result.getError());
+				throw new WebApplicationException(Status.NOT_MODIFIED);
+			}
+			
+		}
+		else
+		{
+			log.severe("Update registration - Could not obtain connection to MongoDB!");
+			throw new WebApplicationException(Status.SERVICE_UNAVAILABLE);
+		}
+	}
+	
 	
 	/**
 	 * 

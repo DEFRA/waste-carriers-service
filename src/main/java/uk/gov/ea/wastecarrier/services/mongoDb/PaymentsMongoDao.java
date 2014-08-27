@@ -125,4 +125,11 @@ public class PaymentsMongoDao
 			throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
 		}
 	}
+
+	public void deletePayment(Payment resultPayment)
+	{
+		// TODO Auto-generated method stub
+		log.severe("Not implemented delete payment - part of the rollback");
+		throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+	}
 }

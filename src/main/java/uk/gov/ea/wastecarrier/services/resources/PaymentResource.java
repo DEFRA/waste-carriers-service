@@ -1,15 +1,19 @@
 package uk.gov.ea.wastecarrier.services.resources;
 
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
+import uk.gov.ea.wastecarrier.services.ElasticSearchConfiguration;
 import uk.gov.ea.wastecarrier.services.SettingsConfiguration;
-import uk.gov.ea.wastecarrier.services.core.MetaData;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.core.Payment;
 import uk.gov.ea.wastecarrier.services.core.Settings;
+import uk.gov.ea.wastecarrier.services.core.User;
 
 import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
+import uk.gov.ea.wastecarrier.services.mongoDb.PaymentHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.PaymentsMongoDao;
 import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationsMongoDao;
+import uk.gov.ea.wastecarrier.services.mongoDb.UsersMongoDao;
+import uk.gov.ea.wastecarrier.services.tasks.Indexer;
 
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
@@ -19,8 +23,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response.Status;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.logging.Logger;
 
@@ -35,8 +39,10 @@ import java.util.logging.Logger;
 public class PaymentResource
 {	
 	private PaymentsMongoDao dao;
+	private PaymentHelper paymentHelper;
 	private RegistrationsMongoDao regDao;
-	private Settings settings;
+	private ElasticSearchConfiguration esConfig;
+	private UsersMongoDao userDao;
 	
 	private Logger log = Logger.getLogger(PaymentResource.class.getName());
 	
@@ -44,11 +50,14 @@ public class PaymentResource
 	 * 
 	 * @param database
 	 */
-	public PaymentResource(DatabaseConfiguration database, SettingsConfiguration settingConfig)
+	public PaymentResource(DatabaseConfiguration database, SettingsConfiguration settingConfig,
+			ElasticSearchConfiguration elasticSearch)
 	{
 		dao = new PaymentsMongoDao(database);
 		regDao = new RegistrationsMongoDao(new DatabaseHelper(database));
-		settings = new Settings(settingConfig);
+		paymentHelper = new PaymentHelper(new Settings(settingConfig));
+		esConfig = elasticSearch;
+		userDao = new UsersMongoDao(database);
 	}
 
 	/**
@@ -79,45 +88,31 @@ public class PaymentResource
 		
 		/*
 		 * Update the registration status, if appropriate
+		 * 
 		 */
 		Registration registration = regDao.getRegistration(registrationId);
-		if (registration.getFinanceDetails().getBalance() == 0 && registration.getCriminallySuspect() == false)
+		User user = userDao.getUserByEmail(registration.getAccountEmail());
+		
+		if (paymentHelper.isReadyToBeActivated(registration, user) )
 		{
-			//make registration active
-			MetaData md = registration.getMetaData();
-			md.setLastModified(MetaData.getCurrentDateTime());
-			
-			// Update Activation status and time
-			if (!MetaData.RegistrationStatus.ACTIVE.equals(md.getStatus()))
+			registration = paymentHelper.setupRegistrationForActivation(registration);
+			try
 			{
-				md.setDateActivated(MetaData.getCurrentDateTime());
+				Registration savedObject = regDao.updateRegistration(registration);
+				
+				log.info("Re-Index the updated registration in ElasticSearch...");
+				Indexer.indexRegistration(esConfig, savedObject);
 			}
-			md.setStatus(MetaData.RegistrationStatus.ACTIVE);
-			
-			registration.setMetaData(md);
-			   
-			//set appropriate metadata
-			md.setDateActivated("today");
-			   
-			//set expiry date
-			Calendar cal = Calendar.getInstance();
-			String[] regPeriodList = settings.getRegistrationPeriod().split(" ");
-			int length = Integer.parseInt(regPeriodList[0]);
-			String type = regPeriodList[0];			
-			if (type == "YEARS")
+			catch(Exception e)
 			{
-				cal.add(Calendar.YEAR, length);
+				/*
+				 * TODO: Need to handle this better because if the registration update 
+				 * fails we should roll-back the payment?
+				 */
+				dao.deletePayment(resultPayment);
+				log.severe("Error while updating registration after payment with ID " + registration.getId() + " in MongoDB.");
+				throw new WebApplicationException(Status.NOT_MODIFIED);
 			}
-			else if (type == "MONTHS")
-			{
-				cal.add(Calendar.MONTH, length);
-			}
-			else if (type == "DAYS")
-			{
-				cal.add(Calendar.DAY_OF_MONTH, length);
-			}
-			Date expiryDate = cal.getTime();
-			registration.setExpiresOn(expiryDate);
 		}
 		
 		return resultPayment;
