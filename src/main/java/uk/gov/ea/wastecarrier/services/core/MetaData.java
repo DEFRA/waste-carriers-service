@@ -69,7 +69,7 @@ public class MetaData {
 	{
 	}
 
-    public MetaData(String dateRegistered, String anotherString) 
+    public MetaData(String dateRegistered, String anotherString, RouteType route) 
     {
         this.dateRegistered = dateRegistered;
         this.anotherString = anotherString;
@@ -77,7 +77,7 @@ public class MetaData {
         this.dateActivated = "";
         //The initial status is PENDING for most new registrations.
         this.status = RegistrationStatus.PENDING;
-        this.route = RouteType.DIGITAL;
+        this.route = route;
     }
 
     public String getDateRegistered() {

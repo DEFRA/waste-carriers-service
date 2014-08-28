@@ -14,7 +14,6 @@ import uk.gov.ea.wastecarrier.services.elasticsearch.ElasticSearchUtils;
 import uk.gov.ea.wastecarrier.services.mongoDb.AccountHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.QueryHelper;
-import uk.gov.ea.wastecarrier.services.mongoDb.ReportingHelper;
 import uk.gov.ea.wastecarrier.services.tasks.Indexer;
 import uk.gov.ea.wastecarrier.services.tasks.PostcodeRegistry;
 
@@ -570,7 +569,7 @@ public class RegistrationsResource
 			 * Insert registration details into the database
 			 */
 			// Update Registration MetaData to include current time
-			reg.setMetaData(new MetaData(MetaData.getCurrentDateTime(), "userDetailAddedAtRegistration"));
+			reg.setMetaData(new MetaData(MetaData.getCurrentDateTime(), "userDetailAddedAtRegistration", reg.getMetaData().getRoute()));
 			
 			// Update Registration Location to include location, derived from postcode
 			if (reg.getPostcode() != null)
