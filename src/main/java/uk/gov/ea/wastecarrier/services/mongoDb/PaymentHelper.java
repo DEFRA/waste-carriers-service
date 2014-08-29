@@ -48,13 +48,38 @@ public class PaymentHelper
 		md.setLastModified(MetaData.getCurrentDateTime());
 		
 		// Update Activation status and time
-		if (!MetaData.RegistrationStatus.ACTIVE.equals(md.getStatus()))
+		md = makeActive(md);
+		
+		registration.setMetaData(md);
+		
+		// Set expires on date
+		registration.setExpiresOn(getExpiryDate());
+		return registration;
+	}
+	
+	/**
+	 * Updates the MetaData to give it an active status
+	 * @param md
+	 * @return
+	 */
+	private MetaData makeActive(MetaData md)
+	{
+		// Update Activation status and time
+		if (MetaData.RegistrationStatus.PENDING.equals(md.getStatus()))
 		{
 			md.setDateActivated(MetaData.getCurrentDateTime());
 			md.setStatus(MetaData.RegistrationStatus.ACTIVE);
 		}
-		registration.setMetaData(md);
-		
+		return md;
+	}
+	
+	/**
+	 * Create an updated expired date based on the current time and the 
+	 * settings provided
+	 * @return
+	 */
+	private Date getExpiryDate()
+	{
 		// Set expires on date
 		Calendar cal = Calendar.getInstance();
 		String[] regPeriodList = settings.getRegistrationPeriod().split(" ");
@@ -73,7 +98,6 @@ public class PaymentHelper
 			cal.add(Calendar.DAY_OF_MONTH, length);
 		}
 		Date expiryDate = cal.getTime();
-		registration.setExpiresOn(expiryDate);
-		return registration;
+		return expiryDate;
 	}
 }
