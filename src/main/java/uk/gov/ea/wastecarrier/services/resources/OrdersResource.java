@@ -1,10 +1,19 @@
 package uk.gov.ea.wastecarrier.services.resources;
 
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
+import uk.gov.ea.wastecarrier.services.ElasticSearchConfiguration;
+import uk.gov.ea.wastecarrier.services.SettingsConfiguration;
 import uk.gov.ea.wastecarrier.services.core.Order;
 import uk.gov.ea.wastecarrier.services.core.Registration;
+import uk.gov.ea.wastecarrier.services.core.Settings;
+import uk.gov.ea.wastecarrier.services.core.User;
 
+import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.OrdersMongoDao;
+import uk.gov.ea.wastecarrier.services.mongoDb.PaymentHelper;
+import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationsMongoDao;
+import uk.gov.ea.wastecarrier.services.mongoDb.UsersMongoDao;
+import uk.gov.ea.wastecarrier.services.tasks.Indexer;
 
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
@@ -14,6 +23,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response.Status;
 
 import java.util.logging.Logger;
 
@@ -28,6 +38,10 @@ import java.util.logging.Logger;
 public class OrdersResource
 {	
 	private OrdersMongoDao dao;
+	private RegistrationsMongoDao regDao;
+	private UsersMongoDao userDao;
+	private ElasticSearchConfiguration esConfig;
+	private PaymentHelper paymentHelper;
 	
 	private Logger log = Logger.getLogger(OrdersResource.class.getName());
 	
@@ -35,9 +49,14 @@ public class OrdersResource
 	 * 
 	 * @param database
 	 */
-	public OrdersResource(DatabaseConfiguration database)
+	public OrdersResource(DatabaseConfiguration database, SettingsConfiguration settingConfig,
+			ElasticSearchConfiguration elasticSearch)
 	{
 		dao = new OrdersMongoDao(database);
+		regDao = new RegistrationsMongoDao(new DatabaseHelper(database));
+		userDao = new UsersMongoDao(database);
+		esConfig = elasticSearch;
+		paymentHelper = new PaymentHelper(new Settings(settingConfig));
 	}
 
 	/**
@@ -54,6 +73,36 @@ public class OrdersResource
 	public Order submitOrder(@PathParam("registrationId") String registrationId, @Valid Order order)
 	{
 		log.info("POST METHOD detected in submitOrder() method. Creating/adding order in database.");
-		return dao.addOrder(registrationId, order);
+		Order resultOrder = dao.addOrder(registrationId, order);
+		
+		/*
+		 * Update the registration status, if appropriate
+		 * 
+		 */
+		Registration registration = regDao.getRegistration(registrationId);
+		User user = userDao.getUserByEmail(registration.getAccountEmail());
+		
+		if (paymentHelper.isReadyToBeActivated(registration, user) )
+		{
+			registration = paymentHelper.setupRegistrationForActivation(registration);
+			try
+			{
+				Registration savedObject = regDao.updateRegistration(registration);
+				
+				log.info("Re-Index the updated registration in ElasticSearch...");
+				Indexer.indexRegistration(esConfig, savedObject);
+			}
+			catch(Exception e)
+			{
+				/*
+				 * TODO: Need to handle this better because if the registration update 
+				 * fails we should roll-back the order?
+				 */
+				log.severe("Error while updating registration after order with ID " + registration.getId() + " in MongoDB.");
+				throw new WebApplicationException(Status.NOT_MODIFIED);
+			}
+		}
+		
+		return resultOrder;
 	}
 }

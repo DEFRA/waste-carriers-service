@@ -73,7 +73,7 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration> {
         environment.addResource(new PaymentResource(dbConfig, configuration.getSettings(), esConfig));
         // Add Order Resource
         environment.addResource(new OrderResource(dbConfig));
-        environment.addResource(new OrdersResource(dbConfig));
+        environment.addResource(new OrdersResource(dbConfig, configuration.getSettings(), esConfig));
         
         // Add Settings resource
         environment.addResource(new SettingsResource(configuration.getSettings()));
