@@ -11,8 +11,8 @@ messageQueue:
 logging:
   # ...
 
-  #standard logging level
-  level: INFO
+  #standard logging level (should usually be INFO)
+  level: DEBUG
   
   #Redefining logging levels for selected classes and packages
   loggers:
