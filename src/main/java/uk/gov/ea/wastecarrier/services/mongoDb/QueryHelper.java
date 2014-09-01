@@ -80,6 +80,24 @@ public class QueryHelper {
 
     }
 
+    protected void addOptionalQueryLikeProperty(
+            String propertyName,
+            Object propertyValue,
+            Map<String, Object> queryProps) {
+
+        if (propertyValue == null || "".equals(propertyValue)) {
+            return;
+        }
+
+        if (propertyValue instanceof String) {
+            String parsedValue = processQueryValue((String) propertyValue);
+            queryProps.put(propertyName, "/" + parsedValue + "/");
+        } else {
+            queryProps.put(propertyName, propertyValue);
+        }
+
+    }
+
     private String processQueryValue(String value) {
         return "NULL".equals(value) ? null : value;
     }

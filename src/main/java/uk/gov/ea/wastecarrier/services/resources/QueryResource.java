@@ -3,8 +3,10 @@ package uk.gov.ea.wastecarrier.services.resources;
 import com.google.common.base.Optional;
 import com.mongodb.MongoException;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
+import uk.gov.ea.wastecarrier.services.core.Payment;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
+import uk.gov.ea.wastecarrier.services.mongoDb.PaymentSearch;
 import uk.gov.ea.wastecarrier.services.mongoDb.QueryHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.ReportingHelper;
 
@@ -42,22 +44,22 @@ public class QueryResource {
     ) {
 
         log.fine("Get Method Detected at /query/registrations");
-        List<Registration> reportResults;
+        List<Registration> searchresults;
 
         try {
-            ReportingHelper helper = new ReportingHelper(new QueryHelper(this.databaseHelper));
-            helper.fromDate = from;
-            helper.toDate = until;
-            helper.route = route;
-            helper.status = status;
-            helper.businessType = businessType;
-            helper.tier = tier;
-            helper.declaredConvictions = declaredConvictions;
-            helper.criminallySuspect = criminallySuspect;
+            ReportingHelper search = new ReportingHelper(new QueryHelper(this.databaseHelper));
+            search.fromDate = from;
+            search.toDate = until;
+            search.route = route;
+            search.status = status;
+            search.businessType = businessType;
+            search.tier = tier;
+            search.declaredConvictions = declaredConvictions;
+            search.criminallySuspect = criminallySuspect;
 
-            reportResults = helper.getRegistrations();
+            searchresults = search.getRegistrations();
 
-            if (reportResults.size() == 0) {
+            if (searchresults.size() == 0) {
                 log.info("No results found - returning empty list");
             }
         } catch (MongoException e) {
@@ -65,6 +67,38 @@ public class QueryResource {
             throw new WebApplicationException(Response.Status.SERVICE_UNAVAILABLE);
         }
 
-        return reportResults;
+        return searchresults;
+    }
+
+    @GET
+    @Path("/" + Payment.COLLECTION_NAME)
+    public List<Registration> getRegistrations(
+            @QueryParam("from") Optional<String> from,
+            @QueryParam("until") Optional<String> until,
+            @QueryParam("paymentType[]") Set<String> paymentTypes,
+            @QueryParam("chargeType[]") Set<String> chargeTypes
+    ) {
+
+        log.fine("Get Method Detected at /query/payments");
+        List<Registration> searchResults;
+
+        try {
+            PaymentSearch search = new PaymentSearch(new QueryHelper(this.databaseHelper));
+            search.fromDate = from;
+            search.toDate = until;
+            search.paymentTypes = paymentTypes;
+            search.chargeTypes = chargeTypes;
+
+            searchResults = search.getRegistrations();
+
+            if (searchResults.size() == 0) {
+                log.info("No results found - returning empty list");
+            }
+        } catch (MongoException e) {
+            log.severe("Database not found, check the database is running");
+            throw new WebApplicationException(Response.Status.SERVICE_UNAVAILABLE);
+        }
+
+        return searchResults;
     }
 }
