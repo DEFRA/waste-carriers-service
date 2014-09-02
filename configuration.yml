@@ -12,7 +12,7 @@ logging:
   # ...
 
   #standard logging level (should usually be INFO)
-  level: DEBUG
+  level: INFO
   
   #Redefining logging levels for selected classes and packages
   loggers:
