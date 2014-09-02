@@ -224,6 +224,9 @@ public class Registration
 	@Valid
 	private Date expiresOn;
 	
+	@JsonProperty
+	private String originalRegistrationNumber;
+	
 	/* Static not applicable value */
 	//private final static String NA = "n/a";
 	
@@ -1017,7 +1020,8 @@ public class Registration
                 && Objects.equals(this.convictionsCheckIndicatesSuspect, other.convictionsCheckIndicatesSuspect)
                 && Objects.equals(this.criminallySuspect, other.criminallySuspect)
                 && Objects.equals(this.declaration, other.declaration)
-                && Objects.equals(this.expiresOn, other.expiresOn);
+                && Objects.equals(this.expiresOn, other.expiresOn)
+                && Objects.equals(this.originalRegistrationNumber, other.originalRegistrationNumber);
     }
 
 	@Override
@@ -1028,7 +1032,7 @@ public class Registration
                 streetLine1, streetLine2, streetLine3, streetLine4, townCity, postcode, country, address, uprn,
                 title, otherTitle, firstName, lastName, position, phoneNumber, contactEmail, totalFee, registrationFee,
                 copyCardFee, copyCards, accountEmail, declaredConvictions, convictionsCheckIndicatesSuspect,
-                criminallySuspect, declaration, expiresOn
+                criminallySuspect, declaration, expiresOn, originalRegistrationNumber
             );
 	}
 
@@ -1047,5 +1051,22 @@ public class Registration
 	{
 		this.financeDetails = financeDetails;
 	}
+	
+	/**
+	 * @return the originalRegistrationNumber
+	 */
+	public String getOriginalRegistrationNumber()
+	{
+		return originalRegistrationNumber;
+	}
+	
+	/**
+	 * @param originalRegistrationNumber the originalRegistrationNumber to set
+	 */
+	public void setOriginalRegistrationNumber(String originalRegistrationNumber)
+	{
+		this.originalRegistrationNumber = originalRegistrationNumber;
+	}
+
 	
 }

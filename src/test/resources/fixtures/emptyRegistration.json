@@ -40,6 +40,7 @@
 	"declaredConvictions":null,
 	"declaration":null,
 	"accessCode":null,
+	"originalRegistrationNumber":null,
 	"company_no":null,
 	"key_people":null,
 	"total_fee":null,
