@@ -5,6 +5,8 @@ import java.util.Date;
 import javax.annotation.Nonnull;
 import javax.validation.Valid;
 
+import org.mongojack.MongoCollection;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -12,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author Steve
  *
  */
+@MongoCollection(name = "orderItems")
 public class OrderItem
 {
 	@JsonProperty
