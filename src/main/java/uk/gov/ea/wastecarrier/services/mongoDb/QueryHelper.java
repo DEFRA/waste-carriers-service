@@ -82,20 +82,31 @@ public class QueryHelper {
 
     protected void addOptionalQueryLikeProperty(
             String propertyName,
-            Object propertyValue,
+            Collection<String> propertyValue,
             Map<String, Object> queryProps) {
 
-        if (propertyValue == null || "".equals(propertyValue)) {
+        if (propertyValue == null || propertyValue.size() == 0) {
             return;
         }
 
-        if (propertyValue instanceof String) {
-            String parsedValue = processQueryValue((String) propertyValue);
+        if (propertyValue.size() == 1) {
+            String value = propertyValue.iterator().next();
+            if (value == null || "".equals(value)) {
+                return;
+            }
+            String parsedValue = processQueryValue(value);
             queryProps.put(propertyName, "/" + parsedValue + "/");
-        } else {
-            queryProps.put(propertyName, propertyValue);
+            return;
         }
 
+        String[] processed = new String[propertyValue.size()];
+        int index = 0;
+        for (String value : propertyValue) {
+            String parsedValue = processQueryValue(value);
+            processed[index] = "/" + parsedValue + "/";
+            index++;
+        }
+        queryProps.put(propertyName, processed);
     }
 
     private String processQueryValue(String value) {

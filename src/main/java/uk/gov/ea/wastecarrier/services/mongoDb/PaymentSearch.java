@@ -19,7 +19,7 @@ public class PaymentSearch {
     private final static String PAY_DATE_FILTER_PROPERTY = "financeDetails.payments.dateReceived";
     private final static String ORD_DATE_FILTER_PROPERTY = "financeDetails.orders.orderItems.dateCreated";
     private final static String PAY_TYPE_FILTER_PROPERTY = "financeDetails.payments.paymentType";
-    private final static String ORD_TYPE_FILTER_PROPERTY = "financeDetails.orders.orderItems.chargeType";
+    private final static String ORD_TYPE_FILTER_PROPERTY = "financeDetails.orders.orderItems.description";
 
     private QueryHelper queryHelper;
     private Logger log = Logger.getLogger(WasteCarrierService.class.getName());
