@@ -2,6 +2,9 @@ package uk.gov.ea.wastecarrier.services.core;
 
 import java.util.Date;
 
+import javax.annotation.Nonnull;
+import javax.validation.Valid;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -13,14 +16,29 @@ public class OrderItem
 {
 	@JsonProperty
 	private int amount;
+	@Valid
 	@JsonProperty
 	private String currency;
 	private Date lastUpdated;
+	@Valid
+	@JsonProperty
 	private String description;
+	@JsonProperty
 	private String reference;
+	@Nonnull
+	@JsonProperty
+	private OrderItemType type;
 	
 	public final static String COLLECTION_SINGULAR_NAME = "orderItem";
 	public final static String COLLECTION_NAME = COLLECTION_SINGULAR_NAME +"s";
+	
+	public enum OrderItemType {
+		NEW,
+		EDIT,
+		RENEW,
+		IRRENEW,	/* The IRRENEW might not be needed? */
+		COPY_CARDS
+	}
 	
 	public OrderItem()
 	{
@@ -108,6 +126,22 @@ public class OrderItem
 	public void setReference(String reference)
 	{
 		this.reference = reference;
+	}
+	
+	/**
+	 * @return the type
+	 */
+	public OrderItemType getType()
+	{
+		return type;
+	}
+
+	/**
+	 * @param type the type to set
+	 */
+	public void setType(OrderItemType type)
+	{
+		this.type = type;
 	}
 
 }

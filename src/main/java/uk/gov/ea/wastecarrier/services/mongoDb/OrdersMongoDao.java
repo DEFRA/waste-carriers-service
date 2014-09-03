@@ -168,6 +168,7 @@ public class OrdersMongoDao
 			updates.put("financeDetails.orders.$.orderItems."+orderCount+".currency", o.getCurrency());
 			updates.put("financeDetails.orders.$.orderItems."+orderCount+".lastUpdated", o.getLastUpdated());
 			updates.put("financeDetails.orders.$.orderItems."+orderCount+".reference", o.getReference());
+			updates.put("financeDetails.orders.$.orderItems."+orderCount+".type", o.getType().toString());
 			orderCount++;
 		}
 		
