@@ -40,6 +40,7 @@
 	"declaredConvictions":"no",
     "declaration":"on",
 	"accessCode":"ABCDEF",
+	"originalRegistrationNumber":"OLDREG123",
 	"company_no":null,
 	"key_people":[{"position":"Director","first_name":"John","last_name":"Smith","dob":-3600000,"person_type":"KEY"}],
 	"total_fee":"164",

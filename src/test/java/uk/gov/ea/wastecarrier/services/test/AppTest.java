@@ -83,6 +83,7 @@ public class AppTest extends TestCase
         reg.setCriminallySuspect(Boolean.TRUE);
 		reg.setDeclaration("on");
 		reg.setExpiresOn(new DateTime(2017, 11, 30, 0, 0).toDate());
+		reg.setOriginalRegistrationNumber("OLDREG123");
 
         List<KeyPerson> keyPeople = new ArrayList<KeyPerson>();
         keyPeople.add(
