@@ -1,0 +1,282 @@
+{
+  "registration" : {
+    "date_detection" : false,
+    "properties" : {
+      "accessCode" : {
+        "type" : "string"
+      },
+      "accountEmail" : {
+        "type" : "string"
+      },
+      "address" : {
+        "type" : "string"
+      },
+      "administrativeArea" : {
+        "type" : "string"
+      },
+      "businessType" : {
+        "type" : "string"
+      },
+      "companyName" : {
+        "type" : "string"
+      },
+      "constructionWaste" : {
+        "type" : "string"
+      },
+      "contactEmail" : {
+        "type" : "string"
+      },
+      "declaration" : {
+        "type" : "string"
+      },
+      "declaredConvictions" : {
+        "type" : "string"
+      },
+      "dependentLocality" : {
+        "type" : "string"
+      },
+      "easting" : {
+        "type" : "string"
+      },
+      "expires_on" : {
+        "type" : "long"
+      },
+      "financeDetails" : {
+        "type": "object",
+        "enabled": false,
+        "properties" : {
+          "balance" : {
+            "type" : "string"
+          },
+          "orders" : {
+            "index": "no",
+            "properties" : {
+              "currency" : {
+                "type" : "string"
+              },
+              "dateCreated" : {
+                "type" : "string"
+              },
+              "dateLastUpdated" : {
+                "type" : "string"
+              },
+              "description" : {
+                "type" : "string"
+              },
+              "merchantId" : {
+                "type" : "string"
+              },
+              "orderCode" : {
+                "type" : "string"
+              },
+              "orderId" : {
+                "type" : "string"
+              },
+              "orderItems" : {
+                "properties" : {
+                  "amount" : {
+                    "type" : "long"
+                  },
+                  "currency" : {
+                    "type" : "string"
+                  },
+                  "description" : {
+                    "type" : "string"
+                  },
+                  "lastUpdated" : {
+                    "type" : "long"
+                  },
+                  "reference" : {
+                    "type" : "string"
+                  }
+                }
+              },
+              "paymentMethod" : {
+                "type" : "string"
+              },
+              "totalAmount" : {
+                "type" : "long"
+              },
+              "updatedByUser" : {
+                "type" : "string"
+              },
+              "worldPayStatus" : {
+                "type" : "string"
+              }
+            }
+          },
+          "payments" : {
+            "enabled": false,
+            "properties" : {
+              "amount" : {
+                "type" : "long"
+              },
+              "comment" : {
+                "type" : "string"
+              },
+              "currency" : {
+                "type" : "string"
+              },
+              "dateEntered" : {
+                "index": "no",
+                "type" : "string"                
+              },
+              "dateReceived" : {
+                "type" : "string"
+              },
+              "mac_code" : {
+                "type" : "string"
+              },
+              "orderKey" : {
+                "type" : "string"
+              },
+              "paymentType" : {
+                "type" : "string"
+              },
+              "registrationReference" : {
+                "type" : "string"
+              },
+              "updatedByUser" : {
+                "type" : "string"
+              },
+              "worldPayPaymentStatus" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      },
+      "firstName" : {
+        "type" : "string"
+      },
+      "houseNumber" : {
+        "type" : "string"
+      },
+      "id" : {
+        "type" : "string"
+      },
+      "individualsType" : {
+        "type" : "string"
+      },
+      "isMainService" : {
+        "type" : "string"
+      },
+      "key_people" : {
+        "properties" : {
+          "dob" : {
+            "type" : "long"
+          },
+          "first_name" : {
+            "type" : "string"
+          },
+          "last_name" : {
+            "type" : "string"
+          },
+          "person_type" : {
+            "type" : "string"
+          },
+          "position" : {
+            "type" : "string"
+          }
+        }
+      },
+      "lastName" : {
+        "type" : "string"
+      },
+      "localAuthorityUpdateDate" : {
+        "type" : "string"
+      },
+      "location" : {
+        "type" : "geo_point"
+      },
+      "metaData" : {
+        "properties" : {
+          "anotherString" : {
+            "type" : "string"
+          },
+          "dateActivated" : {
+            "type" : "string"
+          },
+          "dateRegistered" : {
+            "type" : "string"
+          },
+          "distance" : {
+            "type" : "string"
+          },
+          "lastModified" : {
+            "type" : "string"
+          },
+          "revokedReason" : {
+            "type" : "string"
+          },
+          "route" : {
+            "type" : "string"
+          },
+          "status" : {
+            "type" : "string"
+          }
+        }
+      },
+      "northing" : {
+        "type" : "string"
+      },
+      "onlyAMF" : {
+        "type" : "string"
+      },
+      "otherBusinesses" : {
+        "type" : "string"
+      },
+      "otherTitle" : {
+        "type" : "string"
+      },
+      "phoneNumber" : {
+        "type" : "string"
+      },
+      "position" : {
+        "type" : "string"
+      },
+      "postcode" : {
+        "type" : "string"
+      },
+      "publicBodyType" : {
+        "type" : "string"
+      },
+      "publicBodyTypeOther" : {
+        "type" : "string"
+      },
+      "regIdentifier" : {
+        "type" : "string"
+      },
+      "registrationType" : {
+        "type" : "string"
+      },
+      "royalMailUpdateDate" : {
+        "type" : "string"
+      },
+      "streetLine1" : {
+        "type" : "string"
+      },
+      "streetLine2" : {
+        "type" : "string"
+      },
+      "streetLine3" : {
+        "type" : "string"
+      },
+      "streetLine4" : {
+        "type" : "string"
+      },
+      "tier" : {
+        "type" : "string"
+      },
+      "title" : {
+        "type" : "string"
+      },
+      "townCity" : {
+        "type" : "string"
+      },
+      "uprn" : {
+        "type" : "string"
+      }
+    }
+  }
+}

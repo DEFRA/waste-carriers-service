@@ -45,7 +45,7 @@ echo "Create a clean registrations index"
 curl -X POST http://$esHost:$esPort/registrations
 
 echo "Set the index structure in Elastic Search"
-curl -X PUT http://$esHost:$esPort/registrations/registration/_mapping -d '@elasticSearchIndex.json'
+curl -X PUT http://$esHost:$esPort/registrations/registration/_mapping -d '@registration_mapping.json'
 
 echo "Re-populate the elastic search index"
 curl -X POST http://$wcrsServicesName:$wcrsServicesPort/tasks/indexer
