@@ -75,6 +75,7 @@ public class QueryResource {
     public List<Registration> getRegistrations(
             @QueryParam("from") Optional<String> from,
             @QueryParam("until") Optional<String> until,
+            @QueryParam("paymentStatus[]") Set<String> paymentStatuses,
             @QueryParam("paymentType[]") Set<String> paymentTypes,
             @QueryParam("chargeType[]") Set<String> chargeTypes
     ) {
@@ -86,6 +87,7 @@ public class QueryResource {
             PaymentSearch search = new PaymentSearch(new QueryHelper(this.databaseHelper));
             search.fromDate = from;
             search.toDate = until;
+            search.paymentStatuses = paymentStatuses;
             search.paymentTypes = paymentTypes;
             search.chargeTypes = chargeTypes;
 

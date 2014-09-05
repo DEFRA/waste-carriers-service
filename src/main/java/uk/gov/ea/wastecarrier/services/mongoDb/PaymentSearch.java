@@ -1,6 +1,7 @@
 package uk.gov.ea.wastecarrier.services.mongoDb;
 
 import com.google.common.base.Optional;
+import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
 import uk.gov.ea.wastecarrier.services.WasteCarrierService;
@@ -16,6 +17,7 @@ import java.util.logging.Logger;
 public class PaymentSearch {
 
     private final static String REG_DATE_FILTER_PROPERTY = "metaData.dateRegistered";
+    private final static String REG_BALANCE_FILTER_PROPERTY = "financeDetails.balance";
     private final static String PAY_DATE_FILTER_PROPERTY = "financeDetails.payments.dateReceived";
     private final static String ORD_DATE_FILTER_PROPERTY = "financeDetails.orders.orderItems.dateCreated";
     private final static String PAY_TYPE_FILTER_PROPERTY = "financeDetails.payments.paymentType";
@@ -26,8 +28,15 @@ public class PaymentSearch {
 
     public Optional<String> fromDate;
     public Optional<String> toDate;
+    public Set<String> paymentStatuses;
     public Set<String> paymentTypes;
     public Set<String> chargeTypes;
+
+    public enum PaymentStatus {
+        AWAITING_PAYMENT,
+        FULLY_PAID,
+        OVERPAID
+    }
 
     public PaymentSearch(QueryHelper queryHelper) {
         this.queryHelper = queryHelper;
@@ -40,6 +49,7 @@ public class PaymentSearch {
         BasicDBObject query = new BasicDBObject();
 
         applyDateFilters(query);
+        applyPaymentStatusFilters(query);
 
         if (queryProps != null) {
             for (Map.Entry<String, Object> entry : queryProps.entrySet()) {
@@ -59,10 +69,32 @@ public class PaymentSearch {
 
         DBCursor cursor = queryHelper.getRegistrationsCollection().find(query);
 
-        // TODO do this as a separate feature and apply to all searches.
+        // TODO Add this as a separate feature and apply to all searches.
         cursor.limit(100);
 
         return queryHelper.toRegistrationList(cursor);
+    }
+
+    protected void applyPaymentStatusFilters(BasicDBObject query) {
+
+        if (paymentStatuses == null || paymentStatuses.isEmpty()) {
+            return;
+        }
+
+        BasicDBList or = new BasicDBList();
+        for (String value : paymentStatuses) {
+            if (value == PaymentStatus.AWAITING_PAYMENT.toString()) {
+                or.add(new BasicDBObject(REG_BALANCE_FILTER_PROPERTY, new BasicDBObject("$gt", 0)));
+            } else if (value == PaymentStatus.FULLY_PAID.toString()) {
+                or.add(new BasicDBObject(REG_BALANCE_FILTER_PROPERTY, 0));
+            } else if (value == PaymentStatus.OVERPAID.toString()) {
+                or.add(new BasicDBObject(REG_BALANCE_FILTER_PROPERTY, new BasicDBObject("$lte", 0)));
+            }
+        }
+
+        if (!or.isEmpty()) {
+            query.append("$or", or);
+        }
     }
 
     protected void applyDateFilters(BasicDBObject query) {
