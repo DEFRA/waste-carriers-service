@@ -83,11 +83,11 @@ public class PaymentSearch {
 
         BasicDBList or = new BasicDBList();
         for (String value : paymentStatuses) {
-            if (value == PaymentStatus.AWAITING_PAYMENT.toString()) {
+            if (value.equals(PaymentStatus.AWAITING_PAYMENT.name())) {
                 or.add(new BasicDBObject(REG_BALANCE_FILTER_PROPERTY, new BasicDBObject("$gt", 0)));
-            } else if (value == PaymentStatus.FULLY_PAID.toString()) {
+            } else if (value.equals(PaymentStatus.FULLY_PAID.name())) {
                 or.add(new BasicDBObject(REG_BALANCE_FILTER_PROPERTY, 0));
-            } else if (value == PaymentStatus.OVERPAID.toString()) {
+            } else if (value.equals(PaymentStatus.OVERPAID.name())) {
                 or.add(new BasicDBObject(REG_BALANCE_FILTER_PROPERTY, new BasicDBObject("$lte", 0)));
             }
         }
