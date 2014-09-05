@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Nonnull;
+import javax.validation.Valid;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.hibernate.validator.constraints.NotBlank;
@@ -33,6 +34,7 @@ public class Order
 	@JsonProperty
 	private String orderId;
 	
+	@Valid
 	@JsonProperty
 	private List<OrderItem> orderItems;
 

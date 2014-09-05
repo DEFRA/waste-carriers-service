@@ -17,7 +17,6 @@ import com.mongodb.DBObject;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.core.FinanceDetails;
 import uk.gov.ea.wastecarrier.services.core.Order;
-import uk.gov.ea.wastecarrier.services.core.OrderItem;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 
 public class OrdersMongoDao
@@ -138,6 +137,18 @@ public class OrdersMongoDao
 			throw new WebApplicationException(Status.NOT_FOUND);
 		}
 		
+		// New way to update an order, by finding the order to update and calling DBUpdate.set directly
+		DBObject query1 = new BasicDBObject();
+		query1.put("regIdentifier", registration.getRegIdentifier());
+		query1.put("financeDetails.orders.orderId", orderId);
+		
+		// Update order attributes
+		WriteResult<Registration, String> result;
+		result = registrations.update(query1, DBUpdate.set(FinanceDetails.COLLECTION_NAME + "." + Order.COLLECTION_NAME + ".$", order));
+		
+		/*
+		 * Removed and replaced with individual update commands to the database above
+		 * 
 		DBObject query = new BasicDBObject();
 		query.put("regIdentifier", registration.getRegIdentifier());
 		query.put("financeDetails.orders.orderId", orderId);
@@ -168,12 +179,13 @@ public class OrdersMongoDao
 			updates.put("financeDetails.orders.$.orderItems."+orderCount+".currency", o.getCurrency());
 			updates.put("financeDetails.orders.$.orderItems."+orderCount+".lastUpdated", o.getLastUpdated());
 			updates.put("financeDetails.orders.$.orderItems."+orderCount+".reference", o.getReference());
+			updates.put("financeDetails.orders.$.orderItems."+orderCount+".type", o.getType().toString());
 			orderCount++;
 		}
 		
 		update.put("$set", updates);
 		result = registrations.update(query, update);
-		
+		*/
 		
 		//WriteResult<Registration, String> result = registrations.updateById(registrationId, 
 		//		DBUpdate.set(FinanceDetails.COLLECTION_NAME + "." + Order.COLLECTION_NAME + ".$." + orderId, order));
