@@ -33,6 +33,9 @@ public class KeyPerson {
     @JsonProperty("conviction_search_result")
     private String convictionSearchResult;
 
+    @JsonProperty("conviction_system_flag")
+    private String convictionSystemFlag;
+
     @JsonProperty("last_conviction_search")
     private Date lastConvictionSearch;
 
@@ -47,6 +50,7 @@ public class KeyPerson {
             String position,
             PersonType personType,
             String convictionSearchResult,
+            String convictionSystemFlag,
             Date lastConvictionSearch) {
         this.firstName = firstName;
         this.lastName = lastName;
@@ -54,6 +58,7 @@ public class KeyPerson {
         this.position = position;
         this.personType = personType;
         this.convictionSearchResult = convictionSearchResult;
+        this.convictionSystemFlag = convictionSystemFlag;
         this.lastConvictionSearch = lastConvictionSearch;
     }
 
@@ -103,6 +108,14 @@ public class KeyPerson {
 
     public void setConvictionSearchResult(String convictionSearchResult) {
         this.convictionSearchResult = convictionSearchResult;
+    }
+
+    public String getConvictionSystemFlag() {
+        return convictionSystemFlag;
+    }
+
+    public void setConvictionSystemFlag(String convictionSystemFlag) {
+        this.convictionSystemFlag = convictionSystemFlag;
     }
 
     public Date getLastConvictionSearch() {
