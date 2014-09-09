@@ -1,6 +1,7 @@
 package uk.gov.ea.wastecarrier.services.core;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.joda.time.DateTime;
 
 import java.util.Date;
 
@@ -29,6 +30,12 @@ public class KeyPerson {
     @JsonProperty("person_type")
     private PersonType personType;
 
+    @JsonProperty("conviction_search_result")
+    private String convictionSearchResult;
+
+    @JsonProperty("last_conviction_search")
+    private Date lastConvictionSearch;
+
     public KeyPerson() {
 
     }
@@ -38,12 +45,16 @@ public class KeyPerson {
             String lastName,
             Date dateOfBirth,
             String position,
-            PersonType personType) {
+            PersonType personType,
+            String convictionSearchResult,
+            Date lastConvictionSearch) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.dateOfBirth = dateOfBirth;
         this.position = position;
         this.personType = personType;
+        this.convictionSearchResult = convictionSearchResult;
+        this.lastConvictionSearch = lastConvictionSearch;
     }
 
     public String getFirstName() {
@@ -84,5 +95,21 @@ public class KeyPerson {
 
     public void setPersonType(PersonType personType) {
         this.personType = personType;
+    }
+
+    public String getConvictionSearchResult() {
+        return convictionSearchResult;
+    }
+
+    public void setConvictionSearchResult(String convictionSearchResult) {
+        this.convictionSearchResult = convictionSearchResult;
+    }
+
+    public Date getLastConvictionSearch() {
+        return lastConvictionSearch;
+    }
+
+    public void setLastConvictionSearch(Date lastConvictionSearch) {
+        this.lastConvictionSearch = lastConvictionSearch;
     }
 }

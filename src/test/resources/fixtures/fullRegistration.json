@@ -42,7 +42,7 @@
 	"accessCode":"ABCDEF",
 	"originalRegistrationNumber":"OLDREG123",
 	"company_no":null,
-	"key_people":[{"position":"Director","first_name":"John","last_name":"Smith","dob":-3600000,"person_type":"KEY"}],
+	"key_people":[{"position":"Director","first_name":"John","last_name":"Smith","dob":-3600000,"person_type":"KEY","conviction_search_result":"false","last_conviction_search":1410251092000}],
 	"total_fee":"164",
     "registration_fee":"154",
     "copy_card_fee":"5",
