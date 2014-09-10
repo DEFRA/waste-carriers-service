@@ -12,6 +12,7 @@ import uk.gov.ea.wastecarrier.services.health.TemplateHealthCheck;
 import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.MongoManaged;
 import uk.gov.ea.wastecarrier.services.resources.*;
+import uk.gov.ea.wastecarrier.services.tasks.IRRenewalPopulator;
 import uk.gov.ea.wastecarrier.services.tasks.Indexer;
 import uk.gov.ea.wastecarrier.services.tasks.LocationPopulator;
 
@@ -57,6 +58,7 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration> {
         final DatabaseConfiguration dbConfig = configuration.getDatabase();
         final ElasticSearchConfiguration esConfig = configuration.getElasticSearch();
         final String postcodeFilePath = configuration.getPostcodeFilePath();
+        final IRConfiguration irConfig = configuration.getIrenewals();
         
         //Create a singleton instance of the ElasticSearch TransportClient. Client to be closed on shutdown.
         esClient = ElasticSearchUtils.getNewTransportClient(esConfig);
@@ -84,6 +86,9 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration> {
         //Add convictions resource
         environment.addResource(new IndividualConvictionCheckResource(esConfig));
         environment.addResource(new OrganisationConvictionCheckResource(esConfig));
+        
+        // Add IR Renewals resource
+        environment.addResource(new IRRenewalResource(dbConfig));
         
         /**
          * Note: using environment.addProvider(new RegistrationCreateResource(template, defaultName, mQConfig));
@@ -125,6 +130,9 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration> {
 		// Add Location Population functionality to create location indexes for all provided addresses of all data
         LocationPopulator locationPop = new LocationPopulator("location", dbConfig, postcodeFilePath);
 		environment.addTask(locationPop);
+		
+		IRRenewalPopulator irPop = new IRRenewalPopulator("ir-repopulate", dbConfig, irConfig);
+		environment.addTask(irPop);
 		
 		// Add Heath Check to indexing Service
 		environment.addHealthCheck(

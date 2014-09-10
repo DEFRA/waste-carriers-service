@@ -45,6 +45,11 @@ public class WasteCarrierConfiguration extends Configuration {
     @NotNull
     @JsonProperty
     private SettingsConfiguration settings = new SettingsConfiguration();
+    
+    @Valid
+    @NotNull
+    @JsonProperty
+    private IRConfiguration irrenewals = new IRConfiguration();
 
     public String getTemplate() {
         return template;
@@ -73,4 +78,9 @@ public class WasteCarrierConfiguration extends Configuration {
     public SettingsConfiguration getSettings() {
         return settings;
     }
+
+	public IRConfiguration getIrenewals()
+	{
+		return irrenewals;
+	}
 }
