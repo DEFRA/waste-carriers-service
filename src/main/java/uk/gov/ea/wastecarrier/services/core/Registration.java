@@ -248,6 +248,10 @@ public class Registration
 	
 	@JsonInclude(Include.NON_DEFAULT)
 	private FinanceDetails financeDetails;
+
+    @JsonProperty("conviction_search_result")
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+    private ConvictionSearchResult convictionSearchResult;
 	
 	// Standard logging declaration
 	private Logger log = Logger.getLogger(Registration.class.getName());
@@ -260,50 +264,6 @@ public class Registration
 	{
 		log.info("Create empty registration");
 	}
-	
-	/*
-	 * Alternative to empty constructor
-	 * 
-	 * public Registration (@JsonProperty("registerAs") String registerAs, @JsonProperty("businessType") String businessType, 
-			@JsonProperty("companyName") String companyName, @JsonProperty("organisationType") String organisationType, 
-			@JsonProperty("companyNumber") String companyNumber, @JsonProperty("publicBodyType") String publicBodyType,
-			@JsonProperty("houseNumber") String houseNumber, @JsonProperty("postcode") String postcode,
-			@JsonProperty("address") String address, @JsonProperty("title") String title,
-			@JsonProperty("firstName") String firstName, @JsonProperty("lastName") String lastName,
-			@JsonProperty("phoneNumber") String phoneNumber, @JsonProperty("email") String email,
-			@JsonProperty("confirmDeclaration") String confirmDeclaration)
-	*
-	* OR
-	*
-	public Registration (String id, String registerAs, String businessType, 
-			String companyName, String organisationType, 
-			String companyNumber, String publicBodyType,
-			String houseNumber, String postcode,
-			String address, String title,
-			String firstName, String lastName,
-			String phoneNumber, String email,
-			String confirmDeclaration)
-	{
-		this.id = id;
-		this.registerAs = registerAs;
-		this.businessType = businessType;
-		this.companyName = companyName;
-		this.organisationType = organisationType;
-		this.companyNumber = companyNumber;
-		this.publicBodyType = publicBodyType;
-		
-		this.houseNumber = houseNumber;
-		this.postcode = postcode;
-		this.address = address;
-		
-		this.title = title;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.phoneNumber = phoneNumber;
-		this.email = email;
-		
-		this.confirmDeclaration = confirmDeclaration;
-	}*/
 	
 	/**
 	 * @return the id
@@ -967,7 +927,35 @@ public class Registration
         this.keyPeople = keyPeople;
     }
 
-	/**
+    public ConvictionSearchResult getConvictionSearchResult() {
+        return convictionSearchResult;
+    }
+
+    public void setConvictionSearchResult(ConvictionSearchResult convictionSearchResult) {
+        this.convictionSearchResult = convictionSearchResult;
+    }
+
+    public FinanceDetails getFinanceDetails()
+    {
+        return financeDetails;
+    }
+
+    public void setFinanceDetails(FinanceDetails financeDetails)
+    {
+        this.financeDetails = financeDetails;
+    }
+
+    public String getOriginalRegistrationNumber()
+    {
+        return originalRegistrationNumber;
+    }
+
+    public void setOriginalRegistrationNumber(String originalRegistrationNumber)
+    {
+        this.originalRegistrationNumber = originalRegistrationNumber;
+    }
+
+    /**
 	 * Custom comparison method for comparing the contents of the user entered fields 
 	 * to ensure objects are the same.
 	 * 
@@ -1035,38 +1023,4 @@ public class Registration
                 criminallySuspect, declaration, expiresOn, originalRegistrationNumber
             );
 	}
-
-	/**
-	 * @return the financeDetails
-	 */
-	public FinanceDetails getFinanceDetails()
-	{
-		return financeDetails;
-	}
-
-	/**
-	 * @param financeDetails the financeDetails to set
-	 */
-	public void setFinanceDetails(FinanceDetails financeDetails)
-	{
-		this.financeDetails = financeDetails;
-	}
-	
-	/**
-	 * @return the originalRegistrationNumber
-	 */
-	public String getOriginalRegistrationNumber()
-	{
-		return originalRegistrationNumber;
-	}
-	
-	/**
-	 * @param originalRegistrationNumber the originalRegistrationNumber to set
-	 */
-	public void setOriginalRegistrationNumber(String originalRegistrationNumber)
-	{
-		this.originalRegistrationNumber = originalRegistrationNumber;
-	}
-
-	
 }

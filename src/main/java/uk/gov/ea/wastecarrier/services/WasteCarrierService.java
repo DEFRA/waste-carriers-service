@@ -81,10 +81,6 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration> {
         // Add query resource
         environment.addResource(new QueryResource(dbConfig));
         
-        //Add convictions resource
-        environment.addResource(new IndividualConvictionCheckResource(esConfig));
-        environment.addResource(new OrganisationConvictionCheckResource(esConfig));
-        
         /**
          * Note: using environment.addProvider(new RegistrationCreateResource(template, defaultName, mQConfig));
          * Seems to perform a similar feature to addResources, need to research the difference?

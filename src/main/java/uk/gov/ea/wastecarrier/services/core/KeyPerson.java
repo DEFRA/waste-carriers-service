@@ -1,5 +1,6 @@
 package uk.gov.ea.wastecarrier.services.core;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Date;
@@ -30,16 +31,8 @@ public class KeyPerson {
     private PersonType personType;
 
     @JsonProperty("conviction_search_result")
-    private String convictionSearchResult;
-
-    @JsonProperty("conviction_search_system")
-    private String convictionSearchSystem;
-
-    @JsonProperty("conviction_search_reference")
-    private String convictionSearchReference;
-
-    @JsonProperty("last_conviction_search")
-    private Date lastConvictionSearch;
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+    private ConvictionSearchResult convictionSearchResult;
 
     public KeyPerson() {
 
@@ -51,19 +44,13 @@ public class KeyPerson {
             Date dateOfBirth,
             String position,
             PersonType personType,
-            String convictionSearchResult,
-            String convictionSearchSystem,
-            String convictionSearchReference,
-            Date lastConvictionSearch) {
+            ConvictionSearchResult convictionSearchResult) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.dateOfBirth = dateOfBirth;
         this.position = position;
         this.personType = personType;
         this.convictionSearchResult = convictionSearchResult;
-        this.convictionSearchSystem = convictionSearchSystem;
-        this.convictionSearchReference = convictionSearchReference;
-        this.lastConvictionSearch = lastConvictionSearch;
     }
 
     public String getFirstName() {
@@ -106,35 +93,11 @@ public class KeyPerson {
         this.personType = personType;
     }
 
-    public String getConvictionSearchResult() {
+    public ConvictionSearchResult getConvictionSearchResult() {
         return convictionSearchResult;
     }
 
-    public void setConvictionSearchResult(String convictionSearchResult) {
+    public void setConvictionSearchResult(ConvictionSearchResult convictionSearchResult) {
         this.convictionSearchResult = convictionSearchResult;
-    }
-
-    public String getConvictionSearchSystem() {
-        return convictionSearchSystem;
-    }
-
-    public void setConvictionSearchSystem(String convictionSearchSystem) {
-        this.convictionSearchSystem = convictionSearchSystem;
-    }
-
-    public String getConvictionSearchReference() {
-        return convictionSearchReference;
-    }
-
-    public void setConvictionSearchReference(String convictionSearchReference) {
-        this.convictionSearchReference = convictionSearchReference;
-    }
-
-    public Date getLastConvictionSearch() {
-        return lastConvictionSearch;
-    }
-
-    public void setLastConvictionSearch(Date lastConvictionSearch) {
-        this.lastConvictionSearch = lastConvictionSearch;
     }
 }
