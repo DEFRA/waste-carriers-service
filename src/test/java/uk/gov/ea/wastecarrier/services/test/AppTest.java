@@ -95,6 +95,7 @@ public class AppTest extends TestCase
                         KeyPerson.PersonType.KEY,
                         "false",
                         "CMS",
+                        "15334",
                         new DateTime(2014, 9, 9, 9, 24, 52).toDate())
         );
         reg.setKeyPeople(keyPeople);

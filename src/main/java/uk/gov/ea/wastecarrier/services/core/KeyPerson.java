@@ -1,7 +1,6 @@
 package uk.gov.ea.wastecarrier.services.core;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.joda.time.DateTime;
 
 import java.util.Date;
 
@@ -33,8 +32,11 @@ public class KeyPerson {
     @JsonProperty("conviction_search_result")
     private String convictionSearchResult;
 
-    @JsonProperty("conviction_system_flag")
-    private String convictionSystemFlag;
+    @JsonProperty("conviction_search_system")
+    private String convictionSearchSystem;
+
+    @JsonProperty("conviction_search_reference")
+    private String convictionSearchReference;
 
     @JsonProperty("last_conviction_search")
     private Date lastConvictionSearch;
@@ -50,7 +52,8 @@ public class KeyPerson {
             String position,
             PersonType personType,
             String convictionSearchResult,
-            String convictionSystemFlag,
+            String convictionSearchSystem,
+            String convictionSearchReference,
             Date lastConvictionSearch) {
         this.firstName = firstName;
         this.lastName = lastName;
@@ -58,7 +61,8 @@ public class KeyPerson {
         this.position = position;
         this.personType = personType;
         this.convictionSearchResult = convictionSearchResult;
-        this.convictionSystemFlag = convictionSystemFlag;
+        this.convictionSearchSystem = convictionSearchSystem;
+        this.convictionSearchReference = convictionSearchReference;
         this.lastConvictionSearch = lastConvictionSearch;
     }
 
@@ -110,12 +114,20 @@ public class KeyPerson {
         this.convictionSearchResult = convictionSearchResult;
     }
 
-    public String getConvictionSystemFlag() {
-        return convictionSystemFlag;
+    public String getConvictionSearchSystem() {
+        return convictionSearchSystem;
     }
 
-    public void setConvictionSystemFlag(String convictionSystemFlag) {
-        this.convictionSystemFlag = convictionSystemFlag;
+    public void setConvictionSearchSystem(String convictionSearchSystem) {
+        this.convictionSearchSystem = convictionSearchSystem;
+    }
+
+    public String getConvictionSearchReference() {
+        return convictionSearchReference;
+    }
+
+    public void setConvictionSearchReference(String convictionSearchReference) {
+        this.convictionSearchReference = convictionSearchReference;
     }
 
     public Date getLastConvictionSearch() {
