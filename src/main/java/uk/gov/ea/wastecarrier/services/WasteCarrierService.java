@@ -83,10 +83,6 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration> {
         // Add query resource
         environment.addResource(new QueryResource(dbConfig));
         
-        //Add convictions resource
-        environment.addResource(new IndividualConvictionCheckResource(esConfig));
-        environment.addResource(new OrganisationConvictionCheckResource(esConfig));
-        
         // Add IR Renewals resource
         environment.addResource(new IRRenewalResource(dbConfig));
         
