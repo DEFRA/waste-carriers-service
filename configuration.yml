@@ -55,4 +55,10 @@ http:
   # under /admin.
   adminPort: WCRS_SERVICES_ADMIN_PORT
   
+settings:
+  # registration period
+  registrationPeriod: WCRS_FRONTEND_EXPIRES_AFTER
+  # renew period
+  registrationRenewPeriod: WCRS_FRONTEND_RENEWAL_WINDOW
+  
 # more properties go here
