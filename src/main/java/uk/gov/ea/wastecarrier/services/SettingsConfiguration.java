@@ -11,11 +11,11 @@ public class SettingsConfiguration extends Configuration {
 	
     @NotEmpty
     @JsonProperty
-    private String registrationPeriod = "3 YEARS";
+    private String registrationPeriod = "3";
     
     @NotEmpty
     @JsonProperty
-    private String registrationRenewPeriod = "6 MONTHS";
+    private String registrationRenewPeriod = "6";
     
     @Min(1)
     @Max(100000000)
@@ -32,7 +32,7 @@ public class SettingsConfiguration extends Configuration {
 	 */
 	public String getRegistrationPeriod()
 	{
-		return registrationPeriod;
+		return registrationPeriod + " YEARS";
 	}
 
 	/**
@@ -40,7 +40,7 @@ public class SettingsConfiguration extends Configuration {
 	 */
 	public String getRegistrationRenewPeriod()
 	{
-		return registrationRenewPeriod;
+		return registrationRenewPeriod + " MONTHS";
 	}
 
 	/**

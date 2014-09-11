@@ -59,6 +59,7 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration> {
         final ElasticSearchConfiguration esConfig = configuration.getElasticSearch();
         final String postcodeFilePath = configuration.getPostcodeFilePath();
         final IRConfiguration irConfig = configuration.getIrenewals();
+        final SettingsConfiguration sConfig = configuration.getSettings();
         
         //Create a singleton instance of the ElasticSearch TransportClient. Client to be closed on shutdown.
         esClient = ElasticSearchUtils.getNewTransportClient(esConfig);
@@ -78,7 +79,7 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration> {
         environment.addResource(new OrdersResource(dbConfig, configuration.getSettings(), esConfig));
         
         // Add Settings resource
-        environment.addResource(new SettingsResource(configuration.getSettings()));
+        environment.addResource(new SettingsResource(sConfig));
 
         // Add query resource
         environment.addResource(new QueryResource(dbConfig));
