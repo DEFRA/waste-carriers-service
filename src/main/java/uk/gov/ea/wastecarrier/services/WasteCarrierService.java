@@ -67,7 +67,7 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration> {
         // Add Create Resource
         environment.addResource(new RegistrationsResource(template, defaultName, mQConfig, dbConfig, esConfig, esClient, postcodeFilePath));
         // Add Read Resource
-        environment.addResource(new RegistrationReadEditResource(template, defaultName, mQConfig, dbConfig, esConfig, esClient, sConfig));
+        environment.addResource(new RegistrationReadEditResource(template, defaultName, mQConfig, dbConfig, esConfig, esClient));
         // Add Version Resource
         environment.addResource(new RegistrationVersionResource());
         
