@@ -79,8 +79,6 @@ public class AppTest extends TestCase
 		reg.setCopyCards("2");
 		reg.setAccountEmail("jane@example.com");
         reg.setDeclaredConvictions("no");
-        reg.setConvictionsCheckIndicatesSuspect(Boolean.TRUE);
-        reg.setCriminallySuspect(Boolean.TRUE);
 		reg.setDeclaration("on");
 		reg.setExpiresOn(new DateTime(2017, 11, 30, 0, 0).toDate());
 		reg.setOriginalRegistrationNumber("OLDREG123");

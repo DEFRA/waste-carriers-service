@@ -47,7 +47,5 @@
     "registration_fee":null,
     "copy_card_fee":null,
     "copy_cards":null,
-    "convictions_check_indicates_suspect":null,
-    "criminally_suspect":null,
 	"expires_on":null
 }

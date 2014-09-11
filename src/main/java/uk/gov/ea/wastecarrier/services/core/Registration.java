@@ -193,12 +193,6 @@ public class Registration
 
     @JsonProperty
     private String declaredConvictions;
-
-    @JsonProperty("convictions_check_indicates_suspect")
-    private Boolean convictionsCheckIndicatesSuspect;
-
-    @JsonProperty("criminally_suspect")
-    private Boolean criminallySuspect;
 	
 	/* 
 	 * These are the Declaration Details
@@ -226,10 +220,6 @@ public class Registration
 	
 	@JsonProperty
 	private String originalRegistrationNumber;
-	
-	/* Static not applicable value */
-	//private final static String NA = "n/a";
-	
 
 	public final static String COLLECTION_SINGULAR_NAME = "registration";
 	public final static String COLLECTION_NAME = COLLECTION_SINGULAR_NAME +"s";
@@ -264,6 +254,24 @@ public class Registration
 	{
 		log.info("Create empty registration");
 	}
+
+    public Boolean isAwaitingConvictionConfirmation() {
+
+        if (this.convictionSearchResult != null
+                && this.convictionSearchResult.getConfirmed().equalsIgnoreCase("no")) {
+            return true;
+        }
+
+        for (KeyPerson person : this.keyPeople) {
+            ConvictionSearchResult searchResult = person.getConvictionSearchResult();
+            if (searchResult != null
+                    && searchResult.getConfirmed().equalsIgnoreCase("no")) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 	
 	/**
 	 * @return the id
@@ -482,20 +490,6 @@ public class Registration
      */
     public String getDeclaredConvictions() {
         return declaredConvictions;
-    }
-
-    /**
-     * @return the criminallySuspect
-     */
-    public Boolean getCriminallySuspect() {
-        return criminallySuspect;
-    }
-
-    /**
-     * @return the convictionsCheckIndicatesSuspect
-     */
-    public Boolean getConvictionsCheckIndicatesSuspect() {
-        return convictionsCheckIndicatesSuspect;
     }
 
 	/**
@@ -787,20 +781,6 @@ public class Registration
         this.declaredConvictions = declaredConvictions;
     }
 
-    /**
-     * @param convictionsCheckIndicatesSuspect
-     */
-    public void setConvictionsCheckIndicatesSuspect(Boolean convictionsCheckIndicatesSuspect) {
-        this.convictionsCheckIndicatesSuspect = convictionsCheckIndicatesSuspect;
-    }
-
-    /**
-     * @param criminallySuspect
-     */
-    public void setCriminallySuspect(Boolean criminallySuspect) {
-        this.criminallySuspect = criminallySuspect;
-    }
-
 	/**
 	 * @param declaration the confirmDeclaration to set
 	 */
@@ -1005,8 +985,6 @@ public class Registration
                 && Objects.equals(this.copyCards, other.copyCards)
                 && Objects.equals(this.accountEmail, other.accountEmail)
                 && Objects.equals(this.declaredConvictions, other.declaredConvictions)
-                && Objects.equals(this.convictionsCheckIndicatesSuspect, other.convictionsCheckIndicatesSuspect)
-                && Objects.equals(this.criminallySuspect, other.criminallySuspect)
                 && Objects.equals(this.declaration, other.declaration)
                 && Objects.equals(this.expiresOn, other.expiresOn)
                 && Objects.equals(this.originalRegistrationNumber, other.originalRegistrationNumber);
@@ -1019,8 +997,7 @@ public class Registration
                 onlyAMF, companyName, individualsType, publicBodyType, publicBodyTypeOther, companyNo, houseNumber,
                 streetLine1, streetLine2, streetLine3, streetLine4, townCity, postcode, country, address, uprn,
                 title, otherTitle, firstName, lastName, position, phoneNumber, contactEmail, totalFee, registrationFee,
-                copyCardFee, copyCards, accountEmail, declaredConvictions, convictionsCheckIndicatesSuspect,
-                criminallySuspect, declaration, expiresOn, originalRegistrationNumber
+                copyCardFee, copyCards, accountEmail, declaredConvictions, declaration, expiresOn, originalRegistrationNumber
             );
 	}
 }
