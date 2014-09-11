@@ -3,9 +3,15 @@ package uk.gov.ea.wastecarrier.services.resources;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.ElasticSearchConfiguration;
 import uk.gov.ea.wastecarrier.services.MessageQueueConfiguration;
+import uk.gov.ea.wastecarrier.services.SettingsConfiguration;
 import uk.gov.ea.wastecarrier.services.core.MetaData;
 import uk.gov.ea.wastecarrier.services.core.Registration;
+import uk.gov.ea.wastecarrier.services.core.Settings;
+import uk.gov.ea.wastecarrier.services.core.User;
 import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
+import uk.gov.ea.wastecarrier.services.mongoDb.PaymentHelper;
+import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationsMongoDao;
+import uk.gov.ea.wastecarrier.services.mongoDb.UsersMongoDao;
 import uk.gov.ea.wastecarrier.services.tasks.Indexer;
 
 import com.mongodb.DB;
@@ -47,6 +53,9 @@ public class RegistrationReadEditResource
     //Note: not re-using Clients, instantiating fresh clients instead.
     //private Client esClient;
     private ElasticSearchConfiguration esConfig;
+    private RegistrationsMongoDao regDao;
+    private UsersMongoDao userDao;
+    private PaymentHelper paymentHelper;
     
     // Standard logging declaration
     private Logger log = Logger.getLogger(RegistrationReadEditResource.class.getName());
@@ -59,7 +68,8 @@ public class RegistrationReadEditResource
      * @param database
      */
     public RegistrationReadEditResource(String template, String defaultName, MessageQueueConfiguration mQConfig,
-    		DatabaseConfiguration database, ElasticSearchConfiguration elasticSearch, Client esClient)
+    		DatabaseConfiguration database, ElasticSearchConfiguration elasticSearch, Client esClient, 
+    		SettingsConfiguration settingConfig)
     {
         this.template = template;
         this.defaultName = defaultName;
@@ -71,6 +81,9 @@ public class RegistrationReadEditResource
 
         this.databaseHelper = new DatabaseHelper(database);
         this.esConfig = elasticSearch;
+        this.regDao = new RegistrationsMongoDao(new DatabaseHelper(database));
+        this.paymentHelper = new PaymentHelper(new Settings(settingConfig));
+        this.userDao = new UsersMongoDao(database);
         //this.esClient = esClient;
     }
 
@@ -212,6 +225,31 @@ public class RegistrationReadEditResource
 				log.info("Registration updated successfully in MongoDB for ID:" + id);
 				try
 				{
+					/*
+					 * Update the registration status, if appropriate
+					 * 
+					 */
+					Registration registration = regDao.getRegistration(id);
+					User user = userDao.getUserByEmail(registration.getAccountEmail());
+					
+					if (paymentHelper.isReadyToBeActivated(registration, user) )
+					{
+						registration = paymentHelper.setupRegistrationForActivation(registration);
+						try
+						{
+							savedObject = regDao.updateRegistration(registration);
+						}
+						catch(Exception e)
+						{
+							/*
+							 * TODO: Need to handle this better because if the registration update 
+							 * fails as the first update worked?
+							 */
+							log.severe("Error while updating registration after update with ID " + registration.getId() + " in MongoDB.");
+							throw new WebApplicationException(Status.NOT_MODIFIED);
+						}
+					}
+					
 					// Make a second request for the updated full registration details to be returned
 					savedObject = registrations.findOneById(id);
 					log.fine("Found Updated Registration, Details include:- CompanyName:" + savedObject.getCompanyName());
