@@ -101,6 +101,7 @@ public class IRRenewalResource
 							r.setCompanyName(companyData.getTradingName());
 						}
 						r.setBusinessType("limitedCompany");
+						r.setCompanyNo(companyData.getCompanyNumber());
 						break;
 					case INDIVIDUAL:
 						IndividualIRData individualData = dao.findOneIndividualIRData(regNumber);
