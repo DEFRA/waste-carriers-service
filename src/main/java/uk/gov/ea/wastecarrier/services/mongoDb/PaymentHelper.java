@@ -22,7 +22,7 @@ public class PaymentHelper
 	public boolean isReadyToBeActivated(Registration registration, User user)
 	{
 		if (registration.getFinanceDetails().getBalance() == 0 
-				&& registration.isAwaitingConvictionConfirmation()
+				&& RegistrationHelper.isAwaitingConvictionConfirmation(registration)
 				&& registration.getMetaData().getStatus().equals(RegistrationStatus.PENDING))
 		{
 			// Activate assisted digital routes without checking user

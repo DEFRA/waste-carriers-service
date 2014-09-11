@@ -254,24 +254,6 @@ public class Registration
 	{
 		log.info("Create empty registration");
 	}
-
-    public Boolean isAwaitingConvictionConfirmation() {
-
-        if (this.convictionSearchResult != null
-                && this.convictionSearchResult.getConfirmed().equalsIgnoreCase("no")) {
-            return true;
-        }
-
-        for (KeyPerson person : this.keyPeople) {
-            ConvictionSearchResult searchResult = person.getConvictionSearchResult();
-            if (searchResult != null
-                    && searchResult.getConfirmed().equalsIgnoreCase("no")) {
-                return true;
-            }
-        }
-
-        return false;
-    }
 	
 	/**
 	 * @return the id
