@@ -242,6 +242,9 @@ public class Registration
     @JsonProperty("conviction_search_result")
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private ConvictionSearchResult convictionSearchResult;
+
+    @JsonProperty("conviction_sign_offs")
+    private List<ConvictionSignOff> convictionSignOffs;
 	
 	// Standard logging declaration
 	private Logger log = Logger.getLogger(Registration.class.getName());
@@ -895,6 +898,14 @@ public class Registration
 
     public void setConvictionSearchResult(ConvictionSearchResult convictionSearchResult) {
         this.convictionSearchResult = convictionSearchResult;
+    }
+
+    public List<ConvictionSignOff> getConvictionSignOffs() {
+        return convictionSignOffs;
+    }
+
+    public void setConvictionSignOffs(List<ConvictionSignOff> convictionSignOffs) {
+        this.convictionSignOffs = convictionSignOffs;
     }
 
     public FinanceDetails getFinanceDetails()

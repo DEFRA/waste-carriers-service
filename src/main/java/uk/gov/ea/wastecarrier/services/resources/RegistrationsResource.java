@@ -3,17 +3,13 @@ package uk.gov.ea.wastecarrier.services.resources;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.ElasticSearchConfiguration;
 import uk.gov.ea.wastecarrier.services.MessageQueueConfiguration;
-import uk.gov.ea.wastecarrier.services.core.FinanceDetails;
-import uk.gov.ea.wastecarrier.services.core.Location;
-import uk.gov.ea.wastecarrier.services.core.MetaData;
-import uk.gov.ea.wastecarrier.services.core.Order;
-import uk.gov.ea.wastecarrier.services.core.OrderItem;
-import uk.gov.ea.wastecarrier.services.core.Registration;
+import uk.gov.ea.wastecarrier.services.core.*;
 import uk.gov.ea.wastecarrier.services.core.Registration.RegistrationTier;
 import uk.gov.ea.wastecarrier.services.elasticsearch.ElasticSearchUtils;
 import uk.gov.ea.wastecarrier.services.mongoDb.AccountHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.QueryHelper;
+import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationHelper;
 import uk.gov.ea.wastecarrier.services.tasks.Indexer;
 import uk.gov.ea.wastecarrier.services.tasks.PostcodeRegistry;
 
@@ -561,7 +557,7 @@ public class RegistrationsResource
 		if (db != null)
 		{
 			if (!db.isAuthenticated())
-			{
+            {
 				throw new WebApplicationException(Status.FORBIDDEN);
 			}
 			
@@ -621,6 +617,16 @@ public class RegistrationsResource
 				orders.add(order);
 				reg.getFinanceDetails().setOrders(orders);
 			}
+
+            // If user has declared convictions or we have matched convictions
+            // we need to add a conviction sign off record
+            String declaredConvictions = reg.getDeclaredConvictions();
+            if (declaredConvictions != null && declaredConvictions.equalsIgnoreCase("yes")
+                    || RegistrationHelper.hasUnconfirmedConvictionMatches(reg)) {
+                List<ConvictionSignOff> signOffs = new ArrayList<ConvictionSignOff>();
+                signOffs.add(new ConvictionSignOff("no", null, null));
+                reg.setConvictionSignOffs(signOffs);
+            }
 			
 			// Update Registration to include sequential identifier
 			updateRegistrationIdentifier(reg, db);
