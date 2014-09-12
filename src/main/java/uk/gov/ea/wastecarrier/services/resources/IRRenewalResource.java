@@ -36,12 +36,7 @@ public class IRRenewalResource
 	private IRRenewalMongoDao dao;
 
 	private Logger log = Logger.getLogger(IRRenewalResource.class.getName());
-	
-	/**
-	 * 
-	 * @param database
-	 * @param irrenewalFilePath 
-	 */
+
 	public IRRenewalResource(DatabaseConfiguration database)
 	{
 		dao = new IRRenewalMongoDao(database);
