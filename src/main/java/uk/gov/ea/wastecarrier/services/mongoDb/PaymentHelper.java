@@ -8,6 +8,7 @@ import uk.gov.ea.wastecarrier.services.core.MetaData.RouteType;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.core.Settings;
 import uk.gov.ea.wastecarrier.services.core.MetaData.RegistrationStatus;
+import uk.gov.ea.wastecarrier.services.core.Registration.RegistrationTier;
 import uk.gov.ea.wastecarrier.services.core.User;
 
 public class PaymentHelper
@@ -21,7 +22,12 @@ public class PaymentHelper
 	
 	public boolean isReadyToBeActivated(Registration registration, User user)
 	{
-		if (registration.getFinanceDetails().getBalance() == 0 
+		boolean balanceValid = true;
+		if (registration.getTier().equals(RegistrationTier.UPPER))
+		{
+			balanceValid = registration.getFinanceDetails().getBalance() == 0;
+		}
+		if (balanceValid
 				&& RegistrationHelper.isAwaitingConvictionConfirmation(registration)
 				&& registration.getMetaData().getStatus().equals(RegistrationStatus.PENDING))
 		{
