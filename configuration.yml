@@ -35,6 +35,14 @@ database:
   username: WCRS_SERVICES_DB_USER
   password: WCRS_SERVICES_DB_PASSWD
   
+# added user database connection properties, DatabaseConfiguration
+userDatabase:
+  host: WCRS_SERVICES_DB_HOST
+  port: WCRS_SERVICES_DB_PORT
+  name: WCRS_FRONTEND_USERSDB_NAME
+  username: WCRS_FRONTEND_USERSDB_USERNAME
+  password: WCRS_FRONTEND_USERSDB_PASSWORD
+  
 elasticSearch:
   host: WCRS_SERVICES_ES_HOST
   port: WCRS_SERVICES_ES_PORT

@@ -68,8 +68,8 @@ public class RegistrationReadEditResource
      * @param database
      */
     public RegistrationReadEditResource(String template, String defaultName, MessageQueueConfiguration mQConfig,
-    		DatabaseConfiguration database, ElasticSearchConfiguration elasticSearch, Client esClient, 
-    		SettingsConfiguration settingConfig)
+    		DatabaseConfiguration database, DatabaseConfiguration userDatabase, ElasticSearchConfiguration elasticSearch, 
+    		Client esClient, SettingsConfiguration settingConfig)
     {
         this.template = template;
         this.defaultName = defaultName;
@@ -83,7 +83,7 @@ public class RegistrationReadEditResource
         this.esConfig = elasticSearch;
         this.regDao = new RegistrationsMongoDao(new DatabaseHelper(database));
         this.paymentHelper = new PaymentHelper(new Settings(settingConfig));
-        this.userDao = new UsersMongoDao(database);
+        this.userDao = new UsersMongoDao(userDatabase);
         //this.esClient = esClient;
     }
 

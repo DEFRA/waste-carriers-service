@@ -50,14 +50,14 @@ public class PaymentResource
 	 * 
 	 * @param database
 	 */
-	public PaymentResource(DatabaseConfiguration database, SettingsConfiguration settingConfig,
-			ElasticSearchConfiguration elasticSearch)
+	public PaymentResource(DatabaseConfiguration database, DatabaseConfiguration userDatabase,
+			SettingsConfiguration settingConfig,ElasticSearchConfiguration elasticSearch)
 	{
 		dao = new PaymentsMongoDao(database);
 		regDao = new RegistrationsMongoDao(new DatabaseHelper(database));
 		paymentHelper = new PaymentHelper(new Settings(settingConfig));
 		esConfig = elasticSearch;
-		userDao = new UsersMongoDao(database);
+		userDao = new UsersMongoDao(userDatabase);
 	}
 
 	/**

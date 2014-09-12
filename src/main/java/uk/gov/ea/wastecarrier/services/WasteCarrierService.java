@@ -56,6 +56,7 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration> {
         final String defaultName = configuration.getDefaultName();
         final MessageQueueConfiguration mQConfig = configuration.getMessageQueueConfiguration();
         final DatabaseConfiguration dbConfig = configuration.getDatabase();
+        final DatabaseConfiguration userDbConfig = configuration.getUserDatabase();
         final ElasticSearchConfiguration esConfig = configuration.getElasticSearch();
         final String postcodeFilePath = configuration.getPostcodeFilePath();
         final IRConfiguration irConfig = configuration.getIrenewals();
@@ -67,16 +68,16 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration> {
         // Add Create Resource
         environment.addResource(new RegistrationsResource(template, defaultName, mQConfig, dbConfig, esConfig, esClient, postcodeFilePath));
         // Add Read Resource
-        environment.addResource(new RegistrationReadEditResource(template, defaultName, mQConfig, dbConfig, esConfig, esClient, sConfig));
+        environment.addResource(new RegistrationReadEditResource(template, defaultName, mQConfig, dbConfig, userDbConfig, esConfig, esClient, sConfig));
         // Add Version Resource
         environment.addResource(new RegistrationVersionResource());
         
         // Add Payment Resource, testing new URL for get payment details
         environment.addResource(new NewPaymentResource());
-        environment.addResource(new PaymentResource(dbConfig, configuration.getSettings(), esConfig));
+        environment.addResource(new PaymentResource(dbConfig, userDbConfig, configuration.getSettings(), esConfig));
         // Add Order Resource
         environment.addResource(new OrderResource(dbConfig));
-        environment.addResource(new OrdersResource(dbConfig, configuration.getSettings(), esConfig));
+        environment.addResource(new OrdersResource(dbConfig, userDbConfig, configuration.getSettings(), esConfig));
         
         // Add Settings resource
         environment.addResource(new SettingsResource(sConfig));

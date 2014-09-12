@@ -49,12 +49,12 @@ public class OrdersResource
 	 * 
 	 * @param database
 	 */
-	public OrdersResource(DatabaseConfiguration database, SettingsConfiguration settingConfig,
-			ElasticSearchConfiguration elasticSearch)
+	public OrdersResource(DatabaseConfiguration database, DatabaseConfiguration userDatabase,
+			SettingsConfiguration settingConfig, ElasticSearchConfiguration elasticSearch)
 	{
 		dao = new OrdersMongoDao(database);
 		regDao = new RegistrationsMongoDao(new DatabaseHelper(database));
-		userDao = new UsersMongoDao(database);
+		userDao = new UsersMongoDao(userDatabase);
 		esConfig = elasticSearch;
 		paymentHelper = new PaymentHelper(new Settings(settingConfig));
 	}
