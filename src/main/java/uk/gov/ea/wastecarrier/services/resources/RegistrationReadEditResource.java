@@ -183,39 +183,7 @@ public class RegistrationReadEditResource
 			// Create MONGOJACK connection to the database
 			JacksonDBCollection<Registration, String> registrations = JacksonDBCollection.wrap(
 					db.getCollection(Registration.COLLECTION_NAME), Registration.class, String.class);
-			
-			// Get and check if ID exist
-//			Registration foundReg = null;
-			try
-			{
-//				foundReg = registrations.findOneById(id);
-//				if (foundReg != null)
-//				{
-					// Update Registration MetaData last Modified Time
-					MetaData md = reg.getMetaData();
-					md.setLastModified(MetaData.getCurrentDateTime());
-					
-					// Update Activation status and time
-					if (MetaData.RegistrationStatus.ACTIVATE.equals(md.getStatus()))
-					{
-						md.setDateActivated(MetaData.getCurrentDateTime());
-						md.setStatus(MetaData.RegistrationStatus.ACTIVE);
-					}
-					
-					reg.setMetaData(md);
-/*				}
-				else
-				{
-					throw new Exception("Registration not Found in Database");
-				}
-*/			}
-			catch (Exception e)
-			{
-				log.severe("Caught exception while updating registration with id: " + id + "Exception: " + e.getMessage());
-				e.printStackTrace();
-				//log.severe("Cannot find Registration ID: " + id + ". Error: " + e.getMessage() );
-				throw new WebApplicationException(Status.NOT_FOUND);
-			}
+
 			// If object found
 			WriteResult<Registration, String> result = registrations.updateById(id, reg);
 			log.fine("Found result: '" + result + "' " );
@@ -225,10 +193,7 @@ public class RegistrationReadEditResource
 				log.info("Registration updated successfully in MongoDB for ID:" + id);
 				try
 				{
-					/*
-					 * Update the registration status, if appropriate
-					 * 
-					 */
+					//Update the registration status, if appropriate
 					Registration registration = regDao.getRegistration(id);
 					User user = userDao.getUserByEmail(registration.getAccountEmail());
 					
@@ -253,18 +218,10 @@ public class RegistrationReadEditResource
 					// Make a second request for the updated full registration details to be returned
 					savedObject = registrations.findOneById(id);
 					log.fine("Found Updated Registration, Details include:- CompanyName:" + savedObject.getCompanyName());
-					// Revoked registrations remain the ElasticSearch - therefore not deleting them here.
-/*					if (savedObject.getMetaData().getStatus().equals(RegistrationStatus.REVOKED))
-					{
-						// Delete registration from elastic search as registration has been revoked
-						Indexer.deleteElasticSearchIndex(esClient, savedObject);
-					}
-					else
-					{*/
-						// Perform another create index operation which should override previous index information
-						log.info("Indexing the updated registration in ElasticSearch...");
-						Indexer.indexRegistration(esConfig, savedObject);
-//					}
+
+                    // Perform another create index operation which should override previous index information
+                    log.info("Indexing the updated registration in ElasticSearch...");
+                    Indexer.indexRegistration(esConfig, savedObject);
 					
 					return savedObject;
 				}

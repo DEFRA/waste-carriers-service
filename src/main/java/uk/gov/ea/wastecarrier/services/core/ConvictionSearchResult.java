@@ -9,7 +9,7 @@ import java.util.Date;
 public class ConvictionSearchResult {
 
     public enum MatchResult {
-        YES, NO, UNKNOWN
+        YES, NO, NA, UNKNOWN
     }
 
     @JsonProperty("match_result")

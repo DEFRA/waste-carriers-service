@@ -28,7 +28,7 @@ public class PaymentHelper
 			balanceValid = registration.getFinanceDetails().getBalance() == 0;
 		}
 		if (balanceValid
-				&& RegistrationHelper.isAwaitingConvictionConfirmation(registration)
+				&& !RegistrationHelper.isAwaitingConvictionConfirmation(registration)
 				&& registration.getMetaData().getStatus().equals(RegistrationStatus.PENDING))
 		{
 			// Activate assisted digital routes without checking user

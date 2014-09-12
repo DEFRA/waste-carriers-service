@@ -25,7 +25,7 @@ public class RegistrationHelper {
         ConvictionSearchResult searchResult = registration.getConvictionSearchResult();
         if (searchResult != null) {
             if (searchResult.getMatchResult() != ConvictionSearchResult.MatchResult.NO
-                    && registration.getConvictionSearchResult().getConfirmed().equalsIgnoreCase("no")) {
+                    && searchResult.getConfirmed().equalsIgnoreCase("no")) {
                 return true;
             }
         }
