@@ -47,5 +47,6 @@
     "registration_fee":"154",
     "copy_card_fee":"5",
     "copy_cards":"2",
-	"expires_on":1512000000000
+	"expires_on":1512000000000,
+	"conviction_sign_offs":null
 }
