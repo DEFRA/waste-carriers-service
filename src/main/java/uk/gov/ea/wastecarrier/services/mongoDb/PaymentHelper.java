@@ -14,38 +14,59 @@ import uk.gov.ea.wastecarrier.services.core.User;
 public class PaymentHelper
 {
 	private Settings settings;
-	
+
 	public PaymentHelper(Settings settings) {
 
         this.settings = settings;
     }
-	
+
 	public boolean isReadyToBeActivated(Registration registration, User user)
 	{
-		boolean balanceValid = true;
-		if (registration.getTier().equals(RegistrationTier.UPPER))
-		{
-			balanceValid = registration.getFinanceDetails().getBalance() == 0;
-		}
-		if (balanceValid
-				&& !RegistrationHelper.isAwaitingConvictionConfirmation(registration)
-				&& registration.getMetaData().getStatus().equals(RegistrationStatus.PENDING))
-		{
-			// Activate assisted digital routes without checking user
-			if (registration.getMetaData().getRoute().equals(RouteType.ASSISTED_DIGITAL))
-			{
-				return true;
-			}
-			// For digital routes check the user has confirmed there account
-			else if (registration.getMetaData().getRoute().equals(RouteType.DIGITAL)
-					&& user != null
-					&& user.getConfirmed_at() != null)
-			{
-				return true;
-			}
-		}
+        if (registration.getMetaData().getStatus().equals(RegistrationStatus.PENDING)) {
+
+            // Activate assisted digital routes without checking user
+            if (registration.getMetaData().getRoute().equals(RouteType.ASSISTED_DIGITAL))
+            {
+                return true;
+            }
+
+            if (registration.getTier().equals(RegistrationTier.LOWER)
+                    && registration.getMetaData().getRoute().equals(RouteType.DIGITAL)
+                    && isUserValid(user)) {
+                return true;
+            }
+            else if (isBalanceValid(registration)
+                    && !RegistrationHelper.isAwaitingConvictionConfirmation(registration)) {
+                return true;
+            }
+        }
+
 		return false;
 	}
+
+    public Boolean isUserValid(User user) {
+
+        Boolean result = false;
+
+        if (user != null && user.getConfirmed_at() != null) {
+            result = true;
+        }
+
+        return result;
+    }
+
+    public Boolean isBalanceValid(Registration registration) {
+
+        Boolean result;
+
+        if (registration.getTier().equals(RegistrationTier.LOWER)) {
+            result = true;
+        } else {
+            result = registration.getFinanceDetails().getBalance() == 0;
+        }
+
+        return result;
+    }
 	
 	public Registration setupRegistrationForActivation(Registration registration)
 	{
