@@ -15,7 +15,7 @@ public class ReportingHelper {
     private final static String DATE_FILTER_PROPERTY = "metaData.dateRegistered";
 
     private QueryHelper queryHelper;
-	private Logger log = Logger.getLogger(WasteCarrierService.class.getName());
+	private Logger log = Logger.getLogger(ReportingHelper.class.getName());
 
 	public Optional<String> fromDate;
 	public Optional<String> toDate;

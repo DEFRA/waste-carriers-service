@@ -24,7 +24,7 @@ public class PaymentSearch {
     private final static String ORD_TYPE_FILTER_PROPERTY = "financeDetails.orders.orderItems.description";
 
     private QueryHelper queryHelper;
-    private Logger log = Logger.getLogger(WasteCarrierService.class.getName());
+    private Logger log = Logger.getLogger(PaymentSearch.class.getName());
 
     public Optional<String> fromDate;
     public Optional<String> toDate;

@@ -22,7 +22,7 @@ import uk.gov.ea.wastecarrier.services.core.Registration;
 public class OrdersMongoDao
 {
 	/** logger for this class. */
-	private static Logger log = Logger.getLogger(PaymentsMongoDao.class.getName());
+	private static Logger log = Logger.getLogger(OrdersMongoDao.class.getName());
 	
 	/** The database helper. */
 	private DatabaseHelper databaseHelper;
