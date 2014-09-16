@@ -36,6 +36,9 @@ if [[ -z "${WCRS_SERVICES_DB_USER}" ]]; then env_alert WCRS_SERVICES_DB_USER; fi
 if [[ -z "${WCRS_SERVICES_DB_PASSWD}" ]]; then env_alert WCRS_SERVICES_DB_PASSWD; fi
 if [[ -z "${WCRS_SERVICES_ES_HOST}" ]]; then env_alert WCRS_SERVICES_ES_HOST; fi
 if [[ -z "${WCRS_SERVICES_ES_PORT}" ]]; then env_alert WCRS_SERVICES_ES_PORT; fi
+if [[ -z "${WCRS_SERVICES_USERSDB_NAME}" ]]; then env_alert WCRS_SERVICES_USERSDB_NAME; fi
+if [[ -z "${WCRS_SERVICES_USERSDB_USER}" ]]; then env_alert WCRS_SERVICES_USERSDB_USER; fi
+if [[ -z "${WCRS_SERVICES_USERSDB_PASSWD}" ]]; then env_alert WCRS_SERVICES_USERSDB_PASSWD; fi
 
 
 ## Stop previously running wcrs-services.
@@ -155,6 +158,12 @@ sed -i "s/WCRS_SERVICES_DB_PASSWD/${WCRS_SERVICES_DB_PASSWD}/g" \
 sed -i "s/WCRS_SERVICES_ES_HOST/${WCRS_SERVICES_ES_HOST}/g" \
        "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
 sed -i "s/WCRS_SERVICES_ES_PORT/${WCRS_SERVICES_ES_PORT}/g" \
+       "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
+sed -i "s/WCRS_SERVICES_USERSDB_NAME/${WCRS_SERVICES_USERSDB_NAME}/g" \
+       "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
+sed -i "s/WCRS_SERVICES_USERSDB_USER/${WCRS_SERVICES_USERSDB_USER}/g" \
+       "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
+sed -i "s/WCRS_SERVICES_USERSDB_PASSWD/${WCRS_SERVICES_USERSDB_PASSWD}/g" \
        "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
 
 
