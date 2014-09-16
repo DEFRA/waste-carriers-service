@@ -64,9 +64,9 @@ http:
   adminPort: WCRS_SERVICES_ADMIN_PORT
   
 settings:
-  # registration period
+  # registration period (in years)
   registrationPeriod: WCRS_FRONTEND_EXPIRES_AFTER
-  # renew period
+  # renew period (in months)
   registrationRenewPeriod: WCRS_FRONTEND_RENEWAL_WINDOW
   
 # more properties go here

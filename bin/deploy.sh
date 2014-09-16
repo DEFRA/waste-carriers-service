@@ -165,6 +165,10 @@ sed -i "s/WCRS_SERVICES_USERSDB_USER/${WCRS_SERVICES_USERSDB_USER}/g" \
        "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
 sed -i "s/WCRS_SERVICES_USERSDB_PASSWD/${WCRS_SERVICES_USERSDB_PASSWD}/g" \
        "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
+sed -i "s/WCRS_FRONTEND_EXPIRES_AFTER/${WCRS_FRONTEND_EXPIRES_AFTER}/g" \
+       "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
+sed -i "s/WCRS_FRONTEND_RENEWAL_WINDOW/${WCRS_FRONTEND_RENEWAL_WINDOW}/g" \
+       "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
 
 
 ## Preserve the jenkins build number file.
