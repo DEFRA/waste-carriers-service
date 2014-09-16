@@ -27,7 +27,7 @@ import uk.gov.ea.wastecarrier.services.core.User;
 public class UsersMongoDao
 {
 	/** logger for this class. */
-	private static Logger log = Logger.getLogger(PaymentsMongoDao.class.getName());
+	private static Logger log = Logger.getLogger(UsersMongoDao.class.getName());
 	
 	/** The database helper. */
 	private DatabaseHelper databaseHelper;
@@ -38,6 +38,13 @@ public class UsersMongoDao
 	 */
 	public UsersMongoDao(DatabaseConfiguration database)
 	{
+		log.info("GGG *** GGG");
+		log.info("host = " + database.getHost());
+		log.info("port = " + database.getPort());
+		log.info("name = " + database.getName());
+		log.info("username = " + database.getUsername());
+		//log.info("password = " + database.getPassword());
+		
 		log.fine("Constructing DAO with databaseHelper.");
 		this.databaseHelper = new DatabaseHelper(database);
 	}
