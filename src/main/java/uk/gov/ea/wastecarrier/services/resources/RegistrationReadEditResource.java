@@ -10,6 +10,7 @@ import uk.gov.ea.wastecarrier.services.core.Settings;
 import uk.gov.ea.wastecarrier.services.core.User;
 import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.PaymentHelper;
+import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationsMongoDao;
 import uk.gov.ea.wastecarrier.services.mongoDb.UsersMongoDao;
 import uk.gov.ea.wastecarrier.services.tasks.Indexer;
@@ -129,6 +130,14 @@ public class RegistrationReadEditResource
 				if (foundReg != null)
 				{
 					log.info("Found Registration, CompanyName:" + foundReg.getCompanyName());
+					
+					// Check if if Expired date is beyond today, and if so mark registration as EXPIRED
+					if (RegistrationHelper.hasExpired(foundReg))
+					{
+						// Set and update registration with updated values
+						foundReg = RegistrationHelper.setAsExpired(foundReg);
+						return regDao.updateRegistration(foundReg);
+					}
 					return foundReg;
 				}
 				else
