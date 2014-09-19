@@ -42,11 +42,11 @@
 	"accessCode":"ABCDEF",
 	"expires_on":1512000000000,
 	"originalRegistrationNumber":"OLDREG123",
+	"conviction_sign_offs":null,
 	"company_no":null,
 	"key_people":[{"position":"Director","first_name":"John","last_name":"Smith","dob":-3600000,"person_type":"KEY"}],
 	"total_fee":"164",
     "registration_fee":"154",
     "copy_card_fee":"5",
-    "copy_cards":"2",
-	"conviction_sign_offs":null
+    "copy_cards":"2"
 }

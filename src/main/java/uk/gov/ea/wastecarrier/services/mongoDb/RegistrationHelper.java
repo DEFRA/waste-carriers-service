@@ -13,8 +13,8 @@ public class RegistrationHelper {
 
     public static Boolean isAwaitingConvictionConfirmation(Registration registration) {
 
-        if (registration.getConvictionSignOffs() != null) {
-            for (ConvictionSignOff signOff : registration.getConvictionSignOffs()) {
+        if (registration.getConviction_sign_offs() != null) {
+            for (ConvictionSignOff signOff : registration.getConviction_sign_offs()) {
                 if (signOff.getConfirmed().equalsIgnoreCase("no")) {
                     return true;
                 }

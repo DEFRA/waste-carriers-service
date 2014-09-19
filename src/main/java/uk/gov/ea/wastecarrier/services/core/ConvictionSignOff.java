@@ -9,10 +9,10 @@ public class ConvictionSignOff {
     @JsonProperty("confirmed")
     private String confirmed;
 
-    @JsonProperty("confirmed_at")
+    @JsonProperty("confirmedAt")
     private Date confirmedAt;
 
-    @JsonProperty("confirmed_by")
+    @JsonProperty("confirmedBy")
     private String confirmedBy;
 
     public ConvictionSignOff() {

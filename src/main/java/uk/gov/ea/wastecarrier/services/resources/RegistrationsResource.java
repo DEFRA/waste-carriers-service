@@ -625,7 +625,7 @@ public class RegistrationsResource
                     || RegistrationHelper.hasUnconfirmedConvictionMatches(reg)) {
                 List<ConvictionSignOff> signOffs = new ArrayList<ConvictionSignOff>();
                 signOffs.add(new ConvictionSignOff("no", null, null));
-                reg.setConvictionSignOffs(signOffs);
+                reg.setConviction_sign_offs(signOffs);
             }
 			
 			// Update Registration to include sequential identifier
