@@ -57,7 +57,7 @@ public class RegistrationHelper {
     	if (registration.getTier().equals(Registration.RegistrationTier.UPPER))
     	{
 			Date currentDate = new Date();
-			Date expiresDate = registration.getExpiresOn();
+			Date expiresDate = registration.getExpires_on();
 			return currentDate.getTime() > expiresDate.getTime();
     	}
     	return false;

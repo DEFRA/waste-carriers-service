@@ -40,6 +40,7 @@
 	"declaredConvictions":null,
 	"declaration":null,
 	"accessCode":null,
+	"expires_on":null,
 	"originalRegistrationNumber":null,
 	"company_no":null,
 	"key_people":null,
@@ -47,6 +48,5 @@
     "registration_fee":null,
     "copy_card_fee":null,
     "copy_cards":null,
-	"expires_on":null,
 	"conviction_sign_offs":null
 }

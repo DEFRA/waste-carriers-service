@@ -216,7 +216,7 @@ public class Registration
 	 */
 	@JsonProperty("expires_on")
 	@Valid
-	private Date expiresOn;
+	private Date expires_on;
 	
 	@JsonProperty
 	private String originalRegistrationNumber;
@@ -801,15 +801,15 @@ public class Registration
 	/**
 	 * @return the expiresOn
 	 */
-	public Date getExpiresOn() {
-		return expiresOn;
+	public Date getExpires_on() {
+		return expires_on;
 	}
 
 	/**
 	 * @param expiresOn the expiresOn to set
 	 */
-	public void setExpiresOn(Date expiresOn) {
-		this.expiresOn = expiresOn;
+	public void setExpires_on(Date expiresOn) {
+		this.expires_on = expiresOn;
 	}
 
 	/**
@@ -979,7 +979,7 @@ public class Registration
                 && Objects.equals(this.accountEmail, other.accountEmail)
                 && Objects.equals(this.declaredConvictions, other.declaredConvictions)
                 && Objects.equals(this.declaration, other.declaration)
-                && Objects.equals(this.expiresOn, other.expiresOn)
+                && Objects.equals(this.expires_on, other.expires_on)
                 && Objects.equals(this.originalRegistrationNumber, other.originalRegistrationNumber);
     }
 
@@ -990,7 +990,7 @@ public class Registration
                 onlyAMF, companyName, individualsType, publicBodyType, publicBodyTypeOther, companyNo, houseNumber,
                 streetLine1, streetLine2, streetLine3, streetLine4, townCity, postcode, country, address, uprn,
                 title, otherTitle, firstName, lastName, position, phoneNumber, contactEmail, totalFee, registrationFee,
-                copyCardFee, copyCards, accountEmail, declaredConvictions, declaration, expiresOn, originalRegistrationNumber
+                copyCardFee, copyCards, accountEmail, declaredConvictions, declaration, expires_on, originalRegistrationNumber
             );
 	}
 }
