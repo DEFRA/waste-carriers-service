@@ -17,8 +17,7 @@ import uk.gov.ea.wastecarrier.services.core.Version;
 import com.yammer.metrics.annotation.Timed;
 
 /**
- * This class represents a GET and PUT Resource provided as the @Path parameter. Specifically serving the Edit and
- * Update services
+ * Reports the current version.
  * 
  */
 @Path("/" + Version.VERSION_SINGULAR_NAME + ".json")
