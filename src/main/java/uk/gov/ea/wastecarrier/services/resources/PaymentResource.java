@@ -93,8 +93,9 @@ public class PaymentResource
 		Registration registration = regDao.getRegistration(registrationId);
 		User user = userDao.getUserByEmail(registration.getAccountEmail());
 		
-		if (paymentHelper.isReadyToBeActivated(registration, user) )
+		if (paymentHelper.isReadyToBeActivated(registration, user) || paymentHelper.isReadyToBeRenewed(registration))
 		{
+			if (paymentHelper.isReadyToBeRenewed(registration)) registration.setRenewalRequested(null);
 			registration = paymentHelper.setupRegistrationForActivation(registration);
 			try
 			{

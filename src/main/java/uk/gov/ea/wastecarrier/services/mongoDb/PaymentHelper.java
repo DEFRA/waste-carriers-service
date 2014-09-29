@@ -43,6 +43,16 @@ public class PaymentHelper
 
 		return false;
 	}
+	
+	public boolean isReadyToBeRenewed(Registration registration)
+	{
+        if (registration.getRenewalRequested() != null && registration.getRenewalRequested().equalsIgnoreCase("true")) {
+        	// Renewal requested
+        	return true;
+        }
+
+		return false;
+	}
 
     public Boolean isUserValid(User user) {
 
