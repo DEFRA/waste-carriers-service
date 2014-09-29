@@ -220,6 +220,9 @@ public class Registration
 	
 	@JsonProperty
 	private String originalRegistrationNumber;
+	
+	@JsonProperty
+	private String renewalRequested;
 
 	public final static String COLLECTION_SINGULAR_NAME = "registration";
 	public final static String COLLECTION_NAME = COLLECTION_SINGULAR_NAME +"s";
@@ -927,6 +930,22 @@ public class Registration
     {
         this.originalRegistrationNumber = originalRegistrationNumber;
     }
+    
+    /**
+	 * @return the renewalRequested
+	 */
+	public String getRenewalRequested()
+	{
+		return renewalRequested;
+	}
+
+	/**
+	 * @param renewalRequested the renewalRequested to set
+	 */
+	public void setRenewalRequested(String renewalRequested)
+	{
+		this.renewalRequested = renewalRequested;
+	}
 
     /**
 	 * Custom comparison method for comparing the contents of the user entered fields 
@@ -980,7 +999,8 @@ public class Registration
                 && Objects.equals(this.declaredConvictions, other.declaredConvictions)
                 && Objects.equals(this.declaration, other.declaration)
                 && Objects.equals(this.expires_on, other.expires_on)
-                && Objects.equals(this.originalRegistrationNumber, other.originalRegistrationNumber);
+                && Objects.equals(this.originalRegistrationNumber, other.originalRegistrationNumber)
+                && Objects.equals(this.renewalRequested, other.renewalRequested);
     }
 
 	@Override

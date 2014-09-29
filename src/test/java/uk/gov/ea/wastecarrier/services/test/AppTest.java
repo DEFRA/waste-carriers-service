@@ -82,6 +82,7 @@ public class AppTest extends TestCase
 		reg.setDeclaration("on");
 		reg.setExpires_on(new DateTime(2017, 11, 30, 0, 0).toDate());
 		reg.setOriginalRegistrationNumber("OLDREG123");
+		reg.setRenewalRequested("false");
 
         List<KeyPerson> keyPeople = new ArrayList<KeyPerson>();
         keyPeople.add(

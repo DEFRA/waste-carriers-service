@@ -42,6 +42,7 @@
 	"accessCode":"ABCDEF",
 	"expires_on":1512000000000,
 	"originalRegistrationNumber":"OLDREG123",
+	"renewalRequested": "false",
 	"conviction_sign_offs":null,
 	"company_no":null,
 	"key_people":[{"position":"Director","first_name":"John","last_name":"Smith","dob":-3600000,"person_type":"KEY"}],

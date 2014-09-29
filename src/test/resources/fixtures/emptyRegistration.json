@@ -42,6 +42,7 @@
 	"accessCode":null,
 	"expires_on":null,
 	"originalRegistrationNumber":null,
+	"renewalRequested": null,
 	"conviction_sign_offs":null,
 	"company_no":null,
 	"key_people":null,
