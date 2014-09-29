@@ -7,6 +7,7 @@ import com.mongodb.DBCursor;
 import uk.gov.ea.wastecarrier.services.WasteCarrierService;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -99,17 +100,17 @@ public class PaymentSearch {
 
     protected void applyDateFilters(BasicDBObject query) {
 
-        String fromString = null;
-        String untilString = null;
+        Date fromString = null;
+        Date untilString = null;
 
         if (fromDate.isPresent()) {
             Long from = QueryHelper.dateStringToLong(fromDate.get(), false);
-            fromString = QueryHelper.timeToDateTimeString(from);
+            fromString = new Date(from);
         }
 
         if (toDate.isPresent()) {
             Long until = QueryHelper.dateStringToLong(toDate.get(), true);
-            untilString = QueryHelper.timeToDateTimeString(until);
+            untilString = new Date(until);
         }
 
         if (fromString != null && untilString != null) {
