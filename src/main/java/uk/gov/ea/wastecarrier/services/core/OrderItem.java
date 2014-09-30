@@ -40,7 +40,8 @@ public class OrderItem
 		EDIT,
 		RENEW,
 		IRRENEW,	/* The IRRENEW might not be needed? */
-		COPY_CARDS
+		COPY_CARDS,
+		CHARGE_ADJUST
 	}
 	
 	public OrderItem()
