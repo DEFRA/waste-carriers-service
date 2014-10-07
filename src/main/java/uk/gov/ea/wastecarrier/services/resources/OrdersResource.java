@@ -103,6 +103,9 @@ public class OrdersResource
 			}
 		}
 		
+		log.info("Re-Index the registration (with new order) in ElasticSearch");
+		Indexer.indexRegistration(esConfig, registration);
+		
 		return resultOrder;
 	}
 }
