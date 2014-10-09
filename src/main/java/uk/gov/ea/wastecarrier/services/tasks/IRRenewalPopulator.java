@@ -27,7 +27,7 @@ import uk.gov.ea.wastecarrier.services.mongoDb.IRRenewalMongoDao;
  * That data can subsequently be queried and used to populate some registration data.
  * 
  * To use this service call, E.g. 
- * curl -X POST http://localhost:9091/tasks/ir-renewal 
+ * curl -X POST http://localhost:9091/tasks/ir-repopulate 
  * Which performs a full re-population for entries in the csv's provided
  * 
  * @author Steve
