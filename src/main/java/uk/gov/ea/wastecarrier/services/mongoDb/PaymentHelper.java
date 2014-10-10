@@ -22,10 +22,13 @@ public class PaymentHelper
 
 	public boolean isReadyToBeActivated(Registration registration, User user)
 	{
-        if (registration.getMetaData().getStatus().equals(RegistrationStatus.PENDING)) {
+        if (registration.getMetaData().getStatus().equals(RegistrationStatus.PENDING) 
+        		|| registration.getMetaData().getStatus().equals(RegistrationStatus.REFUSED)) {
 
             // Activate assisted digital routes without checking user
-            if (registration.getMetaData().getRoute().equals(RouteType.ASSISTED_DIGITAL))
+            if (registration.getMetaData().getRoute().equals(RouteType.ASSISTED_DIGITAL)
+            		&& isBalanceValid(registration)
+                    && !RegistrationHelper.isAwaitingConvictionConfirmation(registration))
             {
                 return true;
             }
@@ -102,7 +105,8 @@ public class PaymentHelper
 	private MetaData makeActive(MetaData md)
 	{
 		// Update Activation status and time
-		if (MetaData.RegistrationStatus.PENDING.equals(md.getStatus()))
+		if (MetaData.RegistrationStatus.PENDING.equals(md.getStatus()) 
+				|| MetaData.RegistrationStatus.REFUSED.equals(md.getStatus()))
 		{
 			md.setDateActivated(MetaData.getCurrentDateTime());
 			md.setStatus(MetaData.RegistrationStatus.ACTIVE);
