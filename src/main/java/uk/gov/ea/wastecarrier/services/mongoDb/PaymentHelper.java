@@ -92,8 +92,11 @@ public class PaymentHelper
 		
 		registration.setMetaData(md);
 		
-		// Set expires on date
-		registration.setExpires_on(getExpiryDate());
+		if (registration.getTier().equals(RegistrationTier.UPPER))
+		{
+			// Set expires on date
+			registration.setExpires_on(getExpiryDate());
+		}
 		return registration;
 	}
 	
