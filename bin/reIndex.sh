@@ -20,11 +20,20 @@ else
   esHost="localhost"
 fi
 echo "esHost: $esHost"
-esPort="9200"
-echo "TODO esPort: No ENV var set, using default 9200"
+
+esPort=${WCRS_SERVICES_ES_PORT}
+if [ $esPort ]
+then
+  echo "String length not zero"
+else
+  echo "Using local setting for WCRS_SERVICES_ES_PORT"
+  esPort="9200"
+fi
+echo "esPort: $esPort"
 
 wcrsServicesName="localhost"
 echo "TODO wcrsServicesName: No ENV var set, using default localhost"
+echo "NB We don't actually have a WCRS_SERVICES_NAME env variable"
 wcrsServicesAdminPort=${WCRS_SERVICES_ADMIN_PORT}
 if [ $wcrsServicesAdminPort ]
 then
