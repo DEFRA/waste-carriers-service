@@ -92,35 +92,27 @@ public class PaymentResource
 		 */
 		Registration registration = regDao.getRegistration(registrationId);
 		User user = userDao.getUserByEmail(registration.getAccountEmail());
-		boolean indexed = false;
 		if (paymentHelper.isReadyToBeActivated(registration, user) || paymentHelper.isReadyToBeRenewed(registration))
 		{
 			if (paymentHelper.isReadyToBeRenewed(registration)) registration.setRenewalRequested(null);
 			registration = paymentHelper.setupRegistrationForActivation(registration);
-			try
-			{
-				Registration savedObject = regDao.updateRegistration(registration);
-				
-				log.info("Re-Index the updated registration in ElasticSearch...");
-				Indexer.indexRegistration(esConfig, savedObject);
-				indexed = true;
-			}
-			catch(Exception e)
-			{
-				/*
-				 * TODO: Need to handle this better because if the registration update 
-				 * fails we should roll-back the payment?
-				 */
-				dao.deletePayment(resultPayment);
-				log.severe("Error while updating registration after payment with ID " + registration.getId() + " in MongoDB.");
-				throw new WebApplicationException(Status.NOT_MODIFIED);
-			}
 		}
-		
-		if (!indexed)
+		try
 		{
-			log.info("Re-Index the updated registration (with new payment) in ElasticSearch...");
-			Indexer.indexRegistration(esConfig, registration);
+			Registration savedObject = regDao.updateRegistration(registration);
+			
+			log.info("Re-Index the updated registration in ElasticSearch...");
+			Indexer.indexRegistration(esConfig, savedObject);
+		}
+		catch(Exception e)
+		{
+			/*
+			 * TODO: Need to handle this better because if the registration update 
+			 * fails we should roll-back the payment?
+			 */
+			dao.deletePayment(resultPayment);
+			log.severe("Error while updating registration after payment with ID " + registration.getId() + " in MongoDB.");
+			throw new WebApplicationException(Status.NOT_MODIFIED);
 		}
 		
 		return resultPayment;
