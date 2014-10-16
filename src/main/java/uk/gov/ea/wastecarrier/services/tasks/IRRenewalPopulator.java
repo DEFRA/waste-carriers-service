@@ -1,14 +1,13 @@
 package uk.gov.ea.wastecarrier.services.tasks;
 
-import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-//import java.io.FileReader;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.logging.Logger;
+
+import au.com.bytecode.opencsv.CSVReader;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.yammer.dropwizard.tasks.Task;
@@ -123,22 +122,14 @@ public class IRRenewalPopulator extends Task
 	 */
 	private void populateIRData(String csvFile, IRRenewal_Type irType)
 	{
-		BufferedReader br = null;
-		String line = "";
-		String cvsSplitBy = ",";
-		
-		try
-		{
-			log.info("Try to read from: " + csvFile);
-			InputStream is = IRRenewalPopulator.class.getResourceAsStream(csvFile);
-			InputStreamReader isr = new InputStreamReader(is);
-			br = new BufferedReader(isr);
-			log.fine("Attempting to read file: " + csvFile);
+		String[] nextLine;
+		CSVReader reader = null;
+		try {
 			int count = 0;
-			while ((line = br.readLine()) != null)
-			{
+			reader = new CSVReader(new FileReader(csvFile));
+			while ((nextLine = reader.readNext()) != null) {
 				// use comma as separator
-				String[] irDataRow = line.split(cvsSplitBy);
+				String[] irDataRow = nextLine;
 
 				log.fine("IR Data [0: " + irDataRow[0] +
 						" , 1: " + irDataRow[1] + 
@@ -195,19 +186,68 @@ public class IRRenewalPopulator extends Task
 		}
 		finally
 		{
-			if (br != null)
+			try 
 			{
-				try
+				if (reader != null) 
 				{
-					br.close();
+					reader.close();
 				}
-				catch (IOException e)
-				{
-					log.severe("Error: cannot close connection to file, " + e.getMessage());
-				}
+			} 
+			catch (IOException e) 
+			{
+				log.severe("IOException while closing CSV reader: "
+						+ e.getMessage());
 			}
 		}
 		log.fine("Done");
+	}
+	
+	/**
+	 * Loads sample data for the purpose of populating the IR data with a minimal set of data for the tests 
+	 * to be able to use and find.
+	 * 
+	 * This was used for testing without a CSV file. Has been replaced by loading the test CSV files with dummy
+	 * data.
+	 */
+	@SuppressWarnings("unused")
+	private void populateListwithTestIRData()
+	{
+		String testCompanyData[] = {"CB/AE9999XX/A001",
+				"01/24/2014",
+				"Carrier and Broker",
+				"Company",
+				"IR Company Name",
+				"",
+				"07713745"};
+		this.irDataList.add(new CompanyIRData(testCompanyData));
+		
+		String testIndividualData[] = {"CB/AN9999YY/R002",
+				"3/16/2015",
+				"Carrier",
+				"Person",
+				"Joe Grades",
+				"Sole Trader Ltd",
+				"4/23/1959"};
+		this.irDataList.add(new IndividualIRData(testIndividualData));
+		
+		String testPartnerData[] = {"CB/AN9999ZZ/R002",
+				"3/13/2015",
+				"Carrier and Broker",
+				"Organisation of Individuals",
+				"Partnership",
+				"Joe Grades",
+				"",
+				"8/15/1979"};
+		this.irDataList.add(new PartnersIRData(testPartnerData));
+		
+		String testPublicBodyData[] = {"CB/VM9999WW/A001",
+				"10/29/2014",
+				"Carrier",
+				"Public Body",
+				"Public Body Council",
+				"Public Body Name"};
+		this.irDataList.add(new PublicBodyIRData(testPublicBodyData));
+		log.info("Read " + irDataList.size() + " Test IR records.");
 	}
 	
 }

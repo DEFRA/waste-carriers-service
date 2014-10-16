@@ -69,4 +69,8 @@ settings:
   # renew period (in months)
   registrationRenewPeriod: WCRS_SERVICES_RENEWAL_WINDOW
   
+irrenewals:
+  # path to ir data folder (import from legacy system)
+  irRenewalFolderPath: WCRS_SERVICES_IR_FOLDERPATH
+  
 # more properties go here
