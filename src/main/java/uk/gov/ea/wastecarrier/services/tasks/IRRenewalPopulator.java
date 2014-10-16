@@ -86,6 +86,9 @@ public class IRRenewalPopulator extends Task
 		// Drop any existing IR renewal data
 		dropAllIRData();
 		
+		// Populate list with initial set of test data
+		populateListwithTestIRData();
+		
 		// Setup IR data with list in CSV files
 		populateIRData(this.irCompanyDataFilePath, IRRenewal_Type.Company);
 		populateIRData(this.irIndividualDataFilePath, IRRenewal_Type.Individual);
@@ -206,10 +209,7 @@ public class IRRenewalPopulator extends Task
 	 * Loads sample data for the purpose of populating the IR data with a minimal set of data for the tests 
 	 * to be able to use and find.
 	 * 
-	 * This was used for testing without a CSV file. Has been replaced by loading the test CSV files with dummy
-	 * data.
 	 */
-	@SuppressWarnings("unused")
 	private void populateListwithTestIRData()
 	{
 		String testCompanyData[] = {"CB/AE9999XX/A001",
