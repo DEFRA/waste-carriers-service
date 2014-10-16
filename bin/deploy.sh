@@ -39,6 +39,7 @@ if [[ -z "${WCRS_SERVICES_ES_PORT}" ]]; then env_alert WCRS_SERVICES_ES_PORT; fi
 if [[ -z "${WCRS_SERVICES_USERSDB_NAME}" ]]; then env_alert WCRS_SERVICES_USERSDB_NAME; fi
 if [[ -z "${WCRS_SERVICES_USERSDB_USER}" ]]; then env_alert WCRS_SERVICES_USERSDB_USER; fi
 if [[ -z "${WCRS_SERVICES_USERSDB_PASSWD}" ]]; then env_alert WCRS_SERVICES_USERSDB_PASSWD; fi
+if [[ -z "${WCRS_SERVICES_IR_FOLDERPATH}" ]]; then env_alert WCRS_SERVICES_IR_FOLDERPATH; fi
 
 
 ## Stop previously running wcrs-services.
@@ -168,6 +169,8 @@ sed -i "s/WCRS_SERVICES_USERSDB_PASSWD/${WCRS_SERVICES_USERSDB_PASSWD}/g" \
 sed -i "s/WCRS_SERVICES_EXPIRES_AFTER/${WCRS_SERVICES_EXPIRES_AFTER}/g" \
        "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
 sed -i "s/WCRS_SERVICES_RENEWAL_WINDOW/${WCRS_SERVICES_RENEWAL_WINDOW}/g" \
+       "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
+sed -i "s/WCRS_SERVICES_IR_FOLDERPATH/${WCRS_SERVICES_IR_FOLDERPATH}/g" \
        "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
 
 
