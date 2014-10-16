@@ -11,7 +11,7 @@ public class IRConfiguration extends Configuration {
 	@Valid
     @NotEmpty
     @JsonProperty
-    private String irRenewalFolderPath = "src/test/resources/ir_data/";
+    private String irRenewalFolderPath = "src/test/resources/ir_data";
     
     @Valid
     @NotEmpty

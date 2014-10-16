@@ -1,5 +1,6 @@
 package uk.gov.ea.wastecarrier.services.tasks;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -64,10 +65,10 @@ public class IRRenewalPopulator extends Task
 	{
 		super(name);
 		this.dao = new IRRenewalMongoDao(database);
-		this.irCompanyDataFilePath = irConfig.getIrRenewalFolderPath() + irConfig.getIrRenewalCompanyFileName();
-		this.irIndividualDataFilePath = irConfig.getIrRenewalFolderPath() + irConfig.getIrRenewalIndividualFileName();
-		this.irPartnersDataFilePath = irConfig.getIrRenewalFolderPath() + irConfig.getIrRenewalPartnersFileName();
-		this.irPublicBodyDataFilePath = irConfig.getIrRenewalFolderPath() + irConfig.getIrRenewalPublicBodyFileName();
+		this.irCompanyDataFilePath = irConfig.getIrRenewalFolderPath() +File.separatorChar+ irConfig.getIrRenewalCompanyFileName();
+		this.irIndividualDataFilePath = irConfig.getIrRenewalFolderPath() +File.separatorChar+ irConfig.getIrRenewalIndividualFileName();
+		this.irPartnersDataFilePath = irConfig.getIrRenewalFolderPath() +File.separatorChar+ irConfig.getIrRenewalPartnersFileName();
+		this.irPublicBodyDataFilePath = irConfig.getIrRenewalFolderPath() +File.separatorChar+ irConfig.getIrRenewalPublicBodyFileName();
 		this.irDataList = new ArrayList<IRData>();
 		log.fine("IR data populator loaded");
 	}
