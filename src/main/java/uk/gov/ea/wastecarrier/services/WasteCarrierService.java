@@ -12,6 +12,7 @@ import uk.gov.ea.wastecarrier.services.health.TemplateHealthCheck;
 import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.MongoManaged;
 import uk.gov.ea.wastecarrier.services.resources.*;
+import uk.gov.ea.wastecarrier.services.tasks.DatabaseCleaner;
 import uk.gov.ea.wastecarrier.services.tasks.IRRenewalPopulator;
 import uk.gov.ea.wastecarrier.services.tasks.Indexer;
 import uk.gov.ea.wastecarrier.services.tasks.LocationPopulator;
@@ -131,6 +132,10 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration> {
 		
 		IRRenewalPopulator irPop = new IRRenewalPopulator("ir-repopulate", dbConfig, irConfig);
 		environment.addTask(irPop);
+		
+		// Add Task for Database cleaner
+        DatabaseCleaner dbCleaner = new DatabaseCleaner("dbcleaner", dbConfig, esConfig);
+		environment.addTask(dbCleaner);
 		
 		// Add Heath Check to indexing Service
 		environment.addHealthCheck(
