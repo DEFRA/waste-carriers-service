@@ -32,6 +32,7 @@ public class PaymentSearch {
     public Set<String> paymentStatuses;
     public Set<String> paymentTypes;
     public Set<String> chargeTypes;
+    public Optional<Integer> resultCount;
 
     public enum PaymentStatus {
         AWAITING_PAYMENT,
@@ -69,11 +70,21 @@ public class PaymentSearch {
         }
 
         DBCursor cursor = queryHelper.getRegistrationsCollection().find(query);
-
-        // TODO Add this as a separate feature and apply to all searches.
-        cursor.limit(100);
+        applyResultCount(cursor);
 
         return queryHelper.toRegistrationList(cursor);
+    }
+
+    protected void applyResultCount(DBCursor cursor) {
+
+        if (resultCount.isPresent())
+        {
+            Integer count = resultCount.get();
+            if ( count != null && !count.equals(0))
+            {
+                cursor.limit(resultCount.get());
+            }
+        }
     }
 
     protected void applyPaymentStatusFilters(BasicDBObject query) {

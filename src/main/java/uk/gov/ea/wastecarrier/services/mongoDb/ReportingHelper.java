@@ -25,6 +25,7 @@ public class ReportingHelper {
     public Set<String> tier;
     public Optional<String> declaredConvictions;
     public Optional<Boolean> criminallySuspect;
+    public Optional<Integer> resultCount;
 
     public ReportingHelper(QueryHelper queryHelper) {
 
@@ -56,9 +57,22 @@ public class ReportingHelper {
         }
 		
 		DBCursor cursor = queryHelper.getRegistrationsCollection().find(query);
+        applyResultCount(cursor);
 		
 		return queryHelper.toRegistrationList(cursor);
 	}
+
+    protected void applyResultCount(DBCursor cursor) {
+
+        if (resultCount.isPresent())
+        {
+            Integer count = resultCount.get();
+            if ( count != null && !count.equals(0))
+            {
+                cursor.limit(resultCount.get());
+            }
+        }
+    }
 
     protected void applyDateFilters(BasicDBObject query) {
 

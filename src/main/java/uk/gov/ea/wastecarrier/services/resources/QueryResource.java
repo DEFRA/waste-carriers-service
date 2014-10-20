@@ -40,7 +40,8 @@ public class QueryResource {
             @QueryParam("businessType[]") Set<String> businessType,
             @QueryParam("tier[]") Set<String> tier,
             @QueryParam("declaredConvictions") Optional<String> declaredConvictions,
-            @QueryParam("criminallySuspect") Optional<Boolean> criminallySuspect
+            @QueryParam("criminallySuspect") Optional<Boolean> criminallySuspect,
+            @QueryParam("resultCount") Optional<Integer> resultCount
     ) {
 
         log.fine("Get Method Detected at /query/registrations");
@@ -77,7 +78,8 @@ public class QueryResource {
             @QueryParam("until") Optional<String> until,
             @QueryParam("paymentStatus[]") Set<String> paymentStatuses,
             @QueryParam("paymentType[]") Set<String> paymentTypes,
-            @QueryParam("chargeType[]") Set<String> chargeTypes
+            @QueryParam("chargeType[]") Set<String> chargeTypes,
+            @QueryParam("resultCount") Optional<Integer> resultCount
     ) {
 
         log.fine("Get Method Detected at /query/payments");
