@@ -57,6 +57,7 @@ public class QueryResource {
             search.tier = tier;
             search.declaredConvictions = declaredConvictions;
             search.criminallySuspect = criminallySuspect;
+            search.resultCount = resultCount;
 
             searchresults = search.getRegistrations();
 
@@ -92,6 +93,7 @@ public class QueryResource {
             search.paymentStatuses = paymentStatuses;
             search.paymentTypes = paymentTypes;
             search.chargeTypes = chargeTypes;
+            search.resultCount = resultCount;
 
             searchResults = search.getRegistrations();
 
