@@ -21,7 +21,7 @@ public class PaymentSearch {
     private final static String REG_DATE_FILTER_PROPERTY = "metaData.dateRegistered";
     private final static String REG_BALANCE_FILTER_PROPERTY = "financeDetails.balance";
     private final static String PAY_DATE_FILTER_PROPERTY = "financeDetails.payments.dateReceived";
-    private final static String ORD_DATE_FILTER_PROPERTY = "financeDetails.orders.orderItems.dateCreated";
+    private final static String ORD_DATE_FILTER_PROPERTY = "financeDetails.orders.dateCreated";
     private final static String PAY_TYPE_FILTER_PROPERTY = "financeDetails.payments.paymentType";
     private final static String ORD_TYPE_FILTER_PROPERTY = "financeDetails.orders.orderItems.description";
 
@@ -114,6 +114,8 @@ public class PaymentSearch {
 
         Date from = null;
         Date until = null;
+        BasicDBObject paymentsClause = null;
+        BasicDBObject ordersClause = null;
 
         if (fromDate.isPresent()) {
             from = QueryHelper.dateStringToDate(fromDate.get(), false).toDate();
@@ -124,15 +126,35 @@ public class PaymentSearch {
         }
 
         if (from != null && until != null) {
-            query.append(
+
+            paymentsClause = new BasicDBObject(
                     PAY_DATE_FILTER_PROPERTY,
                     new BasicDBObject("$gte", from).append("$lte", until));
+            ordersClause = new BasicDBObject(
+                    ORD_DATE_FILTER_PROPERTY,
+                    new BasicDBObject("$gte", from).append("$lte", until));
+
         } else if (from != null) {
-            query.append(PAY_DATE_FILTER_PROPERTY, new BasicDBObject("$gte", from));
+
+            paymentsClause = new BasicDBObject(
+                    PAY_DATE_FILTER_PROPERTY, new BasicDBObject("$gte", from));
+            ordersClause = new BasicDBObject(
+                    ORD_DATE_FILTER_PROPERTY, new BasicDBObject("$gte", from));
+
         } else if (until != null) {
-            query.append(PAY_DATE_FILTER_PROPERTY, new BasicDBObject("$lte", until));
+
+            paymentsClause = new BasicDBObject(
+                    PAY_DATE_FILTER_PROPERTY, new BasicDBObject("$lte", until));
+            ordersClause = new BasicDBObject(
+                    ORD_DATE_FILTER_PROPERTY, new BasicDBObject("$lte", until));
+
         }
 
+        BasicDBList orQuery = new BasicDBList();
+        orQuery.add(paymentsClause);
+        orQuery.add(ordersClause);
+
+        query.append("$or", orQuery);
     }
 
     private Map<String,Object> authorQueryProperties() {
