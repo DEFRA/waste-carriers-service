@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
+import org.joda.time.DateTime;
 import uk.gov.ea.wastecarrier.services.WasteCarrierService;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 
@@ -111,28 +112,25 @@ public class PaymentSearch {
 
     protected void applyDateFilters(BasicDBObject query) {
 
-        Date fromString = null;
-        Date untilString = null;
+        Date from = null;
+        Date until = null;
 
         if (fromDate.isPresent()) {
-            Long from = QueryHelper.dateStringToLong(fromDate.get(), false);
-            fromString = new Date(from);
+            from = QueryHelper.dateStringToDate(fromDate.get(), false).toDate();
         }
 
         if (toDate.isPresent()) {
-            Long until = QueryHelper.dateStringToLong(toDate.get(), true);
-            untilString = new Date(until);
+            until = QueryHelper.dateStringToDate(toDate.get(), true).toDate();
         }
 
-        if (fromString != null && untilString != null) {
+        if (from != null && until != null) {
             query.append(
                     PAY_DATE_FILTER_PROPERTY,
-                    new BasicDBObject("$gt", fromString)
-                            .append("$lte", untilString));
-        } else if (fromString != null) {
-            query.append(PAY_DATE_FILTER_PROPERTY, new BasicDBObject("$gt", fromString));
-        } else if (untilString != null) {
-            query.append(PAY_DATE_FILTER_PROPERTY, new BasicDBObject("$lte", untilString));
+                    new BasicDBObject("$gte", from).append("$lte", until));
+        } else if (from != null) {
+            query.append(PAY_DATE_FILTER_PROPERTY, new BasicDBObject("$gte", from));
+        } else if (until != null) {
+            query.append(PAY_DATE_FILTER_PROPERTY, new BasicDBObject("$lte", until));
         }
 
     }

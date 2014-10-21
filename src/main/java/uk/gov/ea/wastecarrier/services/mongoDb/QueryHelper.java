@@ -4,16 +4,24 @@ import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import net.vz.mongodb.jackson.JacksonDBCollection;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeUtils;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.DateTimeFormatterBuilder;
+import org.joda.time.format.DateTimeParser;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Logger;
 
 public class QueryHelper {
 
-    private Logger log = Logger.getLogger(QueryHelper.class.getName());
+    private static Logger log = Logger.getLogger(QueryHelper.class.getName());
     private DatabaseHelper databaseHelper;
 
     public QueryHelper(DatabaseHelper databaseHelper) {
@@ -171,48 +179,49 @@ public class QueryHelper {
     }
 
     /**
-     * Returns the time in milliseconds for a date in ddmmyyyy format.
+     * Returns a DateTime for a date string formatted as dd/MM/yyyy, dd-MM-yyyy,
+     * dd MM yyyy and ddMMyyyy.
      *
      * @param date
-     *            The date in ddmmyyyy or dd/mm/yyyy format.
+     *            The date string to be converted.
      * @param end
      *            Whether the returned time should be for the end of the day.
-     * @return The time in milliseconds for a date in ddmmyyyy or dd/mm/yyyy
-     *         format.
+     * @return A DateTime representing the date string, set to either to start or
+     * end of the day.
      */
-    public static long dateStringToLong(String date, boolean end) {
+    public static DateTime dateStringToDate(String date, boolean end) {
 
-        if (date == null || (date.length() != 8 && date.length() != 10)) {
-            throw new IllegalArgumentException("Invalid date string: " + date);
-        }
-        int day = Integer.parseInt(date.substring(0, 2));
-        int start = 2;
-        if (date.charAt(start) == '/') {
-            start++;
-        }
-        int month = Integer.parseInt(date.substring(start, start + 2)) - 1;
-        start += 2;
-        if (date.charAt(start) == '/') {
-            start++;
-        }
-        int year = Integer.parseInt(date.substring(start, start + 4));
-        Calendar cal = Calendar.getInstance();
+        DateTime result = null;
 
         if (end) {
-            cal.set(Calendar.MILLISECOND, 999);
-            cal.set(Calendar.SECOND, 59);
-            cal.set(Calendar.MINUTE, 59);
-            cal.set(Calendar.HOUR_OF_DAY, 23);
-        } else {
-            cal.set(Calendar.MILLISECOND, 0);
-            cal.set(Calendar.SECOND, 0);
-            cal.set(Calendar.MINUTE, 0);
-            cal.set(Calendar.HOUR_OF_DAY, 0);
+            result = dateStringToDateTime(date).withTime(23, 59, 59, 999);
         }
-        cal.set(Calendar.DAY_OF_MONTH, day);
-        cal.set(Calendar.MONTH, month);
-        cal.set(Calendar.YEAR, year);
+        else {
+            result = dateStringToDateTime(date).withTimeAtStartOfDay();
+        }
 
-        return cal.getTimeInMillis();
+        return result;
+    }
+
+    public static DateTime dateStringToDateTime(String date) {
+
+        DateTimeParser[] parsers = {
+                DateTimeFormat.forPattern("dd/MM/yyyy").getParser(),
+                DateTimeFormat.forPattern("dd-MM-yyyy").getParser(),
+                DateTimeFormat.forPattern("dd MM yyyy").getParser(),
+                DateTimeFormat.forPattern("ddMMyyyy").getParser()
+        };
+
+        DateTimeFormatter formatter =
+                new DateTimeFormatterBuilder().append(null, parsers).toFormatter();
+
+        DateTime result = null;
+        try {
+            result = formatter.parseDateTime(date);
+        } catch (Exception e) {
+            log.warning("Failed to parse date " + date + ". " + e.getMessage());
+        }
+
+        return result;
     }
 }

@@ -80,12 +80,12 @@ public class ReportingHelper {
         String untilString = null;
 
         if (fromDate.isPresent()) {
-            Long from = QueryHelper.dateStringToLong(fromDate.get(), false);
+            Long from = QueryHelper.dateStringToDate(fromDate.get(), false).getMillis();
             fromString = QueryHelper.timeToDateTimeString(from);
         }
 
         if (toDate.isPresent()) {
-            Long until = QueryHelper.dateStringToLong(toDate.get(), true);
+            Long until = QueryHelper.dateStringToDate(toDate.get(), true).getMillis();
             untilString = QueryHelper.timeToDateTimeString(until);
         }
 
