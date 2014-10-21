@@ -134,7 +134,7 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration> {
 		environment.addTask(irPop);
 		
 		// Add Task for Database cleaner
-        DatabaseCleaner dbCleaner = new DatabaseCleaner("dbcleaner", dbConfig, esConfig);
+        DatabaseCleaner dbCleaner = new DatabaseCleaner("dbcleaner", dbConfig, esConfig, esClient);
 		environment.addTask(dbCleaner);
 		
 		// Add Heath Check to indexing Service
