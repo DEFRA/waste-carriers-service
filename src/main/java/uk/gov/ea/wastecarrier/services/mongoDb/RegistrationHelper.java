@@ -54,7 +54,7 @@ public class RegistrationHelper {
 	 */
     public static Boolean hasExpired(Registration registration)
     {
-    	if (registration.getTier().equals(Registration.RegistrationTier.UPPER))
+    	if (registration.getTier() != null && registration.getTier().equals(Registration.RegistrationTier.UPPER))
     	{
 			Date currentDate = new Date();
 			Date expiresDate = registration.getExpires_on();
