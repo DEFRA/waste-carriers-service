@@ -111,6 +111,8 @@ cp "${WCRS_SERVICES_SOURCE}/bin/deploy.sh" "${WCRS_SERVICES_HOME}/${RELEASE_DIR}
 chmod 744 "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/bin/deploy.sh"
 cp "${WCRS_SERVICES_SOURCE}/bin/reindex_elasticsearch.sh" "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/bin/"
 chmod 744 "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/bin/reindex_elasticsearch.sh"
+cp "${WCRS_SERVICES_SOURCE}/bin/registration_mapping.json" "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/bin/"
+chmod 744 "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/bin/registration_mapping.json"
 
 
 ## Deploy the most recent jar file.
