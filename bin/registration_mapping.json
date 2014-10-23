@@ -26,6 +26,19 @@
       "contactEmail" : {
         "type" : "string"
       },
+      "conviction_sign_offs" : {
+        "properties" : {
+          "confirmed" : {
+            "type" : "string"
+          },
+          "confirmedAt" : {
+            "type" : "long"
+          },
+          "confirmedBy" : {
+            "type" : "string"
+          }
+        }
+      },
       "declaration" : {
         "type" : "string"
       },
