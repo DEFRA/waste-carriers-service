@@ -1,6 +1,7 @@
 package uk.gov.ea.wastecarrier.services.mongoDb;
 
 import java.util.Date;
+import java.util.logging.Logger;
 
 import uk.gov.ea.wastecarrier.services.core.ConvictionSearchResult;
 import uk.gov.ea.wastecarrier.services.core.ConvictionSignOff;
@@ -10,6 +11,9 @@ import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.core.MetaData.RegistrationStatus;
 
 public class RegistrationHelper {
+	
+	/** logger for this class. */
+	private static Logger log = Logger.getLogger(RegistrationHelper.class.getName());
 
     public static Boolean isAwaitingConvictionConfirmation(Registration registration) {
 
@@ -58,7 +62,16 @@ public class RegistrationHelper {
     	{
 			Date currentDate = new Date();
 			Date expiresDate = registration.getExpires_on();
-			return currentDate.getTime() > expiresDate.getTime();
+			if (expiresDate != null)
+			{
+				return currentDate.getTime() > expiresDate.getTime();
+			}
+			else
+			{
+				log.info("Could not find an expiry date for Upper tier registration: " + registration.getId());
+				log.info("Marking registration as expired as the expiry date cannot be found");
+				return true;
+			}
     	}
     	return false;
     }
