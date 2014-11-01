@@ -1,5 +1,6 @@
 package uk.gov.ea.wastecarrier.services;
 
+import java.io.PrintWriter;
 import java.util.logging.Logger;
 
 import org.elasticsearch.client.Client;
@@ -14,6 +15,8 @@ import uk.gov.ea.wastecarrier.services.mongoDb.MongoManaged;
 import uk.gov.ea.wastecarrier.services.resources.*;
 import uk.gov.ea.wastecarrier.services.tasks.DatabaseCleaner;
 import uk.gov.ea.wastecarrier.services.tasks.IRRenewalPopulator;
+import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationsMongoDao;
+import uk.gov.ea.wastecarrier.services.tasks.EnsureDatabaseIndexesTask;
 import uk.gov.ea.wastecarrier.services.tasks.Indexer;
 import uk.gov.ea.wastecarrier.services.tasks.LocationPopulator;
 
@@ -99,6 +102,7 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration> {
         
         // Add Database Heath checks
         DatabaseHelper dbHelper = new DatabaseHelper(dbConfig);
+        RegistrationsMongoDao dao = new RegistrationsMongoDao(dbHelper);
         mongoClient = dbHelper.getMongoClient();
         
         // TEST authentication
@@ -125,6 +129,17 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration> {
         // Add Indexing functionality to clean Elastic Search Indexes and perform re-index of all data
         Indexer task = new Indexer("indexer", dbConfig, esConfig, esClient);
 		environment.addTask(task);
+		
+		//Add a task to ensure that indexes have been defined in the database.
+		EnsureDatabaseIndexesTask ensureDbIndexesTask = new EnsureDatabaseIndexesTask("EnsureDatabaseIndexes", dao);
+		environment.addTask(ensureDbIndexesTask);
+		
+		try {
+			ensureDbIndexesTask.execute(null, new PrintWriter(System.out));			
+		} catch (Exception e) {
+			log.severe("Could not ensure indexes at startup: " + e.getMessage());
+		}
+		
 		
 		// Add Location Population functionality to create location indexes for all provided addresses of all data
         LocationPopulator locationPop = new LocationPopulator("location", dbConfig, postcodeFilePath);

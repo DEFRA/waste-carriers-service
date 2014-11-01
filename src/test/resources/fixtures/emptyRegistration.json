@@ -44,6 +44,7 @@
 	"originalRegistrationNumber":null,
 	"renewalRequested": null,
 	"conviction_sign_offs":null,
+  "reg_uuid":null,
 	"company_no":null,
 	"key_people":null,
 	"total_fee":null,
