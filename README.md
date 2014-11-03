@@ -102,4 +102,4 @@ Apache Maven: http://maven.apache.org/
 
 ##License
 
-TBD
+TBD - MIT License

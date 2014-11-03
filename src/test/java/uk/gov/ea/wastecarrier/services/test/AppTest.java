@@ -57,12 +57,14 @@ public class AppTest extends TestCase
 	private Registration getFullRegistrationDetails(final Registration reg)
 	{
 		// Setup Matching Registration object to match full File defined in JSON
+		reg.setUuid("1234567890");
 		reg.setTier(Registration.RegistrationTier.UPPER);
 		reg.setRegistrationType("carrier_dealer");
 		reg.setBusinessType("soleTrader");
 		reg.setOtherBusinesses("no");
 		reg.setConstructionWaste("yes");
 		reg.setCompanyName("Acme Waste");
+		reg.setCompanyNo("12345678");
 		reg.setHouseNumber("1");
 		reg.setStreetLine1("Deanery Road");
 		reg.setStreetLine2("Bristol");
@@ -124,8 +126,8 @@ public class AppTest extends TestCase
 	{
 	    final Registration reg = getFullRegistrationDetails(new Registration());
 	    String asJson = asJson(reg);
-	    System.out.println(asJson);
-	    System.out.println(jsonFixture("fixtures/fullRegistration.json"));
+	    System.out.println("actual:  " + asJson);
+	    System.out.println("expected:" + jsonFixture("fixtures/fullRegistration.json"));
 	    assertEquals("a Registration can be serialized to JSON",
 	               asJson,
 	               jsonFixture("fixtures/fullRegistration.json") );
