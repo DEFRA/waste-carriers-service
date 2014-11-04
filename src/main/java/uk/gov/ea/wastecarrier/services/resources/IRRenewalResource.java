@@ -2,6 +2,7 @@ package uk.gov.ea.wastecarrier.services.resources;
 
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.core.Registration;
+import uk.gov.ea.wastecarrier.services.core.Registration.RegistrationTier;
 import uk.gov.ea.wastecarrier.services.core.irdata.CompanyIRData;
 import uk.gov.ea.wastecarrier.services.core.irdata.IRData;
 import uk.gov.ea.wastecarrier.services.core.irdata.IndividualIRData;
@@ -66,6 +67,7 @@ public class IRRenewalResource
 				
 				// Set generic registration information
 				r.setOriginalRegistrationNumber(regNumber);
+				r.setTier(RegistrationTier.UPPER);
 				switch(irData.getTrueRegistrationType())
 				{
 					case CARRIER:
