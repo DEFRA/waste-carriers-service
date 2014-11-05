@@ -148,11 +148,18 @@ public class PaymentSearch {
 
         }
 
-        BasicDBList orQuery = new BasicDBList();
-        orQuery.add(paymentsClause);
-        orQuery.add(ordersClause);
+        BasicDBList or = new BasicDBList();
 
-        query.append("$or", orQuery);
+        if (paymentsClause != null) {
+            or.add(paymentsClause);
+        }
+        if (ordersClause != null) {
+            or.add(ordersClause);
+        }
+
+        if (!or.isEmpty()) {
+            query.append("$or", or);
+        }
     }
 
     private Map<String,Object> authorQueryProperties() {
