@@ -1,5 +1,6 @@
 package uk.gov.ea.wastecarrier.services.mongoDb;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
@@ -85,10 +86,10 @@ public class SearchHelper {
 
     }
 
-    protected void addOptionalQueryLikeProperty(
+    protected void applyOptionalQueryLikeProperties(
             String propertyName,
             Collection<String> propertyValue,
-            Map<String, Object> queryProps) {
+            BasicDBObject query) {
 
         if (propertyValue == null || propertyValue.size() == 0) {
             return;
@@ -100,18 +101,26 @@ public class SearchHelper {
                 return;
             }
             String parsedValue = processQueryValue(value);
-            queryProps.put(propertyName, "/" + parsedValue + "/");
+            query.append(propertyName, java.util.regex.Pattern.compile(parsedValue));
             return;
         }
 
-        String[] processed = new String[propertyValue.size()];
-        int index = 0;
         for (String value : propertyValue) {
+
             String parsedValue = processQueryValue(value);
-            processed[index] = "/" + parsedValue + "/";
-            index++;
+
+            // For like you have to pass the value in via a regex in order for
+            // the resultant query to be properly formatted. Previously we concatenated
+            // / + value + / which just resulted in Mongo looking for "/value/" and
+            // obviously never finding anything. We essentially need to get it to just be
+            // /value/ (no ") for the query to work and this should do that.
+            BasicDBObject inQuery = new BasicDBObject(
+                    "$in",
+                    java.util.regex.Pattern.compile(parsedValue)
+            );
+
+            query.append(propertyName, inQuery);
         }
-        queryProps.put(propertyName, processed);
     }
 
     private String processQueryValue(String value) {
