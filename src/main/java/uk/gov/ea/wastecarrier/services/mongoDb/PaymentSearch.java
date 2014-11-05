@@ -21,7 +21,7 @@ public class PaymentSearch {
     private final static String PAY_DATE_FILTER_PROPERTY = "financeDetails.payments.dateReceived";
     private final static String ORD_DATE_FILTER_PROPERTY = "financeDetails.orders.dateCreated";
     private final static String PAY_TYPE_FILTER_PROPERTY = "financeDetails.payments.paymentType";
-    private final static String ORD_TYPE_FILTER_PROPERTY = "financeDetails.orders.orderItems.description";
+    private final static String ORD_TYPE_FILTER_PROPERTY = "financeDetails.orders.orderItems.type";
 
     private SearchHelper searchHelper;
     private Logger log = Logger.getLogger(PaymentSearch.class.getName());
@@ -160,7 +160,7 @@ public class PaymentSearch {
         Map<String, Object> queryProps = new HashMap<String, Object>();
 
         searchHelper.addOptionalQueryProperty(PAY_TYPE_FILTER_PROPERTY, this.paymentTypes, queryProps);
-        searchHelper.addOptionalQueryLikeProperty(ORD_TYPE_FILTER_PROPERTY, this.chargeTypes, queryProps);
+        searchHelper.addOptionalQueryProperty(ORD_TYPE_FILTER_PROPERTY, this.chargeTypes, queryProps);
 
         return queryProps;
     }
