@@ -5,7 +5,6 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import net.vz.mongodb.jackson.JacksonDBCollection;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeUtils;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
@@ -14,17 +13,15 @@ import uk.gov.ea.wastecarrier.services.core.Registration;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Logger;
 
-public class QueryHelper {
+public class SearchHelper {
 
-    private static Logger log = Logger.getLogger(QueryHelper.class.getName());
+    private static Logger log = Logger.getLogger(SearchHelper.class.getName());
     private DatabaseHelper databaseHelper;
 
-    public QueryHelper(DatabaseHelper databaseHelper) {
+    public SearchHelper(DatabaseHelper databaseHelper) {
         this.databaseHelper = databaseHelper;
     }
 

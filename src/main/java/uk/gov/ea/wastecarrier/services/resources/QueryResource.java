@@ -7,8 +7,8 @@ import uk.gov.ea.wastecarrier.services.core.Payment;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.PaymentSearch;
-import uk.gov.ea.wastecarrier.services.mongoDb.QueryHelper;
-import uk.gov.ea.wastecarrier.services.mongoDb.ReportingHelper;
+import uk.gov.ea.wastecarrier.services.mongoDb.SearchHelper;
+import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationSearch;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -40,7 +40,7 @@ public class QueryResource {
             @QueryParam("businessType[]") Set<String> businessType,
             @QueryParam("tier[]") Set<String> tier,
             @QueryParam("declaredConvictions") Optional<String> declaredConvictions,
-            @QueryParam("criminallySuspect") Optional<Boolean> criminallySuspect,
+            @QueryParam("convictionCheckMatch") Optional<String> convictionCheckMatch,
             @QueryParam("resultCount") Optional<Integer> resultCount
     ) {
 
@@ -48,7 +48,7 @@ public class QueryResource {
         List<Registration> searchresults;
 
         try {
-            ReportingHelper search = new ReportingHelper(new QueryHelper(this.databaseHelper));
+            RegistrationSearch search = new RegistrationSearch(new SearchHelper(this.databaseHelper));
             search.fromDate = from;
             search.toDate = until;
             search.route = route;
@@ -56,7 +56,7 @@ public class QueryResource {
             search.businessType = businessType;
             search.tier = tier;
             search.declaredConvictions = declaredConvictions;
-            search.criminallySuspect = criminallySuspect;
+            search.convictionCheckMatch = convictionCheckMatch;
             search.resultCount = resultCount;
 
             searchresults = search.getRegistrations();
@@ -87,7 +87,7 @@ public class QueryResource {
         List<Registration> searchResults;
 
         try {
-            PaymentSearch search = new PaymentSearch(new QueryHelper(this.databaseHelper));
+            PaymentSearch search = new PaymentSearch(new SearchHelper(this.databaseHelper));
             search.fromDate = from;
             search.toDate = until;
             search.paymentStatuses = paymentStatuses;

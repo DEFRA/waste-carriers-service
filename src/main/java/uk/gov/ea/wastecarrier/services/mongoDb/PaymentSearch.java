@@ -4,8 +4,6 @@ import com.google.common.base.Optional;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
-import org.joda.time.DateTime;
-import uk.gov.ea.wastecarrier.services.WasteCarrierService;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 
 import java.util.Date;
@@ -25,7 +23,7 @@ public class PaymentSearch {
     private final static String PAY_TYPE_FILTER_PROPERTY = "financeDetails.payments.paymentType";
     private final static String ORD_TYPE_FILTER_PROPERTY = "financeDetails.orders.orderItems.description";
 
-    private QueryHelper queryHelper;
+    private SearchHelper searchHelper;
     private Logger log = Logger.getLogger(PaymentSearch.class.getName());
 
     public Optional<String> fromDate;
@@ -41,8 +39,8 @@ public class PaymentSearch {
         OVERPAID
     }
 
-    public PaymentSearch(QueryHelper queryHelper) {
-        this.queryHelper = queryHelper;
+    public PaymentSearch(SearchHelper searchHelper) {
+        this.searchHelper = searchHelper;
     }
 
     public List<Registration> getRegistrations() {
@@ -70,10 +68,10 @@ public class PaymentSearch {
             log.info(query.toString());
         }
 
-        DBCursor cursor = queryHelper.getRegistrationsCollection().find(query);
+        DBCursor cursor = searchHelper.getRegistrationsCollection().find(query);
         applyResultCount(cursor);
 
-        return queryHelper.toRegistrationList(cursor);
+        return searchHelper.toRegistrationList(cursor);
     }
 
     protected void applyResultCount(DBCursor cursor) {
@@ -118,11 +116,11 @@ public class PaymentSearch {
         BasicDBObject ordersClause = null;
 
         if (fromDate.isPresent()) {
-            from = QueryHelper.dateStringToDate(fromDate.get(), false).toDate();
+            from = SearchHelper.dateStringToDate(fromDate.get(), false).toDate();
         }
 
         if (toDate.isPresent()) {
-            until = QueryHelper.dateStringToDate(toDate.get(), true).toDate();
+            until = SearchHelper.dateStringToDate(toDate.get(), true).toDate();
         }
 
         if (from != null && until != null) {
@@ -161,8 +159,8 @@ public class PaymentSearch {
 
         Map<String, Object> queryProps = new HashMap<String, Object>();
 
-        queryHelper.addOptionalQueryProperty(PAY_TYPE_FILTER_PROPERTY, this.paymentTypes, queryProps);
-        queryHelper.addOptionalQueryLikeProperty(ORD_TYPE_FILTER_PROPERTY, this.chargeTypes, queryProps);
+        searchHelper.addOptionalQueryProperty(PAY_TYPE_FILTER_PROPERTY, this.paymentTypes, queryProps);
+        searchHelper.addOptionalQueryLikeProperty(ORD_TYPE_FILTER_PROPERTY, this.chargeTypes, queryProps);
 
         return queryProps;
     }

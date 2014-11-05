@@ -1,21 +1,23 @@
 package uk.gov.ea.wastecarrier.services.mongoDb;
 
 import com.google.common.base.Optional;
+import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
-import uk.gov.ea.wastecarrier.services.WasteCarrierService;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class ReportingHelper {
+public class RegistrationSearch {
 
     private final static String DATE_FILTER_PROPERTY = "metaData.dateRegistered";
+    private final static String COMPANY_CONVICTION_MATCH = "convictionSearchResult.matchResult";
+    private final static String KEY_PEOPLE_CONVICTION_MATCH = "keyPeople.convictionSearchResult.matchResult";
 
-    private QueryHelper queryHelper;
-	private Logger log = Logger.getLogger(ReportingHelper.class.getName());
+    private SearchHelper searchHelper;
+	private Logger log = Logger.getLogger(RegistrationSearch.class.getName());
 
 	public Optional<String> fromDate;
 	public Optional<String> toDate;
@@ -24,12 +26,12 @@ public class ReportingHelper {
 	public Set<String> businessType;
     public Set<String> tier;
     public Optional<String> declaredConvictions;
-    public Optional<Boolean> criminallySuspect;
+    public Optional<String> convictionCheckMatch;
     public Optional<Integer> resultCount;
 
-    public ReportingHelper(QueryHelper queryHelper) {
+    public RegistrationSearch(SearchHelper searchHelper) {
 
-        this.queryHelper = queryHelper;
+        this.searchHelper = searchHelper;
     }
 	
 	public List<Registration> getRegistrations() {
@@ -39,6 +41,7 @@ public class ReportingHelper {
         BasicDBObject query = new BasicDBObject();
 
         applyDateFilters(query);
+        applyConvictionMatchFilter(query);
 
         if (queryProps != null) {
             for (Map.Entry<String, Object> entry : queryProps.entrySet()) {
@@ -56,10 +59,10 @@ public class ReportingHelper {
             log.info(query.toString());
         }
 		
-		DBCursor cursor = queryHelper.getRegistrationsCollection().find(query);
+		DBCursor cursor = searchHelper.getRegistrationsCollection().find(query);
         applyResultCount(cursor);
 		
-		return queryHelper.toRegistrationList(cursor);
+		return searchHelper.toRegistrationList(cursor);
 	}
 
     protected void applyResultCount(DBCursor cursor) {
@@ -80,13 +83,13 @@ public class ReportingHelper {
         String untilString = null;
 
         if (fromDate.isPresent()) {
-            Long from = QueryHelper.dateStringToDate(fromDate.get(), false).getMillis();
-            fromString = QueryHelper.timeToDateTimeString(from);
+            Long from = SearchHelper.dateStringToDate(fromDate.get(), false).getMillis();
+            fromString = SearchHelper.timeToDateTimeString(from);
         }
 
         if (toDate.isPresent()) {
-            Long until = QueryHelper.dateStringToDate(toDate.get(), true).getMillis();
-            untilString = QueryHelper.timeToDateTimeString(until);
+            Long until = SearchHelper.dateStringToDate(toDate.get(), true).getMillis();
+            untilString = SearchHelper.timeToDateTimeString(until);
         }
 
         if (fromString != null && untilString != null) {
@@ -102,26 +105,33 @@ public class ReportingHelper {
 
     }
 
+    protected void applyConvictionMatchFilter(BasicDBObject query) {
+
+        if (!convictionCheckMatch.isPresent()) {
+            return;
+        }
+
+        BasicDBList or = new BasicDBList();
+        or.add(new BasicDBObject(COMPANY_CONVICTION_MATCH, convictionCheckMatch.get()));
+        or.add(new BasicDBObject(KEY_PEOPLE_CONVICTION_MATCH, convictionCheckMatch.get()));
+
+        query.append("$or", or);
+    }
+
 	private Map<String, Object> authorQueryProperties() {
 		
 		Map<String, Object> queryProps = new HashMap<String, Object>();
 
         if (declaredConvictions.isPresent())
-            queryHelper.addOptionalQueryProperty(
+            searchHelper.addOptionalQueryProperty(
                     "declaredConvictions",
                     this.declaredConvictions.get(),
                     queryProps);
 
-        if (criminallySuspect.isPresent())
-            queryHelper.addOptionalQueryProperty(
-                    "criminallySuspect",
-                    this.criminallySuspect.get(),
-                    queryProps);
-
-		queryHelper.addOptionalQueryProperty("metaData.status", this.status, queryProps);
-        queryHelper.addOptionalQueryProperty("metaData.route", this.route, queryProps);
-        queryHelper.addOptionalQueryProperty("businessType", this.businessType, queryProps);
-        queryHelper.addOptionalQueryProperty("tier", this.tier, queryProps);
+		searchHelper.addOptionalQueryProperty("metaData.status", this.status, queryProps);
+        searchHelper.addOptionalQueryProperty("metaData.route", this.route, queryProps);
+        searchHelper.addOptionalQueryProperty("businessType", this.businessType, queryProps);
+        searchHelper.addOptionalQueryProperty("tier", this.tier, queryProps);
 
 		return queryProps;
 	}

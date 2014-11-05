@@ -8,7 +8,7 @@ import uk.gov.ea.wastecarrier.services.core.Registration.RegistrationTier;
 import uk.gov.ea.wastecarrier.services.elasticsearch.ElasticSearchUtils;
 import uk.gov.ea.wastecarrier.services.mongoDb.AccountHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
-import uk.gov.ea.wastecarrier.services.mongoDb.QueryHelper;
+import uk.gov.ea.wastecarrier.services.mongoDb.SearchHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationHelper;
 import uk.gov.ea.wastecarrier.services.tasks.Indexer;
 import uk.gov.ea.wastecarrier.services.tasks.PostcodeRegistry;
@@ -166,7 +166,7 @@ public class RegistrationsResource
         // TODO This was quickly added in to support soft deleting registrations. Also needs to be re-factored out
         try {
             if (account.isPresent()) {
-                AccountHelper helper = new AccountHelper(new QueryHelper(this.databaseHelper));
+                AccountHelper helper = new AccountHelper(new SearchHelper(this.databaseHelper));
                 helper.accountEmail = account.get();
                 helper.status = status;
 

@@ -11,15 +11,15 @@ import java.util.logging.Logger;
 
 public class AccountHelper {
 
-    private QueryHelper queryHelper;
+    private SearchHelper searchHelper;
     private Logger log = Logger.getLogger(AccountHelper.class.getName());
 
     public String accountEmail;
     public Set<String> status;
 
-    public AccountHelper(QueryHelper queryHelper) {
+    public AccountHelper(SearchHelper searchHelper) {
 
-        this.queryHelper = queryHelper;
+        this.searchHelper = searchHelper;
     }
 
     public List<Registration> getRegistrations() {
@@ -28,7 +28,7 @@ public class AccountHelper {
 
         DBCursor cursor = getRegistrationCursorForAccount(queryProps);
 
-        return queryHelper.toRegistrationList(cursor);
+        return searchHelper.toRegistrationList(cursor);
     }
 
     private DBCursor getRegistrationCursorForAccount(Map<String, Object> queryProps) {
@@ -50,7 +50,7 @@ public class AccountHelper {
         if (log.isLoggable(Level.INFO)) {
             log.info(query.toString());
         }
-        return queryHelper.getRegistrationsCollection().find(query);
+        return searchHelper.getRegistrationsCollection().find(query);
     }
 
     private Map<String, Object> authorQueryProperties() {
@@ -59,8 +59,8 @@ public class AccountHelper {
         Collection<String> accountEmailProp = new ArrayList<String>();
         accountEmailProp.add(accountEmail);
 
-        queryHelper.addOptionalQueryProperty("accountEmail", accountEmailProp, queryProps);
-        queryHelper.addOptionalQueryProperty("metaData.status", this.status, queryProps);
+        searchHelper.addOptionalQueryProperty("accountEmail", accountEmailProp, queryProps);
+        searchHelper.addOptionalQueryProperty("metaData.status", this.status, queryProps);
 
         return queryProps;
     }
