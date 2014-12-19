@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 import net.vz.mongodb.jackson.DBCursor;
 import net.vz.mongodb.jackson.JacksonDBCollection;
 
-import org.elasticsearch.ElasticSearchException;
+import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
 import org.elasticsearch.action.admin.indices.flush.FlushRequest;
@@ -230,7 +230,7 @@ public class Indexer extends Task
 			log.info("Creating new ElasticSearch TransportClient for indexing.");
 			newClient = ElasticSearchUtils.getNewTransportClient(esConfig);
 			indexRegistration(esConfig, newClient, reg);
-		} catch (ElasticSearchException e) {
+		} catch (ElasticsearchException e) {
 			log.severe("Encountered ElasticSearch Exception while indexing: " + e.getDetailedMessage());
 		}
 		finally {
@@ -255,7 +255,7 @@ public class Indexer extends Task
 					.setSource(asJson(reg)).execute().actionGet();
 			log.info("indexResponse: id = " + indexResponse.getId());
 			log.info("indexResponse: version = " + indexResponse.getVersion());
-		} catch (ElasticSearchException e) {
+		} catch (ElasticsearchException e) {
 			log.severe("Encountered ElasticSearch exception while indexing registration: " + e.getDetailedMessage());
 			e.printStackTrace();
 			throw e;
@@ -282,7 +282,7 @@ public class Indexer extends Task
 					.prepareDelete(Registration.COLLECTION_NAME, Registration.COLLECTION_SINGULAR_NAME, reg.getId()).setOperationThreaded(false)
 					.execute().actionGet();
 			log.info("deleted: " + deleteResponse.getId());
-		} catch (ElasticSearchException e) {
+		} catch (ElasticsearchException e) {
 			log.severe("Encountered Exception while deleting from ElasticSearch: " + e.getDetailedMessage());
 		} finally {
 			log.info("Closing ElasticSearchClient after use");

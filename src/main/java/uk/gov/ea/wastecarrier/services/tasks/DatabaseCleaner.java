@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
-import org.elasticsearch.ElasticSearchException;
+import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
@@ -113,7 +113,7 @@ public class DatabaseCleaner extends Task
 						log.fine("deleted: " + deleteResponse.getId());
 						log.info("Deleted reg: " + r.getId() + " from DB");
 						out.append("Deleted reg: " + r.getId() + " from DB\n");
-					} catch (ElasticSearchException e) {
+					} catch (ElasticsearchException e) {
 						log.severe("Encountered Exception while deleting from ElasticSearch: " + e.getDetailedMessage());
 					} finally {
 						log.info("Closing ElasticSearchClient after use");
@@ -154,7 +154,7 @@ public class DatabaseCleaner extends Task
 						log.fine("deleted: " + deleteResponse.getId());
 						log.info("Deleted reg: " + sh.getId() + " from ES");
 						out.append("Deleted reg: " + sh.getId() + " from just ES\n");
-					} catch (ElasticSearchException e) {
+					} catch (ElasticsearchException e) {
 						log.severe("Encountered Exception while deleting from ElasticSearch: " + e.getDetailedMessage());
 					} finally {
 						log.info("Closing ElasticSearchClient after use");
