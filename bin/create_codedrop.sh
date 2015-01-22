@@ -21,7 +21,7 @@ workspace_dir="/caci/jenkins/jobs/waste-exemplar-services/workspace"
 
 echo ""
 ## Make a record of the jenkins build number.
-jenkins_build_number=`ls -l $build_dir | grep ^l | grep -v last | awk '{print $9}' | sort -n | tail -1`
+jenkins_build_number=`ls -l $build_dir | grep ^d | grep -v last | awk '{print $9}' | sort -n | tail -1`
 echo "j$jenkins_build_number" > $workspace_dir/jenkins_build_number
 echo "jenkins_build_number = $jenkins_build_number"
 
