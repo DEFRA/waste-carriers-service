@@ -32,7 +32,7 @@
             "type" : "string"
           },
           "confirmedAt" : {
-            "type" : "long"
+            "type" : "date"
           },
           "confirmedBy" : {
             "type" : "string"
@@ -52,7 +52,7 @@
         "type" : "string"
       },
       "expires_on" : {
-        "type" : "string"
+        "type" : "date"
       },
       "financeDetails" : {
         "type": "object",
@@ -68,10 +68,10 @@
                 "type" : "string"
               },
               "dateCreated" : {
-                "type" : "string"
+                "type" : "date"
               },
               "dateLastUpdated" : {
-                "type" : "string"
+                "type" : "date"
               },
               "description" : {
                 "type" : "string"
@@ -97,7 +97,7 @@
                     "type" : "string"
                   },
                   "lastUpdated" : {
-                    "type" : "long"
+                    "type" : "date"
                   },
                   "reference" : {
                     "type" : "string"
@@ -132,10 +132,10 @@
               },
               "dateEntered" : {
                 "index": "no",
-                "type" : "string"                
+                "type" : "date"
               },
               "dateReceived" : {
-                "type" : "string"
+                "type" : "date"
               },
               "mac_code" : {
                 "type" : "string"
@@ -177,7 +177,7 @@
       "key_people" : {
         "properties" : {
           "dob" : {
-            "type" : "long"
+            "type" : "date"
           },
           "first_name" : {
             "type" : "string"
@@ -208,16 +208,16 @@
             "type" : "string"
           },
           "dateActivated" : {
-            "type" : "string"
+            "type" : "date"
           },
           "dateRegistered" : {
-            "type" : "string"
+            "type" : "date"
           },
           "distance" : {
             "type" : "string"
           },
           "lastModified" : {
-            "type" : "string"
+            "type" : "date"
           },
           "revokedReason" : {
             "type" : "string"
