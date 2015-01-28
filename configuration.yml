@@ -1,6 +1,4 @@
 # Default parameters defined in WasteCarrierConfiguration
-template: Hello, %s, %s!
-defaultName: Stranger
 
 # messageQueue complex parameter to show class of different configuration types MessageQueueConfiguration
 messageQueue:
@@ -29,23 +27,23 @@ logging:
 
 # added database connection properties, DatabaseConfiguration
 database:
-  host: WCRS_SERVICES_DB_HOST
-  port: WCRS_SERVICES_DB_PORT
-  name: WCRS_SERVICES_DB_NAME
-  username: WCRS_SERVICES_DB_USER
-  password: WCRS_SERVICES_DB_PASSWD
+  host: WCRS_REGSDB_HOST
+  port: WCRS_REGSDB_PORT1
+  name: WCRS_REGSDB_NAME
+  username: WCRS_REGSDB_USERNAME
+  password: WCRS_REGSDB_PASSWORD
   
 # added user database connection properties, DatabaseConfiguration
 userDatabase:
-  host: WCRS_SERVICES_DB_HOST
-  port: WCRS_SERVICES_DB_PORT
-  name: WCRS_SERVICES_USERSDB_NAME
-  username: WCRS_SERVICES_USERSDB_USER
-  password: WCRS_SERVICES_USERSDB_PASSWD
+  host: WCRS_USERSDB_HOST
+  port: WCRS_USERSDB_PORT1
+  name: WCRS_USERSDB_NAME
+  username: WCRS_USERSDB_USERNAME
+  password: WCRS_USERSDB_PASSWORD
   
 elasticSearch:
-  host: WCRS_SERVICES_ES_HOST
-  port: WCRS_SERVICES_ES_PORT
+  host: WCRS_ELASDB_HOST
+  port: WCRS_ELASDB_PORT1
   # Can also specify a size for the maximum number of results to return in a given query
   # By default the 100 is used, but can be overridden here if specified
   #size: 100
