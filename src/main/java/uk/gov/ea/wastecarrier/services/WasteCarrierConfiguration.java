@@ -8,18 +8,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.NotEmpty;
 
 public class WasteCarrierConfiguration extends Configuration {
-	
-	/**
-	 * This is an example parameter, which is not used, but has been left as an example
-	 * for when genuine parameters are required
-	 */
-    @NotEmpty
-    @JsonProperty
-    private String template;
-
-    @NotEmpty
-    @JsonProperty
-    private String defaultName = "Stranger";
     
     @Valid
     @NotNull
@@ -55,14 +43,6 @@ public class WasteCarrierConfiguration extends Configuration {
     @NotNull
     @JsonProperty
     private IRConfiguration irrenewals = new IRConfiguration();
-
-    public String getTemplate() {
-        return template;
-    }
-
-    public String getDefaultName() {
-        return defaultName;
-    }
     
     public MessageQueueConfiguration getMessageQueueConfiguration() {
         return messageQueue;

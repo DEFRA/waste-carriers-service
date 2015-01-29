@@ -9,7 +9,6 @@ import uk.gov.ea.wastecarrier.services.elasticsearch.ElasticSearchManaged;
 import uk.gov.ea.wastecarrier.services.elasticsearch.ElasticSearchUtils;
 import uk.gov.ea.wastecarrier.services.health.ElasticSearchHealthCheck;
 import uk.gov.ea.wastecarrier.services.health.MongoHealthCheck;
-import uk.gov.ea.wastecarrier.services.health.TemplateHealthCheck;
 import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.MongoManaged;
 import uk.gov.ea.wastecarrier.services.resources.*;
@@ -56,8 +55,6 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration> {
     @Override
     public void run(WasteCarrierConfiguration configuration,
                     Environment environment) {
-    	final String template = configuration.getTemplate();
-        final String defaultName = configuration.getDefaultName();
         final MessageQueueConfiguration mQConfig = configuration.getMessageQueueConfiguration();
         final DatabaseConfiguration dbConfig = configuration.getDatabase();
         final DatabaseConfiguration userDbConfig = configuration.getUserDatabase();
@@ -70,9 +67,9 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration> {
         esClient = ElasticSearchUtils.getNewTransportClient(esConfig);
 
         // Add Create Resource
-        environment.addResource(new RegistrationsResource(template, defaultName, mQConfig, dbConfig, esConfig, esClient, postcodeFilePath));
+        environment.addResource(new RegistrationsResource(mQConfig, dbConfig, esConfig, esClient, postcodeFilePath));
         // Add Read Resource
-        environment.addResource(new RegistrationReadEditResource(template, defaultName, mQConfig, dbConfig, userDbConfig, esConfig, esClient, sConfig));
+        environment.addResource(new RegistrationReadEditResource(mQConfig, dbConfig, userDbConfig, esConfig, esClient, sConfig));
         // Add Version Resource
         environment.addResource(new RegistrationVersionResource());
         
@@ -96,9 +93,6 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration> {
          * Note: using environment.addProvider(new RegistrationCreateResource(template, defaultName, mQConfig));
          * Seems to perform a similar feature to addResources, need to research the difference?
          */
-        
-        // Add Service Health checks
-        environment.addHealthCheck(new TemplateHealthCheck(template));
         
         // Add Database Heath checks
         DatabaseHelper dbHelper = new DatabaseHelper(dbConfig);
