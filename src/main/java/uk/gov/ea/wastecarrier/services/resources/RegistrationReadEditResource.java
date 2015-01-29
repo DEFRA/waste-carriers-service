@@ -46,9 +46,6 @@ import java.util.logging.Logger;
 @Consumes(MediaType.APPLICATION_JSON)
 public class RegistrationReadEditResource
 {
-	
-    private final String template;
-    private final String defaultName;
     private MessageQueueConfiguration messageQueue;
     private DatabaseHelper databaseHelper;
     //Note: not re-using Clients, instantiating fresh clients instead.
@@ -63,21 +60,15 @@ public class RegistrationReadEditResource
 
     /**
      * 
-     * @param template
-     * @param defaultName
      * @param mQConfig
      * @param database
      */
-    public RegistrationReadEditResource(String template, String defaultName, MessageQueueConfiguration mQConfig,
+    public RegistrationReadEditResource(MessageQueueConfiguration mQConfig,
     		DatabaseConfiguration database, DatabaseConfiguration userDatabase, ElasticSearchConfiguration elasticSearch, 
     		Client esClient, SettingsConfiguration settingConfig)
     {
-        this.template = template;
-        this.defaultName = defaultName;
         this.messageQueue = mQConfig;
-        
-        log.fine("> template: " + this.template);
-    	log.fine("> defaultName: " + this.defaultName);
+
     	log.fine("> messageQueue: " + this.messageQueue);
 
         this.databaseHelper = new DatabaseHelper(database);

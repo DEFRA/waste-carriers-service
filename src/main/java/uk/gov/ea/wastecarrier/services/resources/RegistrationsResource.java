@@ -83,8 +83,6 @@ import java.util.logging.Logger;
 public class RegistrationsResource
 {
 
-	private final String template;
-	private final String defaultName;
 	private final MessageQueueConfiguration messageQueue;
 	private final DatabaseHelper databaseHelper;
 	private final ElasticSearchConfiguration elasticSearch;
@@ -99,26 +97,18 @@ public class RegistrationsResource
 	private Logger log = Logger.getLogger(RegistrationsResource.class.getName());
 	
 	/**
-	 * 
-	 * @param template
-	 * @param defaultName
+	 *
 	 * @param mQConfig
 	 * @param database
 	 */
 	public RegistrationsResource(
-			String template, 
-			String defaultName, 
 			MessageQueueConfiguration mQConfig,
 			DatabaseConfiguration database, 
 			ElasticSearchConfiguration elasticSearch, 
 			Client esClient, 
 			String postcodeFilePath)
 	{
-		this.template = template;
-		this.defaultName = defaultName;
 		this.messageQueue = mQConfig;
-		log.fine("> template: " + this.template);
-		log.fine("> defaultName: " + this.defaultName);
 		log.fine("> messageQueue: " + this.messageQueue);
 		
 		this.databaseHelper = new DatabaseHelper(database);
