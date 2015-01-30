@@ -40,7 +40,7 @@ if [[ -z "${WCRS_USERSDB_NAME}" ]]; then env_alert WCRS_USERSDB_NAME; fi
 if [[ -z "${WCRS_USERSDB_USERNAME}" ]]; then env_alert WCRS_SERVICES_USERSDB_USER; fi
 if [[ -z "${WCRS_USERSDB_PASSWORD}" ]]; then env_alert WCRS_SERVICES_USERSDB_PASSWD; fi
 if [[ -z "${WCRS_ELASDB_HOST}" ]]; then env_alert WCRS_ELASDB_HOST; fi
-if [[ -z "${WCRS_ELASDB_PORT1}" ]]; then env_alert WCRS_ELASDB_PORT1; fi
+if [[ -z "${WCRS_ELASDB_PORT_JAVA}" ]]; then env_alert WCRS_ELASDB_PORT_JAVA; fi
 
 if [[ -z "${WCRS_SERVICES_IR_FOLDERPATH}" ]]; then env_alert WCRS_SERVICES_IR_FOLDERPATH; fi
 
@@ -172,7 +172,7 @@ sed -i "s/WCRS_USERSDB_USERNAME/${WCRS_USERSDB_USERNAME}/g" \
 sed -i "s/WCRS_USERSDB_PASSWORD/${WCRS_USERSDB_PASSWORD}/g" \
 sed -i "s/WCRS_ELASDB_HOST/${WCRS_ELASDB_HOST}/g" \
        "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
-sed -i "s/WCRS_ELASDB_PORT1/${WCRS_ELASDB_PORT1}/g" \
+sed -i "s/WCRS_ELASDB_PORT_JAVA/${WCRS_ELASDB_PORT_JAVA}/g" \
        "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
 sed -i "s/WCRS_SERVICES_EXPIRES_AFTER/${WCRS_SERVICES_EXPIRES_AFTER}/g" \
        "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
