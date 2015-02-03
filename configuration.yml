@@ -1,6 +1,4 @@
 # Default parameters defined in WasteCarrierConfiguration
-template: Hello, %s, %s!
-defaultName: Stranger
 
 # messageQueue complex parameter to show class of different configuration types MessageQueueConfiguration
 messageQueue:
@@ -45,7 +43,7 @@ userDatabase:
   
 elasticSearch:
   host: WCRS_ELASDB_HOST
-  port: WCRS_ELASDB_PORT1
+  port: WCRS_ELASDB_PORT_JAVA
   # Can also specify a size for the maximum number of results to return in a given query
   # By default the 100 is used, but can be overridden here if specified
   #size: 100

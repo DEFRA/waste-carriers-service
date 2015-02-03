@@ -20,7 +20,7 @@ WCRS_USERSDB_NAME  <= users database name
 WCRS_USERSDB_USERNAME  <= users database user name
 WCRS_USERSDB_PASSWORD  <= users database password
 WCRS_ELASDB_HOST  <= hostname of elasticsearch server
-WCRS_ELASDB_PORT1=9300  <= port for Elasticsearch transport protocol
+WCRS_ELASDB_PORT_JAVA=9300  <= port for Elasticsearch transport protocol
 
 Example:
 >>>>> Add to ~/.bashrc and ~/.bash_profile <<<<<
@@ -52,5 +52,5 @@ export WCRS_USERSDB_NAME="waste-carriers-users"
 export WCRS_USERSDB_USERNAME="username"
 export WCRS_USERSDB_PASSWORD="password"
 export WCRS_ELASDB_HOST="ea-dev"
-export WCRS_ELASDB_PORT1=9300
+export WCRS_ELASDB_PORT_JAVA=9300
 
