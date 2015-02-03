@@ -170,6 +170,7 @@ sed -i "s/WCRS_USERSDB_NAME/${WCRS_USERSDB_NAME}/g" \
 sed -i "s/WCRS_USERSDB_USERNAME/${WCRS_USERSDB_USERNAME}/g" \
        "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
 sed -i "s/WCRS_USERSDB_PASSWORD/${WCRS_USERSDB_PASSWORD}/g"
+       "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
 sed -i "s/WCRS_ELASDB_HOST/${WCRS_ELASDB_HOST}/g" \
        "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
 sed -i "s/WCRS_ELASDB_PORT_JAVA/${WCRS_ELASDB_PORT_JAVA}/g" \
