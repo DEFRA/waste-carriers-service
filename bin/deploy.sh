@@ -41,9 +41,9 @@ if [[ -z "${WCRS_USERSDB_USERNAME}" ]]; then env_alert WCRS_SERVICES_USERSDB_USE
 if [[ -z "${WCRS_USERSDB_PASSWORD}" ]]; then env_alert WCRS_SERVICES_USERSDB_PASSWD; fi
 if [[ -z "${WCRS_ELASDB_HOST}" ]]; then env_alert WCRS_ELASDB_HOST; fi
 if [[ -z "${WCRS_ELASDB_PORT_JAVA}" ]]; then env_alert WCRS_ELASDB_PORT_JAVA; fi
-
 if [[ -z "${WCRS_SERVICES_IR_FOLDERPATH}" ]]; then env_alert WCRS_SERVICES_IR_FOLDERPATH; fi
-
+if [[ -z "${WCRS_REGISTRATION_EXPIRES_AFTER}" ]]; then env_alert WCRS_REGISTRATION_EXPIRES_AFTER; fi
+if [[ -z "${WCRS_REGISTRATION_RENEWAL_WINDOW}" ]]; then env_alert WCRS_SERVICES_IR_FOLDERPATH; fi
 
 ## Stop previously running wcrs-services.
 echo "Stopping old wcrs-services."
@@ -175,9 +175,9 @@ sed -i "s/WCRS_ELASDB_HOST/${WCRS_ELASDB_HOST}/g" \
        "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
 sed -i "s/WCRS_ELASDB_PORT_JAVA/${WCRS_ELASDB_PORT_JAVA}/g" \
        "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
-sed -i "s/WCRS_SERVICES_EXPIRES_AFTER/${WCRS_SERVICES_EXPIRES_AFTER}/g" \
+sed -i "s/WCRS_REGISTRATION_EXPIRES_AFTER/${WCRS_REGISTRATION_EXPIRES_AFTER}/g" \
        "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
-sed -i "s/WCRS_SERVICES_RENEWAL_WINDOW/${WCRS_SERVICES_RENEWAL_WINDOW}/g" \
+sed -i "s/WCRS_REGISTRATION_RENEWAL_WINDOW/${WCRS_REGISTRATION_RENEWAL_WINDOW}/g" \
        "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
 sed -i "s|WCRS_SERVICES_IR_FOLDERPATH|${WCRS_SERVICES_IR_FOLDERPATH}|g" \
        "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"

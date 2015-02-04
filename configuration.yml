@@ -63,9 +63,9 @@ http:
   
 settings:
   # registration period (in years)
-  registrationPeriod: WCRS_SERVICES_EXPIRES_AFTER
+  registrationPeriod: WCRS_REGISTRATION_EXPIRES_AFTER
   # renew period (in months)
-  registrationRenewPeriod: WCRS_SERVICES_RENEWAL_WINDOW
+  registrationRenewPeriod: WCRS_REGISTRATION_RENEWAL_WINDOW
   
 irrenewals:
   # path to ir data folder (import from legacy system)
