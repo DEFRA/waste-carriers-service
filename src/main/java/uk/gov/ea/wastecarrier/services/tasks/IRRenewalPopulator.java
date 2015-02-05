@@ -221,7 +221,7 @@ public class IRRenewalPopulator extends Task
 				"",
 				"07713745"};
 		this.irDataList.add(new CompanyIRData(testCompanyData));
-		
+
 		String testIndividualData[] = {"CB/AN9999YY/R002",
 				"3/16/2015",
 				"Carrier",
@@ -230,7 +230,7 @@ public class IRRenewalPopulator extends Task
 				"Sole Trader Ltd",
 				"4/23/1959"};
 		this.irDataList.add(new IndividualIRData(testIndividualData));
-		
+
 		String testPartnerData[] = {"CB/AN9999ZZ/R002",
 				"3/13/2015",
 				"Carrier and Broker",
@@ -240,7 +240,17 @@ public class IRRenewalPopulator extends Task
 				"",
 				"8/15/1979"};
 		this.irDataList.add(new PartnersIRData(testPartnerData));
-		
+
+        String testPartnerData2[] = {"CB/AN9999ZZ/R003",
+                "3/13/2015",
+                "Carrier and Broker",
+                "Organisation of Individuals",
+                "Partnership",
+                "IR Company Name abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 .-&'[],()",
+                "",
+                "8/15/1979"};
+        this.irDataList.add(new PartnersIRData(testPartnerData2));
+
 		String testPublicBodyData[] = {"CB/VM9999WW/A001",
 				"10/29/2014",
 				"Carrier",
