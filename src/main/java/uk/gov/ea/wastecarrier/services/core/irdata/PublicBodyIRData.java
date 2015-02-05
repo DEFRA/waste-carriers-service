@@ -30,7 +30,7 @@ public class PublicBodyIRData extends IRData
 		
 		setPartyName(rawData[4]);
 		
-		if (rawData.length < 5) setTradingName(rawData[5]);
+		if (rawData.length > 5) setTradingName(rawData[5]);
 	}
 	
 	@Override

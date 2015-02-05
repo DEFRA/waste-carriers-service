@@ -111,7 +111,7 @@ public class IRRenewalMongoDao
 	public IndividualIRData findOneIndividualIRData(String registrationNumber)
 	{
 		
-		log.info("Param GET Method Detected - findOneCompanyIRData limited by registrationNumber");
+		log.info("Param GET Method Detected - findOneIndividualIRData limited by registrationNumber");
 		DB db = databaseHelper.getConnection();
 		if (db != null)
 		{
@@ -144,7 +144,7 @@ public class IRRenewalMongoDao
 	
 	public PartnersIRData findOnePartnersIRData(String registrationNumber)
 	{
-		log.info("Param GET Method Detected - findOneCompanyIRData limited by registrationNumber");
+		log.info("Param GET Method Detected - findOnePartnersIRData limited by registrationNumber");
 		DB db = databaseHelper.getConnection();
 		if (db != null)
 		{
@@ -177,7 +177,7 @@ public class IRRenewalMongoDao
 
 	public PublicBodyIRData findOnePublicBodyIRData(String registrationNumber)
 	{
-		log.info("Param GET Method Detected - findOneCompanyIRData limited by registrationNumber");
+		log.info("Param GET Method Detected - findOnePublicBodyIRData limited by registrationNumber");
 		DB db = databaseHelper.getConnection();
 		if (db != null)
 		{
