@@ -43,7 +43,7 @@ if [[ -z "${WCRS_ELASDB_HOST}" ]]; then env_alert WCRS_ELASDB_HOST; fi
 if [[ -z "${WCRS_ELASDB_PORT_JAVA}" ]]; then env_alert WCRS_ELASDB_PORT_JAVA; fi
 if [[ -z "${WCRS_SERVICES_IR_FOLDERPATH}" ]]; then env_alert WCRS_SERVICES_IR_FOLDERPATH; fi
 if [[ -z "${WCRS_REGISTRATION_EXPIRES_AFTER}" ]]; then env_alert WCRS_REGISTRATION_EXPIRES_AFTER; fi
-if [[ -z "${WCRS_REGISTRATION_RENEWAL_WINDOW}" ]]; then env_alert WCRS_SERVICES_IR_FOLDERPATH; fi
+if [[ -z "${WCRS_REGISTRATION_RENEWAL_WINDOW}" ]]; then env_alert WCRS_REGISTRATION_RENEWAL_WINDOW; fi
 
 ## Stop previously running wcrs-services.
 echo "Stopping old wcrs-services."
