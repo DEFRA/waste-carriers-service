@@ -45,6 +45,9 @@ if [[ -z "${WCRS_SERVICES_IR_FOLDERPATH}" ]]; then env_alert WCRS_SERVICES_IR_FO
 if [[ -z "${WCRS_REGISTRATION_EXPIRES_AFTER}" ]]; then env_alert WCRS_REGISTRATION_EXPIRES_AFTER; fi
 if [[ -z "${WCRS_REGISTRATION_RENEWAL_WINDOW}" ]]; then env_alert WCRS_REGISTRATION_RENEWAL_WINDOW; fi
 
+##Disable cron job or service will be restarted during deploy
+sudo crontab -u servicecheck /home/servicecheck/off
+
 ## Stop previously running wcrs-services.
 echo "Stopping old wcrs-services."
 if [ -f "${WCRS_SERVICES_HOME}/live/logs/pid" ]; then
@@ -213,5 +216,8 @@ echo $! > "${WCRS_SERVICES_HOME}/live/logs/pid"
 
 echo "Deploy complete."
 echo ""
+
+##Re-enable cron job to check services
+sudo crontab -u servicecheck /home/servicecheck/on
 exit 0
 
