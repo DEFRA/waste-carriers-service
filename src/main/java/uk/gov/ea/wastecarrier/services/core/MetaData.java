@@ -13,13 +13,13 @@ import java.util.Date;
  */
 public class MetaData {
 	
-    private String dateRegistered;
+    private Date dateRegistered;
 	
     private String anotherString;
 
-	private String lastModified;
+	private Date lastModified;
 	
-	private String dateActivated;
+	private Date dateActivated;
 	
 	private RegistrationStatus status;
 	
@@ -69,18 +69,18 @@ public class MetaData {
 	{
 	}
 
-    public MetaData(String dateRegistered, String anotherString, RouteType route) 
+    public MetaData(Date dateRegistered, String anotherString, RouteType route)
     {
         this.dateRegistered = dateRegistered;
         this.anotherString = anotherString;
         this.lastModified = dateRegistered;
-        this.dateActivated = "";
+        this.dateActivated = null;
         //The initial status is PENDING for most new registrations.
         this.status = RegistrationStatus.PENDING;
         this.route = route;
     }
 
-    public String getDateRegistered() {
+    public Date getDateRegistered() {
         return dateRegistered;
     }
     
@@ -91,7 +91,7 @@ public class MetaData {
 	/**
 	 * @return the lastModified
 	 */
-	public String getLastModified()
+	public Date getLastModified()
 	{
 		return lastModified;
 	}
@@ -99,7 +99,7 @@ public class MetaData {
 	/**
 	 * @return the dateActivated
 	 */
-	public String getDateActivated()
+	public Date getDateActivated()
 	{
 		return dateActivated;
 	}
@@ -136,17 +136,17 @@ public class MetaData {
 		return distance;
 	}
 	
-	public static String getCurrentDateTime()
+	public static Date getCurrentDateTime()
     {
-    	DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		//@SamGriffiths [20150127]- changed the formats of all Dates to Date rather than String
 		Date date = new Date();
-		return dateFormat.format(date);
+		return date;
     }
 	
 	/**
 	 * @param dateRegistered the dateRegistered to set
 	 */
-	public void setDateRegistered(String dateRegistered)
+	public void setDateRegistered(Date dateRegistered)
 	{
 		this.dateRegistered = dateRegistered;
 	}
@@ -162,7 +162,7 @@ public class MetaData {
 	/**
 	 * @param lastModified the lastModified to set
 	 */
-	public void setLastModified(String lastModified)
+	public void setLastModified(Date lastModified)
 	{
 		this.lastModified = lastModified;
 	}
@@ -170,7 +170,7 @@ public class MetaData {
 	/**
 	 * @param dateActivated the dateActivated to set
 	 */
-	public void setDateActivated(String dateActivated)
+	public void setDateActivated(Date dateActivated)
 	{
 		this.dateActivated = dateActivated;
 	}

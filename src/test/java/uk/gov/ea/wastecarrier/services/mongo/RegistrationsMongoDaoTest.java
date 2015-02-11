@@ -166,7 +166,7 @@ public class RegistrationsMongoDaoTest extends TestCase {
 		reg.getFinanceDetails().setOrders(new ArrayList<Order>());
 		reg.getFinanceDetails().setPayments(new ArrayList<Payment>());
 		reg.setMetaData(new MetaData());
-		reg.getMetaData().setDateRegistered(new Date().toString());
+		reg.getMetaData().setDateRegistered(new Date());
 		reg.getMetaData().setStatus(RegistrationStatus.ACTIVE);
 		reg.getMetaData().setRoute(RouteType.DIGITAL);
 		return reg;
