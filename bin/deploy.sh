@@ -29,18 +29,24 @@ if [[ -z "${WCRS_SERVICES_PORT}" ]]; then env_alert WCRS_SERVICES_PORT; fi
 if [[ -z "${WCRS_SERVICES_ADMIN_PORT}" ]]; then env_alert WCRS_SERVICES_ADMIN_PORT; fi
 if [[ -z "${WCRS_SERVICES_MQ_HOST}" ]]; then env_alert WCRS_SERVICES_MQ_HOST; fi
 if [[ -z "${WCRS_SERVICES_MQ_PORT}" ]]; then env_alert WCRS_SERVICES_MQ_PORT; fi
-if [[ -z "${WCRS_SERVICES_DB_HOST}" ]]; then env_alert WCRS_SERVICES_DB_HOST; fi
-if [[ -z "${WCRS_SERVICES_DB_PORT}" ]]; then env_alert WCRS_SERVICES_DB_PORT; fi
-if [[ -z "${WCRS_SERVICES_DB_NAME}" ]]; then env_alert WCRS_SERVICES_DB_NAME; fi
-if [[ -z "${WCRS_SERVICES_DB_USER}" ]]; then env_alert WCRS_SERVICES_DB_USER; fi
-if [[ -z "${WCRS_SERVICES_DB_PASSWD}" ]]; then env_alert WCRS_SERVICES_DB_PASSWD; fi
-if [[ -z "${WCRS_SERVICES_ES_HOST}" ]]; then env_alert WCRS_SERVICES_ES_HOST; fi
-if [[ -z "${WCRS_SERVICES_ES_PORT}" ]]; then env_alert WCRS_SERVICES_ES_PORT; fi
-if [[ -z "${WCRS_SERVICES_USERSDB_NAME}" ]]; then env_alert WCRS_SERVICES_USERSDB_NAME; fi
-if [[ -z "${WCRS_SERVICES_USERSDB_USER}" ]]; then env_alert WCRS_SERVICES_USERSDB_USER; fi
-if [[ -z "${WCRS_SERVICES_USERSDB_PASSWD}" ]]; then env_alert WCRS_SERVICES_USERSDB_PASSWD; fi
+if [[ -z "${WCRS_REGSDB_HOST}" ]]; then env_alert WCRS_REGSDB_HOST; fi
+if [[ -z "${WCRS_REGSDB_PORT1}" ]]; then env_alert WCRS_REGSDB_PORT1; fi
+if [[ -z "${WCRS_REGSDB_NAME}" ]]; then env_alert WCRS_REGSDB_NAME; fi
+if [[ -z "${WCRS_REGSDB_USERNAME}" ]]; then env_alert WCRS_REGSDB_USERNAME; fi
+if [[ -z "${WCRS_REGSDB_PASSWORD}" ]]; then env_alert WCRS_REGSDB_PASSWORD; fi
+if [[ -z "${WCRS_USERSDB_HOST}" ]]; then env_alert WCRS_USERSDB_HOST; fi
+if [[ -z "${WCRS_USERSDB_PORT1}" ]]; then env_alert WCRS_USERSDB_PORT1; fi
+if [[ -z "${WCRS_USERSDB_NAME}" ]]; then env_alert WCRS_USERSDB_NAME; fi
+if [[ -z "${WCRS_USERSDB_USERNAME}" ]]; then env_alert WCRS_SERVICES_USERSDB_USER; fi
+if [[ -z "${WCRS_USERSDB_PASSWORD}" ]]; then env_alert WCRS_SERVICES_USERSDB_PASSWD; fi
+if [[ -z "${WCRS_ELASDB_HOST}" ]]; then env_alert WCRS_ELASDB_HOST; fi
+if [[ -z "${WCRS_ELASDB_PORT_JAVA}" ]]; then env_alert WCRS_ELASDB_PORT_JAVA; fi
 if [[ -z "${WCRS_SERVICES_IR_FOLDERPATH}" ]]; then env_alert WCRS_SERVICES_IR_FOLDERPATH; fi
+if [[ -z "${WCRS_REGISTRATION_EXPIRES_AFTER}" ]]; then env_alert WCRS_REGISTRATION_EXPIRES_AFTER; fi
+if [[ -z "${WCRS_REGISTRATION_RENEWAL_WINDOW}" ]]; then env_alert WCRS_REGISTRATION_RENEWAL_WINDOW; fi
 
+##Disable cron job or service will be restarted during deploy
+sudo crontab -u servicecheck /home/servicecheck/off
 
 ## Stop previously running wcrs-services.
 echo "Stopping old wcrs-services."
@@ -148,29 +154,33 @@ sed -i "s/WCRS_SERVICES_MQ_HOST/${WCRS_SERVICES_MQ_HOST}/g" \
        "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
 sed -i "s/WCRS_SERVICES_MQ_PORT/${WCRS_SERVICES_MQ_PORT}/g" \
        "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
-sed -i "s/WCRS_SERVICES_DB_HOST/${WCRS_SERVICES_DB_HOST}/g" \
+sed -i "s/WCRS_REGSDB_HOST/${WCRS_REGSDB_HOST}/g" \
        "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
-sed -i "s/WCRS_SERVICES_DB_PORT/${WCRS_SERVICES_DB_PORT}/g" \
+sed -i "s/WCRS_REGSDB_PORT1/${WCRS_REGSDB_PORT1}/g" \
        "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
-sed -i "s/WCRS_SERVICES_DB_NAME/${WCRS_SERVICES_DB_NAME}/g" \
+sed -i "s/WCRS_REGSDB_NAME/${WCRS_REGSDB_NAME}/g" \
        "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
-sed -i "s/WCRS_SERVICES_DB_USER/${WCRS_SERVICES_DB_USER}/g" \
+sed -i "s/WCRS_REGSDB_USERNAME/${WCRS_REGSDB_USERNAME}/g" \
        "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
-sed -i "s/WCRS_SERVICES_DB_PASSWD/${WCRS_SERVICES_DB_PASSWD}/g" \
+sed -i "s/WCRS_REGSDB_PASSWORD/${WCRS_REGSDB_PASSWORD}/g" \
        "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
-sed -i "s/WCRS_SERVICES_ES_HOST/${WCRS_SERVICES_ES_HOST}/g" \
+sed -i "s/WCRS_USERSDB_HOST/${WCRS_USERSDB_HOST}/g" \
        "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
-sed -i "s/WCRS_SERVICES_ES_PORT/${WCRS_SERVICES_ES_PORT}/g" \
+sed -i "s/WCRS_USERSDB_PORT1/${WCRS_USERSDB_PORT1}/g" \
        "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
-sed -i "s/WCRS_SERVICES_USERSDB_NAME/${WCRS_SERVICES_USERSDB_NAME}/g" \
+sed -i "s/WCRS_USERSDB_NAME/${WCRS_USERSDB_NAME}/g" \
        "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
-sed -i "s/WCRS_SERVICES_USERSDB_USER/${WCRS_SERVICES_USERSDB_USER}/g" \
+sed -i "s/WCRS_USERSDB_USERNAME/${WCRS_USERSDB_USERNAME}/g" \
        "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
-sed -i "s/WCRS_SERVICES_USERSDB_PASSWD/${WCRS_SERVICES_USERSDB_PASSWD}/g" \
+sed -i "s/WCRS_USERSDB_PASSWORD/${WCRS_USERSDB_PASSWORD}/g" \
        "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
-sed -i "s/WCRS_SERVICES_EXPIRES_AFTER/${WCRS_SERVICES_EXPIRES_AFTER}/g" \
+sed -i "s/WCRS_ELASDB_HOST/${WCRS_ELASDB_HOST}/g" \
        "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
-sed -i "s/WCRS_SERVICES_RENEWAL_WINDOW/${WCRS_SERVICES_RENEWAL_WINDOW}/g" \
+sed -i "s/WCRS_ELASDB_PORT_JAVA/${WCRS_ELASDB_PORT_JAVA}/g" \
+       "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
+sed -i "s/WCRS_REGISTRATION_EXPIRES_AFTER/${WCRS_REGISTRATION_EXPIRES_AFTER}/g" \
+       "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
+sed -i "s/WCRS_REGISTRATION_RENEWAL_WINDOW/${WCRS_REGISTRATION_RENEWAL_WINDOW}/g" \
        "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
 sed -i "s|WCRS_SERVICES_IR_FOLDERPATH|${WCRS_SERVICES_IR_FOLDERPATH}|g" \
        "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
@@ -206,5 +216,8 @@ echo $! > "${WCRS_SERVICES_HOME}/live/logs/pid"
 
 echo "Deploy complete."
 echo ""
+
+##Re-enable cron job to check services
+sudo crontab -u servicecheck /home/servicecheck/on
 exit 0
 
