@@ -51,7 +51,7 @@ fi
 ## A second check in case the pid file was out of date.
 WCRS_SERVICES_PID=`ps -ef | grep java | grep ${WCRS_SERVICES_PORT} | awk '{print $2}'`
 if [[ ! -z "${WCRS_SERVICES_PID}" ]]; then
-  kill ${WCRS_SERVICES_PID} 
+  kill ${WCRS_SERVICES_PID}
 fi
 
 
@@ -77,8 +77,8 @@ if [ -d "${WCRS_SERVICES_HOME}" ]; then
   if [ -w "${WCRS_SERVICES_HOME}" ]; then
     for DIR in bin conf logs webapps; do
       if [ ! -d "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/${DIR}" ]; then
-        echo "Creating directory: ${WCRS_SERVICES_HOME}/${RELEASE_DIR}/${DIR}" 
-        mkdir "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/${DIR}" 
+        echo "Creating directory: ${WCRS_SERVICES_HOME}/${RELEASE_DIR}/${DIR}"
+        mkdir "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/${DIR}"
       fi
     done
   else
@@ -107,6 +107,8 @@ cp "${WCRS_SERVICES_SOURCE}/bin/deploy.sh" "${WCRS_SERVICES_HOME}/${RELEASE_DIR}
 chmod 744 "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/bin/deploy.sh"
 cp "${WCRS_SERVICES_SOURCE}/bin/reindex_elasticsearch.sh" "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/bin/"
 chmod 744 "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/bin/reindex_elasticsearch.sh"
+cp "${WCRS_SERVICES_SOURCE}/bin/reIndex.sh" "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/bin/"
+chmod 744 "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/bin/reIndex.sh"
 
 
 ## Deploy the most recent jar file.
@@ -164,8 +166,8 @@ if [ -f ${WCRS_SERVICES_SOURCE}/jenkins_build_number ]; then
 fi
 
 ## Preserve the license and readme files.
-cp "${WCRS_SERVICES_SOURCE}/LICENSE" "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/" 
-cp "${WCRS_SERVICES_SOURCE}/README.md" "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/" 
+cp "${WCRS_SERVICES_SOURCE}/LICENSE" "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/"
+cp "${WCRS_SERVICES_SOURCE}/README.md" "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/"
 
 ## Create live symlink.
 echo "Creating symlink: ${WCRS_SERVICES_HOME}/live"
@@ -189,4 +191,3 @@ echo $! > "${WCRS_SERVICES_HOME}/live/logs/pid"
 echo "Deploy complete."
 echo ""
 exit 0
-
