@@ -20,6 +20,9 @@ public class ConvictionSearchResult {
 
     @JsonProperty("reference")
     private String reference;
+    
+    @JsonProperty("matched_name")
+    private String matchedName;
 
     @JsonProperty("searched_at")
     private Date searchedAt;
@@ -40,6 +43,7 @@ public class ConvictionSearchResult {
             MatchResult matched,
             String matchingSystem,
             String reference,
+            String matchedName,
             Date searchedAt,
             String confirmed,
             Date confirmedAt,
@@ -48,6 +52,7 @@ public class ConvictionSearchResult {
         this.matchResult = matched;
         this.matchingSystem = matchingSystem;
         this.reference = reference;
+        this.matchedName = matchedName;
         this.searchedAt = searchedAt;
         this.confirmed = confirmed;
         this.confirmedAt = confirmedAt;
@@ -76,6 +81,14 @@ public class ConvictionSearchResult {
 
     public void setReference(String reference) {
         this.reference = reference;
+    }
+    
+    public String getMatchedName() {
+        return matchedName;
+    }
+    
+    public void setMatchedName(String matchedName) {
+        this.matchedName = matchedName;
     }
 
     public Date getSearchedAt() {
