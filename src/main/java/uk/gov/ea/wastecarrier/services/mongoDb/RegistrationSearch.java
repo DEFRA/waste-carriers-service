@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
+import org.joda.time.DateTime;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 
 import java.util.*;
@@ -79,28 +80,30 @@ public class RegistrationSearch {
 
     protected void applyDateFilters(BasicDBObject query) {
 
-        String fromString = null;
-        String untilString = null;
+        DateTime from;
+        Date dateFrom = null;
+        DateTime until;
+        Date dateUntil = null;
 
         if (fromDate.isPresent()) {
-            Long from = SearchHelper.dateStringToDate(fromDate.get(), false).getMillis();
-            fromString = SearchHelper.timeToDateTimeString(from);
+            from = SearchHelper.dateStringToDate(fromDate.get(), false);
+            dateFrom = from.toDate();
         }
 
         if (toDate.isPresent()) {
-            Long until = SearchHelper.dateStringToDate(toDate.get(), true).getMillis();
-            untilString = SearchHelper.timeToDateTimeString(until);
+            until = SearchHelper.dateStringToDate(toDate.get(), true);
+            dateUntil = until.toDate();
         }
 
-        if (fromString != null && untilString != null) {
+        if (dateFrom != null && dateUntil != null) {
             query.append(
                     DATE_FILTER_PROPERTY,
-                    new BasicDBObject("$gt", fromString)
-                            .append("$lte", untilString));
-        } else if (fromString != null) {
-            query.append(DATE_FILTER_PROPERTY, new BasicDBObject("$gt", fromString));
-        } else if (untilString != null) {
-            query.append(DATE_FILTER_PROPERTY, new BasicDBObject("$lte", untilString));
+                    new BasicDBObject("$gt", dateFrom)
+                            .append("$lte", dateUntil));
+        } else if (dateFrom != null) {
+            query.append(DATE_FILTER_PROPERTY, new BasicDBObject("$gt", dateFrom));
+        } else if (dateUntil != null) {
+            query.append(DATE_FILTER_PROPERTY, new BasicDBObject("$lte", dateUntil));
         }
 
     }
