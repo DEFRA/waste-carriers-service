@@ -22,29 +22,32 @@ public class PaymentHelper
 
 	public boolean isReadyToBeActivated(Registration registration, User user)
 	{
-        if (registration.getMetaData().getStatus().equals(RegistrationStatus.PENDING) 
-        		|| registration.getMetaData().getStatus().equals(RegistrationStatus.REFUSED)) {
+        boolean result = false;
 
-            // Activate assisted digital routes without checking user
-            if (registration.getMetaData().getRoute().equals(RouteType.ASSISTED_DIGITAL)
-            		&& isBalanceValid(registration)
-                    && !RegistrationHelper.isAwaitingConvictionConfirmation(registration))
+        // Can only be activated if currently pending or refused.
+        if (registration.getMetaData().getStatus().equals(RegistrationStatus.PENDING)
+                || registration.getMetaData().getStatus().equals(RegistrationStatus.REFUSED))
+        {
+            // Only activate if no money is owed, and no convictions checks are pending.
+            if (isBalanceValid(registration) && !RegistrationHelper.isAwaitingConvictionConfirmation(registration))
             {
-                return true;
-            }
-
-            if (registration.getTier().equals(RegistrationTier.LOWER)
-                    && registration.getMetaData().getRoute().equals(RouteType.DIGITAL)
-                    && isUserValid(user)) {
-                return true;
-            }
-            else if (isBalanceValid(registration)
-                    && !RegistrationHelper.isAwaitingConvictionConfirmation(registration)) {
-                return true;
+                // Assisted Digital registrations are activated immediately, as
+                // are Upper Tier registrations.
+                if (registration.getMetaData().getRoute().equals(RouteType.ASSISTED_DIGITAL)
+                        || registration.getTier().equals(RegistrationTier.UPPER))
+                {
+                    result = true;
+                }
+                // Lower Tier non-AD registrations can only become active once
+                // the account holder has validated their account.
+                else if (registration.getTier().equals(RegistrationTier.LOWER))
+                {
+                    result = isUserValid(user);
+                }
             }
         }
 
-		return false;
+        return result;
 	}
 	
 	public boolean isReadyToBeRenewed(Registration registration)
