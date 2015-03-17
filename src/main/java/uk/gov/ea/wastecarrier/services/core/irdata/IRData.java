@@ -21,7 +21,7 @@ public class IRData
 	 * 0 CB_REFERENCE_NUMBER, ==> originalReferenceNumber
 	 * FORMAT:: CB/[A-Z]{2}[0-9]{4}[A-Z]{2}/[ARV]{1}[0-9]{3}
 	 * E.g. CB/AM3280HA/A001
-	 * 
+	 *
 	 */
 	
 	public final static String COLLECTION_SINGULAR_NAME = "irrenewal";
@@ -39,7 +39,7 @@ public class IRData
 	/**
 	 * This is the Key for the IR details
 	 */
-	@JsonProperty 
+	@JsonProperty
 	@Id
 	@ObjectId
     private String id;
@@ -168,9 +168,9 @@ public class IRData
 	}
 	
 	/**
-	 * Gets the registration type from the IR Data, and returns it as a 
+	 * Gets the registration type from the IR Data, and returns it as a
 	 * RegistrationType object
-	 * 
+	 *
 	 * @return RegistrationType object for this IRData
 	 */
 	public RegistrationType getTrueRegistrationType()
@@ -214,8 +214,8 @@ public class IRData
 				message += s + ",";
 			}
 			message += "]";
-			log.severe("Could not parse date: " + dateAsString + " for row: " + message);
-			e.printStackTrace();
+			log.severe("Could not parse date '" + dateAsString + "' for row: " + message);
+			log.severe("It is likely that a preceeding column includes an unquoted comma; please fix the CSV file.");
 		}
 		return d;
 	}
