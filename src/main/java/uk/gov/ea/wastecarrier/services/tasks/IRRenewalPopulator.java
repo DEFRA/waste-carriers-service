@@ -1,26 +1,17 @@
 package uk.gov.ea.wastecarrier.services.tasks;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.logging.Logger;
-
 import au.com.bytecode.opencsv.CSVReader;
-
 import com.google.common.collect.ImmutableMultimap;
 import com.yammer.dropwizard.tasks.Task;
-
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.IRConfiguration;
-import uk.gov.ea.wastecarrier.services.core.irdata.CompanyIRData;
-import uk.gov.ea.wastecarrier.services.core.irdata.IRData;
-import uk.gov.ea.wastecarrier.services.core.irdata.IndividualIRData;
-import uk.gov.ea.wastecarrier.services.core.irdata.PartnersIRData;
-import uk.gov.ea.wastecarrier.services.core.irdata.PublicBodyIRData;
+import uk.gov.ea.wastecarrier.services.core.irdata.*;
 import uk.gov.ea.wastecarrier.services.mongoDb.IRRenewalMongoDao;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.logging.Logger;
 
 /**
  * The IR Renewal Populator creates records in the mongoDB database from exported data from the legacy IR system.
@@ -126,20 +117,22 @@ public class IRRenewalPopulator extends Task
 	 */
 	private void populateIRData(String csvFile, IRRenewal_Type irType)
 	{
-		String[] nextLine;
+		String[] irDataRow;
 		CSVReader reader = null;
 		try {
 			int count = 0;
 			reader = new CSVReader(new FileReader(csvFile));
-			while ((nextLine = reader.readNext()) != null) {
+            log.info(reader.readNext().toString());
+			while ((irDataRow = reader.readNext()) != null) {
 				// use comma as separator
-				String[] irDataRow = nextLine;
-
+                if (irDataRow.length < 4) {
+                    continue;
+                }
 				log.fine("IR Data [0: " + irDataRow[0] +
-						" , 1: " + irDataRow[1] + 
-						" , 2: "+ irDataRow[2] + 
+						" , 1: " + irDataRow[1] +
+						" , 2: "+ irDataRow[2] +
 						" , 3: " + irDataRow[3] + "]");
-				
+
 				if ("CB_REFERENCE_NUMBER".equalsIgnoreCase(irDataRow[0]))
 				{
 					// skip this iteration, to ignore CSV headings
@@ -169,6 +162,7 @@ public class IRRenewalPopulator extends Task
 				default:
 					break;
 				}
+
 				
 			}
 			log.info("Read: " + count + " irrenewals from " + csvFile + " file.");
