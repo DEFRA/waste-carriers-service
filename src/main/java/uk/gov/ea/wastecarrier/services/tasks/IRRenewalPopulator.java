@@ -46,10 +46,18 @@ public class IRRenewalPopulator extends Task
 	{
 		super(name);
 		this.dao = new IRRenewalMongoDao(database);
-		this.irCompanyDataFilePath = irConfig.getIrRenewalFolderPath() +File.separatorChar+ irConfig.getIrRenewalCompanyFileName();
-		this.irIndividualDataFilePath = irConfig.getIrRenewalFolderPath() +File.separatorChar+ irConfig.getIrRenewalIndividualFileName();
-		this.irPartnersDataFilePath = irConfig.getIrRenewalFolderPath() +File.separatorChar+ irConfig.getIrRenewalPartnersFileName();
-		this.irPublicBodyDataFilePath = irConfig.getIrRenewalFolderPath() +File.separatorChar+ irConfig.getIrRenewalPublicBodyFileName();
+		this.irCompanyDataFilePath = irConfig.getIrRenewalFolderPath()
+                + File.separatorChar
+                + irConfig.getIrRenewalCompanyFileName();
+		this.irIndividualDataFilePath = irConfig.getIrRenewalFolderPath()
+                + File.separatorChar
+                + irConfig.getIrRenewalIndividualFileName();
+		this.irPartnersDataFilePath = irConfig.getIrRenewalFolderPath()
+                + File.separatorChar
+                + irConfig.getIrRenewalPartnersFileName();
+		this.irPublicBodyDataFilePath = irConfig.getIrRenewalFolderPath()
+                + File.separatorChar
+                + irConfig.getIrRenewalPublicBodyFileName();
 		this.irDataList = new ArrayList<IRData>();
 		log.fine("IR data populator loaded");
 	}
@@ -151,8 +159,6 @@ public class IRRenewalPopulator extends Task
 				default:
 					break;
 				}
-
-				
 			}
 			log.info("Read: " + count + " irrenewals from " + csvFile + " file.");
 			if (count == 0)
