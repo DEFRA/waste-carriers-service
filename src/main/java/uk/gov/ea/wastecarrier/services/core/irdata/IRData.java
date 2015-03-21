@@ -195,7 +195,7 @@ public class IRData
 	 * @param dateAsString date string to convert to java.util.Date
 	 * @return Date if valid date, or null if unable to convert date
 	 */
-	protected Date convertToDate(String dateAsString)
+	protected Date convertToDate(String dateAsString, IRType type)
 	{
 		Date d = null;
 		try
@@ -214,8 +214,8 @@ public class IRData
 				message += s + ",";
 			}
 			message += "]";
-			log.severe("Could not parse date '" + dateAsString + "' for row: " + message);
-			log.severe("It is likely that a preceeding column includes an unquoted comma; please fix the CSV file.");
+			log.severe("Could not parse date '" + dateAsString + "' for row: " + message + ", type : " + type);
+			log.severe("It is likely that a preceding column includes an unquoted comma; please fix the CSV file.");
 		}
 		return d;
 	}

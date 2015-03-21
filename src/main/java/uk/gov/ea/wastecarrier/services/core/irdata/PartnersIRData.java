@@ -21,7 +21,7 @@ public class PartnersIRData extends IRData
 		
         setReferenceNumber(rawData[0]);
 		
-        Date d = convertToDate(rawData[1]);
+        Date d = convertToDate(rawData[1], getIrType());
 		setExpiryDate(d);
 		
 		setRegistrationType(rawData[2]);
@@ -34,7 +34,7 @@ public class PartnersIRData extends IRData
 		
 		setTradingName(rawData[6]);
 		
-		Date dob = convertToDate(rawData[7]);
+		Date dob = convertToDate(rawData[7], getIrType());
 		setDateOfBirth(dob);
 	}
 	

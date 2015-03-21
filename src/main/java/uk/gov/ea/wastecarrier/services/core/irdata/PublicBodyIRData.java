@@ -21,7 +21,7 @@ public class PublicBodyIRData extends IRData
 		
         setReferenceNumber(rawData[0]);
 		
-        Date d = convertToDate(rawData[1]);
+        Date d = convertToDate(rawData[1], getIrType());
 		setExpiryDate(d);
 		
 		setRegistrationType(rawData[2]);

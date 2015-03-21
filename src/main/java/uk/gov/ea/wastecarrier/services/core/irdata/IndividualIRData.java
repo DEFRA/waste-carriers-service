@@ -22,7 +22,7 @@ public class IndividualIRData extends IRData
 		
         setReferenceNumber(rawData[0]);
 		
-        Date d = convertToDate(rawData[1]);
+        Date d = convertToDate(rawData[1], getIrType());
 		setExpiryDate(d);
 		
 		setRegistrationType(rawData[2]);
@@ -33,7 +33,7 @@ public class IndividualIRData extends IRData
 		
 		setTradingName(rawData[5]);
 		
-		Date dob = convertToDate(rawData[6]);
+		Date dob = convertToDate(rawData[6], getIrType());
 		setDateOfBirth(dob);
 	}
 	
