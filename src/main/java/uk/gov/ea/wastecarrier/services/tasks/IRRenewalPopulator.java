@@ -112,7 +112,6 @@ public class IRRenewalPopulator extends Task
 		try {
 			int count = 0;
 			reader = new CSVReader(new FileReader(csvFile));
-            log.info(Arrays.toString(reader.readNext()));
 			while ((irDataRow = reader.readNext()) != null) {
 				// use comma as separator
                 if (irDataRow.length < 4) {
