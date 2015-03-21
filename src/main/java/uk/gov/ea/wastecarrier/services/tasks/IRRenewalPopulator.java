@@ -40,17 +40,7 @@ public class IRRenewalPopulator extends Task
 	    Partner,
 	    PublicBody
 	}
-	
-	
-	/**
-	 * Setup the Postcode Register
-	 * 
-	 * @param dao IRRenewalMongoDao used to perform database operations
-	 * @param irCompanyData a string of the path to the Company Data CSV file
-	 * @param irIndividualData a string of the path to the Individual Data CSV file
-	 * @param irPartnersData a string of the path to the Partners Data CSV file
-	 * @param irPublicBodyData a string of the path to the Public Body Data CSV file
-	 */
+
 	public IRRenewalPopulator(String name, DatabaseConfiguration database, IRConfiguration irConfig)
 	{
 		super(name);
