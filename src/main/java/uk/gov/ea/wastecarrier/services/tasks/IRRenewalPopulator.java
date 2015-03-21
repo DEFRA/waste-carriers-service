@@ -10,7 +10,6 @@ import uk.gov.ea.wastecarrier.services.mongoDb.IRRenewalMongoDao;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.logging.Logger;
 
 /**
