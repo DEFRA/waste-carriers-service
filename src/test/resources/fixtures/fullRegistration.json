@@ -42,6 +42,7 @@
 	"accessCode":"ABCDEF",
 	"expires_on":1512000000000,
 	"originalRegistrationNumber":"OLDREG123",
+    "originalDateExpiry":1437994800000,
 	"renewalRequested": "false",
 	"conviction_sign_offs":null,
   "reg_uuid": "1234567890",
