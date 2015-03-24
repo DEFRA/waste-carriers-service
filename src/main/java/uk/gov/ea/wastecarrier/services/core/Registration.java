@@ -227,11 +227,14 @@ public class Registration
 	@JsonProperty("expires_on")
 	@Valid
 	private Date expires_on;
-	
-	@JsonProperty
+
+    @JsonProperty
 	private String originalRegistrationNumber;
-	
-	@JsonProperty
+
+    @JsonProperty
+    private Date originalDateExpiry;
+
+    @JsonProperty
 	private String renewalRequested;
 
 	public final static String COLLECTION_SINGULAR_NAME = "registration";
@@ -974,7 +977,15 @@ public class Registration
 		this.renewalRequested = renewalRequested;
 	}
 
-	public boolean validateUuid()
+    public Date getOriginalDateExpiry() {
+        return originalDateExpiry;
+    }
+
+    public void setOriginalDateExpiry(Date originalDateExpiry) {
+        this.originalDateExpiry = originalDateExpiry;
+    }
+
+    public boolean validateUuid()
 	{
 		//TODO May want to use Apache Commons StringUtils or the like	
 		return this.uuid != null && !this.uuid.isEmpty();

@@ -82,7 +82,9 @@ public class IRRenewalResource
 					default:
 						break;
 				}
-				
+
+                r.setOriginalDateExpiry(irData.getExpiryDate());
+
 				log.info("IR get type: " + irData.getIrType());
 				switch (irData.getIrType())
 				{
