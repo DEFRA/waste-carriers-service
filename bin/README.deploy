@@ -9,13 +9,18 @@ WCRS_SERVICES_PORT  <= port to run the wcrs-services on
 WCRS_SERVICES_ADMIN_PORT  <= port to run the wcrs-services admin on
 WCRS_SERVICES_MQ_HOST  <= hostname of message queue server
 WCRS_SERVICES_MQ_PORT  <= message queue port
-WCRS_SERVICES_DB_HOST  <= hostname of database server
-WCRS_SERVICES_DB_PORT  <= database port
-WCRS_SERVICES_DB_NAME  <= database name
-WCRS_SERVICES_DB_USER  <= database user name
-WCRS_SERVICES_DB_PASSWD  <= database password
-WCRS_SERVICES_ES_HOST  <= hostname of elasticsearch server
-WCRS_SERVICES_ES_PORT=9300  <= port for Elasticsearch transport protocol
+WCRS_REGSDB_HOST  <= hostname of the registrations database server
+WCRS_REGSDB_PORT1  <= registrations database port
+WCRS_REGSDB_NAME  <= registrations database name
+WCRS_REGSDB_USERNAME  <= registrations database user name
+WCRS_REGSDB_PASSWORD  <= registrations database password
+WCRS_USERSDB_HOST  <= hostname of the users database server
+WCRS_USERSDB_PORT1  <= users database port
+WCRS_USERSDB_NAME  <= users database name
+WCRS_USERSDB_USERNAME  <= users database user name
+WCRS_USERSDB_PASSWORD  <= users database password
+WCRS_ELASDB_HOST  <= hostname of elasticsearch server
+WCRS_ELASDB_PORT_JAVA=9300  <= port for Elasticsearch transport protocol
 
 Example:
 >>>>> Add to ~/.bashrc and ~/.bash_profile <<<<<
@@ -36,12 +41,16 @@ export WCRS_SERVICES_PORT=9090
 export WCRS_SERVICES_ADMIN_PORT=9091
 export WCRS_SERVICES_MQ_HOST="mqserver.com"
 export WCRS_SERVICES_MQ_PORT=5673
-export WCRS_SERVICES_DB_HOST= "db.com"
-export WCRS_SERVICES_DB_PORT=27017
-export WCRS_SERVICES_DB_NAME="waste-carriers"
-export WCRS_SERVICES_DB_USER="username"
-export WCRS_SERVICES_DB_PASSWD="password"
-export WCRS_SERVICES_ES_HOST="ea-dev"
-## Port for Elasticsearch transport protocol.
-export WCRS_SERVICES_ES_PORT=9300
+export WCRS_REGSDB_HOST= "db.com"
+export WCRS_REGSDB_PORT1=27017
+export WCRS_REGSDB_NAME="waste-carriers"
+export WCRS_REGSDB_USERNAME="username"
+export WCRS_REGSDB_PASSWORD="password"
+export WCRS_USERSDB_HOST= "db.com"
+export WCRS_USERSDB_PORT1=27017
+export WCRS_USERSDB_NAME="waste-carriers-users"
+export WCRS_USERSDB_USERNAME="username"
+export WCRS_USERSDB_PASSWORD="password"
+export WCRS_ELASDB_HOST="ea-dev"
+export WCRS_ELASDB_PORT_JAVA=9300
 

@@ -8,17 +8,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.NotEmpty;
 
 public class WasteCarrierConfiguration extends Configuration {
-	
-	/**
-	 * @deprecated - obsolete parameter, not used anymore
-	 */
-    @NotEmpty
-    @JsonProperty
-    private String template;
-
-    @NotEmpty
-    @JsonProperty
-    private String defaultName = "Stranger";
     
     @Valid
     @NotNull
@@ -33,20 +22,27 @@ public class WasteCarrierConfiguration extends Configuration {
     @Valid
     @NotNull
     @JsonProperty
+    private DatabaseConfiguration userDatabase = new DatabaseConfiguration();
+    
+    @Valid
+    @NotNull
+    @JsonProperty
     private ElasticSearchConfiguration elasticSearch = new ElasticSearchConfiguration();
     
     @Valid
     @NotEmpty
     @JsonProperty
     private String postcodeFilePath = "/postcodes.csv";
-
-    public String getTemplate() {
-        return template;
-    }
-
-    public String getDefaultName() {
-        return defaultName;
-    }
+    
+    @Valid
+    @NotNull
+    @JsonProperty
+    private SettingsConfiguration settings = new SettingsConfiguration();
+    
+    @Valid
+    @NotNull
+    @JsonProperty
+    private IRConfiguration irrenewals = new IRConfiguration();
     
     public MessageQueueConfiguration getMessageQueueConfiguration() {
         return messageQueue;
@@ -56,6 +52,10 @@ public class WasteCarrierConfiguration extends Configuration {
         return database;
     }
     
+    public DatabaseConfiguration getUserDatabase() {
+        return userDatabase;
+    }
+    
     public ElasticSearchConfiguration getElasticSearch() {
         return elasticSearch;
     }
@@ -63,4 +63,13 @@ public class WasteCarrierConfiguration extends Configuration {
     public String getPostcodeFilePath() {
         return postcodeFilePath;
     }
+    
+    public SettingsConfiguration getSettings() {
+        return settings;
+    }
+
+	public IRConfiguration getIrenewals()
+	{
+		return irrenewals;
+	}
 }

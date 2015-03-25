@@ -3,11 +3,13 @@ package uk.gov.ea.wastecarrier.services.resources;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.ElasticSearchConfiguration;
 import uk.gov.ea.wastecarrier.services.MessageQueueConfiguration;
-import uk.gov.ea.wastecarrier.services.core.Location;
-import uk.gov.ea.wastecarrier.services.core.MetaData;
-import uk.gov.ea.wastecarrier.services.core.Registration;
+import uk.gov.ea.wastecarrier.services.core.*;
+import uk.gov.ea.wastecarrier.services.core.Registration.RegistrationTier;
 import uk.gov.ea.wastecarrier.services.elasticsearch.ElasticSearchUtils;
+import uk.gov.ea.wastecarrier.services.mongoDb.AccountHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
+import uk.gov.ea.wastecarrier.services.mongoDb.SearchHelper;
+import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationHelper;
 import uk.gov.ea.wastecarrier.services.tasks.Indexer;
 import uk.gov.ea.wastecarrier.services.tasks.PostcodeRegistry;
 
@@ -61,10 +63,13 @@ import net.vz.mongodb.jackson.WriteResult;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 /**
@@ -78,8 +83,6 @@ import java.util.logging.Logger;
 public class RegistrationsResource
 {
 
-	private final String template;
-	private final String defaultName;
 	private final MessageQueueConfiguration messageQueue;
 	private final DatabaseHelper databaseHelper;
 	private final ElasticSearchConfiguration elasticSearch;
@@ -94,20 +97,18 @@ public class RegistrationsResource
 	private Logger log = Logger.getLogger(RegistrationsResource.class.getName());
 	
 	/**
-	 * 
-	 * @param template
-	 * @param defaultName
+	 *
 	 * @param mQConfig
 	 * @param database
 	 */
-	public RegistrationsResource(String template, String defaultName, MessageQueueConfiguration mQConfig,
-			DatabaseConfiguration database, ElasticSearchConfiguration elasticSearch, Client esClient, String postcodeFilePath)
+	public RegistrationsResource(
+			MessageQueueConfiguration mQConfig,
+			DatabaseConfiguration database, 
+			ElasticSearchConfiguration elasticSearch, 
+			Client esClient, 
+			String postcodeFilePath)
 	{
-		this.template = template;
-		this.defaultName = defaultName;
 		this.messageQueue = mQConfig;
-		log.fine("> template: " + this.template);
-		log.fine("> defaultName: " + this.defaultName);
 		log.fine("> messageQueue: " + this.messageQueue);
 		
 		this.databaseHelper = new DatabaseHelper(database);
@@ -144,12 +145,32 @@ public class RegistrationsResource
 			@QueryParam("searchWithin") Optional<String> sw, 
 			@QueryParam("ac") Optional<String> account,
 			@QueryParam("activeOnly") Optional<Boolean> activeOnly, 
-			@QueryParam("excludeRegId") Optional<Boolean> excludeRegId)
+			@QueryParam("excludeRegId") Optional<Boolean> excludeRegId,
+            @QueryParam("status[]") Set<String> status)
 	{
 		log.fine("Get Method Detected at /registrations");
 		ArrayList<Registration> returnlist = new ArrayList<Registration>();
 		
 		//TODO Re-factor, restructure and simplify this method...
+
+        // TODO This was quickly added in to support soft deleting registrations. Also needs to be re-factored out
+        try {
+            if (account.isPresent()) {
+                AccountHelper helper = new AccountHelper(new SearchHelper(this.databaseHelper));
+                helper.accountEmail = account.get();
+                helper.status = status;
+
+                List<Registration> results = helper.getRegistrations();
+
+                if (results.size() == 0) {
+                    log.info("No results found - returning empty list");
+                }
+                return results;
+            }
+        } catch (MongoException e) {
+            log.severe("Database not found, check the database is running");
+            throw new WebApplicationException(Status.SERVICE_UNAVAILABLE);
+        }
 		
 		if (q.isPresent())
 		{
@@ -172,7 +193,7 @@ public class RegistrationsResource
 				BoolFilterBuilder fbBoolFilter = null;
 				GeoDistanceSortBuilder gsb = null;
 				boolean useDistanceFilter = false;
-				boolean excludeId = false;
+				//boolean excludeId = false;
 				if (activeOnly.isPresent())
 				{
 					GeoDistanceFilterBuilder geoFilter = null;
@@ -244,7 +265,7 @@ public class RegistrationsResource
 						.setQuery(qb0)
 						.setSize(1);
 				if (fbBoolFilter != null) {
-					srb0.setFilter(fbBoolFilter);
+					srb0.setPostFilter(fbBoolFilter);
 				}
 				
 				// Second Priority - Exact match to any other value
@@ -274,7 +295,7 @@ public class RegistrationsResource
 							.addSort("_score", SortOrder.DESC)
 							.addSort("companyName", SortOrder.ASC);
 				}
-				if (fbBoolFilter != null) srb1.setFilter(fbBoolFilter);
+				if (fbBoolFilter != null) srb1.setPostFilter(fbBoolFilter);
 				
 				// Third Priority - Fuzzy match to certain fields
 				//QueryBuilder qb2 = QueryBuilders.fuzzyQuery("companyName", qValue);	// Works as a fuzzy search but only on 1 field
@@ -306,7 +327,7 @@ public class RegistrationsResource
 							.addSort("companyName", SortOrder.ASC);
 				}
 				if (fbBoolFilter != null) {
-					srb2.setFilter(fbBoolFilter);
+					srb2.setPostFilter(fbBoolFilter);
 				}
 
 				MultiSearchResponse sr = null;
@@ -526,7 +547,7 @@ public class RegistrationsResource
 		if (db != null)
 		{
 			if (!db.isAuthenticated())
-			{
+            {
 				throw new WebApplicationException(Status.FORBIDDEN);
 			}
 			
@@ -539,7 +560,7 @@ public class RegistrationsResource
 			 * Insert registration details into the database
 			 */
 			// Update Registration MetaData to include current time
-			reg.setMetaData(new MetaData(MetaData.getCurrentDateTime(), "userDetailAddedAtRegistration"));
+			reg.setMetaData(new MetaData(MetaData.getCurrentDateTime(), "userDetailAddedAtRegistration", reg.getMetaData().getRoute()));
 			
 			// Update Registration Location to include location, derived from postcode
 			if (reg.getPostcode() != null)
@@ -557,6 +578,50 @@ public class RegistrationsResource
 				tmpMD.setAnotherString("Non-UK Address Assumed");
 				reg.setMetaData(tmpMD);
 			}
+			
+			// If upper tier, create an initial Order to represent fees/charges the user has to pay
+			if (RegistrationTier.UPPER.equals(reg.getTier()))
+			{
+				FinanceDetails financeDetails = new FinanceDetails();
+				reg.setFinanceDetails(financeDetails);
+				Order order = new Order();
+				order.setOrderId(UUID.randomUUID().toString());
+				Date now = new Date();
+				//The total amount will be updated when the user confirms on the payment page
+				order.setTotalAmount(15400);
+				order.setCurrency("GBP");
+				order.setDescription("default order");
+				order.setOrderCode("NNN");
+				order.setPaymentMethod(Order.PaymentMethod.UNKNOWN);
+				order.setWorldPayStatus("NEW");
+				order.setDateCreated(now);
+				order.setDateLastUpdated(now);
+				
+				// Order Item dummy
+				OrderItem item = new OrderItem();
+				item.setAmount(0);
+				item.setCurrency("GBP");
+				item.setLastUpdated(now);
+				item.setDescription("default item");
+				item.setReference("");
+				List<OrderItem> orderItems = new ArrayList<OrderItem>();
+				orderItems.add(item);
+				order.setOrderItems(orderItems);
+				
+				List<Order> orders = new ArrayList<Order>();
+				orders.add(order);
+				reg.getFinanceDetails().setOrders(orders);
+			}
+
+            // If user has declared convictions or we have matched convictions
+            // we need to add a conviction sign off record
+            String declaredConvictions = reg.getDeclaredConvictions();
+            if (declaredConvictions != null && declaredConvictions.equalsIgnoreCase("yes")
+                    || RegistrationHelper.hasUnconfirmedConvictionMatches(reg)) {
+                List<ConvictionSignOff> signOffs = new ArrayList<ConvictionSignOff>();
+                signOffs.add(new ConvictionSignOff("no", null, null));
+                reg.setConviction_sign_offs(signOffs);
+            }
 			
 			// Update Registration to include sequential identifier
 			updateRegistrationIdentifier(reg, db);
@@ -639,7 +704,7 @@ public class RegistrationsResource
 		{
 			int sequentialNumber = (Integer) dbObj.get("seq");
 			// Set the formatted identifier in the registration document
-			reg.setRegIdentifier(getFormattedRegIdentifier(sequentialNumber, true, false));	
+			reg.setRegIdentifier(getFormattedRegIdentifier(sequentialNumber, reg.getTier()));
 		}
 		else
 		{
@@ -653,30 +718,12 @@ public class RegistrationsResource
 	 * Returns a formated unique string representing the registration identifier.
 	 * NOTE: THis is NOT the ID for the registration
 	 * @param sequentialNumber sequential integer of the registration counter
-	 * @param lowerTier boolean provide true if lower tier, false for upper tier format
-	 * @param padToLength boolean provide true to pad numeric format to max of Registration.REGID_LENGTH, or false to not pad value.
+	 * @param tier RegistrationTier enum for tier
 	 * @return String of the formatted registration, prefixed with Registration.REGID_PREFIX
 	 */
-	private String getFormattedRegIdentifier(int sequentialNumber, boolean lowerTier, boolean padToLength)
+	private String getFormattedRegIdentifier(int sequentialNumber, Registration.RegistrationTier tier)
 	{
-		String numberAsString = Integer.toString(sequentialNumber);
-		if (padToLength) 
-		{
-			while (numberAsString.length() < Registration.REGID_LENGTH)
-			{
-				numberAsString = "0" + numberAsString;
-			}
-		}
-		String prefix = Registration.REGID_PREFIX;
-		if (lowerTier) 
-		{
-			prefix = prefix + Registration.REGID_PREFIX_LOWER;
-		}
-		else
-		{
-			prefix = prefix + Registration.REGID_PREFIX_UPPER;
-		}
-		return prefix + numberAsString;
+        return Registration.REGID_PREFIX + tier.getPrefix() + Integer.toString(sequentialNumber);
 	}
 
 }

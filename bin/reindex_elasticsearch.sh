@@ -31,11 +31,11 @@ curl -X POST http://localhost:9091/tasks/indexer -d 'deleteAll'
 echo ""
 
 echo "Recreate the empty registrations index."
-curl -XPOST http://$WCRS_SERVICES_DB_HOST:9200/registrations
+curl -X POST http://$WCRS_SERVICES_DB_HOST:9200/registrations
 echo ""
 
 echo "Set a custom mapping for the registration object."
-curl -XPUT $WCRS_SERVICES_DB_HOST:9200/registrations/registration/_mapping -d '{ registration : { properties : { accessCode : {type:"string"}, accountEmail : {type:"string"}, address : {type:"string"}, administrativeArea : {type:"string"}, businessType : {type:"string"}, companyName : {type:"string"}, contactEmail : {type:"string"}, declaration : {type:"string"}, dependentLocality : {type:"string"}, easting : {type:"string"}, firstName : {type:"string"}, houseNumber : {type:"string"}, id : {type:"string"}, individualsType : {type:"string"}, lastName : {type:"string"}, localAuthorityUpdateDate : {type:"string"}, location : {type:"geo_point"}, metaData : { properties : { anotherString : {type:"string"}, dateActivated : {type:"string"}, dateRegistered : {type:"string"}, distance : {type:"string"}, lastModified : {type:"string"}, revokedReason : {type:"string"}, route : {type:"string"}, status : {type:"string"} }}, northing : {type:"string"}, otherTitle : {type:"string"}, phoneNumber : {type:"string"}, position : {type:"string"}, postcode : {type:"string"}, publicBodyType : {type:"string"}, publicBodyTypeOther : {type:"string"}, regIdentifier : {type:"string"}, royalMailUpdateDate : {type:"string"}, streetLine1 : {type:"string"}, streetLine2 : {type:"string"}, streetLine3 : {type:"string"}, streetLine4 : {type:"string"}, title : {type:"string"}, townCity : {type:"string"}, uprn : {type:"string"}}}}'
+curl -X PUT $WCRS_SERVICES_DB_HOST:9200/registrations/registration/_mapping -d '@registration_mapping.json'
 echo ""
 
 echo "Re-index the data from the database (without any parameters)"

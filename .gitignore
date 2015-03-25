@@ -13,6 +13,18 @@ target
 .settings
 .project
 
+# Intellij project files #
+.idea/
+*.iml
+*.iws
+
+# Mac
+.DS_Store
+
+# Maven
+log/
+target/
+
 # Ignore dependency reduced POM #
 dependency-reduced-pom.xml
 
@@ -24,3 +36,6 @@ run.sh
 runConfig/WasteCarrierService.launch
 
 .README.md.html
+
+bin/georg_snippets.txt
+Jenkins_Services_Env_Vars.sh

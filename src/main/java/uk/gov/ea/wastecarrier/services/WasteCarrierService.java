@@ -9,13 +9,12 @@ import uk.gov.ea.wastecarrier.services.elasticsearch.ElasticSearchManaged;
 import uk.gov.ea.wastecarrier.services.elasticsearch.ElasticSearchUtils;
 import uk.gov.ea.wastecarrier.services.health.ElasticSearchHealthCheck;
 import uk.gov.ea.wastecarrier.services.health.MongoHealthCheck;
-import uk.gov.ea.wastecarrier.services.health.TemplateHealthCheck;
 import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.MongoManaged;
+import uk.gov.ea.wastecarrier.services.resources.*;
+import uk.gov.ea.wastecarrier.services.tasks.DatabaseCleaner;
+import uk.gov.ea.wastecarrier.services.tasks.IRRenewalPopulator;
 import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationsMongoDao;
-import uk.gov.ea.wastecarrier.services.resources.RegistrationReadEditResource;
-import uk.gov.ea.wastecarrier.services.resources.RegistrationVersionResource;
-import uk.gov.ea.wastecarrier.services.resources.RegistrationsResource;
 import uk.gov.ea.wastecarrier.services.tasks.EnsureDatabaseIndexesTask;
 import uk.gov.ea.wastecarrier.services.tasks.Indexer;
 import uk.gov.ea.wastecarrier.services.tasks.LocationPopulator;
@@ -56,30 +55,44 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration> {
     @Override
     public void run(WasteCarrierConfiguration configuration,
                     Environment environment) {
-    	final String template = configuration.getTemplate();
-        final String defaultName = configuration.getDefaultName();
         final MessageQueueConfiguration mQConfig = configuration.getMessageQueueConfiguration();
         final DatabaseConfiguration dbConfig = configuration.getDatabase();
+        final DatabaseConfiguration userDbConfig = configuration.getUserDatabase();
         final ElasticSearchConfiguration esConfig = configuration.getElasticSearch();
         final String postcodeFilePath = configuration.getPostcodeFilePath();
+        final IRConfiguration irConfig = configuration.getIrenewals();
+        final SettingsConfiguration sConfig = configuration.getSettings();
         
         //Create a singleton instance of the ElasticSearch TransportClient. Client to be closed on shutdown.
         esClient = ElasticSearchUtils.getNewTransportClient(esConfig);
 
         // Add Create Resource
-        environment.addResource(new RegistrationsResource(template, defaultName, mQConfig, dbConfig, esConfig, esClient, postcodeFilePath));
+        environment.addResource(new RegistrationsResource(mQConfig, dbConfig, esConfig, esClient, postcodeFilePath));
         // Add Read Resource
-        environment.addResource(new RegistrationReadEditResource(template, defaultName, mQConfig, dbConfig, esConfig, esClient));
+        environment.addResource(new RegistrationReadEditResource(mQConfig, dbConfig, userDbConfig, esConfig, esClient, sConfig));
         // Add Version Resource
         environment.addResource(new RegistrationVersionResource());
+        
+        // Add Payment Resource, testing new URL for get payment details
+        environment.addResource(new NewPaymentResource());
+        environment.addResource(new PaymentResource(dbConfig, userDbConfig, configuration.getSettings(), esConfig));
+        // Add Order Resource
+        environment.addResource(new OrderResource(dbConfig));
+        environment.addResource(new OrdersResource(dbConfig, userDbConfig, configuration.getSettings(), esConfig));
+        
+        // Add Settings resource
+        environment.addResource(new SettingsResource(sConfig));
+
+        // Add query resource
+        environment.addResource(new QueryResource(dbConfig));
+        
+        // Add IR Renewals resource
+        environment.addResource(new IRRenewalResource(dbConfig));
         
         /**
          * Note: using environment.addProvider(new RegistrationCreateResource(template, defaultName, mQConfig));
          * Seems to perform a similar feature to addResources, need to research the difference?
          */
-        
-        // Add Service Heath checks
-        environment.addHealthCheck(new TemplateHealthCheck(template));
         
         // Add Database Heath checks
         DatabaseHelper dbHelper = new DatabaseHelper(dbConfig);
@@ -125,6 +138,13 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration> {
 		// Add Location Population functionality to create location indexes for all provided addresses of all data
         LocationPopulator locationPop = new LocationPopulator("location", dbConfig, postcodeFilePath);
 		environment.addTask(locationPop);
+		
+		IRRenewalPopulator irPop = new IRRenewalPopulator("ir-repopulate", dbConfig, irConfig);
+		environment.addTask(irPop);
+		
+		// Add Task for Database cleaner
+        DatabaseCleaner dbCleaner = new DatabaseCleaner("dbcleaner", dbConfig, esConfig, esClient);
+		environment.addTask(dbCleaner);
 		
 		// Add Heath Check to indexing Service
 		environment.addHealthCheck(

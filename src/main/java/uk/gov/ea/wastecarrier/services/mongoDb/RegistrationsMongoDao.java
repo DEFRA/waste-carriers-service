@@ -5,7 +5,12 @@ package uk.gov.ea.wastecarrier.services.mongoDb;
 
 import java.util.logging.Logger;
 
-import com.mongodb.BasicDBList;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response.Status;
+
+import net.vz.mongodb.jackson.JacksonDBCollection;
+import net.vz.mongodb.jackson.WriteResult;
+
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
@@ -16,10 +21,10 @@ import uk.gov.ea.wastecarrier.services.core.Registration;
 /**
  * 
  * Data Access Object for registrations in MongoDB.
- * @author gmueller
  *
  */
-public class RegistrationsMongoDao {
+public class RegistrationsMongoDao 
+{
 
 	/** logger for this class. */
 	private static Logger log = Logger.getLogger(RegistrationsMongoDao.class.getName());
@@ -43,6 +48,148 @@ public class RegistrationsMongoDao {
 	{
 		log.fine("Constructing DAO with databaseHelper.");
 		this.databaseHelper = databaseHelper;
+	}
+	
+	
+	/**
+	 * Insert the registration into the database
+	 * @param registration
+	 * @return the inserted registration
+	 */
+	public Registration insertRegistration(Registration registration)
+	{
+
+		log.info("Inserting registration into MongoDB");
+		Registration savedObject = null;
+
+		DB db = databaseHelper.getConnection();
+		if (db != null)
+		{
+			if (!db.isAuthenticated())
+			{
+				throw new WebApplicationException(Status.FORBIDDEN);
+			}
+			
+			// Create MONGOJACK connection to the database
+			JacksonDBCollection<Registration, String> registrations = JacksonDBCollection.wrap(
+					db.getCollection(Registration.COLLECTION_NAME), Registration.class, String.class);
+
+			// Insert registration information into database
+			WriteResult<Registration, String> result = registrations.insert(registration);
+
+			// Get unique ID out of response, and find updated record
+			String id = result.getSavedId();
+			savedObject = registrations.findOneById(id);
+
+			// Return saved object to user (returned as JSON)
+			return savedObject;
+		}
+		else
+		{
+			log.severe("Could not establish database connection to MongoDB! Check the database is running");
+			throw new WebApplicationException(Status.SERVICE_UNAVAILABLE);
+		}
+	
+	}
+	
+	/**
+	 * Return the registration with the given id
+	 * @param id
+	 * @return
+	 */
+	public Registration getRegistration(String id)
+	{
+		
+    	log.info("Retrieving registration  with id = " + id);
+    	
+    	// Use id to lookup record in database return registration details
+    	DB db = databaseHelper.getConnection();
+		if (db != null)
+		{	
+			if (!db.isAuthenticated())
+			{
+				log.severe("Get registration - Could not authenticate against MongoDB!");
+				throw new WebApplicationException(Status.FORBIDDEN);
+			}
+			
+			// Create MONGOJACK connection to the database
+			JacksonDBCollection<Registration, String> registrations = JacksonDBCollection.wrap(
+					db.getCollection(Registration.COLLECTION_NAME), Registration.class, String.class);
+			
+			try
+			{
+				Registration foundReg = registrations.findOneById(id);
+				return foundReg;
+			}
+			catch (IllegalArgumentException e)
+			{
+				log.warning("Caught exception: " + e.getMessage() + " - Cannot find Registration ID: " + id);
+				throw new WebApplicationException(Status.NOT_FOUND);
+			}
+		}
+		else
+		{
+			log.severe("Get registration - Could not obtain connection to MongoDB!");
+			throw new WebApplicationException(Status.SERVICE_UNAVAILABLE);
+		}
+	}
+	
+	/**
+	 * Return the registration with the given id
+	 * @param id
+	 * @return
+	 */
+	public Registration updateRegistration(Registration reg)
+	{
+		
+    	log.info("Updating registration  with id = " + reg.getId());
+    	
+    	// Use id to lookup record in database return registration details
+    	DB db = databaseHelper.getConnection();
+		if (db != null)
+		{	
+			if (!db.isAuthenticated())
+			{
+				log.severe("Update registration - Could not authenticate against MongoDB!");
+				throw new WebApplicationException(Status.FORBIDDEN);
+			}
+			
+			// Create MONGOJACK connection to the database
+			JacksonDBCollection<Registration, String> registrations = JacksonDBCollection.wrap(
+					db.getCollection(Registration.COLLECTION_NAME), Registration.class, String.class);
+			
+			// If object found
+			WriteResult<Registration, String> result = registrations.updateById(reg.getId(), reg);
+			log.fine("Found result: '" + result + "' " );
+			
+			if (!String.valueOf("").equals(result.getError()))
+			{
+				// did not error, so continue
+				try
+				{
+					// Make a second request for the updated full registration details to be returned
+					Registration savedObject = registrations.findOneById(reg.getId());
+					
+					return savedObject;
+				}
+				catch (IllegalArgumentException e)
+				{
+					log.warning("Caught exception: " + e.getMessage() + " - Cannot find Registration ID: " + reg.getId());
+					throw new WebApplicationException(Status.NOT_FOUND);
+				}
+			}
+			else
+			{
+				log.severe("Error while updating registration with ID " + reg.getId() + " in MongoDB. Result error:" + result.getError());
+				throw new WebApplicationException(Status.NOT_MODIFIED);
+			}
+			
+		}
+		else
+		{
+			log.severe("Update registration - Could not obtain connection to MongoDB!");
+			throw new WebApplicationException(Status.SERVICE_UNAVAILABLE);
+		}
 	}
 	
 	
