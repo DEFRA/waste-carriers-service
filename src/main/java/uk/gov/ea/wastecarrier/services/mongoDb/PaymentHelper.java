@@ -2,6 +2,7 @@ package uk.gov.ea.wastecarrier.services.mongoDb;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 import uk.gov.ea.wastecarrier.services.core.MetaData;
 import uk.gov.ea.wastecarrier.services.core.MetaData.RouteType;
@@ -13,6 +14,8 @@ import uk.gov.ea.wastecarrier.services.core.User;
 
 public class PaymentHelper
 {
+    public static final String IR_REGISTRATION_NO_PREFIX = "CB/";
+
     private Settings settings;
 
     public PaymentHelper(Settings settings)
@@ -102,7 +105,7 @@ public class PaymentHelper
         if (registration.getTier().equals(RegistrationTier.UPPER))
         {
             // Set expires on date
-            registration.setExpires_on(getExpiryDate());
+            registration.setExpires_on(getExpiryDate(registration));
         }
         return registration;
     }
@@ -125,30 +128,62 @@ public class PaymentHelper
     }
     
     /**
-     * Create an updated expired date based on the current time and the
+     * Create an updated expired date depending on registration type and the
      * settings provided
      * @return
      */
-    private Date getExpiryDate()
+    private Date getExpiryDate(Registration registration)
     {
-        // Set expires on date
-        Calendar cal = Calendar.getInstance();
         String[] regPeriodList = settings.getRegistrationPeriod().split(" ");
         int length = Integer.parseInt(regPeriodList[0]);
-        String type = regPeriodList[1];
-        if (type.equalsIgnoreCase("YEARS"))
+        Date expiryDate = null;
+
+        // Detect standard or IR renewal
+        if(isIRRenewal(registration))
         {
-            cal.add(Calendar.YEAR, length);
+            // Set expiry date to X years from current expiry date
+            Calendar newExpiryDate = new GregorianCalendar();
+
+            newExpiryDate.setTime(registration.getOriginalDateExpiry());
+            newExpiryDate.add(Calendar.YEAR, length);
+
+            expiryDate = newExpiryDate.getTime();
         }
-        else if (type.equalsIgnoreCase("MONTHS"))
+        else
         {
-            cal.add(Calendar.MONTH, length);
+            // Set expiry date to X years from now
+            Calendar cal = Calendar.getInstance();
+            String type = regPeriodList[1];
+            if (type.equalsIgnoreCase("YEARS")) {
+                cal.add(Calendar.YEAR, length);
+            } else if (type.equalsIgnoreCase("MONTHS")) {
+                cal.add(Calendar.MONTH, length);
+            } else if (type.equalsIgnoreCase("DAYS")) {
+                cal.add(Calendar.DAY_OF_MONTH, length);
+            }
+
+            expiryDate = cal.getTime();
         }
-        else if (type.equalsIgnoreCase("DAYS"))
-        {
-            cal.add(Calendar.DAY_OF_MONTH, length);
-        }
-        Date expiryDate = cal.getTime();
+
         return expiryDate;
+    }
+
+    public boolean isIRRenewal(Registration registration)
+    {
+        Boolean result = false;
+
+        if(registration.getOriginalRegistrationNumber() != null)
+        {
+            String regNo = registration.getOriginalRegistrationNumber().trim();
+
+            result = (regNo != null && isIRRegistrationType(regNo));
+        }
+
+        return result;
+    }
+
+    public boolean isIRRegistrationType(String regNo)
+    {
+        return regNo.startsWith(IR_REGISTRATION_NO_PREFIX);
     }
 }
