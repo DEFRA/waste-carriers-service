@@ -155,8 +155,6 @@ public class RegistrationSearch {
             copyCards.add("COPY_CARDS");
         }
         searchHelper.addOptionalQueryProperty(COPY_CARDS_MATCH, this.copyCards, queryProps);
-        log.info("\n\ncopyCards = " + this.copyCards.toString() + "\n\n");
-        log.info("\n\nqueryProps = " + queryProps.toString() + "\n\n");
 
 		return queryProps;
 	}
