@@ -153,8 +153,12 @@ public class RegistrationSearch {
                 copyCards.clear();
             }
             copyCards.add("COPY_CARDS");
+
         }
-        searchHelper.addOptionalQueryProperty(COPY_CARDS_MATCH, this.copyCards, queryProps);
+        //only perform the query for Copy cards if the None selection hasn't been made
+        if (!copyCards.contains("NONE")) {
+            searchHelper.addOptionalQueryProperty(COPY_CARDS_MATCH, this.copyCards, queryProps);
+        }
 
 		return queryProps;
 	}
