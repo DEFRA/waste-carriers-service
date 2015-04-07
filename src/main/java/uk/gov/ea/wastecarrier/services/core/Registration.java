@@ -271,7 +271,6 @@ public class Registration
 	 */
 	public Registration ()
 	{
-		log.info("Create empty registration");
 	}
 	
 	/**
