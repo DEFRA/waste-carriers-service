@@ -39,6 +39,7 @@ public class QueryResource {
             @QueryParam("status[]") Set<String> status,
             @QueryParam("businessType[]") Set<String> businessType,
             @QueryParam("tier[]") Set<String> tier,
+            @QueryParam("copyCards[]") Set<String> copyCards,
             @QueryParam("declaredConvictions") Optional<String> declaredConvictions,
             @QueryParam("convictionCheckMatch") Optional<String> convictionCheckMatch,
             @QueryParam("resultCount") Optional<Integer> resultCount
@@ -55,6 +56,7 @@ public class QueryResource {
             search.status = status;
             search.businessType = businessType;
             search.tier = tier;
+            search.copyCards = copyCards;
             search.declaredConvictions = declaredConvictions;
             search.convictionCheckMatch = convictionCheckMatch;
             search.resultCount = resultCount;
