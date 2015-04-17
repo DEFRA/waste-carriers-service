@@ -48,9 +48,6 @@ public class OrdersMongoDao
                 throw new WebApplicationException(Status.FORBIDDEN);
             }
             
-            // Generate order id
-            order.setOrderId(UUID.randomUUID().toString());
-            
             /*
              * Create MONGOJACK connection to the database
              */
@@ -63,11 +60,14 @@ public class OrdersMongoDao
              */
             
             Registration registration = registrations.findOneById(registrationId);
-            Order existingOrder = registration.getFinanceDetails().getOrderForOrderCode(order.getOrderCode());
-            if (existingOrder != null)
+            FinanceDetails financeDetails = registration.getFinanceDetails();
+            if (financeDetails != null)
             {
-                log.info("The registration already has a order for order code " + order.getOrderCode() + ". Not adding order again.");
-                return order;
+                if (financeDetails.getOrderForOrderCode(order.getOrderCode()) != null)
+                {
+                    log.info("The registration already has a order for order code " + order.getOrderCode() + ". Not adding order again.");
+                    return order;
+                }
             }
             
             /*
