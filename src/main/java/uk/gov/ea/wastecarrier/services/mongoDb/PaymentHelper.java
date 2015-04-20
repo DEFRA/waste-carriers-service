@@ -11,6 +11,7 @@ import uk.gov.ea.wastecarrier.services.core.Settings;
 import uk.gov.ea.wastecarrier.services.core.MetaData.RegistrationStatus;
 import uk.gov.ea.wastecarrier.services.core.Registration.RegistrationTier;
 import uk.gov.ea.wastecarrier.services.core.User;
+import uk.gov.ea.wastecarrier.services.core.FinanceDetails;
 
 public class PaymentHelper
 {
@@ -77,7 +78,7 @@ public class PaymentHelper
 
     public Boolean isBalanceValid(Registration registration)
     {
-        Boolean result;
+        Boolean result = false;
 
         if (registration.getTier().equals(RegistrationTier.LOWER))
         {
@@ -85,7 +86,11 @@ public class PaymentHelper
         }
         else
         {
-            result = registration.getFinanceDetails().getBalance() == 0;
+            FinanceDetails financeDetails = registration.getFinanceDetails();
+            if (financeDetails != null)
+            {
+                result = (financeDetails.getBalance() == 0);
+            }
         }
 
         return result;
