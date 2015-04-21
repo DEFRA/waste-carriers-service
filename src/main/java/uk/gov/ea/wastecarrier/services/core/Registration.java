@@ -715,6 +715,10 @@ public class Registration
         this.keyPeople = keyPeople;
     }
 
+	public List<Address> getAddresses() { return addresses; }
+
+	public void setAddresses(List<Address> addresses) { this.addresses = addresses; }
+
     public ConvictionSearchResult getConvictionSearchResult() {
         return convictionSearchResult;
     }
