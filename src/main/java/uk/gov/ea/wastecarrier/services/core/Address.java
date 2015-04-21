@@ -10,13 +10,13 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Address {
 
-    public enum type {
+    public enum addressType {
         REGISTERED,
         POSTAL
     }
 
     @JsonProperty
-    private type type;
+    private addressType addressType;
 
     @JsonProperty
     private String addressMode;
@@ -70,7 +70,7 @@ public class Address {
     }
 
     public Address(
-            type type,
+            addressType addressType,
             String addressMode,
             String houseNumber,
             String addressLine1,
@@ -87,7 +87,7 @@ public class Address {
             String administrativeArea,
             String localAuthorityUpdateDate,
             String royalMailUpdateDate) {
-        this.type = type;
+        this.addressType = addressType;
         this.addressMode = addressMode;
         this.houseNumber = houseNumber;
         this.addressLine1 = addressLine1;
@@ -107,12 +107,12 @@ public class Address {
 
     }
 
-    public Address.type getType() {
-        return type;
+    public Address.addressType getAddressType() {
+        return addressType;
     }
 
-    public void setType(Address.type type) {
-        this.type = type;
+    public void setAddressType(Address.addressType addressType) {
+        this.addressType = addressType;
     }
 
     public String getAddressMode() {
