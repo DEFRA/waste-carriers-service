@@ -77,7 +77,33 @@ public class Address {
             String addressLine2,
             String addressLine3,
             String addressLine4,
-            String townCity,) {
+            String townCity,
+            String postCode,
+            String country,
+            String easting,
+            String northing,
+            String dependentLocality,
+            String dependentThroughfare,
+            String administrativeArea,
+            String localAuthorityUpdateDate,
+            String royalMailUpdateDate) {
+        this.type = type;
+        this.addressMode = addressMode;
+        this.houseNumber = houseNumber;
+        this.addressLine1 = addressLine1;
+        this.addressLine2 = addressLine2;
+        this.addressLine3 = addressLine3;
+        this.addressLine4 = addressLine4;
+        this.townCity = townCity;
+        this.postcode = postCode;
+        this.country = country;
+        this.easting = easting;
+        this.northing = northing;
+        this.dependentLocality = dependentLocality;
+        this.dependentThroughfare = dependentThroughfare;
+        this.administrativeArea = administrativeArea;
+        this.localAuthorityUpdateDate = localAuthorityUpdateDate;
+        this.royalMailUpdateDate = royalMailUpdateDate;
 
     }
 
