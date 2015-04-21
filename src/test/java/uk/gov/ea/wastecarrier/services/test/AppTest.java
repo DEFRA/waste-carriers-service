@@ -4,6 +4,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import org.joda.time.DateTime;
+import uk.gov.ea.wastecarrier.services.core.Address;
 import uk.gov.ea.wastecarrier.services.core.KeyPerson;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 
@@ -65,10 +66,14 @@ public class AppTest extends TestCase
 		reg.setConstructionWaste("yes");
 		reg.setCompanyName("Acme Waste");
 		reg.setCompanyNo("12345678");
-		reg.setHouseNumber("1");
-		reg.setStreetLine1("Deanery Road");
-		reg.setStreetLine2("Bristol");
-		reg.setPostcode("BS1 5AH");
+		ArrayList<Address> addresses = new ArrayList<Address>();
+		Address regAddress = new Address();
+		regAddress.setAddressType(Address.addressType.REGISTERED);
+		regAddress.setHouseNumber("1");
+		regAddress.setAddressLine1("Deanery Road");
+		regAddress.setAddressLine2("Bristol");
+		regAddress.setPostcode("BS1 5AH");
+		reg.setAddresses(addresses);
 		reg.setFirstName("Jane");
 		reg.setLastName("Smith");
 		reg.setPosition("Owner");

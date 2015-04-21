@@ -478,7 +478,7 @@ public class RegistrationsResource
 	 */
 	private Query[] createConditionalSearchParams(Map<String, Optional<String>> paramMap)
 	{
-		log.fine("Create conditional search paramters: " + paramMap.keySet().size() );
+		log.fine("Create conditional search paramters: " + paramMap.keySet().size());
 		ArrayList<Query> newQueryList = new ArrayList<Query>();
 		
 		// Check if parameter exists and if so create a Database Query
@@ -541,7 +541,7 @@ public class RegistrationsResource
 			String regPostCode = null;
 			for (Iterator<Address> address = reg.getAddresses().iterator(); address.hasNext();) {
 				Address thisAddress = address.next();
-				if (thisAddress.getAddressType().equals("REGISTERED")) {
+				if (thisAddress.getAddressType().equals(Address.addressType.REGISTERED)) {
 					regPostCode = thisAddress.getPostcode();
 				}
 			}

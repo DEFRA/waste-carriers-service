@@ -3,22 +3,18 @@
  */
 package uk.gov.ea.wastecarrier.services.mongo;
 
-import java.util.ArrayList;
-import java.util.Date;
-
+import junit.framework.TestCase;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
-import uk.gov.ea.wastecarrier.services.core.FinanceDetails;
-import uk.gov.ea.wastecarrier.services.core.MetaData;
+import uk.gov.ea.wastecarrier.services.core.*;
 import uk.gov.ea.wastecarrier.services.core.MetaData.RegistrationStatus;
 import uk.gov.ea.wastecarrier.services.core.MetaData.RouteType;
-import uk.gov.ea.wastecarrier.services.core.Order;
-import uk.gov.ea.wastecarrier.services.core.Payment;
-import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.OrdersMongoDao;
 import uk.gov.ea.wastecarrier.services.mongoDb.PaymentsMongoDao;
 import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationsMongoDao;
-import junit.framework.TestCase;
+
+import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Tests (involving the MongoDB database) for the Registrations DAO.
@@ -150,10 +146,14 @@ public class RegistrationsMongoDaoTest extends TestCase {
 		reg.setIsMainService("yes");
 		reg.setOnlyAMF("no");
 		reg.setCompanyName("Upper Waste Carriers");
-		reg.setHouseNumber("123");
-		reg.setStreetLine1("Upper Street");
-		reg.setTownCity("Bristol");
-		reg.setPostcode("BS1 5AH");
+		ArrayList<Address> addresses = new ArrayList<Address>();
+		Address regAddress = new Address();
+		regAddress.setAddressType(Address.addressType.REGISTERED);
+		regAddress.setHouseNumber("123");
+		regAddress.setAddressLine1("Upper Street");
+		regAddress.setTownCity("Bristol");
+		regAddress.setPostcode("BS1 5AH");
+		reg.setAddresses(addresses);
 		reg.setFirstName("Joe");
 		reg.setLastName("Bloggs");
 		reg.setPosition("Chief Waster");

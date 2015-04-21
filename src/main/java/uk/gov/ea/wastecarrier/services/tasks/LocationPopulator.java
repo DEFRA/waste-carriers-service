@@ -1,23 +1,22 @@
 package uk.gov.ea.wastecarrier.services.tasks;
 
-import java.io.PrintWriter;
-import java.util.logging.Logger;
-
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response.Status;
-
+import com.google.common.collect.ImmutableMultimap;
+import com.mongodb.DB;
+import com.yammer.dropwizard.tasks.Task;
 import net.vz.mongodb.jackson.DBCursor;
 import net.vz.mongodb.jackson.JacksonDBCollection;
 import net.vz.mongodb.jackson.WriteResult;
-
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
+import uk.gov.ea.wastecarrier.services.core.Address;
 import uk.gov.ea.wastecarrier.services.core.Location;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
 
-import com.google.common.collect.ImmutableMultimap;
-import com.mongodb.DB;
-import com.yammer.dropwizard.tasks.Task;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response.Status;
+import java.io.PrintWriter;
+import java.util.Iterator;
+import java.util.logging.Logger;
 
 /**
  * The Location Populator updates the records in the mongoDB database with XY Coordinates based on the 
@@ -79,7 +78,14 @@ public class LocationPopulator extends Task
 			for (Registration r : dbcur)
 			{
 				// Get XY Coordinates from postcode
-				Double[] xyCoords = pr.getXYCoords(r.getPostcode());
+				String postCode = null;
+				for (Iterator<Address> address = r.getAddresses().iterator(); address.hasNext();) {
+					Address thisAddress = address.next();
+					if (thisAddress.getAddressType().equals(Address.addressType.REGISTERED)) {
+						postCode = thisAddress.getPostcode();
+					}
+				}
+				Double[] xyCoords = pr.getXYCoords(postCode);
 				
 				// Update location
 				Location l = r.getLocation();
