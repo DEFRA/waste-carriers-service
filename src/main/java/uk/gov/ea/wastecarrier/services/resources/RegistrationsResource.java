@@ -538,22 +538,23 @@ public class RegistrationsResource
 			reg.setMetaData(new MetaData(MetaData.getCurrentDateTime(), "userDetailAddedAtRegistration", reg.getMetaData().getRoute()));
 
 			// Update Registration Location to include location, derived from postcode
-			String regPostCode = null;
+			Address regAddress = null;
 			for (Iterator<Address> address = reg.getAddresses().iterator(); address.hasNext();) {
 				Address thisAddress = address.next();
 				if (thisAddress.getAddressType().equals(Address.addressType.REGISTERED)) {
-					regPostCode = thisAddress.getPostcode();
+					regAddress = thisAddress;
+					break;
 				}
 			}
-			if (regPostCode != null)
+			if (regAddress != null)
 			{
-				Double[] xyCoords = postcodeRegistry.getXYCoords(regPostCode);
-				reg.setLocation( new Location( xyCoords[0], xyCoords[1]));
+				Double[] xyCoords = postcodeRegistry.getXYCoords(regAddress.getPostcode());
+				regAddress.setLocation( new Location( xyCoords[0], xyCoords[1], null, null));
 			}
 			else
 			{
 				log.warning("Non-UK Address assumed as Postcode could not be found in the registration, Using default location of X:1, Y:1");
-				reg.setLocation( new Location(1, 1));
+				regAddress.setLocation( new Location(1, 1, null, null));
 				
 				// Update MetaData to include a message to state location information set to default
 				MetaData tmpMD = reg.getMetaData();

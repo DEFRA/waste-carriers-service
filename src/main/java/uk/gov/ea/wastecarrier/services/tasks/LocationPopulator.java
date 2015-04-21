@@ -83,6 +83,7 @@ public class LocationPopulator extends Task
 					Address thisAddress = address.next();
 					if (thisAddress.getAddressType().equals(Address.addressType.REGISTERED)) {
 						postCode = thisAddress.getPostcode();
+
 					}
 				}
 				Double[] xyCoords = pr.getXYCoords(postCode);

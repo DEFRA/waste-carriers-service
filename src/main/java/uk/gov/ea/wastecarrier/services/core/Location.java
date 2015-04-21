@@ -1,5 +1,7 @@
 package uk.gov.ea.wastecarrier.services.core;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Location represents the geo_point location object used for GEO location searching in elastic search.
  * It contains a individual latitude and longitude values to represent the XY coordinate location of the site
@@ -9,10 +11,18 @@ package uk.gov.ea.wastecarrier.services.core;
  * 
  */
 public class Location {
-	
+
+	@JsonProperty("lat")
     private double lat;
-	
+
+	@JsonProperty("lon")
     private double lon;
+
+	@JsonProperty("easting")
+	private String easting;
+
+	@JsonProperty("northing")
+	private String northing;
 	
 	/**
 	 * This empty default constructor is needed for JSON to be happy. The alternative is add
@@ -22,10 +32,12 @@ public class Location {
 	{
 	}
 	
-	public Location(double lat, double lon)
+	public Location(double lat, double lon, String easting, String northing)
 	{
 		this.lat = lat;
 		this.lon = lon;
+		this.easting = easting;
+		this.northing = northing;
 	}
 
     public double getLon() {
@@ -35,7 +47,6 @@ public class Location {
     public double getLat() {
         return lat;
     }
-
 	
 	/**
 	 * @param lon the lon to set
@@ -51,6 +62,22 @@ public class Location {
 	public void setLat(double lat)
 	{
 		this.lat = lat;
+	}
+
+	public String getEasting() {
+		return easting;
+	}
+
+	public void setEasting(String easting) {
+		this.easting = easting;
+	}
+
+	public String getNorthing() {
+		return northing;
+	}
+
+	public void setNorthing(String northing) {
+		this.northing = northing;
 	}
 
 }

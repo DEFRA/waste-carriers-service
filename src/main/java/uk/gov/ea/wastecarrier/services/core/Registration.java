@@ -107,12 +107,6 @@ public class Registration
 	private String companyNo;
 
 	
-	/**
-	 * TODO: Determine if still need address added from rails?
-	 */
-	@JsonProperty
-	private String address;
-
 	@JsonProperty
 	private String uprn;
 
@@ -323,14 +317,7 @@ public class Registration
 		return this.companyNo;
 	}
 	
-	/**
-	 * @return the address
-	 */
-	public String getAddress()
-	{
-		return address;
-	}
-	
+
 	/**
 	 * @return the uprn
 	 */
@@ -554,14 +541,6 @@ public class Registration
 	
 	public void setCompanyNo(String companyNo) {
 		this.companyNo = companyNo;
-	}
-	
-	/**
-	 * @param address the address to set
-	 */
-	public void setAddress(String address)
-	{
-		this.address = address;
 	}
 	
 	/**
@@ -813,7 +792,6 @@ public class Registration
                 && Objects.equals(this.publicBodyType, other.publicBodyType)
                 && Objects.equals(this.publicBodyTypeOther, other.publicBodyTypeOther)
                 && Objects.equals(this.companyNo, other.companyNo)
-                && Objects.equals(this.address, other.address)
                 && Objects.equals(this.uprn, other.uprn)
                 && Objects.equals(this.title, other.title)
                 && Objects.equals(this.otherTitle, other.otherTitle)
@@ -838,7 +816,7 @@ public class Registration
 	public int hashCode()
 	{
         return Objects.hash(tier, registrationType, businessType, otherBusinesses, isMainService, constructionWaste,
-                onlyAMF, companyName, individualsType, publicBodyType, publicBodyTypeOther, companyNo, address, uprn,
+                onlyAMF, companyName, individualsType, publicBodyType, publicBodyTypeOther, companyNo, uprn,
                 title, otherTitle, firstName, lastName, position, phoneNumber, contactEmail, totalFee, registrationFee,
                 copyCardFee, copyCards, accountEmail, declaredConvictions, declaration, expires_on, originalRegistrationNumber
             );

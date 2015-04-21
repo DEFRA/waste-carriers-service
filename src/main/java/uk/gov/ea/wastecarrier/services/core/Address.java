@@ -15,55 +15,53 @@ public class Address {
         POSTAL
     }
 
-    @JsonProperty
+    @JsonProperty("address_type")
     private addressType addressType;
 
-    @JsonProperty
+    @JsonProperty("address_mode")
     private String addressMode;
 
-    @JsonProperty
+    @JsonProperty("house_number")
     private String houseNumber;
 
-    @JsonProperty
+    @JsonProperty("address_line_1")
     private String addressLine1;
 
-    @JsonProperty
+    @JsonProperty("address_line_2")
     private String addressLine2;
 
-    @JsonProperty
+    @JsonProperty("address_line_3")
     private String addressLine3;
 
-    @JsonProperty
+    @JsonProperty("address_line_4")
     private String addressLine4;
 
-    @JsonProperty
+    @JsonProperty("town_city")
     private String townCity;
 
-    @JsonProperty
+    @JsonProperty("post_code")
     private String postcode;
-    @JsonProperty
+
+    @JsonProperty("country")
     private String country;
 
-    @JsonProperty
-    private String easting;
-
-    @JsonProperty
-    private String northing;
-
-    @JsonProperty
+    @JsonProperty("dependent_locality")
     private String dependentLocality;
 
-    @JsonProperty
+    @JsonProperty("dependent_throughfare")
     private String dependentThroughfare;
 
-    @JsonProperty
+    @JsonProperty("administrative_area")
     private String administrativeArea;
 
-    @JsonProperty
+    @JsonProperty("local_authority_update_date")
     private String localAuthorityUpdateDate;
 
-    @JsonProperty
+    @JsonProperty("royal_mail_update_date")
     private String royalMailUpdateDate;
+
+    @JsonProperty("location")
+    private Location location;
 
     public Address() {
 
@@ -80,13 +78,12 @@ public class Address {
             String townCity,
             String postCode,
             String country,
-            String easting,
-            String northing,
             String dependentLocality,
             String dependentThroughfare,
             String administrativeArea,
             String localAuthorityUpdateDate,
-            String royalMailUpdateDate) {
+            String royalMailUpdateDate,
+            Location location) {
         this.addressType = addressType;
         this.addressMode = addressMode;
         this.houseNumber = houseNumber;
@@ -97,14 +94,12 @@ public class Address {
         this.townCity = townCity;
         this.postcode = postCode;
         this.country = country;
-        this.easting = easting;
-        this.northing = northing;
         this.dependentLocality = dependentLocality;
         this.dependentThroughfare = dependentThroughfare;
         this.administrativeArea = administrativeArea;
         this.localAuthorityUpdateDate = localAuthorityUpdateDate;
         this.royalMailUpdateDate = royalMailUpdateDate;
-
+        this.location = location;
     }
 
     public Address.addressType getAddressType() {
@@ -187,22 +182,6 @@ public class Address {
         this.country = country;
     }
 
-    public String getEasting() {
-        return easting;
-    }
-
-    public void setEasting(String easting) {
-        this.easting = easting;
-    }
-
-    public String getNorthing() {
-        return northing;
-    }
-
-    public void setNorthing(String northing) {
-        this.northing = northing;
-    }
-
     public String getDependentLocality() {
         return dependentLocality;
     }
@@ -241,5 +220,13 @@ public class Address {
 
     public void setRoyalMailUpdateDate(String royalMailUpdateDate) {
         this.royalMailUpdateDate = royalMailUpdateDate;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
     }
 }
