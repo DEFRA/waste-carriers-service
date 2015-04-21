@@ -1,37 +1,13 @@
 package uk.gov.ea.wastecarrier.services.resources;
 
-import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
-import uk.gov.ea.wastecarrier.services.ElasticSearchConfiguration;
-import uk.gov.ea.wastecarrier.services.MessageQueueConfiguration;
-import uk.gov.ea.wastecarrier.services.core.*;
-import uk.gov.ea.wastecarrier.services.core.Registration.RegistrationTier;
-import uk.gov.ea.wastecarrier.services.elasticsearch.ElasticSearchUtils;
-import uk.gov.ea.wastecarrier.services.mongoDb.AccountHelper;
-import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
-import uk.gov.ea.wastecarrier.services.mongoDb.SearchHelper;
-import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationHelper;
-import uk.gov.ea.wastecarrier.services.tasks.Indexer;
-import uk.gov.ea.wastecarrier.services.tasks.PostcodeRegistry;
-
 import com.google.common.base.Optional;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
-import com.mongodb.MongoException;
+import com.mongodb.*;
 import com.yammer.metrics.annotation.Timed;
-
-import javax.validation.Valid;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
-
+import net.vz.mongodb.jackson.DBCursor;
+import net.vz.mongodb.jackson.DBQuery;
+import net.vz.mongodb.jackson.DBQuery.Query;
+import net.vz.mongodb.jackson.JacksonDBCollection;
+import net.vz.mongodb.jackson.WriteResult;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -44,32 +20,31 @@ import org.elasticsearch.client.transport.NoNodeAvailableException;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.geo.GeoDistance;
 import org.elasticsearch.common.unit.DistanceUnit;
-import org.elasticsearch.index.query.BoolFilterBuilder;
-import org.elasticsearch.index.query.FilterBuilders;
-import org.elasticsearch.index.query.GeoDistanceFilterBuilder;
+import org.elasticsearch.index.query.*;
 import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.TermFilterBuilder;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.sort.SortOrder;
 import org.elasticsearch.search.sort.GeoDistanceSortBuilder;
+import org.elasticsearch.search.sort.SortOrder;
 import org.mongojack.DBSort;
+import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
+import uk.gov.ea.wastecarrier.services.ElasticSearchConfiguration;
+import uk.gov.ea.wastecarrier.services.MessageQueueConfiguration;
+import uk.gov.ea.wastecarrier.services.core.*;
+import uk.gov.ea.wastecarrier.services.core.Registration.RegistrationTier;
+import uk.gov.ea.wastecarrier.services.elasticsearch.ElasticSearchUtils;
+import uk.gov.ea.wastecarrier.services.mongoDb.AccountHelper;
+import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
+import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationHelper;
+import uk.gov.ea.wastecarrier.services.mongoDb.SearchHelper;
+import uk.gov.ea.wastecarrier.services.tasks.Indexer;
+import uk.gov.ea.wastecarrier.services.tasks.PostcodeRegistry;
 
-import net.vz.mongodb.jackson.DBCursor;
-import net.vz.mongodb.jackson.DBQuery;
-import net.vz.mongodb.jackson.DBQuery.Query;
-import net.vz.mongodb.jackson.JacksonDBCollection;
-import net.vz.mongodb.jackson.WriteResult;
-
+import javax.validation.Valid;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response.Status;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
@@ -561,11 +536,18 @@ public class RegistrationsResource
 			 */
 			// Update Registration MetaData to include current time
 			reg.setMetaData(new MetaData(MetaData.getCurrentDateTime(), "userDetailAddedAtRegistration", reg.getMetaData().getRoute()));
-			
+
 			// Update Registration Location to include location, derived from postcode
-			if (reg.getPostcode() != null)
+			String regPostCode = null;
+			for (Iterator<Address> address = reg.getAddresses().iterator(); address.hasNext();) {
+				Address thisAddress = address.next();
+				if (thisAddress.getAddressType().equals("REGISTERED")) {
+					regPostCode = thisAddress.getPostcode();
+				}
+			}
+			if (regPostCode != null)
 			{
-				Double[] xyCoords = postcodeRegistry.getXYCoords(reg.getPostcode());
+				Double[] xyCoords = postcodeRegistry.getXYCoords(regPostCode);
 				reg.setLocation( new Location( xyCoords[0], xyCoords[1]));
 			}
 			else
