@@ -48,8 +48,8 @@ public class Address {
     @JsonProperty("dependent_locality")
     private String dependentLocality;
 
-    @JsonProperty("dependent_throughfare")
-    private String dependentThroughfare;
+    @JsonProperty("dependent_thoroughfare")
+    private String dependentThoroughfare;
 
     @JsonProperty("administrative_area")
     private String administrativeArea;
@@ -79,7 +79,7 @@ public class Address {
             String postCode,
             String country,
             String dependentLocality,
-            String dependentThroughfare,
+            String dependentThoroughfare,
             String administrativeArea,
             String localAuthorityUpdateDate,
             String royalMailUpdateDate,
@@ -95,7 +95,7 @@ public class Address {
         this.postcode = postCode;
         this.country = country;
         this.dependentLocality = dependentLocality;
-        this.dependentThroughfare = dependentThroughfare;
+        this.dependentThoroughfare = dependentThoroughfare;
         this.administrativeArea = administrativeArea;
         this.localAuthorityUpdateDate = localAuthorityUpdateDate;
         this.royalMailUpdateDate = royalMailUpdateDate;
@@ -190,12 +190,12 @@ public class Address {
         this.dependentLocality = dependentLocality;
     }
 
-    public String getDependentThroughfare() {
-        return dependentThroughfare;
+    public String getDependentThoroughfare() {
+        return dependentThoroughfare;
     }
 
-    public void setDependentThroughfare(String dependentThroughfare) {
-        this.dependentThroughfare = dependentThroughfare;
+    public void setDependentThoroughfare(String dependentThoroughfare) {
+        this.dependentThoroughfare = dependentThoroughfare;
     }
 
     public String getAdministrativeArea() {

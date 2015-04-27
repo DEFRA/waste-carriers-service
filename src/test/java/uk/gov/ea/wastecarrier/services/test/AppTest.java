@@ -73,6 +73,7 @@ public class AppTest extends TestCase
 		regAddress.setAddressLine1("Deanery Road");
 		regAddress.setAddressLine2("Bristol");
 		regAddress.setPostcode("BS1 5AH");
+		addresses.add(regAddress);
 		reg.setAddresses(addresses);
 		reg.setFirstName("Jane");
 		reg.setLastName("Smith");
