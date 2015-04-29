@@ -579,6 +579,40 @@ public class RegistrationsResource
                 reg.setMetaData(tmpMD);
             }
             
+            // If upper tier, create an initial Order to represent fees/charges the user has to pay
+            if (RegistrationTier.UPPER.equals(reg.getTier()))
+            {
+                FinanceDetails financeDetails = new FinanceDetails();
+                reg.setFinanceDetails(financeDetails);
+                Order order = new Order();
+                order.setOrderId(UUID.randomUUID().toString());
+                Date now = new Date();
+                //The total amount will be updated when the user confirms on the payment page
+                order.setTotalAmount(15400);
+                order.setCurrency("GBP");
+                order.setDescription("default order");
+                order.setOrderCode("NNN");
+                order.setPaymentMethod(Order.PaymentMethod.UNKNOWN);
+                order.setWorldPayStatus("NEW");
+                order.setDateCreated(now);
+                order.setDateLastUpdated(now);
+                
+                // Order Item dummy
+                OrderItem item = new OrderItem();
+                item.setAmount(0);
+                item.setCurrency("GBP");
+                item.setLastUpdated(now);
+                item.setDescription("default item");
+                item.setReference("");
+                List<OrderItem> orderItems = new ArrayList<OrderItem>();
+                orderItems.add(item);
+                order.setOrderItems(orderItems);
+                
+                List<Order> orders = new ArrayList<Order>();
+                orders.add(order);
+                reg.getFinanceDetails().setOrders(orders);
+            }
+
             // If user has declared convictions or we have matched convictions
             // we need to add a conviction sign off record
             String declaredConvictions = reg.getDeclaredConvictions();
@@ -611,7 +645,6 @@ public class RegistrationsResource
             log.info("About to index the new registration in ElasticSearch. ID = " + savedObject.getId());
             Indexer.indexRegistration(elasticSearch, savedObject);
             log.info("Returned from indexing.");
-
             // Return saved object to user (returned as JSON)
             return savedObject;
         }
