@@ -10,6 +10,7 @@ import uk.gov.ea.wastecarrier.services.mongoDb.AccountHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.SearchHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationHelper;
+import uk.gov.ea.wastecarrier.services.mongoDb.PaymentHelper;
 import uk.gov.ea.wastecarrier.services.tasks.Indexer;
 import uk.gov.ea.wastecarrier.services.tasks.PostcodeRegistry;
 
@@ -579,6 +580,58 @@ public class RegistrationsResource
                 reg.setMetaData(tmpMD);
             }
             
+            // Update Registration to include sequential identifier
+            updateRegistrationIdentifier(reg, db);
+            
+            // If upper tier, create an initial Order to represent fees/charges the user has to pay
+            if (RegistrationTier.UPPER.equals(reg.getTier()))
+            {
+                Date ir_expiry = new Date();
+                ir_expiry.setHours(23);
+                ir_expiry.setMinutes(59);
+                ir_expiry.setSeconds(59);
+                
+                boolean isIRRenewal = (
+                    PaymentHelper.isIRRenewal(reg) &&
+                    (reg.getOriginalDateExpiry() != null) &&
+                    (reg.getOriginalDateExpiry().after(ir_expiry))
+                );
+                
+                FinanceDetails financeDetails = new FinanceDetails();
+                reg.setFinanceDetails(financeDetails);
+                Order order = new Order();
+                order.setOrderId(UUID.randomUUID().toString());
+                Date now = new Date();
+                
+                // Details will be updated when the user proceeds past the order page.
+                order.setCurrency("GBP");
+                order.setDescription(isIRRenewal ? "Waste Carrier Registration IR-renewal (drop-off)" : "New Waste Carrier Registration (drop-off)");
+                order.setOrderCode(String.valueOf(now.getTime() / 1000L));
+                order.setPaymentMethod(Order.PaymentMethod.UNKNOWN);
+                order.setDateCreated(now);
+                order.setDateLastUpdated(now);
+                
+                // Create order item for registration.
+                OrderItem item = new OrderItem();
+                item.setAmount(isIRRenewal ? 10500 : 15400);
+                item.setCurrency("GBP");
+                item.setDescription(isIRRenewal ? "Renewal of Registration (drop-off)" : "Initial Registration (drop-off)");
+                item.setReference("Reg: " + reg.getRegIdentifier());
+                item.setType(isIRRenewal ? OrderItem.OrderItemType.RENEW : OrderItem.OrderItemType.NEW);
+                
+                order.setTotalAmount(item.getAmount());
+                
+                // Add registraiton fee to order.
+                List<OrderItem> orderItems = new ArrayList<OrderItem>();
+                orderItems.add(item);
+                order.setOrderItems(orderItems);
+                
+                // Add order to registration.
+                List<Order> orders = new ArrayList<Order>();
+                orders.add(order);
+                reg.getFinanceDetails().setOrders(orders);
+            }
+
             // If user has declared convictions or we have matched convictions
             // we need to add a conviction sign off record
             String declaredConvictions = reg.getDeclaredConvictions();
@@ -588,9 +641,6 @@ public class RegistrationsResource
                 signOffs.add(new ConvictionSignOff("no", null, null));
                 reg.setConviction_sign_offs(signOffs);
             }
-            
-            // Update Registration to include sequential identifier
-            updateRegistrationIdentifier(reg, db);
 
             // Create MONGOJACK connection to the database
             JacksonDBCollection<Registration, String> registrations = JacksonDBCollection.wrap(
@@ -611,7 +661,6 @@ public class RegistrationsResource
             log.info("About to index the new registration in ElasticSearch. ID = " + savedObject.getId());
             Indexer.indexRegistration(elasticSearch, savedObject);
             log.info("Returned from indexing.");
-
             // Return saved object to user (returned as JSON)
             return savedObject;
         }

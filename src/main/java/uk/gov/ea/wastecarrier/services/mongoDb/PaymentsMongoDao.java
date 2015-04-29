@@ -65,15 +65,11 @@ public class PaymentsMongoDao
                 db.getCollection(Registration.COLLECTION_NAME), Registration.class, String.class);
         
         Registration registration = registrations.findOneById(registrationId);
-        FinanceDetails financeDetails = registration.getFinanceDetails();
-        if (financeDetails != null)
+        Payment existingPayment = registration.getFinanceDetails().getPaymentForOrderCode(payment.getOrderKey());
+        if (existingPayment != null)
         {
-            Payment existingPayment = financeDetails.getPaymentForOrderCode(payment.getOrderKey());
-            if (existingPayment != null)
-            {
-                log.info("The registration already has a payment for order code " + payment.getOrderKey() + ". Not adding payment again.");
-                return false;
-            }
+            log.info("The registration already has a payment for order code " + payment.getOrderKey() + ". Not adding payment again.");
+            return false;
         }
         return true;
     }
