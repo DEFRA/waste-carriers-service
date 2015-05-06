@@ -675,8 +675,6 @@ public class Registration
 	{
 		this.metaData = metaData;
 	}
-	
-
 
 	/**
 	 * @param location the location to set

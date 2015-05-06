@@ -63,6 +63,12 @@ public class Address {
     @JsonProperty("location")
     private Location location;
 
+    @JsonProperty("first_name")
+    private String firstName;
+
+    @JsonProperty("last_name")
+    private String lastName;
+
     public Address() {
 
     }
@@ -83,7 +89,9 @@ public class Address {
             String administrativeArea,
             String localAuthorityUpdateDate,
             String royalMailUpdateDate,
-            Location location) {
+            Location location,
+            String firstName,
+            String lastName) {
         this.addressType = addressType;
         this.addressMode = addressMode;
         this.houseNumber = houseNumber;
@@ -100,6 +108,8 @@ public class Address {
         this.localAuthorityUpdateDate = localAuthorityUpdateDate;
         this.royalMailUpdateDate = royalMailUpdateDate;
         this.location = location;
+        this.firstName = firstName;
+        this.lastName = lastName;
     }
 
     public Address.addressType getAddressType() {
@@ -228,5 +238,21 @@ public class Address {
 
     public void setLocation(Location location) {
         this.location = location;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 }
