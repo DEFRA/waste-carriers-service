@@ -68,6 +68,7 @@ public class AppTest extends TestCase
 		reg.setCompanyNo("12345678");
 		ArrayList<Address> addresses = new ArrayList<Address>();
 		Address regAddress = new Address();
+		regAddress.setUprn("340116");
 		regAddress.setAddressType(Address.addressType.REGISTERED);
 		regAddress.setHouseNumber("1");
 		regAddress.setAddressLine1("Deanery Road");

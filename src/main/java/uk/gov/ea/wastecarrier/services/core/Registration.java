@@ -106,10 +106,6 @@ public class Registration
 	@JsonProperty("company_no")
 	private String companyNo;
 
-	
-	@JsonProperty
-	private String uprn;
-
 	/* 
 	 * These are the Contact Details
 	 */
@@ -315,15 +311,6 @@ public class Registration
 	
 	public String getCompanyNo() {
 		return this.companyNo;
-	}
-	
-
-	/**
-	 * @return the uprn
-	 */
-	public String getUprn()
-	{
-		return uprn;
 	}
 
 	/**
@@ -541,14 +528,6 @@ public class Registration
 	
 	public void setCompanyNo(String companyNo) {
 		this.companyNo = companyNo;
-	}
-	
-	/**
-	 * @param uprn the uprn to set
-	 */
-	public void setUprn(String uprn)
-	{
-		this.uprn = uprn;
 	}
 
 	/**
@@ -792,7 +771,6 @@ public class Registration
                 && Objects.equals(this.publicBodyType, other.publicBodyType)
                 && Objects.equals(this.publicBodyTypeOther, other.publicBodyTypeOther)
                 && Objects.equals(this.companyNo, other.companyNo)
-                && Objects.equals(this.uprn, other.uprn)
                 && Objects.equals(this.title, other.title)
                 && Objects.equals(this.otherTitle, other.otherTitle)
                 && Objects.equals(this.firstName, other.firstName)
@@ -816,7 +794,7 @@ public class Registration
 	public int hashCode()
 	{
         return Objects.hash(tier, registrationType, businessType, otherBusinesses, isMainService, constructionWaste,
-                onlyAMF, companyName, individualsType, publicBodyType, publicBodyTypeOther, companyNo, uprn,
+                onlyAMF, companyName, individualsType, publicBodyType, publicBodyTypeOther, companyNo,
                 title, otherTitle, firstName, lastName, position, phoneNumber, contactEmail, totalFee, registrationFee,
                 copyCardFee, copyCards, accountEmail, declaredConvictions, declaration, expires_on, originalRegistrationNumber
             );

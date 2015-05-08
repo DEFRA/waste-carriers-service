@@ -11,7 +11,6 @@
 	"individualsType":null, 
 	"publicBodyType":null, 
 	"publicBodyTypeOther":null,
-	"uprn":null,
 	"title":null, 
 	"otherTitle":null, 
 	"firstName":"Jane", 
@@ -20,6 +19,7 @@
 	"phoneNumber":"01179345400", 
 	"contactEmail":"info@example.com",
     "addresses": [{
+	  "uprn":"340116",
 	  "country":null,
 	  "location":null,
 	  "address_type":"REGISTERED",

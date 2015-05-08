@@ -15,6 +15,9 @@ public class Address {
         POSTAL
     }
 
+    @JsonProperty
+    private String uprn;
+
     @JsonProperty("address_type")
     private addressType addressType;
 
@@ -68,6 +71,7 @@ public class Address {
     }
 
     public Address(
+            String uprn,
             addressType addressType,
             String addressMode,
             String houseNumber,
@@ -84,6 +88,7 @@ public class Address {
             String localAuthorityUpdateDate,
             String royalMailUpdateDate,
             Location location) {
+        this.uprn = uprn;
         this.addressType = addressType;
         this.addressMode = addressMode;
         this.houseNumber = houseNumber;
@@ -100,6 +105,14 @@ public class Address {
         this.localAuthorityUpdateDate = localAuthorityUpdateDate;
         this.royalMailUpdateDate = royalMailUpdateDate;
         this.location = location;
+    }
+
+    public String getUprn() {
+        return uprn;
+    }
+
+    public void setUprn(String uprn) {
+        this.uprn = uprn;
     }
 
     public Address.addressType getAddressType() {
