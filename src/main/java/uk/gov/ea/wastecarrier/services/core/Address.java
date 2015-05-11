@@ -42,7 +42,7 @@ public class Address {
     @JsonProperty("town_city")
     private String townCity;
 
-    @JsonProperty("post_code")
+    @JsonProperty("postcode")
     private String postcode;
 
     @JsonProperty("country")

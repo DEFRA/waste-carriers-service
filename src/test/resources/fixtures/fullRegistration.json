@@ -20,6 +20,7 @@
 	"contactEmail":"info@example.com",
     "addresses": [{
 	  "uprn":"340116",
+      "postcode":"BS1 5AH",
 	  "country":null,
 	  "location":null,
 	  "address_type":"REGISTERED",
@@ -30,7 +31,6 @@
 	  "address_line_3":null,
 	  "address_line_4":null,
 	  "town_city":null,
-	  "post_code":"BS1 5AH",
 	  "dependent_locality":null,
 	  "dependent_thoroughfare":null,
 	  "administrative_area":null,
