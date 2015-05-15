@@ -197,9 +197,6 @@ public class Registration
 	@JsonInclude(Include.NON_DEFAULT)	/*TEST: This should not be generated in the JSON */
 	private MetaData metaData;
 	
-	@JsonInclude(Include.NON_DEFAULT)	/*TEST: This should not be generated in the JSON */
-	private Location location;
-	
 	@JsonInclude(Include.NON_DEFAULT)
 	private FinanceDetails financeDetails;
 
@@ -414,14 +411,6 @@ public class Registration
 	public MetaData getMetaData()
 	{
 		return metaData;
-	}
-	
-	/**
-	 * @return the location
-	 */
-	public Location getLocation()
-	{
-		return location;
 	}
 	
 	/**
@@ -653,16 +642,6 @@ public class Registration
 	public void setMetaData(MetaData metaData)
 	{
 		this.metaData = metaData;
-	}
-	
-
-
-	/**
-	 * @param location the location to set
-	 */
-	public void setLocation(Location location)
-	{
-		this.location = location;
 	}
 
     public List<KeyPerson> getKeyPeople() {
