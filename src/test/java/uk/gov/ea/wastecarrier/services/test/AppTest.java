@@ -74,18 +74,7 @@ public class AppTest extends TestCase
 		regAddress.setAddressLine1("Deanery Road");
 		regAddress.setAddressLine2("Bristol");
 		regAddress.setPostcode("BS1 5AH");
-		regAddress.setFirstName("Jane");
-		regAddress.setLastName("Smith");
 		addresses.add(regAddress);
-		Address postAddress = new Address();
-		postAddress.setAddressType(Address.addressType.POSTAL);
-		postAddress.setHouseNumber("1");
-		postAddress.setAddressLine1("Ryecroft Street");
-		postAddress.setAddressLine2("Gloucester");
-		postAddress.setPostcode("GL1 5DS");
-		postAddress.setFirstName("Barry");
-		postAddress.setLastName("Whithingtonsonson");
-		addresses.add(postAddress);
 		reg.setAddresses(addresses);
 		reg.setFirstName("Jane");
 		reg.setLastName("Smith");
