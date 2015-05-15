@@ -555,12 +555,12 @@ public class RegistrationsResource
 			if (regAddress != null)
 			{
 				Double[] xyCoords = postcodeRegistry.getXYCoords(regAddress.getPostcode());
-				regAddress.setLocation( new Location( xyCoords[0], xyCoords[1], null, null));
+				regAddress.setLocation( new Location( xyCoords[0], xyCoords[1]));
 			}
 			else
 			{
 				log.warning("Non-UK Address assumed as Postcode could not be found in the registration, Using default location of X:1, Y:1");
-				regAddress.setLocation( new Location(1, 1, null, null));
+				regAddress.setLocation( new Location(1, 1));
 				
 				// Update MetaData to include a message to state location information set to default
 				MetaData tmpMD = reg.getMetaData();
