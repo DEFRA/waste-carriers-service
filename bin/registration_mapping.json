@@ -8,11 +8,63 @@
       "accountEmail" : {
         "type" : "string"
       },
-      "address" : {
-        "type" : "string"
-      },
-      "administrativeArea" : {
-        "type" : "string"
+      "addresses" : {
+        "properties" : {
+          "addressType" : {
+            "type" : "string"
+          },
+          "addressMode" : {
+            "type" : "string"
+          },
+          "houseNumber" : {
+            "type" : "string"
+          },
+          "addressLine1" : {
+            "type" : "string"
+          },
+          "addressLine2" : {
+            "type" : "string"
+          },
+          "addressLine3" : {
+            "type" : "string"
+          },
+          "addressLine4" : {
+            "type" : "string"
+          },
+          "townCity" : {
+            "type" : "string"
+          },
+          "postcode" : {
+            "type" : "string"
+          },
+          "country" : {
+            "type" : "string"
+          },
+          "dependentLocality" : {
+            "type" : "string"
+          },
+          "dependentThoroughfare" : {
+            "type" : "string"
+          },
+          "administrativeArea" : {
+            "type" : "string"
+          },
+          "localAuthorityUpdateDate" : {
+            "type" : "string"
+          },
+          "royalMailUpdateDate" : {
+            "type" : "string"
+          },
+          "easting" : {
+            "type" : "string"
+          },
+          "northing" : {
+            "type" : "string"
+          },
+          "location" : {
+            "type" : "geo_point"
+          }
+        }
       },
       "businessType" : {
         "type" : "string"
@@ -247,65 +299,6 @@
       },
       "title" : {
         "type" : "string"
-      },
-      "uprn" : {
-        "type" : "string"
-      },
-      "addresses" : {
-        "properties" : {
-          "location" : {
-            "properties" : {
-              "easting" : {
-                "type" : "string"
-              },
-              "northing" : {
-                "type" : "string"
-              },
-              "lat" : {
-                "type" : "geo-point"
-              },
-              "lon" : {
-                "type" : "geo-point"
-              }
-            }
-          },
-          "town_city" : {
-            "type" : "string"
-          },
-          "address_line_1" : {
-            "type" : "string"
-          },
-          "address_line_2" : {
-            "type" : "string"
-          },
-          "address_line_3" : {
-            "type" : "string"
-          },
-          "address_line_4" : {
-            "type" : "string"
-          },
-          "royal_mail_update_date" : {
-            "type" : "string"
-          },
-          "post_code" : {
-            "type" : "string"
-          },
-          "first_name" : {
-            "type" : "string"
-          },
-          "last_name" : {
-            "type" : "string"
-          },
-          "local_authority_update_date" : {
-            "type" : "string"
-          },
-          "house_number" : {
-            "type" : "string"
-          },
-          "dependent_locality" : {
-            "type" : "string"
-          }
-        }
       }
     }
   }

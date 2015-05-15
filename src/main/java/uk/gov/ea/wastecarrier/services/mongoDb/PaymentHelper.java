@@ -168,7 +168,7 @@ public class PaymentHelper
         return expiryDate;
     }
 
-    public boolean isIRRenewal(Registration registration)
+    public static boolean isIRRenewal(Registration registration)
     {
         Boolean result = false;
 
@@ -182,7 +182,7 @@ public class PaymentHelper
         return result;
     }
 
-    public boolean isIRRegistrationType(String regNo)
+    public static boolean isIRRegistrationType(String regNo)
     {
         return regNo.startsWith(IR_REGISTRATION_NO_PREFIX);
     }

@@ -9,6 +9,7 @@ import net.vz.mongodb.jackson.WriteResult;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.core.Address;
 import uk.gov.ea.wastecarrier.services.core.Location;
+import uk.gov.ea.wastecarrier.services.core.MetaData;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
 
@@ -57,10 +58,9 @@ public class LocationPopulator extends Task
 		
 		// Get All Registration records from the database
 		DB db = this.databaseHelper.getConnection();
-		if (db != null)
-		{
-			if (!db.isAuthenticated())
-			{
+		if (db != null) {
+
+			if (!db.isAuthenticated()) {
 				throw new RuntimeException("Error: Could not authenticate user");
 			}
 
@@ -70,44 +70,50 @@ public class LocationPopulator extends Task
 			
 			// Go to database, get list of registrations
 			DBCursor<Registration> dbcur = registrations.find();
-			log.info("Found: " + dbcur.size() + " Matching criteria");
+			log.info(String.format("Found: %s Matching criteria", dbcur.size()));
 			
 			PostcodeRegistry pr = new PostcodeRegistry(PostcodeRegistry.POSTCODE_FROM.FILE, pathToPostcodeFile);
 			
 			// for each registration, get out postcode
-			for (Registration r : dbcur)
-			{
-				// Get XY Coordinates from postcode
-				String postCode = null;
+			for (Registration r : dbcur) {
+
+				Address regAddress = null;
 				for (Iterator<Address> address = r.getAddresses().iterator(); address.hasNext();) {
 					Address thisAddress = address.next();
 					if (thisAddress.getAddressType().equals(Address.addressType.REGISTERED)) {
-						postCode = thisAddress.getPostcode();
-
+						regAddress = thisAddress;
+						break;
 					}
 				}
-				Double[] xyCoords = pr.getXYCoords(postCode);
-				
-				// Update location
-				Location l = r.getLocation();
-				if (l == null)
-				{
-					l = new Location();
-				}
-				l.setLat(xyCoords[0]);
-				l.setLon(xyCoords[1]);
-				r.setLocation(l);
+				if (regAddress != null) {
+					// Unfortunately we have addressMode hard coded> we could have put it into an enum but was a valid
+					// addressMode is null and/or blank!
+					if (regAddress.getAddressMode() == "manual-foreign") {
+						log.warning("Non-UK Address assumed as Postcode could not be found in the address, Using default location of X:1, Y:1");
+						regAddress.setLocation( new Location(1, 1));
 
-				// Update database with XY information
-				WriteResult<Registration, String> result = registrations.updateById(r.getId(), r);
-				
-				if (String.valueOf("").equals(result.getError()))
-				{
-					throw new WebApplicationException(Status.NOT_MODIFIED);
+						// Update MetaData to include a message to state location information set to default
+						MetaData tmpMD = r.getMetaData();
+						tmpMD.setAnotherString("Non-UK Address Assumed");
+						r.setMetaData(tmpMD);
+					}
+					else {
+						Double[] xyCoords = pr.getXYCoords(regAddress.getPostcode());
+						regAddress.setLocation( new Location( xyCoords[0], xyCoords[1]));
+					}
+
+					// Update database with XY information
+					WriteResult<Registration, String> result = registrations.updateById(r.getId(), r);
+
+					if (String.valueOf("").equals(result.getError())) {
+						throw new WebApplicationException(Status.NOT_MODIFIED);
+					}
+					else {
+						log.info(String.format("Updated Registration id: %s", r.getId()));
+					}
 				}
-				else
-				{
-					log.info("> Updated Registration id: " + r.getId());
+				else {
+					log.warning(String.format("Registration with no REGISTERED address: %s, %s", r.getRegIdentifier(), r.getId()));
 				}
 			}
 		}

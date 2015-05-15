@@ -37,19 +37,19 @@ fi
 echo "wcrsServicesAdminPort: $wcrsServicesAdminPort"
 
 echo "Generate XY Coordinates"
-curl -X POST http://$wcrsServicesName:$wcrsServicesAdminPort/tasks/location
+curl --ipv4 -X POST http://$wcrsServicesName:$wcrsServicesAdminPort/tasks/location
 
 echo "Delete all Elastic Search indexes"
-curl -X POST http://$wcrsServicesName:$wcrsServicesAdminPort/tasks/indexer -d 'deleteAll'
+curl --ipv4 -X POST http://$wcrsServicesName:$wcrsServicesAdminPort/tasks/indexer -d 'deleteAll'
 
 echo "Create a clean registrations index"
-curl -X POST http://$esHost:$esPort/registrations
+curl --ipv4 -X POST http://$esHost:$esPort/registrations
 
 echo "Set the index structure in Elastic Search"
-curl -X PUT http://$esHost:$esPort/registrations/registration/_mapping -d '@registration_mapping.json'
+curl --ipv4 -X PUT http://$esHost:$esPort/registrations/registration/_mapping -d '@registration_mapping.json'
 
 echo "Re-populate the elastic search index"
-curl -X POST http://$wcrsServicesName:$wcrsServicesAdminPort/tasks/indexer
+curl --ipv4 -X POST http://$wcrsServicesName:$wcrsServicesAdminPort/tasks/indexer
 
 echo "End Re-Index"
 
