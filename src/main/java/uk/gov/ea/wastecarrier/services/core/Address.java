@@ -17,53 +17,41 @@ public class Address {
 
     @JsonProperty
     private String uprn;
-
-    @JsonProperty("address_type")
+    @JsonProperty
     private addressType addressType;
-
-    @JsonProperty("address_mode")
+    @JsonProperty
     private String addressMode;
-
-    @JsonProperty("house_number")
+    @JsonProperty
     private String houseNumber;
-
-    @JsonProperty("address_line_1")
+    @JsonProperty
     private String addressLine1;
-
-    @JsonProperty("address_line_2")
+    @JsonProperty
     private String addressLine2;
-
-    @JsonProperty("address_line_3")
+    @JsonProperty
     private String addressLine3;
-
-    @JsonProperty("address_line_4")
+    @JsonProperty
     private String addressLine4;
-
-    @JsonProperty("town_city")
+    @JsonProperty
     private String townCity;
-
-    @JsonProperty("postcode")
+    @JsonProperty
     private String postcode;
-
-    @JsonProperty("country")
+    @JsonProperty
     private String country;
-
-    @JsonProperty("dependent_locality")
+    @JsonProperty
     private String dependentLocality;
-
-    @JsonProperty("dependent_thoroughfare")
+    @JsonProperty
     private String dependentThoroughfare;
-
-    @JsonProperty("administrative_area")
+    @JsonProperty
     private String administrativeArea;
-
-    @JsonProperty("local_authority_update_date")
+    @JsonProperty
     private String localAuthorityUpdateDate;
-
-    @JsonProperty("royal_mail_update_date")
+    @JsonProperty
     private String royalMailUpdateDate;
-
-    @JsonProperty("location")
+    @JsonProperty
+    private String easting;
+    @JsonProperty
+    private String northing;
+    @JsonProperty
     private Location location;
 
     public Address() {
@@ -87,6 +75,8 @@ public class Address {
             String administrativeArea,
             String localAuthorityUpdateDate,
             String royalMailUpdateDate,
+            String easting,
+            String northing,
             Location location) {
         this.uprn = uprn;
         this.addressType = addressType;
@@ -104,6 +94,8 @@ public class Address {
         this.administrativeArea = administrativeArea;
         this.localAuthorityUpdateDate = localAuthorityUpdateDate;
         this.royalMailUpdateDate = royalMailUpdateDate;
+        this.easting = easting;
+        this.northing = northing;
         this.location = location;
     }
 
@@ -233,6 +225,22 @@ public class Address {
 
     public void setRoyalMailUpdateDate(String royalMailUpdateDate) {
         this.royalMailUpdateDate = royalMailUpdateDate;
+    }
+
+    public String getEasting() {
+        return easting;
+    }
+
+    public void setEasting(String easting) {
+        this.easting = easting;
+    }
+
+    public String getNorthing() {
+        return northing;
+    }
+
+    public void setNorthing(String northing) {
+        this.northing = northing;
     }
 
     public Location getLocation() {

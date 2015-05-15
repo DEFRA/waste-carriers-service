@@ -341,6 +341,12 @@ public class RegistrationsResource
 							log.info(hit.getSourceAsString());
 							Registration r;
 							try {
+								// TODO: We found that when we used annotations in the POJO's that specified a field
+                                // should be interpreted as snake case (e.g. houseNumber to house_number) readValue
+                                // was returning null from Elasticsearch. The quick hack fix was simply to ditch
+                                // snake case altogether, but that does mean our rails code is now forced to use a
+                                // non-conventional naming methodology. Could do with digging deeper into this when we
+                                // have the time.
 								r = mapper.readValue(hit.getSourceAsString(), Registration.class);
 								for (Object obj : hit.getSortValues()) {
 									if (useDistanceFilter)
