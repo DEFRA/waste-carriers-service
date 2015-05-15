@@ -37,7 +37,9 @@
     "royalMailUpdateDate":null,
     "easting":null,
     "northing":null,
-    "location":null
+    "location":null,
+	"firstName":null,
+	"lastName":null
   }],
   "accountEmail":"jane@example.com",
   "declaredConvictions":"no",
