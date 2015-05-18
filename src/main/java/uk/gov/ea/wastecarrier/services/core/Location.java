@@ -1,5 +1,7 @@
 package uk.gov.ea.wastecarrier.services.core;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Location represents the geo_point location object used for GEO location searching in elastic search.
  * It contains a individual latitude and longitude values to represent the XY coordinate location of the site
@@ -9,9 +11,11 @@ package uk.gov.ea.wastecarrier.services.core;
  * 
  */
 public class Location {
-	
+
+	@JsonProperty()
     private double lat;
-	
+
+	@JsonProperty()
     private double lon;
 	
 	/**
@@ -31,26 +35,18 @@ public class Location {
     public double getLon() {
         return lon;
     }
+
+	public void setLon(double lon)
+	{
+		this.lon = lon;
+	}
     
     public double getLat() {
         return lat;
     }
 
-	
-	/**
-	 * @param lon the lon to set
-	 */
-	public void setLon(double lon)
-	{
-		this.lon = lon;
-	}
-	
-	/**
-	 * @param lat the lat to set
-	 */
 	public void setLat(double lat)
 	{
 		this.lat = lat;
 	}
-
 }

@@ -1,21 +1,18 @@
 package uk.gov.ea.wastecarrier.services.core;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import net.vz.mongodb.jackson.Id;
+import net.vz.mongodb.jackson.ObjectId;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.hibernate.validator.constraints.NotEmpty;
+
+import javax.validation.Valid;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.logging.Logger;
-
-import javax.validation.Valid;
-
-import net.vz.mongodb.jackson.Id;
-import net.vz.mongodb.jackson.ObjectId;
-
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-import org.hibernate.validator.constraints.NotEmpty;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * This class represents the entire model of the initial Waste Carrier Registration details
@@ -110,58 +107,6 @@ public class Registration
 	private String companyNo;
 
 	/* 
-	 * These are the Trading Address Details
-	 */
-	@JsonProperty
-	private String addressMode;
-	@JsonProperty
-	private String houseNumber;
-	@JsonProperty
-	private String streetLine1;
-	@JsonProperty
-	private String streetLine2;
-	@JsonProperty
-	private String streetLine3;
-	@JsonProperty
-	private String streetLine4;
-	@JsonProperty
-	private String townCity;
-	@JsonProperty
-	private String postcode;
-	@JsonProperty
-	private String country;
-
-	@JsonProperty
-	private String easting;
-
-	@JsonProperty
-	private String northing;
-
-	@JsonProperty
-	private String dependentLocality;
-
-	@JsonProperty
-	private String dependentThroughfare;
-
-	@JsonProperty
-	private String administrativeArea;
-	
-	@JsonProperty
-	private String localAuthorityUpdateDate;
-
-	@JsonProperty
-	private String royalMailUpdateDate;
-	
-	/**
-	 * TODO: Determine if still need address added from rails?
-	 */
-	@JsonProperty
-	private String address;
-
-	@JsonProperty
-	private String uprn;
-
-	/* 
 	 * These are the Contact Details
 	 */
 	//Note: the title was mandatory in phase 1, bit not anymore
@@ -182,6 +127,9 @@ public class Registration
 	private String phoneNumber;
 	@JsonProperty
 	private String contactEmail;
+
+	@JsonProperty("addresses")
+	private List<Address> addresses;
 
     @JsonProperty("key_people")
     private List<KeyPerson> keyPeople;
@@ -248,9 +196,6 @@ public class Registration
 	
 	@JsonInclude(Include.NON_DEFAULT)	/*TEST: This should not be generated in the JSON */
 	private MetaData metaData;
-	
-	@JsonInclude(Include.NON_DEFAULT)	/*TEST: This should not be generated in the JSON */
-	private Location location;
 	
 	@JsonInclude(Include.NON_DEFAULT)
 	private FinanceDetails financeDetails;
@@ -366,62 +311,6 @@ public class Registration
 	}
 
 	/**
-	 * @return the houseNumber
-	 */
-	public String getHouseNumber()
-	{
-		return houseNumber;
-	}
-	
-	/**
-	 * @return the streetLineOne
-	 */
-	public String getStreetLine1()
-	{
-		return streetLine1;
-	}
-
-	/**
-	 * @return the streetLineTwo
-	 */
-	public String getStreetLine2()
-	{
-		return streetLine2;
-	}
-
-	/**
-	 * @return the townCity
-	 */
-	public String getTownCity()
-	{
-		return townCity;
-	}
-
-	/**
-	 * @return the postcode
-	 */
-	public String getPostcode()
-	{
-		return postcode;
-	}
-	
-	/**
-	 * @return the address
-	 */
-	public String getAddress()
-	{
-		return address;
-	}
-	
-	/**
-	 * @return the uprn
-	 */
-	public String getUprn()
-	{
-		return uprn;
-	}
-
-	/**
 	 * @return the title
 	 */
 	public String getTitle()
@@ -525,14 +414,6 @@ public class Registration
 	}
 	
 	/**
-	 * @return the location
-	 */
-	public Location getLocation()
-	{
-		return location;
-	}
-	
-	/**
 	 * @param id the id to set
 	 */
 	public void setId(String id)
@@ -559,7 +440,7 @@ public class Registration
 	}
 
 	/**
-	 * @param id the id to set
+	 * @param uuid the id to set
 	 */
 	public void setUuid(String uuid)
 	{
@@ -636,94 +517,6 @@ public class Registration
 	
 	public void setCompanyNo(String companyNo) {
 		this.companyNo = companyNo;
-	}
-
-	public String getAddressMode() {
-		return addressMode;
-	}
-
-	public void setAddressMode(String addressMode) {
-		this.addressMode = addressMode;
-	}
-
-	/**
-	 * @param houseNumber the houseNumber to set
-	 */
-	public void setHouseNumber(String houseNumber)
-	{
-		this.houseNumber = houseNumber;
-	}
-	
-	/**
-	 * @param streetLineOne the streetLineOne to set
-	 */
-	public void setStreetLine1(String streetLineOne)
-	{
-		this.streetLine1 = streetLineOne;
-	}
-	
-	/**
-	 * @param streetLineTwo the streetLineTwo to set
-	 */
-	public void setStreetLine2(String streetLineTwo)
-	{
-		this.streetLine2 = streetLineTwo;
-	}
-	
-	public String getStreetLine3() {
-		return streetLine3;
-	}
-
-	public void setStreetLine3(String streetLine3) {
-		this.streetLine3 = streetLine3;
-	}
-
-	public String getStreetLine4() {
-		return streetLine4;
-	}
-
-	public void setStreetLine4(String streetLine4) {
-		this.streetLine4 = streetLine4;
-	}
-
-	public String getCountry() {
-		return country;
-	}
-
-	public void setCountry(String country) {
-		this.country = country;
-	}
-
-	/**
-	 * @param townCity the townCity to set
-	 */
-	public void setTownCity(String townCity)
-	{
-		this.townCity = townCity;
-	}
-
-	/**
-	 * @param postcode the postcode to set
-	 */
-	public void setPostcode(String postcode)
-	{
-		this.postcode = postcode;
-	}
-	
-	/**
-	 * @param address the address to set
-	 */
-	public void setAddress(String address)
-	{
-		this.address = address;
-	}
-	
-	/**
-	 * @param uprn the uprn to set
-	 */
-	public void setUprn(String uprn)
-	{
-		this.uprn = uprn;
 	}
 
 	/**
@@ -850,70 +643,6 @@ public class Registration
 	{
 		this.metaData = metaData;
 	}
-	
-	public String getEasting() {
-		return easting;
-	}
-
-	public void setEasting(String easting) {
-		this.easting = easting;
-	}
-
-	public String getNorthing() {
-		return northing;
-	}
-
-	public void setNorthing(String northing) {
-		this.northing = northing;
-	}
-
-	public String getDependentLocality() {
-		return dependentLocality;
-	}
-
-	public void setDependentLocality(String dependentLocality) {
-		this.dependentLocality = dependentLocality;
-	}
-
-	public String getDependentThroughfare() {
-		return dependentThroughfare;
-	}
-
-	public void setDependentThroughfare(String dependentThroughfare) {
-		this.dependentThroughfare = dependentThroughfare;
-	}
-
-	public String getAdministrativeArea() {
-		return administrativeArea;
-	}
-
-	public void setAdministrativeArea(String administrativeArea) {
-		this.administrativeArea = administrativeArea;
-	}
-
-	/**
-	 * @param location the location to set
-	 */
-	public void setLocation(Location location)
-	{
-		this.location = location;
-	}
-	
-	public String getLocalAuthorityUpdateDate() {
-		return localAuthorityUpdateDate;
-	}
-
-	public void setLocalAuthorityUpdateDate(String localAuthorityUpdateDate) {
-		this.localAuthorityUpdateDate = localAuthorityUpdateDate;
-	}
-
-	public String getRoyalMailUpdateDate() {
-		return royalMailUpdateDate;
-	}
-
-	public void setRoyalMailUpdateDate(String royalMailUpdateDate) {
-		this.royalMailUpdateDate = royalMailUpdateDate;
-	}
 
     public List<KeyPerson> getKeyPeople() {
         return keyPeople;
@@ -922,6 +651,10 @@ public class Registration
     public void setKeyPeople(List<KeyPerson> keyPeople) {
         this.keyPeople = keyPeople;
     }
+
+	public List<Address> getAddresses() { return addresses; }
+
+	public void setAddresses(List<Address> addresses) { this.addresses = addresses; }
 
     public ConvictionSearchResult getConvictionSearchResult() {
         return convictionSearchResult;
@@ -1017,16 +750,6 @@ public class Registration
                 && Objects.equals(this.publicBodyType, other.publicBodyType)
                 && Objects.equals(this.publicBodyTypeOther, other.publicBodyTypeOther)
                 && Objects.equals(this.companyNo, other.companyNo)
-                && Objects.equals(this.houseNumber, other.houseNumber)
-                && Objects.equals(this.streetLine1, other.streetLine1)
-                && Objects.equals(this.streetLine2, other.streetLine2)
-                && Objects.equals(this.streetLine3, other.streetLine3)
-                && Objects.equals(this.streetLine4, other.streetLine4)
-                && Objects.equals(this.townCity, other.townCity)
-                && Objects.equals(this.postcode, other.postcode)
-                && Objects.equals(this.country, other.country)
-                && Objects.equals(this.address, other.address)
-                && Objects.equals(this.uprn, other.uprn)
                 && Objects.equals(this.title, other.title)
                 && Objects.equals(this.otherTitle, other.otherTitle)
                 && Objects.equals(this.firstName, other.firstName)
@@ -1050,8 +773,7 @@ public class Registration
 	public int hashCode()
 	{
         return Objects.hash(tier, registrationType, businessType, otherBusinesses, isMainService, constructionWaste,
-                onlyAMF, companyName, individualsType, publicBodyType, publicBodyTypeOther, companyNo, houseNumber,
-                streetLine1, streetLine2, streetLine3, streetLine4, townCity, postcode, country, address, uprn,
+                onlyAMF, companyName, individualsType, publicBodyType, publicBodyTypeOther, companyNo,
                 title, otherTitle, firstName, lastName, position, phoneNumber, contactEmail, totalFee, registrationFee,
                 copyCardFee, copyCards, accountEmail, declaredConvictions, declaration, expires_on, originalRegistrationNumber
             );

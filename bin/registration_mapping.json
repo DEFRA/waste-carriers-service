@@ -8,11 +8,69 @@
       "accountEmail" : {
         "type" : "string"
       },
-      "address" : {
-        "type" : "string"
-      },
-      "administrativeArea" : {
-        "type" : "string"
+      "addresses" : {
+        "properties" : {
+          "addressType" : {
+            "type" : "string"
+          },
+          "addressMode" : {
+            "type" : "string"
+          },
+          "houseNumber" : {
+            "type" : "string"
+          },
+          "addressLine1" : {
+            "type" : "string"
+          },
+          "addressLine2" : {
+            "type" : "string"
+          },
+          "addressLine3" : {
+            "type" : "string"
+          },
+          "addressLine4" : {
+            "type" : "string"
+          },
+          "townCity" : {
+            "type" : "string"
+          },
+          "postcode" : {
+            "type" : "string"
+          },
+          "country" : {
+            "type" : "string"
+          },
+          "dependentLocality" : {
+            "type" : "string"
+          },
+          "dependentThoroughfare" : {
+            "type" : "string"
+          },
+          "administrativeArea" : {
+            "type" : "string"
+          },
+          "localAuthorityUpdateDate" : {
+            "type" : "string"
+          },
+          "royalMailUpdateDate" : {
+            "type" : "string"
+          },
+          "easting" : {
+            "type" : "string"
+          },
+          "northing" : {
+            "type" : "string"
+          },
+          "location" : {
+            "type" : "geo_point"
+          },
+          "firstName" : {
+            "type" : "string"
+          },
+          "lastName" : {
+            "type" : "string"
+          }
+        }
       },
       "businessType" : {
         "type" : "string"
@@ -43,12 +101,6 @@
         "type" : "string"
       },
       "declaredConvictions" : {
-        "type" : "string"
-      },
-      "dependentLocality" : {
-        "type" : "string"
-      },
-      "easting" : {
         "type" : "string"
       },
       "expires_on" : {
@@ -162,9 +214,6 @@
       "firstName" : {
         "type" : "string"
       },
-      "houseNumber" : {
-        "type" : "string"
-      },
       "id" : {
         "type" : "string"
       },
@@ -196,12 +245,6 @@
       "lastName" : {
         "type" : "string"
       },
-      "localAuthorityUpdateDate" : {
-        "type" : "string"
-      },
-      "location" : {
-        "type" : "geo_point"
-      },
       "metaData" : {
         "properties" : {
           "anotherString" : {
@@ -230,9 +273,6 @@
           }
         }
       },
-      "northing" : {
-        "type" : "string"
-      },
       "onlyAMF" : {
         "type" : "string"
       },
@@ -248,9 +288,6 @@
       "position" : {
         "type" : "string"
       },
-      "postcode" : {
-        "type" : "string"
-      },
       "publicBodyType" : {
         "type" : "string"
       },
@@ -263,31 +300,10 @@
       "registrationType" : {
         "type" : "string"
       },
-      "royalMailUpdateDate" : {
-        "type" : "string"
-      },
-      "streetLine1" : {
-        "type" : "string"
-      },
-      "streetLine2" : {
-        "type" : "string"
-      },
-      "streetLine3" : {
-        "type" : "string"
-      },
-      "streetLine4" : {
-        "type" : "string"
-      },
       "tier" : {
         "type" : "string"
       },
       "title" : {
-        "type" : "string"
-      },
-      "townCity" : {
-        "type" : "string"
-      },
-      "uprn" : {
         "type" : "string"
       }
     }
