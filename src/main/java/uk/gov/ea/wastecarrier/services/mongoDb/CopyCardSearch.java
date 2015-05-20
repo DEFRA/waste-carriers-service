@@ -5,9 +5,6 @@ import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
 import org.joda.time.DateTime;
-import uk.gov.ea.wastecarrier.services.core.FinanceDetails;
-import uk.gov.ea.wastecarrier.services.core.Order;
-import uk.gov.ea.wastecarrier.services.core.OrderItem;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 
 import java.util.*;
@@ -17,6 +14,7 @@ import java.util.logging.Logger;
  * Created by sammoth on 19/05/15.
  */
 public class CopyCardSearch {
+    private final static String DATE_FILTER_PROPERTY = "financeDetails.orders.dateLastUpdated";
     private final static String COMPANY_CONVICTION_MATCH = "convictionSearchResult.matchResult";
     private final static String KEY_PEOPLE_CONVICTION_MATCH = "keyPeople.convictionSearchResult.matchResult";
     private final static String COPY_CARDS_MATCH = "financeDetails.orders.orderItems.type";
@@ -41,6 +39,7 @@ public class CopyCardSearch {
 
         BasicDBObject query = new BasicDBObject();
 
+        applyDateFilters(query);
         applyConvictionMatchFilter(query);
 
         if (queryProps != null) {
@@ -66,39 +65,8 @@ public class CopyCardSearch {
         DBCursor cursor = searchHelper.getRegistrationsCollection().find(query);
         applyResultCount(cursor);
 
-        List<Registration> registrationList = searchHelper.toRegistrationList(cursor);
+        return searchHelper.toRegistrationList(cursor);
 
-        List<Registration> correctDateRegList = new ArrayList<Registration>();
-
-        DateTime from = SearchHelper.dateStringToDate(fromDate.get(), false);
-        Date dateFrom = from.toDate();
-        DateTime until = SearchHelper.dateStringToDate(toDate.get(), true);
-        Date dateUntil = until.toDate();
-
-        for (Iterator<Registration> registration = registrationList.iterator(); registration.hasNext();) {
-            Registration thisReg = registration.next();
-            FinanceDetails financeDetails = thisReg.getFinanceDetails();
-            List<Order> orderList = financeDetails.getOrders();
-            for (Iterator<Order> order = orderList.iterator(); order.hasNext();) {
-                Order thisOrder = order.next();
-                List<OrderItem> orderItemList = thisOrder.getOrderItems();
-                boolean hasCopyCards = false;
-                for (Iterator<OrderItem> orderItem = orderItemList.iterator(); orderItem.hasNext();) {
-                    OrderItem thisOrderItem = orderItem.next();
-                     if (thisOrderItem.getType().equals(OrderItem.OrderItemType.COPY_CARDS)) {
-                        hasCopyCards = true;
-                    }
-                }
-                if (hasCopyCards) {
-                    Date lastUpdatedDate = thisOrder.getDateLastUpdated();
-                    if (lastUpdatedDate.after(dateFrom) && lastUpdatedDate.before(dateUntil)) {
-                        correctDateRegList.add(thisReg);
-                    }
-                }
-            }
-        }
-
-        return correctDateRegList;
     }
 
     protected void applyResultCount(DBCursor cursor) {
@@ -124,6 +92,36 @@ public class CopyCardSearch {
         or.add(new BasicDBObject(KEY_PEOPLE_CONVICTION_MATCH, convictionCheckMatch.get()));
 
         query.append("$or", or);
+    }
+
+    protected void applyDateFilters(BasicDBObject query) {
+
+        DateTime from;
+        Date dateFrom = null;
+        DateTime until;
+        Date dateUntil = null;
+
+        if (fromDate.isPresent()) {
+            from = SearchHelper.dateStringToDate(fromDate.get(), false);
+            dateFrom = from.toDate();
+        }
+
+        if (toDate.isPresent()) {
+            until = SearchHelper.dateStringToDate(toDate.get(), true);
+            dateUntil = until.toDate();
+        }
+
+        if (dateFrom != null && dateUntil != null) {
+            query.append(
+                    DATE_FILTER_PROPERTY,
+                    new BasicDBObject("$gt", dateFrom)
+                            .append("$lte", dateUntil));
+        } else if (dateFrom != null) {
+            query.append(DATE_FILTER_PROPERTY, new BasicDBObject("$gt", dateFrom));
+        } else if (dateUntil != null) {
+            query.append(DATE_FILTER_PROPERTY, new BasicDBObject("$lte", dateUntil));
+        }
+
     }
 
     private Map<String, Object> authorQueryProperties() {
