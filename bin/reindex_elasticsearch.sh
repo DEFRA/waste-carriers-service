@@ -21,25 +21,25 @@ fi
 echo ""
 
 echo "Create accurate XY coordinates in the database for each postcode provided."
-curl -X POST http://localhost:9091/tasks/location
+curl --ipv4 -X POST http://localhost:9091/tasks/location
 echo ""
 
 echo "Delete existing Elastic search records. It may give an exception about"
 echo "registrations not found, this should be safe to ignore."
 echo "Note: This will throw an error the first time it's run because the index doesn't exist yet."
-curl -X POST http://localhost:9091/tasks/indexer -d 'deleteAll'
+curl --ipv4 -X POST http://localhost:9091/tasks/indexer -d 'deleteAll'
 echo ""
 
 echo "Recreate the empty registrations index."
-curl -X POST http://$WCRS_SERVICES_DB_HOST:9200/registrations
+curl --ipv4 -X POST http://$WCRS_SERVICES_DB_HOST:9200/registrations
 echo ""
 
 echo "Set a custom mapping for the registration object."
-curl -X PUT $WCRS_SERVICES_DB_HOST:9200/registrations/registration/_mapping -d '@registration_mapping.json'
+curl --ipv4 -X PUT $WCRS_SERVICES_DB_HOST:9200/registrations/registration/_mapping -d '@registration_mapping.json'
 echo ""
 
 echo "Re-index the data from the database (without any parameters)"
-curl -X POST http://localhost:9091/tasks/indexer
+curl --ipv4 -X POST http://localhost:9091/tasks/indexer
 echo ""
 
 echo "Re-indexing is now complete."
