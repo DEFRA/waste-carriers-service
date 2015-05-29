@@ -66,6 +66,7 @@ public class AppTest extends TestCase
 		reg.setConstructionWaste("yes");
 		reg.setCompanyName("Acme Waste");
 		reg.setCompanyNo("12345678");
+
 		ArrayList<Address> addresses = new ArrayList<Address>();
 		Address regAddress = new Address();
 		regAddress.setUprn("340116");
@@ -75,7 +76,18 @@ public class AppTest extends TestCase
 		regAddress.setAddressLine2("Bristol");
 		regAddress.setPostcode("BS1 5AH");
 		addresses.add(regAddress);
+
+		Address postalAddress = new Address();
+		postalAddress.setAddressType(Address.addressType.POSTAL);
+		postalAddress.setHouseNumber("2");
+		postalAddress.setAddressLine1("Deanery Road");
+		postalAddress.setAddressLine2("Bristol");
+		postalAddress.setPostcode("BS1 5AH");
+		postalAddress.setFirstName("Jane");
+		postalAddress.setLastName("Smith");
+		addresses.add(postalAddress);
 		reg.setAddresses(addresses);
+
 		reg.setFirstName("Jane");
 		reg.setLastName("Smith");
 		reg.setPosition("Owner");

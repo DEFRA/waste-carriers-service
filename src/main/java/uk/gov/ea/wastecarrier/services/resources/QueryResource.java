@@ -3,12 +3,10 @@ package uk.gov.ea.wastecarrier.services.resources;
 import com.google.common.base.Optional;
 import com.mongodb.MongoException;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
+import uk.gov.ea.wastecarrier.services.core.CopyCards;
 import uk.gov.ea.wastecarrier.services.core.Payment;
 import uk.gov.ea.wastecarrier.services.core.Registration;
-import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
-import uk.gov.ea.wastecarrier.services.mongoDb.PaymentSearch;
-import uk.gov.ea.wastecarrier.services.mongoDb.SearchHelper;
-import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationSearch;
+import uk.gov.ea.wastecarrier.services.mongoDb.*;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -108,5 +106,39 @@ public class QueryResource {
         }
 
         return searchResults;
+    }
+
+    @GET
+    @Path("/" + CopyCards.COLLECTION_NAME)
+    public List<Registration> getRegistrations(
+            @QueryParam("from") Optional<String> from,
+            @QueryParam("until") Optional<String> until,
+            @QueryParam("declaredConvictions") Optional<String> declaredConvictions,
+            @QueryParam("convictionCheckMatch") Optional<String> convictionCheckMatch,
+            @QueryParam("resultCount") Optional<Integer> resultCount
+    ) {
+
+        log.fine("Get Method Detected at /query/registrations");
+        List<Registration> searchresults;
+
+        try {
+            CopyCardSearch search = new CopyCardSearch(new SearchHelper(this.databaseHelper));
+            search.fromDate = from;
+            search.toDate = until;
+            search.declaredConvictions = declaredConvictions;
+            search.convictionCheckMatch = convictionCheckMatch;
+            search.resultCount = resultCount;
+
+            searchresults = search.getCopyCardRegistrations();
+
+            if (searchresults.size() == 0) {
+                log.info("No results found - returning empty list");
+            }
+        } catch (MongoException e) {
+            log.severe("Database not found, check the database is running");
+            throw new WebApplicationException(Response.Status.SERVICE_UNAVAILABLE);
+        }
+
+        return searchresults;
     }
 }
