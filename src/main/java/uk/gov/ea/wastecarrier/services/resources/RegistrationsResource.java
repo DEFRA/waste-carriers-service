@@ -94,7 +94,8 @@ public class RegistrationsResource
         esClient = null;
     }
     
-    protected void finalize() throws Throwable {
+    protected void finalize() throws Throwable
+    {
         //esClient.close();
     };
 
@@ -127,20 +128,25 @@ public class RegistrationsResource
         // TODO Re-factor, restructure and simplify this method...
 
         // TODO This was quickly added in to support soft deleting registrations. Also needs to be re-factored out
-        try {
-            if (account.isPresent()) {
+        try
+        {
+            if (account.isPresent())
+            {
                 AccountHelper helper = new AccountHelper(new SearchHelper(this.databaseHelper));
                 helper.accountEmail = account.get();
                 helper.status = status;
 
                 List<Registration> results = helper.getRegistrations();
 
-                if (results.size() == 0) {
+                if (results.size() == 0)
+                {
                     log.info("No results found - returning empty list");
                 }
                 return results;
             }
-        } catch (MongoException e) {
+        }
+        catch (MongoException e)
+        {
             log.severe("Database not found, check the database is running");
             throw new WebApplicationException(Status.SERVICE_UNAVAILABLE);
         }
@@ -170,8 +176,7 @@ public class RegistrationsResource
                 if (activeOnly.isPresent())
                 {
                     GeoDistanceFilterBuilder geoFilter = null;
-                    if (postcode.isPresent() && postcode.get() != ""
-                            && distance.isPresent() && distance.get() != "")
+                    if (postcode.isPresent() && postcode.get() != "" && distance.isPresent() && distance.get() != "")
                     {
                         log.info("Filtered Search, postcode: " + postcode.get());
                         Double[] xyCoords = postcodeRegistry.getXYCoords(postcode.get());
@@ -237,7 +242,8 @@ public class RegistrationsResource
                         .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                         .setQuery(qb0)
                         .setSize(1);
-                if (fbBoolFilter != null) {
+                if (fbBoolFilter != null)
+                {
                     srb0.setPostFilter(fbBoolFilter);
                 }
                 
@@ -259,7 +265,9 @@ public class RegistrationsResource
                             .setQuery(qb1)
                             .setSize(this.elasticSearch.getSize())
                             .addSort(gsb);
-                } else {
+                }
+                else
+                {
                     srb1 = esClient.prepareSearch(Registration.COLLECTION_NAME)
                             .setTypes(Registration.COLLECTION_SINGULAR_NAME)
                             .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
@@ -268,7 +276,11 @@ public class RegistrationsResource
                             .addSort("_score", SortOrder.DESC)
                             .addSort("companyName", SortOrder.ASC);
                 }
-                if (fbBoolFilter != null) srb1.setPostFilter(fbBoolFilter);
+                
+                if (fbBoolFilter != null)
+                {
+                    srb1.setPostFilter(fbBoolFilter);
+                }
                 
                 // Third Priority - Fuzzy match to certain fields
                 //QueryBuilder qb2 = QueryBuilders.fuzzyQuery("companyName", qValue);    // Works as a fuzzy search but only on 1 field
@@ -291,7 +303,9 @@ public class RegistrationsResource
                             .setQuery(qb2)
                             .setSize(this.elasticSearch.getSize())
                             .addSort(gsb);
-                } else {
+                }
+                else
+                {
                     srb2 = esClient.prepareSearch(Registration.COLLECTION_NAME)
                             .setTypes(Registration.COLLECTION_SINGULAR_NAME)
                             .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
@@ -299,7 +313,8 @@ public class RegistrationsResource
                             .setSize(this.elasticSearch.getSize())
                             .addSort("companyName", SortOrder.ASC);
                 }
-                if (fbBoolFilter != null) {
+                if (fbBoolFilter != null)
+                {
                     srb2.setPostFilter(fbBoolFilter);
                 }
 
@@ -333,12 +348,14 @@ public class RegistrationsResource
                     if (response != null)
                     {
                         Iterator<SearchHit> hit_it = response.getHits().iterator();
-                        while(hit_it.hasNext()){
+                        while(hit_it.hasNext())
+                        {
                             SearchHit hit = hit_it.next();
                             ObjectMapper mapper = new ObjectMapper();
                             log.info(hit.getSourceAsString());
                             Registration r;
-                            try {
+                            try
+                            {
                                 // TODO: We found that when we used annotations in the POJO's that specified a field
                                 // should be interpreted as snake case (e.g. houseNumber to house_number) readValue
                                 // was returning null from Elasticsearch. The quick hack fix was simply to ditch
@@ -346,7 +363,8 @@ public class RegistrationsResource
                                 // non-conventional naming methodology. Could do with digging deeper into this when we
                                 // have the time.
                                 r = mapper.readValue(hit.getSourceAsString(), Registration.class);
-                                for (Object obj : hit.getSortValues()) {
+                                for (Object obj : hit.getSortValues())
+                                {
                                     if (useDistanceFilter)
                                     {
                                         int milesToSite = Double.valueOf(obj.toString()).intValue();
@@ -356,11 +374,17 @@ public class RegistrationsResource
                                         r.setMetaData(rMeta);
                                     }
                                 }
-                            } catch (JsonParseException e) {
+                            }
+                            catch (JsonParseException e)
+                            {
                                 throw new RuntimeException(e);
-                            } catch (JsonMappingException e) {
+                            }
+                            catch (JsonMappingException e)
+                            {
                                 throw new RuntimeException(e);
-                            } catch (IOException e) {
+                            }
+                            catch (IOException e)
+                            {
                                 throw new RuntimeException(e);
                             }
                             returnlist.add(r);
@@ -369,11 +393,17 @@ public class RegistrationsResource
                         if (totalHits > 0)
                         {
                             if (count == 0)
+                            {
                                 matchType = "RegIdentifier ";
+                            }
                             else if (count == 1)
+                            {
                                 matchType = "Value ";
+                            }
                             else if (count == 2)
+                            {
                                 matchType = "Fuzzy ";
+                            }
                             break;
                         }
                         count++;
@@ -383,6 +413,7 @@ public class RegistrationsResource
                         log.severe("Error: response object from ElasticSearch was null");
                     }
                 }
+                
                 log.info("Found " + totalHits + " matching " + matchType
                         + "records in ElasticSearch, but returning up to: "+this.elasticSearch.getSize());
                 log.info("Closing the ElasticSearch Client after use");
@@ -543,9 +574,11 @@ public class RegistrationsResource
 
             // Update Registration Location to include location, derived from postcode
             Address regAddress = null;
-            for (Iterator<Address> address = reg.getAddresses().iterator(); address.hasNext();) {
+            for (Iterator<Address> address = reg.getAddresses().iterator(); address.hasNext(); )
+            {
                 Address thisAddress = address.next();
-                if (thisAddress.getAddressType().equals(Address.addressType.REGISTERED)) {
+                if (thisAddress.getAddressType().equals(Address.addressType.REGISTERED))
+                {
                     regAddress = thisAddress;
                     break;
                 }
@@ -603,8 +636,8 @@ public class RegistrationsResource
             // If user has declared convictions or we have matched convictions
             // we need to add a conviction sign off record
             String declaredConvictions = reg.getDeclaredConvictions();
-            if (declaredConvictions != null && declaredConvictions.equalsIgnoreCase("yes")
-                    || RegistrationHelper.hasUnconfirmedConvictionMatches(reg)) {
+            if (declaredConvictions != null && declaredConvictions.equalsIgnoreCase("yes") || RegistrationHelper.hasUnconfirmedConvictionMatches(reg))
+            {
                 List<ConvictionSignOff> signOffs = new ArrayList<ConvictionSignOff>();
                 signOffs.add(new ConvictionSignOff("no", null, null));
                 reg.setConviction_sign_offs(signOffs);
