@@ -69,6 +69,6 @@ settings:
   
 irrenewals:
   # path to ir data folder (import from legacy system)
-  irRenewalFolderPath: WCRS_SERVICES_IR_FOLDERPATH
+  irFolderPath: WCRS_SERVICES_IR_FOLDERPATH
   
 # more properties go here

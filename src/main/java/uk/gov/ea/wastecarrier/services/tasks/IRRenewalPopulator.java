@@ -44,22 +44,22 @@ public class IRRenewalPopulator extends Task
         PublicBody
     }
 
-    public IRRenewalPopulator(String name, DatabaseConfiguration database, IRConfiguration irConfig)
+    public IRRenewalPopulator(String name, DatabaseConfiguration database, IRConfiguration irRenewalConfig)
     {
         super(name);
         this.dao = new IRRenewalMongoDao(database);
-        this.irCompanyDataFilePath = irConfig.getIrRenewalFolderPath()
+        this.irCompanyDataFilePath = irRenewalConfig.getIrFolderPath()
                 + File.separatorChar
-                + irConfig.getIrRenewalCompanyFileName();
-        this.irIndividualDataFilePath = irConfig.getIrRenewalFolderPath()
+                + irRenewalConfig.getIrCompanyFileName();
+        this.irIndividualDataFilePath = irRenewalConfig.getIrFolderPath()
                 + File.separatorChar
-                + irConfig.getIrRenewalIndividualFileName();
-        this.irPartnersDataFilePath = irConfig.getIrRenewalFolderPath()
+                + irRenewalConfig.getIrIndividualFileName();
+        this.irPartnersDataFilePath = irRenewalConfig.getIrFolderPath()
                 + File.separatorChar
-                + irConfig.getIrRenewalPartnersFileName();
-        this.irPublicBodyDataFilePath = irConfig.getIrRenewalFolderPath()
+                + irRenewalConfig.getIrPartnersFileName();
+        this.irPublicBodyDataFilePath = irRenewalConfig.getIrFolderPath()
                 + File.separatorChar
-                + irConfig.getIrRenewalPublicBodyFileName();
+                + irRenewalConfig.getIrPublicBodyFileName();
         this.irDataList = new ArrayList<IRData>();
         log.fine("IR data populator loaded");
     }
