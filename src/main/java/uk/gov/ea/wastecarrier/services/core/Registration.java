@@ -658,6 +658,27 @@ public class Registration
         this.addresses = addresses;
     }
 
+    /**
+     * Locate the first address of the specified type.
+     * @param addressType The type of address to return.
+     * @return The first address of the specified address type, or null if no
+     * address of the specified type can be found.
+     */
+    public Address getFirstAddressByType(Address.addressType addressType)
+    {
+        if (addresses != null)
+        {
+            for (Address thisAddress : addresses)
+            {
+                if (thisAddress.getAddressType().equals(addressType))
+                {
+                    return thisAddress;
+                }
+            }
+        }
+        return null;
+    }
+
     public ConvictionSearchResult getConvictionSearchResult() {
         return convictionSearchResult;
     }
@@ -782,5 +803,15 @@ public class Registration
                 title, otherTitle, firstName, lastName, position, phoneNumber, contactEmail, totalFee, registrationFee,
                 copyCardFee, copyCards, accountEmail, declaredConvictions, declaration, expires_on, originalRegistrationNumber
             );
+    }
+    
+    /**
+     * Determines if this Registration should go on a Public Register.
+     * @return True if this Registration should go on the Public Register;
+     * otherwise False.
+     */
+    public boolean goesOnPublicRegister()
+    {
+        return ((metaData != null) && (metaData.getStatus() == MetaData.RegistrationStatus.ACTIVE));
     }
 }
