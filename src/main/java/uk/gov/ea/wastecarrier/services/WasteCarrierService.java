@@ -60,7 +60,6 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration> {
         final DatabaseConfiguration userDbConfig = configuration.getUserDatabase();
         final ElasticSearchConfiguration esConfig = configuration.getElasticSearch();
         final String postcodeFilePath = configuration.getPostcodeFilePath();
-        final IRConfiguration irConfig = configuration.getIrenewals();
         final SettingsConfiguration sConfig = configuration.getSettings();
         
         //Create a singleton instance of the ElasticSearch TransportClient. Client to be closed on shutdown.
@@ -139,7 +138,7 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration> {
         LocationPopulator locationPop = new LocationPopulator("location", dbConfig, postcodeFilePath);
 		environment.addTask(locationPop);
 		
-		IRRenewalPopulator irPop = new IRRenewalPopulator("ir-repopulate", dbConfig, irConfig);
+		IRRenewalPopulator irPop = new IRRenewalPopulator("ir-repopulate", dbConfig, configuration.getIrRenewals());
 		environment.addTask(irPop);
 		
 		// Add Task for Database cleaner
