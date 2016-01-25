@@ -13,6 +13,7 @@ import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.MongoManaged;
 import uk.gov.ea.wastecarrier.services.resources.*;
 import uk.gov.ea.wastecarrier.services.tasks.DatabaseCleaner;
+import uk.gov.ea.wastecarrier.services.tasks.IRImporter;
 import uk.gov.ea.wastecarrier.services.tasks.IRRenewalPopulator;
 import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationsMongoDao;
 import uk.gov.ea.wastecarrier.services.tasks.EnsureDatabaseIndexesTask;
@@ -141,6 +142,7 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration>
 
         // Add tasks related to IR data.
         environment.addTask(new IRRenewalPopulator("ir-repopulate", dbConfig, configuration.getIrRenewals()));
+        environment.addTask(new IRImporter("ir-import", dbConfig, configuration.getIrMigration()));
 
         // Add Task for Database cleaner.
         environment.addTask(new DatabaseCleaner("dbcleaner", dbConfig, esConfig, esClient));
