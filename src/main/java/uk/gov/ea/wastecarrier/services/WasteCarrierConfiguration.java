@@ -42,7 +42,12 @@ public class WasteCarrierConfiguration extends Configuration {
     @Valid
     @NotNull
     @JsonProperty
-    private IRConfiguration irrenewals = new IRConfiguration();
+    private IRConfiguration irRenewals = new IRConfiguration();
+    
+    @Valid
+    @NotNull
+    @JsonProperty
+    private IRConfiguration irMigration = new IRConfiguration();
     
     public MessageQueueConfiguration getMessageQueueConfiguration() {
         return messageQueue;
@@ -68,8 +73,13 @@ public class WasteCarrierConfiguration extends Configuration {
         return settings;
     }
 
-	public IRConfiguration getIrenewals()
-	{
-		return irrenewals;
-	}
+    public IRConfiguration getIrRenewals()
+    {
+        return irRenewals;
+    }
+    
+    public IRConfiguration getIrMigration()
+    {
+        return irMigration;
+    }
 }

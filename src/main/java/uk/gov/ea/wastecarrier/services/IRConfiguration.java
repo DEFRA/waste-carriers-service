@@ -8,52 +8,53 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 public class IRConfiguration extends Configuration {
 	
-	@Valid
+    @Valid
     @NotEmpty
     @JsonProperty
-    private String irRenewalFolderPath = "src/test/resources/ir_data";
+    private String irFolderPath;
     
     @Valid
     @NotEmpty
     @JsonProperty
-    private String irRenewalCompanyFileName = "irdata_company.csv";
+    private String irCompanyFileName = "irdata_company.csv";
 
     @Valid
     @NotEmpty
     @JsonProperty
-    private String irRenewalIndividualFileName = "irdata_individual.csv";
+    private String irIndividualFileName = "irdata_individual.csv";
     
     @Valid
     @NotEmpty
     @JsonProperty
-    private String irRenewalPartnersFileName = "irdata_partners.csv";
+    private String irPartnersFileName = "irdata_partners.csv";
     
     @Valid
     @NotEmpty
     @JsonProperty
-    private String irRenewalPublicBodyFileName = "irdata_publicbody.csv";
+    private String irPublicBodyFileName = "irdata_publicbody.csv";
     
-    public String getIrRenewalFolderPath() {
-        return irRenewalFolderPath;
+    public String getIrFolderPath()
+    {
+        return irFolderPath;
     }
     
-	public String getIrRenewalCompanyFileName()
-	{
-		return irRenewalCompanyFileName;
-	}
+    public String getIrCompanyFileName()
+    {
+        return irCompanyFileName;
+    }
 
-	public String getIrRenewalIndividualFileName()
-	{
-		return irRenewalIndividualFileName;
-	}
+    public String getIrIndividualFileName()
+    {
+        return irIndividualFileName;
+    }
 
-	public String getIrRenewalPartnersFileName()
-	{
-		return irRenewalPartnersFileName;
-	}
+    public String getIrPartnersFileName()
+    {
+        return irPartnersFileName;
+    }
 
-	public String getIrRenewalPublicBodyFileName()
-	{
-		return irRenewalPublicBodyFileName;
-	}
+    public String getIrPublicBodyFileName()
+    {
+        return irPublicBodyFileName;
+    }
 }

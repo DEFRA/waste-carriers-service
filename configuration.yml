@@ -66,9 +66,15 @@ settings:
   registrationPeriod: WCRS_REGISTRATION_EXPIRES_AFTER
   # renew period (in months)
   registrationRenewPeriod: WCRS_REGISTRATION_RENEWAL_WINDOW
-  
-irrenewals:
-  # path to ir data folder (import from legacy system)
-  irRenewalFolderPath: WCRS_SERVICES_IR_FOLDERPATH
-  
+
+# IrRenewals brings a very limitted set of data into Waste Carriers to allow
+# IR customers to "renew" in the service.
+irRenewals:
+  irFolderPath: WCRS_SERVICES_IR_RENEWAL_FOLDERPATH
+
+# IrMigration is used to migrate registrations from IR into the Waste Carriers
+# database to allow IR decommissioning.
+irMigration:
+  irFolderPath: WCRS_SERVICES_IR_MIGRATION_PATH
+
 # more properties go here
