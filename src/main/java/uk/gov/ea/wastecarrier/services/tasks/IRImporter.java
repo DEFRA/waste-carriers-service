@@ -39,12 +39,12 @@ import uk.gov.ea.wastecarrier.services.core.MetaData;
 public class IRImporter extends Task
 {
     // Private static members.
-    private static final Logger log = Logger.getLogger(IRRenewalPopulator.class.getName());
+    private static final Logger log = Logger.getLogger(IRImporter.class.getName());
     private static final SecureRandom accessCodeRnd = new SecureRandom();
     
     // Private constants and enumerations.
     private static final int ACCESS_CODE_LENGTH = 6;
-    private static final String ACCESS_CODE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private static final String ACCESS_CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ";
     private static final int ACCESS_CODE_CHARS_LENGTH = ACCESS_CODE_CHARS.length();
     private static final String SOLE_TRADER = "soleTrader";
     private static final String COMPANY = "limitedCompany";
@@ -185,10 +185,11 @@ public class IRImporter extends Task
         importErrorCount += importRecordsFromCsvFile(importedRegistrations, irIndividualDataFilePath, out);
         importErrorCount += importRecordsFromCsvFile(importedRegistrations, irPublicBodyDataFilePath, out);
         
-        // Write the registrations to the database ONLY IF all records were
+        // Write the registrations to the database ONLY if all records were
         // successfully read in.
         if (importErrorCount == 0)
         {
+            out.println("\n==> Writing imported registrations to database...");
             documentCollection.insert(importedRegistrations);
             out.println(String.format("\n==> Successfully imported %d registrations", importedRegistrations.size()));
         }
@@ -241,7 +242,7 @@ public class IRImporter extends Task
                     // process it.
                     try
                     {
-                        // Validate row contains expected number of columns, and
+                        // Check row contains expected number of columns, and
                         // that Registration ID column 'appears' valid.
                         if (rowData.length != (CsvColumn.Status.index() + 1))
                         {
@@ -271,7 +272,7 @@ public class IRImporter extends Task
                             registration = createNewRegistrationFromDataRow(rowData);
                         }
                     }
-                    // Handle any error processing a single row of data.
+                    // Handle any error that occurred processing this row of data.
                     catch (Exception e)
                     {
                         registration = null;
@@ -288,9 +289,9 @@ public class IRImporter extends Task
                         }
                     }
                 } // End of processing this row of data.
-            } // End of WHILE loop.
+            } // End of WHILE loop iterating over all rows in CSV file.
             
-            // Save the last registraiton, if necessary
+            // Save the last registraiton in the file, if necessary.
             if (registration != null)
             {
                 if (!safelyValidateRegistrationAndSave(importedRegistrations, registration, out))
@@ -349,7 +350,10 @@ public class IRImporter extends Task
         setAddresses(registration, dataRow);
         
         // Parse the Key Person data from this row.
-        registration.setKeyPeople(new ArrayList<KeyPerson>());
+        if (registration.getTier() == Registration.RegistrationTier.UPPER)
+        {
+            registration.setKeyPeople(new ArrayList<KeyPerson>());
+        }
         updateRegistrationWithPersonData(registration, dataRow);
           
         // Return the Registration as extracted from this row.  It may need to
@@ -445,7 +449,7 @@ public class IRImporter extends Task
      */
     private void assertMinStringLength(String s, String colName, int minLength) throws RuntimeException
     {
-        if (s.length() < minLength)
+        if ((s == null) || (s.length() < minLength))
         {
             throw new RuntimeException(String.format("value in %s is too short", colName));
         }
@@ -489,10 +493,10 @@ public class IRImporter extends Task
         }
     }
     
-    // Sets the Business Type (e.g. Company, Sole Trader etc.)
+    // Sets the Business Type (e.g. Company, Sole Trader etc).
     private void setBusinessType(Registration reg, String csvValue)
     {
-        if ("Person".equals(csvValue))
+        if ("Person".equalsIgnoreCase(csvValue))
         {
             reg.setBusinessType(SOLE_TRADER);
         }
@@ -515,19 +519,23 @@ public class IRImporter extends Task
     }
     
     // Sets miscellaneous fields on the registration, including contact email
-    // and phone number, registration identifier, AD access code, and all
-    // date fields, plus the registration metadata.
+    // and phone number, AD access code, all date fields, plus the
+    // registration metadata.
     private void setMiscellaneousRegDetails(Registration reg, String[] dataRow)
     {
-        // Set miscellaneous contact information.
-        assertMinStringLength(dataRow[CsvColumn.PhoneNumber.index()], "PHONENUMBER", 8);
-        reg.setPhoneNumber(dataRow[CsvColumn.PhoneNumber.index()]);
-        if (!dataRow[CsvColumn.ContactEmail.index()].isEmpty())
+        // Set phone number.
+        String phoneNumber = dataRow[CsvColumn.PhoneNumber.index()];
+        assertMinStringLength(phoneNumber, "PHONENUMBER", 8);
+        reg.setPhoneNumber(phoneNumber);
+        
+        // Set email address if provided.
+        String emailAddress = dataRow[CsvColumn.ContactEmail.index()];
+        if ((emailAddress != null) && !emailAddress.isEmpty())
         {
-            reg.setContactEmail(dataRow[CsvColumn.ContactEmail.index()]);
+            reg.setContactEmail(emailAddress);
         }
         
-        // Generate a random 6-character Access Code, and set it.
+        // Generate an Assisted Digital user Access Code.
         StringBuilder accessCode = new StringBuilder(ACCESS_CODE_LENGTH);
         for (int n = 0; n < ACCESS_CODE_LENGTH; n++)
         {
@@ -575,8 +583,10 @@ public class IRImporter extends Task
         md.setLastModified(new Date());
         reg.setMetaData(md);
         
-        // Set conviction and declaration fields.
+        // Set declaration field.
         reg.setDeclaration("1");
+        
+        // TODO: Testing to determine if conviction-check fields are required.
     }
     
     // Sets the addresses for a registration.
@@ -661,9 +671,11 @@ public class IRImporter extends Task
     // also sets the company number.
     private void setOrganisationDetails(Registration reg, String[] dataRow)
     {
+        String businessType = reg.getBusinessType();
+        
         // If the registration has ALREADY been set to have Organisation Type of
-        // limited company, then sets company number.
-        if ("limitedCompany".equals(reg.getBusinessType()))
+        // limited company, then set company number.
+        if (COMPANY.equals(businessType))
         {
             assertMinStringLength(dataRow[CsvColumn.CompanyNo.index()], "COMPANYNO", 6);
             reg.setCompanyNo(dataRow[CsvColumn.CompanyNo.index()]);
@@ -671,14 +683,15 @@ public class IRImporter extends Task
         
         // Take the orgnisation name from the Business Name column if possible,
         // or the Post Name column (sole trader and public body only) otherwise.
-        if (dataRow[CsvColumn.BusinessName.index()].length() > 2)
+        String businessName = dataRow[CsvColumn.BusinessName.index()];
+        String postAddrName = dataRow[CsvColumn.PostAddrName.index()];
+        if (businessName.length() > 2)
         {
-            reg.setCompanyName(dataRow[CsvColumn.BusinessName.index()]);
+            reg.setCompanyName(businessName);
         }
-        else if ((dataRow[CsvColumn.PostAddrName.index()].length() > 2)
-                && ("soleTrader".equals(reg.getBusinessType())) || "publicBody".equals(reg.getBusinessType()))
+        else if ((postAddrName.length() > 2) && (SOLE_TRADER.equals(businessType) || PUBLIC_BODY.equals(businessType)))
         {
-            reg.setCompanyName(dataRow[CsvColumn.PostAddrName.index()]);
+            reg.setCompanyName(postAddrName);
         }
         else
         {
