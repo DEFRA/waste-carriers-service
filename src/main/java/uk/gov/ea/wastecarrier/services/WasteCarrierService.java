@@ -19,6 +19,8 @@ import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationsMongoDao;
 import uk.gov.ea.wastecarrier.services.tasks.EnsureDatabaseIndexesTask;
 import uk.gov.ea.wastecarrier.services.tasks.Indexer;
 import uk.gov.ea.wastecarrier.services.tasks.LocationPopulator;
+import uk.gov.ea.wastecarrier.services.backgroundJobs.BackgroundJobScheduler;
+import uk.gov.ea.wastecarrier.services.backgroundJobs.ExportJobStarter;
 
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
@@ -123,6 +125,14 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration>
         // Add Indexing functionality to clean Elastic Search Indexes and perform re-index of all data.
         environment.addTask(new Indexer("indexer", dbConfig, esConfig, esClient));
 
+        // Add managed component and tasks for Background Scheduled Jobs.
+        BackgroundJobScheduler dailyJobScheduler = BackgroundJobScheduler.getInstance();
+        dailyJobScheduler.setDatabaseConfiguration(dbConfig);
+        dailyJobScheduler.setExportJobConfiguration(configuration.getExportJobConfiguration());
+        environment.manage(dailyJobScheduler);
+        
+        environment.addTask(new ExportJobStarter("start-exportJob"));
+        
         //Add a task to ensure that indexes have been defined in the database.
         EnsureDatabaseIndexesTask ensureDbIndexesTask = new EnsureDatabaseIndexesTask("EnsureDatabaseIndexes", dao);
         environment.addTask(ensureDbIndexesTask);
