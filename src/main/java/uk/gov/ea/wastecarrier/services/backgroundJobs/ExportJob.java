@@ -44,6 +44,9 @@ public class ExportJob implements Job
     public static final String REPORTING_EXPORT_PATH = "reporting_export_path";
     public static final String REPORTING_DATE_FORMAT = "reporting_date_format";
 
+    // Constants used in string fields of the Registration object.
+    private static final String COMPANY = "limitedCompany";
+    
     // Private static members.
     private final static Logger log = Logger.getLogger(ExportJob.class.getName());
 
@@ -209,7 +212,8 @@ public class ExportJob implements Job
             "Registration tier",
             "Registration type",
             "Registration date",
-            "Expiry date"
+            "Expiry date",
+            "Company number"
         };
     }
     
@@ -224,7 +228,7 @@ public class ExportJob implements Job
     {
         MetaData metaData = reg.getMetaData();
         
-        if (reg.goesOnPublicRegister())
+        if ((metaData != null) && reg.goesOnPublicRegister())
         {
             boolean isUpper = (reg.getTier() == Registration.RegistrationTier.UPPER);
             writer.writeNext(new String[] {
@@ -245,6 +249,7 @@ public class ExportJob implements Job
                 isUpper ? reg.getRegistrationType() : "carrier_broker_dealer",  // Carrier / Broker / Dealer status.
                 eprDateFormatter.format(metaData.getDateActivated()),           // Registration date.
                 isUpper ? eprDateFormatter.format(reg.getExpires_on()) : "",    // Expiry date.
+                COMPANY.equals(reg.getBusinessType()) ? reg.getCompanyNo() : "" // Company number.
             });
         }
     }
