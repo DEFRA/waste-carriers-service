@@ -11,6 +11,7 @@ import org.quartz.impl.StdSchedulerFactory;
 
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.TriggerBuilder.newTrigger;
+import static org.quartz.CronScheduleBuilder.cronSchedule;
 
 import java.util.logging.Logger;
 
@@ -181,6 +182,50 @@ public class BackgroundJobScheduler implements Managed
     }
     
     /**
+     * If a cron expression for execution of the Export Job has been set in the
+     * service configuration then we setup the execution schedule here.
+     * @throws SchedulerException 
+     */
+    private void scheduleExportJob() throws SchedulerException
+    {
+        boolean scheduled = false;
+        
+        // Only schedule if we have Export Job configuration.
+        if (exportJobConfig != null)
+        {
+            // Attempt to get cron expression, and trim any white-space.
+            String cronExpression = exportJobConfig.getCronExpression();
+            if (cronExpression != null)
+            {
+                cronExpression = cronExpression.trim();
+            }
+            
+            // Only schedule the Export Job if a cron expression has been
+            // provided in the Export Job configuration.
+            if ((cronExpression != null) && !cronExpression.isEmpty())
+            {
+                scheduler.scheduleJob(getExportJob(), newTrigger()
+                        .withIdentity("ScheduledExport", JOB_GROUP)
+                        .withSchedule(
+                                cronSchedule(cronExpression)
+                                .withMisfireHandlingInstructionFireAndProceed()
+                        )
+                        .build()
+                );
+                
+                scheduled = true;
+                log.info(String.format("Export Job has been setup with cron schedule: %s", cronExpression));
+            }
+        }
+        
+        // Log an informative message if the Export Job isn't scheduled.
+        if (!scheduled)
+        {
+            log.info("Export Job is not scheduled for execution; will be started by manual trigger only");
+        }
+    }
+    
+    /**
      * Called by DropWizard to start the managed module.  Starts the Quartz
      * scheduler engine.
      * @throws Exception 
@@ -190,12 +235,14 @@ public class BackgroundJobScheduler implements Managed
     {
         if (scheduler == null)
         {
+            // Create the Scheduler engine.
             log.fine("Starting the Background Job Scheduler...");
             scheduler = StdSchedulerFactory.getDefaultScheduler();
             scheduler.start();
             log.fine("... done");
             
-            // TODO: Implement crontab-based jobs here.
+            // Setup any jobs that will run on a schedule.
+            scheduleExportJob();
         }
         else
         {

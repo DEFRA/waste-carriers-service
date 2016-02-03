@@ -1,6 +1,7 @@
-package uk.gov.ea.wastecarrier.services.tasks;
+package uk.gov.ea.wastecarrier.services.cli;
 
-import com.yammer.dropwizard.tasks.Task;
+import com.yammer.dropwizard.cli.ConfiguredCommand;
+import com.yammer.dropwizard.config.Bootstrap;
 
 import java.io.*;
 import java.security.SecureRandom;
@@ -10,17 +11,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Logger;
 
 import com.mongodb.DB;
 import net.vz.mongodb.jackson.JacksonDBCollection;
 
 import au.com.bytecode.opencsv.CSVReader;
-import com.google.common.collect.ImmutableMultimap;
+import net.sourceforge.argparse4j.impl.Arguments;
+import net.sourceforge.argparse4j.inf.Namespace;
+import net.sourceforge.argparse4j.inf.Subparser;
 import org.joda.time.DateTime;
 
+import uk.gov.ea.wastecarrier.services.WasteCarrierConfiguration;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
-import uk.gov.ea.wastecarrier.services.IRConfiguration;
 import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.core.Address;
@@ -32,14 +34,13 @@ import uk.gov.ea.wastecarrier.services.core.MetaData;
  * once, to migrate Waste Carrier Registration data from IR into the new digital
  * service.
  *
- * curl -X POST http://localhost:9091/tasks/ir-import
+ * java -jar <jarfile> irimport -s <csvfile> <configuration.yml>
  *
  * There are no Query String parameters.
  */
-public class IRImporter extends Task
+public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
 {
     // Private static members.
-    private static final Logger log = Logger.getLogger(IRImporter.class.getName());
     private static final SecureRandom accessCodeRnd = new SecureRandom();
     
     // Private constants and enumerations.
@@ -98,59 +99,54 @@ public class IRImporter extends Task
         }
     }
         
-    // Private instance members set at construction.
-    private final DatabaseConfiguration dbConfig;
-    private final String irCompanyDataFilePath;
-    private final String irIndividualDataFilePath;
-    private final String irPartnersDataFilePath;
-    private final String irPublicBodyDataFilePath;
-    private final SimpleDateFormat dateParser;
+    // Private instance members set during command execution.
+    private SimpleDateFormat dateParser;
 
     /**
-     * Constructor.  Basic initialisation only.
-     * @param name The name by which the Task will be known.
-     * @param databaseConfig Object containing database configuration.
-     * @param irMigrationConfig Object defining where the source data is stored.
+     * Constructor.  Sets command name and description only.
      */
-    public IRImporter(String name, DatabaseConfiguration databaseConfig, IRConfiguration irMigrationConfig)
+    public IRImporter()
     {
-        super(name);
-        
-        // Store database configuration for later use.
-        dbConfig = databaseConfig;
-        
-        // Build fully-qualified paths for the IR migration data sources.
-        this.irCompanyDataFilePath = irMigrationConfig.getIrFolderPath()
-                + File.separatorChar
-                + irMigrationConfig.getIrCompanyFileName();
-        
-        this.irIndividualDataFilePath = irMigrationConfig.getIrFolderPath()
-                + File.separatorChar
-                + irMigrationConfig.getIrIndividualFileName();
-        
-        this.irPartnersDataFilePath = irMigrationConfig.getIrFolderPath()
-                + File.separatorChar
-                + irMigrationConfig.getIrPartnersFileName();
-        
-        this.irPublicBodyDataFilePath = irMigrationConfig.getIrFolderPath()
-                + File.separatorChar
-                + irMigrationConfig.getIrPublicBodyFileName();
-        
-        // Create a date parser.
-        this.dateParser = new SimpleDateFormat("dd/MM/yyyy");
+        super("irimport", "Imports IR registrations from a CSV file");
     }
     
     /**
-     * Executes the task.
-     * @param arg0 Task parameters provided via the query string.  We don't use
-     * this value.
-     * @param out An object allowing formatted messages to be returned to the
-     * REST call originator.
+     * Describes the command-line arguments required to run this command.
+     * @param subparser (See DropWizard documentation).
+     */
+    @Override
+    public void configure(Subparser subparser)
+    {
+        super.configure(subparser);
+        
+        subparser.addArgument("-s", "--source")
+                .dest("source")
+                .type(String.class)
+                .required(true)
+                .help("full path to the CSV file to import data from");
+        
+        subparser.addArgument("--dryrun")
+                .dest("dryrun")
+                .action(Arguments.storeFalse())
+                .help("perform a dry run only; don't modify the database");
+    }
+    
+    /**
+     * Runs the command
+     * @param bootstrap The DropWizard bootstrap (not used).
+     * @param namespace The DropWizard parsed command line namespace.
+     * @param configuration Service configuration read from a YAML file.
      * @throws Exception 
      */
     @Override
-    public void execute(ImmutableMultimap<String, String> arg0, PrintWriter out) throws Exception
+    public void run(Bootstrap<WasteCarrierConfiguration> bootstrap, Namespace namespace, WasteCarrierConfiguration configuration) throws Exception
     {
+        // Create a date parser.
+        dateParser = new SimpleDateFormat("dd/MM/yyyy");
+        
+        // Get database configuration, read in from YAML file.
+        DatabaseConfiguration dbConfig = configuration.getDatabase();
+        
         // Build a database helper.
         DatabaseHelper dbHelper = new DatabaseHelper(new DatabaseConfiguration(
                 dbConfig.getHost(),
@@ -178,24 +174,24 @@ public class IRImporter extends Task
         // We'll import the records into memory, and only write them to the
         // Mongo database if all files can be parsed successfully.  This will
         // avoid having to recover from "partial success" scenarios.
-        int importErrorCount = 0;
         List<Registration>importedRegistrations = new ArrayList<Registration>();
-        importErrorCount += importRecordsFromCsvFile(importedRegistrations, irCompanyDataFilePath, out);
-        importErrorCount += importRecordsFromCsvFile(importedRegistrations, irPartnersDataFilePath, out);
-        importErrorCount += importRecordsFromCsvFile(importedRegistrations, irIndividualDataFilePath, out);
-        importErrorCount += importRecordsFromCsvFile(importedRegistrations, irPublicBodyDataFilePath, out);
+        int errorCount = importRecordsFromCsvFile(importedRegistrations, namespace.getString("source"));
         
         // Write the registrations to the database ONLY if all records were
         // successfully read in.
-        if (importErrorCount == 0)
+        if ((errorCount == 0) && !namespace.getBoolean("dryrun"))
         {
-            out.println("\n==> Writing imported registrations to database...");
+            System.out.println("\n==> Writing imported registrations to database...");
             documentCollection.insert(importedRegistrations);
-            out.println(String.format("\n==> Successfully imported %d registrations", importedRegistrations.size()));
+            System.out.println(String.format("\n==> Successfully imported %d registrations", importedRegistrations.size()));
+        }
+        else if (errorCount != 0)
+        {
+            System.out.println("\n==> Not making any changes to database, due to errors during CSV import.");
         }
         else
         {
-            out.println("\n==> Not making any changes to database, due to errors during CSV import.");
+            System.out.println("\n==> No parsing errors encountered.  No changes to database; dry-run only.");
         }
     }
     
@@ -204,19 +200,17 @@ public class IRImporter extends Task
      * as required, and saves them to the provided list.
      * @param importedRegistrations A list to save newly-imported Registrations to.
      * @param source Full path to a CSV file to import the data from.
-     * @param out An object allowing formatted messages to be returned to the
-     * REST call originator.
      * @return The number of errors encountered parsing the file / validating
      * the contents of the file.
      * @throws Exception 
      */
-    private int importRecordsFromCsvFile(List<Registration> importedRegistrations, String source, PrintWriter out) throws Exception
+    private int importRecordsFromCsvFile(List<Registration> importedRegistrations, String source) throws Exception
     {
         CSVReader reader = null;
         String[] rowData;
         int rowIndex = 0, errorCount = 0;
         
-        out.println(String.format("\n==> Importing registrations from %s", source));
+        System.out.println(String.format("\n==> Importing registrations from %s", source));
         
         try
         {
@@ -230,11 +224,11 @@ public class IRImporter extends Task
                 // Check row isn't empty or a header row.
                 if (rowData.length == 1)
                 {
-                    out.println(String.format("Skipping row %d; row contains only one field.", rowIndex));
+                    System.out.println(String.format("Skipping row %d; row contains only one field.", rowIndex));
                 }
                 else if ("TIER".equalsIgnoreCase(rowData[0]))
                 {
-                    out.println(String.format("Skipping row %d; looks like a header row.", rowIndex));
+                    System.out.println(String.format("Skipping row %d; looks like a header row.", rowIndex));
                 }
                 else
                 {
@@ -265,7 +259,7 @@ public class IRImporter extends Task
                         {
                             // This row corresponds to a new registration, so
                             // we'll save the data from the previous row now.
-                            if (!safelyValidateRegistrationAndSave(importedRegistrations, registration, out))
+                            if (!safelyValidateRegistrationAndSave(importedRegistrations, registration))
                             {
                                 errorCount++;
                             }
@@ -280,12 +274,11 @@ public class IRImporter extends Task
                         
                         String exceptionMessage = e.getMessage();
                         String message = String.format("Failed to import data from row %d: %s.", rowIndex, exceptionMessage);
-                        log.warning(message);
-                        out.println(message);
+                        System.out.println(message);
                         if ((exceptionMessage == null) || exceptionMessage.isEmpty())
                         {
-                            out.println("Unexpected error: stack trace follows...");
-                            e.printStackTrace(out);
+                            System.out.println("Unexpected error: stack trace follows...");
+                            e.printStackTrace(System.out);
                         }
                     }
                 } // End of processing this row of data.
@@ -294,7 +287,7 @@ public class IRImporter extends Task
             // Save the last registraiton in the file, if necessary.
             if (registration != null)
             {
-                if (!safelyValidateRegistrationAndSave(importedRegistrations, registration, out))
+                if (!safelyValidateRegistrationAndSave(importedRegistrations, registration))
                 {
                     errorCount++;
                 }
@@ -314,8 +307,7 @@ public class IRImporter extends Task
             }
             catch (IOException e)
             {
-                log.severe(String.format("IOException while closing CSVReader: %s", e.getMessage()));
-                out.println(String.format("Error: IOException while closing CSVReader: %s", e.getMessage()));
+                System.out.println(String.format("Error: IOException while closing CSVReader: %s", e.getMessage()));
                 throw(e);
             }
         }
@@ -370,11 +362,9 @@ public class IRImporter extends Task
      * @param importedRegistrations A list to save the new Registration to if it
      * is valid.
      * @param reg The registration object to check, and save if valid.
-     * @param out An object allowing formatted messages to be returned to the
-     * REST call originator.
      * @return True if the new Registration was valid and saved; otherwise False.
      */
-    private boolean safelyValidateRegistrationAndSave(List<Registration> importedRegistrations, Registration reg, PrintWriter out)
+    private boolean safelyValidateRegistrationAndSave(List<Registration> importedRegistrations, Registration reg)
     {
         boolean success = false;
         
@@ -426,12 +416,11 @@ public class IRImporter extends Task
         {
             String exceptionMessage = e.getMessage();
             String message = String.format("Failed to import registraiton %s: %s.", reg.getRegIdentifier(), exceptionMessage);
-            log.warning(message);
-            out.println(message);
+            System.out.println(message);
             if ((exceptionMessage == null) || exceptionMessage.isEmpty())
             {
-                out.println("Unexpected error: stack trace follows...");
-                e.printStackTrace(out);
+                System.out.println("Unexpected error: stack trace follows...");
+                e.printStackTrace(System.out);
             }
         }
         

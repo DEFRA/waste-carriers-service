@@ -27,6 +27,9 @@ public class ExportJobConfiguration extends Configuration {
     @JsonProperty
     private String reportingExportDateFormat = "yyyy-MM-dd";
 
+    @JsonProperty
+    private String cronExpression;
+    
     /**
      * Gets the file to write ePR export data to.
      * @return The eprExportFile.
@@ -61,5 +64,15 @@ public class ExportJobConfiguration extends Configuration {
     public String getReportingExportDateFormat()
     {
         return reportingExportDateFormat;
+    }
+    
+    /**
+     * Gets a cron expression defining the schedule to execute the Export job
+     * at.  A null or empty definition indicates "no schedule".
+     * @return String containing the 6- or 7-field cron expression for this job.
+     */
+    public String getCronExpression()
+    {
+        return cronExpression;
     }
 }

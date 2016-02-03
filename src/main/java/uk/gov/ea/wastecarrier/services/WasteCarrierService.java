@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 
 import org.elasticsearch.client.Client;
 
+import uk.gov.ea.wastecarrier.services.cli.IRImporter;
 import uk.gov.ea.wastecarrier.services.elasticsearch.ElasticSearchManaged;
 import uk.gov.ea.wastecarrier.services.elasticsearch.ElasticSearchUtils;
 import uk.gov.ea.wastecarrier.services.health.ElasticSearchHealthCheck;
@@ -13,7 +14,6 @@ import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.MongoManaged;
 import uk.gov.ea.wastecarrier.services.resources.*;
 import uk.gov.ea.wastecarrier.services.tasks.DatabaseCleaner;
-import uk.gov.ea.wastecarrier.services.tasks.IRImporter;
 import uk.gov.ea.wastecarrier.services.tasks.IRRenewalPopulator;
 import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationsMongoDao;
 import uk.gov.ea.wastecarrier.services.tasks.EnsureDatabaseIndexesTask;
@@ -55,6 +55,10 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration>
     public void initialize(Bootstrap<WasteCarrierConfiguration> bootstrap)
     {
         bootstrap.setName("wastecarrier-services");
+        
+        // Add a command to import IR registrations.
+        // This can only be performed when the server is NOT running.
+        bootstrap.addCommand(new IRImporter());
     }
 
     @Override
@@ -152,7 +156,6 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration>
 
         // Add tasks related to IR data.
         environment.addTask(new IRRenewalPopulator("ir-repopulate", dbConfig, configuration.getIrRenewals()));
-        environment.addTask(new IRImporter("ir-import", dbConfig, configuration.getIrMigration()));
 
         // Add Task for Database cleaner.
         environment.addTask(new DatabaseCleaner("dbcleaner", dbConfig, esConfig, esClient));
