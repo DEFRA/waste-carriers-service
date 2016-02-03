@@ -126,7 +126,7 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
         
         subparser.addArgument("--dryrun")
                 .dest("dryrun")
-                .action(Arguments.storeFalse())
+                .action(Arguments.storeTrue())
                 .help("perform a dry run only; don't modify the database");
     }
     
