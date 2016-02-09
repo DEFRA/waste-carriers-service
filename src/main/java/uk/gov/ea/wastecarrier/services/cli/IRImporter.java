@@ -699,14 +699,27 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
         // Decide if the person on this row of the CSV file should be used as
         // the main contact for this Registration, and store their name if so.
         boolean useAsContact = "Contact".equalsIgnoreCase(personPosition);
-        if (PUBLIC_BODY.equals(businessType))
+        if (useAsContact && PUBLIC_BODY.equals(businessType))
         {
-            useAsContact &= dataRow[CsvColumn.ApplicantName.index()].toLowerCase()
+            // Public Bodies seem to have multiple Contact people.  We try to
+            // select the best one by ideally choosing the Person whose surname
+            // appears in the "Applicant" column.
+            boolean isBestContact = dataRow[CsvColumn.ApplicantName.index()].toLowerCase()
                     .contains(dataRow[CsvColumn.Lastname.index()].toLowerCase());
+            
+            // But in case we don't find anyone matching that criteria, we'll
+            // default to the first Contact we find.
+            String existingContactLastname = reg.getLastName();
+            boolean noExistingConact = (existingContactLastname == null) || existingContactLastname.isEmpty();
+            
+            // Use this Person if either condition is met.
+            useAsContact = isBestContact || noExistingConact;
         }
         
         if (useAsContact)
         {
+            assertMinStringLength(dataRow[CsvColumn.Firstname.index()], "FIRSTNAME", 1);
+            assertMinStringLength(dataRow[CsvColumn.Lastname.index()], "SURNAME", 2);
             reg.setFirstName(dataRow[CsvColumn.Firstname.index()]);
             reg.setLastName(dataRow[CsvColumn.Lastname.index()]);
         }
