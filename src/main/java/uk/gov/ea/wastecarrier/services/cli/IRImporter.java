@@ -749,6 +749,10 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
 
             if (!serrSimPositionName.isEmpty())
             {
+                // Validate the name and DoB of this Key Person.
+                assertMinStringLength(dataRow[CsvColumn.Firstname.index()], "FIRSTNAME", 1);
+                assertMinStringLength(dataRow[CsvColumn.Lastname.index()], "SURNAME", 2);
+            
                 Date personDateOfBirth;
                 try
                 {
@@ -759,6 +763,7 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
                     throw new RuntimeException("cannot parse person's Date Of Birth", e);
                 }
 
+                // Add this person to the list of Key People.
                 KeyPerson keyPerson = new KeyPerson();
                 keyPerson.setFirstName(dataRow[CsvColumn.Firstname.index()]);
                 keyPerson.setLastName(dataRow[CsvColumn.Lastname.index()]);
