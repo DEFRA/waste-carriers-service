@@ -254,6 +254,11 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
                 {
                     System.out.println(String.format("Skipping row %d; it is identical to the previous row", rowIndex));
                 }
+                else if (!"ACTIVE".equals(rowData[CsvColumn.Status.index()]))
+                {
+                    System.out.println(String.format("Skipping row %d; status is %s and not ACTIVE (%s)", rowIndex,
+                            rowData[CsvColumn.Status.index()], rowData[CsvColumn.RegID.index()]));
+                }
                 else
                 {
                     // We expect this row to contain valid data; attempt to
@@ -580,10 +585,6 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
         reg.setExpires_on(expiryDate);
                 
         // Set registration metadata.
-        if (!"ACTIVE".equals(dataRow[CsvColumn.Status.index()]))
-        {
-            throw new RuntimeException("STATUS column contains value other than 'ACTIVE'");
-        }
         MetaData md = new MetaData();
         md.setAnotherString("Imported-from-IR");
         md.setStatus(MetaData.RegistrationStatus.ACTIVE);
