@@ -34,7 +34,7 @@ import uk.gov.ea.wastecarrier.services.core.MetaData;
  * once, to migrate Waste Carrier Registration data from IR into the new digital
  * service.
  *
- * java -jar <jarfile> irimport -s <csvfile> <configuration.yml>
+ * java -jar <jarfile> irimport <configuration.yml> -s <csvfile>
  *
  * There are no Query String parameters.
  */
@@ -146,6 +146,15 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
     @Override
     public void run(Bootstrap<WasteCarrierConfiguration> bootstrap, Namespace namespace, WasteCarrierConfiguration configuration) throws Exception
     {
+        // Output useful logging.
+        System.out.println("IR-Import command starting");
+        System.out.println(String.format(" - will attempt to import from %s", namespace.getString("source")));
+        System.out.println(String.format(" - will attempt to parse dates using the format string '%s'", namespace.getString("dateFormat")));
+        System.out.println(namespace.getBoolean("dryrun") ?
+                " - using Dry Run mode; no changes will be made to the database" :
+                " - not a Dry Run; will update database if no errors occur");
+        System.out.println();
+        
         // Create a date parser.
         dateParser = new SimpleDateFormat(namespace.getString("dateFormat"));
         
@@ -184,20 +193,23 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
         
         // Write the registrations to the database ONLY if all records were
         // successfully read in.
+        System.out.println();
         if ((errorCount == 0) && !namespace.getBoolean("dryrun"))
         {
-            System.out.println("\n==> Writing imported registrations to database...");
+            System.out.println("==> Writing imported registrations to database...");
             documentCollection.insert(importedRegistrations);
-            System.out.println(String.format("\n==> Successfully imported %d registrations", importedRegistrations.size()));
+            System.out.println(String.format("==> Successfully imported %d registrations", importedRegistrations.size()));
         }
         else if (errorCount != 0)
         {
-            System.out.println("\n==> Not making any changes to database, due to errors during CSV import.");
+            System.out.println("==> Not making any changes to database, due to errors during CSV import.");
         }
         else
         {
-            System.out.println("\n==> No parsing errors encountered.  No changes to database; dry-run only.");
+            System.out.println("==> No parsing errors encountered.  No changes to database; dry-run only.");
         }
+        
+        System.out.println("\nIR-Import command exiting cleanly");
     }
     
     /**
@@ -214,8 +226,6 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
         CSVReader reader = null;
         String[] rowData;
         int rowIndex = 0, errorCount = 0;
-        
-        System.out.println(String.format("\n==> Importing registrations from %s", source));
         
         try
         {
