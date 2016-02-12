@@ -124,6 +124,12 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
                 .required(true)
                 .help("full path to the CSV file to import data from");
         
+        subparser.addArgument("--dateformat")
+                .dest("dateFormat")
+                .type(String.class)
+                .setDefault("dd/MM/yyyy")
+                .help("the format to use when parsing date values");
+        
         subparser.addArgument("--dryrun")
                 .dest("dryrun")
                 .action(Arguments.storeTrue())
@@ -141,7 +147,7 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
     public void run(Bootstrap<WasteCarrierConfiguration> bootstrap, Namespace namespace, WasteCarrierConfiguration configuration) throws Exception
     {
         // Create a date parser.
-        dateParser = new SimpleDateFormat("dd/MM/yyyy");
+        dateParser = new SimpleDateFormat(namespace.getString("dateFormat"));
         
         // Get database configuration, read in from YAML file.
         DatabaseConfiguration dbConfig = configuration.getDatabase();
