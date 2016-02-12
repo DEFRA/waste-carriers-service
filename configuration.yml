@@ -72,11 +72,6 @@ settings:
 irRenewals:
   irFolderPath: WCRS_SERVICES_IR_RENEWAL_FOLDERPATH
 
-# IrMigration is used to migrate registrations from IR into the Waste Carriers
-# database to allow IR decommissioning.
-irMigration:
-  irFolderPath: WCRS_SERVICES_IR_MIGRATION_PATH
-
 exportJob:
   # File to use for EPR exports (note: file, not directory).
   eprExportFile: WCRS_SERVICES_EPR_EXPORT_FILE
