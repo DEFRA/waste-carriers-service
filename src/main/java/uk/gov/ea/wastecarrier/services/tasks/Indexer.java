@@ -143,7 +143,6 @@ public class Indexer extends Task
 				if (!deleteAll)
 				{
 					deleteElasticSearchIndex(elasticSearch, r);
-					out.append("deleted reg: " + r.getId() + "\n");
 				}
 				// Update records if reIndex is true
 				if (reIndex) 
@@ -160,7 +159,6 @@ public class Indexer extends Task
 					{
 						log.info("createdIndex for: " + r.getId());
 					}
-					out.append("indexed new: " + r.getId() + "\n");
 				}
 			}
 

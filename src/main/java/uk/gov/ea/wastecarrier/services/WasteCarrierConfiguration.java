@@ -48,11 +48,6 @@ public class WasteCarrierConfiguration extends Configuration {
     @Valid
     @NotNull
     @JsonProperty
-    private IRConfiguration irMigration = new IRConfiguration();
-
-    @Valid
-    @NotNull
-    @JsonProperty
     private ExportJobConfiguration exportJob = new ExportJobConfiguration();
     
     public MessageQueueConfiguration getMessageQueueConfiguration() {
@@ -84,11 +79,6 @@ public class WasteCarrierConfiguration extends Configuration {
         return irRenewals;
     }
     
-    public IRConfiguration getIrMigration()
-    {
-        return irMigration;
-    }
-
     public ExportJobConfiguration getExportJobConfiguration() {
         return exportJob;
     }

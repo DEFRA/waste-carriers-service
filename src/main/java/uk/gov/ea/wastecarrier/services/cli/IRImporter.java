@@ -34,7 +34,7 @@ import uk.gov.ea.wastecarrier.services.core.MetaData;
  * once, to migrate Waste Carrier Registration data from IR into the new digital
  * service.
  *
- * java -jar <jarfile> irimport -s <csvfile> <configuration.yml>
+ * java -jar <jarfile> irimport <configuration.yml> -s <csvfile>
  *
  * There are no Query String parameters.
  */
@@ -61,32 +61,31 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
         ApplicantName    (5),
         PhoneNumber      (6),
         ContactEmail     (7),
-        RegAddrBuilding  (10),
-        RegAddrLine1     (11),
-        RegAddrLine2     (12),
-        RegAddrLine3     (13),
-        RegAddrLine4     (14),
-        RegAddrTown      (15),
-        RegAddrPostcode  (16),
-        RegAddrEasting   (19),
-        RegAddrNorthing  (20),
-        PostAddrBuilding (22),
-        PostAddrLine1    (23),
-        PostAddrLine2    (24),
-        PostAddrLine3    (25),
-        PostAddrLine4    (26),
-        PostAddrTown     (27),
-        PostAddrPostcode (28),
-        PostAddrName     (30),
-        Firstname        (31),
-        Lastname         (32),
-        DateOfBirth      (33),
-        Position         (34),
-        PersonKey        (35),
-        RegID            (36),
-        ExpiryDate       (37),
-        RegisteredDate   (38),
-        Status           (39);
+        RegAddrBuilding  (8),
+        RegAddrLine1     (9),
+        RegAddrLine2     (10),
+        RegAddrLine3     (11),
+        RegAddrLine4     (12),
+        RegAddrTown      (13),
+        RegAddrPostcode  (14),
+        RegAddrEasting   (15),
+        RegAddrNorthing  (16),
+        PostAddrBuilding (17),
+        PostAddrLine1    (18),
+        PostAddrLine2    (19),
+        PostAddrLine3    (20),
+        PostAddrLine4    (21),
+        PostAddrTown     (22),
+        PostAddrPostcode (23),
+        PostAddrName     (24),
+        Firstname        (25),
+        Lastname         (26),
+        DateOfBirth      (27),
+        Position         (28),
+        RegID            (30),
+        ExpiryDate       (31),
+        RegisteredDate   (32),
+        Status           (33);
                 
         private final int value;
 
@@ -125,9 +124,15 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
                 .required(true)
                 .help("full path to the CSV file to import data from");
         
+        subparser.addArgument("--dateformat")
+                .dest("dateFormat")
+                .type(String.class)
+                .setDefault("dd/MM/yyyy")
+                .help("the format to use when parsing date values");
+        
         subparser.addArgument("--dryrun")
                 .dest("dryrun")
-                .action(Arguments.storeFalse())
+                .action(Arguments.storeTrue())
                 .help("perform a dry run only; don't modify the database");
     }
     
@@ -141,8 +146,17 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
     @Override
     public void run(Bootstrap<WasteCarrierConfiguration> bootstrap, Namespace namespace, WasteCarrierConfiguration configuration) throws Exception
     {
+        // Output useful logging.
+        System.out.println("IR-Import command starting");
+        System.out.println(String.format(" - will attempt to import from %s", namespace.getString("source")));
+        System.out.println(String.format(" - will attempt to parse dates using the format string '%s'", namespace.getString("dateFormat")));
+        System.out.println(namespace.getBoolean("dryrun") ?
+                " - using Dry Run mode; no changes will be made to the database" :
+                " - not a Dry Run; will update database if no errors occur");
+        System.out.println();
+        
         // Create a date parser.
-        dateParser = new SimpleDateFormat("dd/MM/yyyy");
+        dateParser = new SimpleDateFormat(namespace.getString("dateFormat"));
         
         // Get database configuration, read in from YAML file.
         DatabaseConfiguration dbConfig = configuration.getDatabase();
@@ -179,20 +193,23 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
         
         // Write the registrations to the database ONLY if all records were
         // successfully read in.
+        System.out.println();
         if ((errorCount == 0) && !namespace.getBoolean("dryrun"))
         {
-            System.out.println("\n==> Writing imported registrations to database...");
+            System.out.println("==> Writing imported registrations to database...");
             documentCollection.insert(importedRegistrations);
-            System.out.println(String.format("\n==> Successfully imported %d registrations", importedRegistrations.size()));
+            System.out.println(String.format("==> Successfully imported %d registrations", importedRegistrations.size()));
         }
         else if (errorCount != 0)
         {
-            System.out.println("\n==> Not making any changes to database, due to errors during CSV import.");
+            System.out.println("==> Not making any changes to database, due to errors during CSV import.");
         }
         else
         {
-            System.out.println("\n==> No parsing errors encountered.  No changes to database; dry-run only.");
+            System.out.println("==> No parsing errors encountered.  No changes to database; dry-run only.");
         }
+        
+        System.out.println("\nIR-Import command exiting cleanly");
     }
     
     /**
@@ -209,8 +226,6 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
         CSVReader reader = null;
         String[] rowData;
         int rowIndex = 0, errorCount = 0;
-        
-        System.out.println(String.format("\n==> Importing registrations from %s", source));
         
         try
         {
@@ -700,14 +715,27 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
         // Decide if the person on this row of the CSV file should be used as
         // the main contact for this Registration, and store their name if so.
         boolean useAsContact = "Contact".equalsIgnoreCase(personPosition);
-        if (PUBLIC_BODY.equals(businessType))
+        if (useAsContact && PUBLIC_BODY.equals(businessType))
         {
-            useAsContact &= dataRow[CsvColumn.ApplicantName.index()].toLowerCase()
+            // Public Bodies seem to have multiple Contact people.  We try to
+            // select the best one by ideally choosing the Person whose surname
+            // appears in the "Applicant" column.
+            boolean isBestContact = dataRow[CsvColumn.ApplicantName.index()].toLowerCase()
                     .contains(dataRow[CsvColumn.Lastname.index()].toLowerCase());
+            
+            // But in case we don't find anyone matching that criteria, we'll
+            // default to the first Contact we find.
+            String existingContactLastname = reg.getLastName();
+            boolean noExistingConact = (existingContactLastname == null) || existingContactLastname.isEmpty();
+            
+            // Use this Person if either condition is met.
+            useAsContact = isBestContact || noExistingConact;
         }
         
         if (useAsContact)
         {
+            assertMinStringLength(dataRow[CsvColumn.Firstname.index()], "FIRSTNAME", 1);
+            assertMinStringLength(dataRow[CsvColumn.Lastname.index()], "SURNAME", 2);
             reg.setFirstName(dataRow[CsvColumn.Firstname.index()]);
             reg.setLastName(dataRow[CsvColumn.Lastname.index()]);
         }
@@ -737,6 +765,10 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
 
             if (!serrSimPositionName.isEmpty())
             {
+                // Validate the name and DoB of this Key Person.
+                assertMinStringLength(dataRow[CsvColumn.Firstname.index()], "FIRSTNAME", 1);
+                assertMinStringLength(dataRow[CsvColumn.Lastname.index()], "SURNAME", 2);
+            
                 Date personDateOfBirth;
                 try
                 {
@@ -747,6 +779,7 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
                     throw new RuntimeException("cannot parse person's Date Of Birth", e);
                 }
 
+                // Add this person to the list of Key People.
                 KeyPerson keyPerson = new KeyPerson();
                 keyPerson.setFirstName(dataRow[CsvColumn.Firstname.index()]);
                 keyPerson.setLastName(dataRow[CsvColumn.Lastname.index()]);
