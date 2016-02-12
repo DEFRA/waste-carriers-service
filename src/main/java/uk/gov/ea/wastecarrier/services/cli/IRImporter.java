@@ -224,13 +224,14 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
     private int importRecordsFromCsvFile(List<Registration> importedRegistrations, String source) throws Exception
     {
         CSVReader reader = null;
-        String[] rowData;
+        String[] rowData, previousRowData;
         int rowIndex = 0, errorCount = 0;
         
         try
         {
             reader = new CSVReader(new FileReader(source));
             Registration registration = null;
+            previousRowData = null;
             
             while ((rowData = reader.readNext()) != null)
             {
@@ -245,18 +246,24 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
                 {
                     System.out.println(String.format("Skipping row %d; looks like a header row.", rowIndex));
                 }
+                else if (rowData.length != (CsvColumn.Status.index() + 1))
+                {
+                    throw new RuntimeException(String.format("Aborting import: unexpected number of columns in row %d", rowIndex));
+                }
+                else if (Arrays.deepEquals(rowData, previousRowData))
+                {
+                    System.out.println(String.format("Skipping row %d; it is identical to the previous row", rowIndex));
+                }
                 else
                 {
                     // We expect this row to contain valid data; attempt to
                     // process it.
                     try
                     {
-                        // Check row contains expected number of columns, and
-                        // that Registration ID column 'appears' valid.
-                        if (rowData.length != (CsvColumn.Status.index() + 1))
-                        {
-                            throw new RuntimeException("unexpected number of columns");
-                        }
+                        // Update our record of the "previous" row.
+                        previousRowData = rowData;
+                        
+                        // Check that Registration ID column 'appears' valid.
                         assertMinStringLength(rowData[CsvColumn.RegID.index()], "REGIDENTIFIER", 10);
                         
                         // Either place the data from this row into a new
