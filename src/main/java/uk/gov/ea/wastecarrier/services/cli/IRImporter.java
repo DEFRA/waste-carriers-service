@@ -737,8 +737,21 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
         // limited company, then set company number.
         if (COMPANY.equals(businessType))
         {
-            assertMinStringLength(dataRow[CsvColumn.CompanyNo.index()], "COMPANYNO", 6);
-            reg.setCompanyNo(dataRow[CsvColumn.CompanyNo.index()]);
+            if (stringIsNullOrEmpty(dataRow[CsvColumn.CompanyNo.index()]))
+            {
+                nRecommendations++;
+                System.out.println(String.format("Recommendation: add the Company Number for %s", reg.getRegIdentifier()));
+            }
+            else
+            {
+                reg.setCompanyNo(dataRow[CsvColumn.CompanyNo.index()]);
+                int regNumLength = dataRow[CsvColumn.CompanyNo.index()].length();
+                if (!((regNumLength == 6) || (regNumLength == 8)))
+                {
+                    nRecommendations++;
+                    System.out.println(String.format("Recommendation: check the Company Number for %s", reg.getRegIdentifier()));
+                }
+            }
         }
         
         // Take the orgnisation name from the Business Name column if possible,
