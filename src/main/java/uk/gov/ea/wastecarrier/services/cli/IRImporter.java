@@ -383,10 +383,11 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
     }
     
     /**
-     * Asserts that the number of Key People for a registration is appropriate
+     * Checks that the number of Key People for a registration is appropriate
      * for the Business Type, and that a Contact first + last name has been
-     * imported.  If all tests pass the Registration is saved.  If any test
-     * fails, the error is logged but no exception is thrown.
+     * imported.  Missing or invalid data is filled-in with dummy data, and
+     * warnings to fix this manually later are issued.  If any error occurs it
+     * is logged but no Exception is thrown.
      * @param importedRegistrations A list to save the new Registration to if it
      * is valid.
      * @param reg The registration object to check, and save if valid.
@@ -398,16 +399,13 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
         
         try
         {
-            // Assert a contact name (first + last) was found.
-            String firstName = reg.getFirstName();
-            String lastName = reg.getLastName();
-            if ((firstName == null) || firstName.isEmpty())
+            // Provide a dummy contact name if no real name was found.
+            if (stringIsNullOrEmpty(reg.getFirstName()) || stringIsNullOrEmpty(reg.getLastName()))
             {
-                throw new RuntimeException("no contact first name found");
-            }
-            if ((lastName == null) || lastName.isEmpty())
-            {
-                throw new RuntimeException("no contact last name found");
+                nActions++;
+                reg.setFirstName("The");
+                reg.setLastName("Waste Carrier Registrant");
+                System.out.println(String.format("Action: correct the Contact Name for %s", reg.getRegIdentifier()));
             }
 
             // Validate the Key People list.  This only applies to Upper Tier registrations.
