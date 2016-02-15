@@ -620,6 +620,9 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
     // Sets the addresses for a registration.
     private void setAddresses(Registration reg, String[] dataRow)
     {
+        // Prevent repetitive address warnings.
+        boolean regAddrWarningIssued = false, postalAddrWarningIssued = false;
+        
         // Check that both addresses have a postcode; issue an Action if not.
         // Ideally we want a premises number / name and town to always be
         // present, but a large proportion of IR data is missing one or both of
@@ -627,11 +630,13 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
         if (stringIsNullOrEmpty(dataRow[CsvColumn.RegAddrPostcode.index()]))
         {
             nActions++;
+            regAddrWarningIssued = true;
             System.out.println(String.format("Action: fix the missing postcode in the Registered Address for %s", reg.getRegIdentifier()));
         }
         if (stringIsNullOrEmpty(dataRow[CsvColumn.PostAddrPostcode.index()]))
         {
             nActions++;
+            postalAddrWarningIssued = true;
             System.out.println(String.format("Action: fix the missing postcode in the Postal Address for %s", reg.getRegIdentifier()));
         }
         
@@ -645,9 +650,12 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
         setAddressLines(regAddr, dataRow, CsvColumn.RegAddrLine1.index());
         if (stringIsNullOrEmpty(dataRow[CsvColumn.RegAddrEasting.index()]) || stringIsNullOrEmpty(dataRow[CsvColumn.RegAddrNorthing.index()]))
         {
-            nRecommendations++;
-            System.out.println(String.format("Recommendation: no Eastings/Nothings in Registered Address for %s; can address be improved?",
-                    reg.getRegIdentifier()));
+            if (!regAddrWarningIssued)
+            {
+                nRecommendations++;
+                regAddrWarningIssued = true;
+                System.out.println(String.format("Recommendation: improve the Registered Address for %s", reg.getRegIdentifier()));
+            }
         }
         else
         {
@@ -662,11 +670,11 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
             {
                 throw new RuntimeException(String.format("Registered Address is completely empty for %s", reg.getRegIdentifier()));
             }
-            else
+            else if (!regAddrWarningIssued)
             {
                 nRecommendations++;
-                System.out.println(String.format("Recommendation: Registered Address for %s lacks detail; can it be improved?",
-                        reg.getRegIdentifier()));
+                regAddrWarningIssued = true;
+                System.out.println(String.format("Recommendation: improve the Registered Address for %s", reg.getRegIdentifier()));
             }
         }
         
@@ -685,11 +693,11 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
             {
                 throw new RuntimeException(String.format("Postal Address is completely empty for %s", reg.getRegIdentifier()));
             }
-            else
+            else if (!postalAddrWarningIssued)
             {
                 nRecommendations++;
-                System.out.println(String.format("Recommendation: Postal Address for %s lacks detail; can it be improved?",
-                        reg.getRegIdentifier()));
+                postalAddrWarningIssued = true;
+                System.out.println(String.format("Recommendation: improve the Postal Address for %s", reg.getRegIdentifier()));
             }
         }
         
