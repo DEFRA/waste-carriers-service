@@ -192,6 +192,12 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
         List<Registration>importedRegistrations = new ArrayList<Registration>();
         int errorCount = importRecordsFromCsvFile(importedRegistrations, namespace.getString("source"));
         
+        // Print a summary of the number of Errors, Actions and Recommendations.
+        System.out.println();
+        System.out.println(String.format("Total number of Errors: %d", errorCount));
+        System.out.println(String.format("Total number of Actions: %d", nActions));
+        System.out.println(String.format("Total number of Recommendations: %d", nRecommendations));
+        
         // Write the registrations to the database ONLY if all records were
         // successfully read in.
         System.out.println();
