@@ -472,6 +472,17 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
         }
     }
     
+    /**
+     * Checks if a string is null, empty or contains only whitespace.
+     * @param s The string to check.
+     * @return True if the string is null, empty or contains only whitespace;
+     * otherwise False.
+     */
+    private boolean stringIsNullOrEmpty(String s)
+    {
+        return ((s == null) || s.trim().isEmpty());
+    }
+    
     // Sets the Tier from a string.
     private void setTier(Registration reg, String csvValue)
     {
@@ -605,14 +616,20 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
     // Sets the addresses for a registration.
     private void setAddresses(Registration reg, String[] dataRow)
     {
-        // Validate addresses have expected data.
-        assertMinStringLength(dataRow[CsvColumn.RegAddrBuilding.index()], "REG_HOUSENUMBER", 1);
-        assertMinStringLength(dataRow[CsvColumn.RegAddrTown.index()], "REG_TOWNCITY", 2);
-        assertMinStringLength(dataRow[CsvColumn.RegAddrPostcode.index()], "REG_POSTCODE", 5);
-        
-        assertMinStringLength(dataRow[CsvColumn.PostAddrBuilding.index()], "POST_HOUSENUMBER", 1);
-        assertMinStringLength(dataRow[CsvColumn.PostAddrTown.index()], "POST_TOWNCITY", 2);
-        assertMinStringLength(dataRow[CsvColumn.PostAddrPostcode.index()], "POST_POSTCODE", 5);
+        // Check that both addresses have a postcode; issue an Action if not.
+        // Ideally we want a premises number / name and town to always be
+        // present, but a large proportion of IR data is missing one or both of
+        // these fields so we silently ignore this.
+        if (stringIsNullOrEmpty(dataRow[CsvColumn.RegAddrPostcode.index()]))
+        {
+            nActions++;
+            System.out.println(String.format("Action: fix the missing postcode in the Registered Address for %s", reg.getRegIdentifier()));
+        }
+        if (stringIsNullOrEmpty(dataRow[CsvColumn.PostAddrPostcode.index()]))
+        {
+            nActions++;
+            System.out.println(String.format("Action: fix the missing postcode in the Postal Address for %s", reg.getRegIdentifier()));
+        }
         
         // Create and populate Registered address.
         Address regAddr = new Address();
@@ -622,8 +639,32 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
         regAddr.setTownCity(dataRow[CsvColumn.RegAddrTown.index()]);
         regAddr.setPostcode(dataRow[CsvColumn.RegAddrPostcode.index()]);
         setAddressLines(regAddr, dataRow, CsvColumn.RegAddrLine1.index());
-        regAddr.setEasting(dataRow[CsvColumn.RegAddrEasting.index()]);
-        regAddr.setNorthing(dataRow[CsvColumn.RegAddrNorthing.index()]);
+        if (stringIsNullOrEmpty(dataRow[CsvColumn.RegAddrEasting.index()]) || stringIsNullOrEmpty(dataRow[CsvColumn.RegAddrNorthing.index()]))
+        {
+            nRecommendations++;
+            System.out.println(String.format("Recommendation: no Eastings/Nothings in Registered Address for %s; can address be improved?",
+                    reg.getRegIdentifier()));
+        }
+        else
+        {
+            regAddr.setEasting(dataRow[CsvColumn.RegAddrEasting.index()]);
+            regAddr.setNorthing(dataRow[CsvColumn.RegAddrNorthing.index()]);
+        }
+        
+        // If there was no premises and no address lines, issue a warning (Registered address).
+        if (stringIsNullOrEmpty(regAddr.getHouseNumber()) && stringIsNullOrEmpty(regAddr.getAddressLine1()))
+        {
+            if (stringIsNullOrEmpty(regAddr.getPostcode()) && stringIsNullOrEmpty(regAddr.getTownCity()))
+            {
+                throw new RuntimeException(String.format("Registered Address is completely empty for %s", reg.getRegIdentifier()));
+            }
+            else
+            {
+                nRecommendations++;
+                System.out.println(String.format("Recommendation: Registered Address for %s lacks detail; can it be improved?",
+                        reg.getRegIdentifier()));
+            }
+        }
         
         // Create and populate Postal address.
         Address postalAddr = new Address();
@@ -633,6 +674,22 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
         postalAddr.setPostcode(dataRow[CsvColumn.PostAddrPostcode.index()]);
         setAddressLines(postalAddr, dataRow, CsvColumn.PostAddrLine1.index());
         
+        // If there was no premises and no address lines, issue a warning (Contact address).
+        if (stringIsNullOrEmpty(postalAddr.getHouseNumber()) && stringIsNullOrEmpty(postalAddr.getAddressLine1()))
+        {
+            if (stringIsNullOrEmpty(postalAddr.getPostcode()) && stringIsNullOrEmpty(postalAddr.getTownCity()))
+            {
+                throw new RuntimeException(String.format("Postal Address is completely empty for %s", reg.getRegIdentifier()));
+            }
+            else
+            {
+                nRecommendations++;
+                System.out.println(String.format("Recommendation: Postal Address for %s lacks detail; can it be improved?",
+                        reg.getRegIdentifier()));
+            }
+        }
+        
+        // Save the address data to the registration.
         reg.setAddresses(Arrays.asList(regAddr, postalAddr));
     }
     
@@ -657,24 +714,16 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
         
         // Use the result to populate the address object.  Fail if we didn't 
         // find at least one non-empty line.
-        if ((nonEmptyLines[0] == null) || nonEmptyLines[0].isEmpty())
-        {
-            throw new RuntimeException("All ADDRESSLINE columns are empty.");
-        }
-        else
-        {
-            address.setAddressLine1(nonEmptyLines[0]);
-        }
-        
-        if ((nonEmptyLines[1] != null) && !nonEmptyLines[1].isEmpty())
+        address.setAddressLine1(stringIsNullOrEmpty(nonEmptyLines[0]) ? "" : nonEmptyLines[0]);
+        if (!stringIsNullOrEmpty(nonEmptyLines[1]))
         {
             address.setAddressLine2(nonEmptyLines[1]);
         }
-        if ((nonEmptyLines[2] != null) && !nonEmptyLines[2].isEmpty())
+        if (!stringIsNullOrEmpty(nonEmptyLines[2]))
         {
             address.setAddressLine3(nonEmptyLines[2]);
         }
-        if ((nonEmptyLines[3] != null) && !nonEmptyLines[3].isEmpty())
+        if (!stringIsNullOrEmpty(nonEmptyLines[3]))
         {
             address.setAddressLine4(nonEmptyLines[3]);
         }
