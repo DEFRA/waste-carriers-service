@@ -100,6 +100,7 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
         
     // Private instance members set during command execution.
     private SimpleDateFormat dateParser;
+    private int nActions = 0, nRecommendations = 0;
 
     /**
      * Constructor.  Sets command name and description only.
@@ -784,7 +785,12 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
                 }
                 catch (ParseException e)
                 {
-                    throw new RuntimeException("cannot parse person's Date Of Birth", e);
+                    nActions++;
+                    System.out.println(String.format("Action: correct the Date Of Birth for %s %s in %s",
+                            dataRow[CsvColumn.Firstname.index()], dataRow[CsvColumn.Lastname.index()], reg.getRegIdentifier()));
+                    
+                    // Rails app will error without a DoB, so lets create a fake one for now.
+                    personDateOfBirth = new Date(0, 0, 1);
                 }
 
                 // Add this person to the list of Key People.
