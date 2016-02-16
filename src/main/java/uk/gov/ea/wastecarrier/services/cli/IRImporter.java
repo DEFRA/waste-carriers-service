@@ -197,6 +197,7 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
         System.out.println(String.format("Total number of Errors: %d", errorCount));
         System.out.println(String.format("Total number of Actions: %d", nActions));
         System.out.println(String.format("Total number of Recommendations: %d", nRecommendations));
+        System.out.println(String.format("Total number of Registrations ready for import: %d", importedRegistrations.size()));
         
         // Write the registrations to the database ONLY if all records were
         // successfully read in.
@@ -673,7 +674,7 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
             else if (!regAddrWarningIssued)
             {
                 nRecommendations++;
-                regAddrWarningIssued = true;
+                regAddrWarningIssued = true;  // Intentional unused assignment, in case of future edits.
                 System.out.println(String.format("Recommendation: improve the Registered Address for %s", reg.getRegIdentifier()));
             }
         }
@@ -696,7 +697,7 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
             else if (!postalAddrWarningIssued)
             {
                 nRecommendations++;
-                postalAddrWarningIssued = true;
+                postalAddrWarningIssued = true;  // Intentional unused assignment, in case of future edits.
                 System.out.println(String.format("Recommendation: improve the Postal Address for %s", reg.getRegIdentifier()));
             }
         }
