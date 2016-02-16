@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import com.mongodb.DB;
 import net.vz.mongodb.jackson.JacksonDBCollection;
@@ -26,8 +27,11 @@ import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.core.Address;
+import uk.gov.ea.wastecarrier.services.core.FinanceDetails;
 import uk.gov.ea.wastecarrier.services.core.KeyPerson;
 import uk.gov.ea.wastecarrier.services.core.MetaData;
+import uk.gov.ea.wastecarrier.services.core.Order;
+import uk.gov.ea.wastecarrier.services.core.OrderItem;
 
 /**
  * Imports registration records from CSV files.  It is intended to be used only
@@ -41,7 +45,7 @@ import uk.gov.ea.wastecarrier.services.core.MetaData;
 public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
 {
     // Private static members.
-    private static final SecureRandom accessCodeRnd = new SecureRandom();
+    private static final SecureRandom RND_SOURCE = new SecureRandom();
     
     // Private constants and enumerations.
     private static final int ACCESS_CODE_LENGTH = 6;
@@ -382,7 +386,13 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
             registration.setKeyPeople(new ArrayList<KeyPerson>());
         }
         updateRegistrationWithPersonData(registration, dataRow);
-          
+        
+        // Add Finance Details if an Upper Tier registration.
+        if (registration.getTier() == Registration.RegistrationTier.UPPER)
+        {
+            addDummyFinanceDetails(registration);
+        }
+        
         // Return the Registration as extracted from this row.  It may need to
         // be updated with Key Person data from a subsequent row, but we'll
         // handle this elsewhere.
@@ -611,7 +621,7 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
         StringBuilder accessCode = new StringBuilder(ACCESS_CODE_LENGTH);
         for (int n = 0; n < ACCESS_CODE_LENGTH; n++)
         {
-            accessCode.append(ACCESS_CODE_CHARS.charAt(accessCodeRnd.nextInt(ACCESS_CODE_CHARS_LENGTH)));
+            accessCode.append(ACCESS_CODE_CHARS.charAt(RND_SOURCE.nextInt(ACCESS_CODE_CHARS_LENGTH)));
         }
         reg.setAccessCode(accessCode.toString());
         
@@ -919,5 +929,39 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
                 reg.setKeyPeople(keyPeople);
             }
         }
+    }
+    
+    /**
+     * Creates the bare minimum Finance Details required for an Upper Tier
+     * registration to function correctly in the service.
+     * @param reg The Registration to add Finance Details to.
+     */
+    private void addDummyFinanceDetails(Registration reg)
+    {
+        OrderItem dummyOrderItem = new OrderItem();
+        dummyOrderItem.setAmount(0);
+        dummyOrderItem.setCurrency("GBP");
+        dummyOrderItem.setDescription("Import from IR");
+        dummyOrderItem.setType(OrderItem.OrderItemType.IR_IMPORT);
+        dummyOrderItem.setReference("Reg: " + reg.getRegIdentifier());
+        
+        Order dummyOrder = new Order();
+        dummyOrder.setOrderId(UUID.randomUUID().toString());
+        dummyOrder.setOrderCode(Integer.toString(RND_SOURCE.nextInt(999999999)));  // Add an upper bound to avoid negative numbers.
+        dummyOrder.setPaymentMethod(Order.PaymentMethod.OFFLINE);
+        dummyOrder.setMerchantId("n/a");
+        dummyOrder.setWorldPayStatus("n/a");
+        dummyOrder.setTotalAmount(0);
+        dummyOrder.setCurrency("GBP");
+        dummyOrder.setDateCreated(reg.getMetaData().getDateRegistered());
+        dummyOrder.setDateLastUpdated(new Date());
+        dummyOrder.setDescription("Import from IR");
+        dummyOrder.setOrderItems(Arrays.asList(dummyOrderItem));
+        
+        FinanceDetails dummyFinanceDetails = new FinanceDetails();
+        dummyFinanceDetails.setBalance(0);
+        dummyFinanceDetails.setOrders(Arrays.asList(dummyOrder));
+        
+        reg.setFinanceDetails(dummyFinanceDetails);
     }
 }
