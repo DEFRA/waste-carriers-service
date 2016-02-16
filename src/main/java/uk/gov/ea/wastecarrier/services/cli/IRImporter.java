@@ -488,6 +488,45 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
         return ((s == null) || s.trim().isEmpty());
     }
     
+    /**
+     * Converts a string to title case.  Any letter that does not immediately
+     * follow another letter is treated as the start of a new word.
+     * @param s The string to convert.
+     * @return The input string converted into title case, or an empty string
+     * if the input is null or contains only whitespace.
+     */
+    private String toTitleCase(String s)
+    {
+        if (stringIsNullOrEmpty(s))
+        {
+            return "";
+        }
+        else
+        {
+            StringBuilder sb = new StringBuilder();
+            boolean makeNextCharUppercase = true;
+            
+            for (char c : s.trim().toCharArray())
+            {
+                sb.append(makeNextCharUppercase ? Character.toUpperCase(c) : Character.toLowerCase(c));
+                makeNextCharUppercase = !Character.isLetter(c);
+            }
+            
+            return sb.toString();
+        }
+    }
+    
+    /**
+     * Safely converts a string to upper case.
+     * @param s The string to convert.
+     * @return The string converted to upper case, or an empty string if the
+     * input is null or contains only whitespace
+     */
+    private String safeToUpperCase(String s)
+    {
+        return (stringIsNullOrEmpty(s) ? "" : s.trim().toUpperCase());
+    }
+    
     // Sets the Tier from a string.
     private void setTier(Registration reg, String csvValue)
     {
@@ -645,9 +684,9 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
         Address regAddr = new Address();
         regAddr.setAddressType(Address.addressType.REGISTERED);
         regAddr.setAddressMode("manual-uk");
-        regAddr.setHouseNumber(dataRow[CsvColumn.RegAddrBuilding.index()]);
-        regAddr.setTownCity(dataRow[CsvColumn.RegAddrTown.index()]);
-        regAddr.setPostcode(dataRow[CsvColumn.RegAddrPostcode.index()]);
+        regAddr.setHouseNumber(toTitleCase(dataRow[CsvColumn.RegAddrBuilding.index()]));
+        regAddr.setTownCity(toTitleCase(dataRow[CsvColumn.RegAddrTown.index()]));
+        regAddr.setPostcode(safeToUpperCase(dataRow[CsvColumn.RegAddrPostcode.index()]));
         setAddressLines(regAddr, dataRow, CsvColumn.RegAddrLine1.index());
         if (stringIsNullOrEmpty(dataRow[CsvColumn.RegAddrEasting.index()]) || stringIsNullOrEmpty(dataRow[CsvColumn.RegAddrNorthing.index()]))
         {
@@ -682,9 +721,9 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
         // Create and populate Postal address.
         Address postalAddr = new Address();
         postalAddr.setAddressType(Address.addressType.POSTAL);
-        postalAddr.setHouseNumber(dataRow[CsvColumn.PostAddrBuilding.index()]);
-        postalAddr.setTownCity(dataRow[CsvColumn.PostAddrTown.index()]);
-        postalAddr.setPostcode(dataRow[CsvColumn.PostAddrPostcode.index()]);
+        postalAddr.setHouseNumber(toTitleCase(dataRow[CsvColumn.PostAddrBuilding.index()]));
+        postalAddr.setTownCity(toTitleCase(dataRow[CsvColumn.PostAddrTown.index()]));
+        postalAddr.setPostcode(safeToUpperCase(dataRow[CsvColumn.PostAddrPostcode.index()]));
         setAddressLines(postalAddr, dataRow, CsvColumn.PostAddrLine1.index());
         
         // If there was no premises and no address lines, issue a warning (Contact address).
@@ -727,18 +766,18 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
         
         // Use the result to populate the address object.  Fail if we didn't 
         // find at least one non-empty line.
-        address.setAddressLine1(stringIsNullOrEmpty(nonEmptyLines[0]) ? "" : nonEmptyLines[0]);
+        address.setAddressLine1(toTitleCase(nonEmptyLines[0]));
         if (!stringIsNullOrEmpty(nonEmptyLines[1]))
         {
-            address.setAddressLine2(nonEmptyLines[1]);
+            address.setAddressLine2(toTitleCase(nonEmptyLines[1]));
         }
         if (!stringIsNullOrEmpty(nonEmptyLines[2]))
         {
-            address.setAddressLine3(nonEmptyLines[2]);
+            address.setAddressLine3(toTitleCase(nonEmptyLines[2]));
         }
         if (!stringIsNullOrEmpty(nonEmptyLines[3]))
         {
-            address.setAddressLine4(nonEmptyLines[3]);
+            address.setAddressLine4(toTitleCase(nonEmptyLines[3]));
         }
     }
     
