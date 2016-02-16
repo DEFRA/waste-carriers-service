@@ -310,7 +310,7 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
                         String exceptionMessage = e.getMessage();
                         String message = String.format("Failed to import data from row %d: %s.", rowIndex, exceptionMessage);
                         System.out.println(message);
-                        if ((exceptionMessage == null) || exceptionMessage.isEmpty())
+                        if (stringIsNullOrEmpty(exceptionMessage))
                         {
                             System.out.println("Unexpected error: stack trace follows...");
                             e.printStackTrace(System.out);
@@ -450,7 +450,7 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
             String exceptionMessage = e.getMessage();
             String message = String.format("Failed to import registraiton %s: %s.", reg.getRegIdentifier(), exceptionMessage);
             System.out.println(message);
-            if ((exceptionMessage == null) || exceptionMessage.isEmpty())
+            if (stringIsNullOrEmpty(exceptionMessage))
             {
                 System.out.println("Unexpected error: stack trace follows...");
                 e.printStackTrace(System.out);
@@ -602,7 +602,7 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
         
         // Set email address if provided.
         String emailAddress = dataRow[CsvColumn.ContactEmail.index()];
-        if ((emailAddress != null) && !emailAddress.isEmpty())
+        if (!stringIsNullOrEmpty(emailAddress))
         {
             reg.setContactEmail(emailAddress);
         }
@@ -849,7 +849,7 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
             // But in case we don't find anyone matching that criteria, we'll
             // default to the first Contact we find.
             String existingContactLastname = reg.getLastName();
-            boolean noExistingConact = (existingContactLastname == null) || existingContactLastname.isEmpty();
+            boolean noExistingConact = stringIsNullOrEmpty(existingContactLastname);
             
             // Use this Person if either condition is met.
             useAsContact = isBestContact || noExistingConact;
