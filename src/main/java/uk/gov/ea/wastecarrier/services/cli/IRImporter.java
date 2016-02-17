@@ -292,7 +292,8 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
                         }
                         else if (registration.getRegIdentifier().equals(rowData[CsvColumn.RegID.index()]))
                         {
-                            updateRegistrationWithPersonData(registration, rowData);
+                            updateRegistrationWithContactPersonData(registration, rowData);
+                            updateRegistrationWithKeyPersonData(registration, rowData);
                         }
                         else
                         {
@@ -385,7 +386,8 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
         {
             registration.setKeyPeople(new ArrayList<KeyPerson>());
         }
-        updateRegistrationWithPersonData(registration, dataRow);
+        updateRegistrationWithContactPersonData(registration, dataRow);
+        updateRegistrationWithKeyPersonData(registration, dataRow);
         
         // Add Finance Details if an Upper Tier registration.
         if (registration.getTier() == Registration.RegistrationTier.UPPER)
@@ -837,42 +839,66 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
         }
     }
     
-    // Updates a Registration with data from the person-related columns in the
-    // CSV file.  These columns may contain data about a Key Person, and/or
-    // the contact name for this Registration.
-    private void updateRegistrationWithPersonData(Registration reg, String[] dataRow)
+    // Updates a Registration with Contact Name data, if this row of the CSV
+    // file contains this type of data.
+    private void updateRegistrationWithContactPersonData(Registration reg, String[] dataRow)
     {
-        // Extract some key values for easier manipulation.
-        String businessType = reg.getBusinessType();
-        String personPosition = dataRow[CsvColumn.Position.index()];
+        // Get the Postal Address for this Registration.
+        Address postalAddr = reg.getFirstAddressByType(Address.addressType.POSTAL);
+        if (postalAddr == null)
+        {
+            throw new RuntimeException("Unexpected error: registration is missing a postal address");
+        }
         
         // Decide if the person on this row of the CSV file should be used as
         // the main contact for this Registration, and store their name if so.
-        boolean useAsContact = "Contact".equalsIgnoreCase(personPosition);
-        if (useAsContact && PUBLIC_BODY.equals(businessType))
-        {
-            // Public Bodies seem to have multiple Contact people.  We try to
-            // select the best one by ideally choosing the Person whose surname
-            // appears in the "Applicant" column.
-            boolean isBestContact = dataRow[CsvColumn.ApplicantName.index()].toLowerCase()
-                    .contains(dataRow[CsvColumn.Lastname.index()].toLowerCase());
-            
-            // But in case we don't find anyone matching that criteria, we'll
-            // default to the first Contact we find.
-            String existingContactLastname = reg.getLastName();
-            boolean noExistingConact = stringIsNullOrEmpty(existingContactLastname);
-            
-            // Use this Person if either condition is met.
-            useAsContact = isBestContact || noExistingConact;
-        }
-        
-        if (useAsContact)
+        // In cases where there are multiple Contacts, we simply use the first.
+        if (stringIsNullOrEmpty(reg.getLastName()) && "Contact".equalsIgnoreCase(dataRow[CsvColumn.Position.index()]))
         {
             assertMinStringLength(dataRow[CsvColumn.Firstname.index()], "FIRSTNAME", 1);
             assertMinStringLength(dataRow[CsvColumn.Lastname.index()], "SURNAME", 2);
             reg.setFirstName(dataRow[CsvColumn.Firstname.index()]);
             reg.setLastName(dataRow[CsvColumn.Lastname.index()]);
+            postalAddr.setFirstName(dataRow[CsvColumn.Firstname.index()]);
+            postalAddr.setLastName(dataRow[CsvColumn.Lastname.index()]);
         }
+        
+        // For Person type records only, the IR export does not contain a
+        // separate row for the Contact.  So we have to try to parse the Post
+        // Name column into a First and Last name.
+        if (SOLE_TRADER.equals(reg.getBusinessType()) && !stringIsNullOrEmpty(dataRow[CsvColumn.PostAddrName.index()]))
+        {
+            String[] nameParts = dataRow[CsvColumn.PostAddrName.index()].split("\\s+");
+            if ((nameParts != null) && (nameParts.length > 0))
+            {
+                StringBuilder firstNames = new StringBuilder();
+                for (int n = 0, nMax = nameParts.length - 1; n < nMax; n++)
+                {
+                    if (n > 0)
+                    {
+                        firstNames.append(" ");
+                    }
+                    firstNames.append(nameParts[n]);
+                }
+                
+                String firstName = firstNames.toString();
+                String lastName = nameParts[nameParts.length - 1];
+                
+                reg.setFirstName(firstName);
+                reg.setLastName(lastName);
+                postalAddr.setFirstName(firstName);
+                postalAddr.setLastName(lastName);
+            }
+        }
+    }
+    
+    // Updates a Registration with Key Person data, if this row of the CSV file
+    // contains this type of data.
+    private void updateRegistrationWithKeyPersonData(Registration reg, String[] dataRow)
+    {
+        // Extract some values for easier manipulation.
+        String businessType = reg.getBusinessType();
+        String personPosition = dataRow[CsvColumn.Position.index()];
         
         // Key People are only applicable on Upper Tier registrations.
         if (reg.getTier() == Registration.RegistrationTier.UPPER)
@@ -927,7 +953,6 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
 
                 ArrayList<KeyPerson> keyPeople = (ArrayList<KeyPerson>)reg.getKeyPeople();
                 keyPeople.add(keyPerson);
-                reg.setKeyPeople(keyPeople);
             }
         }
     }
