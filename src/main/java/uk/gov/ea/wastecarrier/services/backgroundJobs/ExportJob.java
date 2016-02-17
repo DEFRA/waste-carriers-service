@@ -1,5 +1,6 @@
 package uk.gov.ea.wastecarrier.services.backgroundJobs;
 
+import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobKey;
 import org.quartz.JobDataMap;
@@ -28,6 +29,7 @@ import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
  * Reporting systems.  This job also updates Registration status (ACTIVE,
  * EXPIRED etc).  This job is normally run once daily.
  */
+@DisallowConcurrentExecution
 public class ExportJob implements Job
 {
     // Public 'constants' used in the JobDataMap, which passes configuration
