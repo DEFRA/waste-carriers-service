@@ -24,6 +24,12 @@ import javax.ws.rs.core.Response.Status;
 
 import java.util.logging.Logger;
 
+import com.mongodb.DB;
+import net.vz.mongodb.jackson.DBQuery;
+import net.vz.mongodb.jackson.JacksonDBCollection;
+
+import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
+
 /**
  * Resource for accessing and updating individual orders within a registration.
  *
@@ -33,13 +39,22 @@ import java.util.logging.Logger;
 @Consumes(MediaType.APPLICATION_JSON)
 public class IRRenewalResource
 {
-    private IRRenewalMongoDao dao;
+    // Private members set in the constructor.  They provide access to Mongo
+    // documents.
+    private final IRRenewalMongoDao dao;
+    private final DatabaseHelper dbHelper;
 
-    private Logger log = Logger.getLogger(IRRenewalResource.class.getName());
+    // Logging capability.
+    private final Logger log = Logger.getLogger(IRRenewalResource.class.getName());
 
+    /**
+     * Constructor.  Create objects to access Mongo documents later.
+     * @param database  The database configuration to use.
+     */
     public IRRenewalResource(DatabaseConfiguration database)
     {
         dao = new IRRenewalMongoDao(database);
+        dbHelper = new DatabaseHelper(database);
     }
 
     /**
@@ -66,7 +81,7 @@ public class IRRenewalResource
                 // Set generic registration information
                 r.setOriginalRegistrationNumber(regNumber);
                 r.setTier(RegistrationTier.UPPER);
-                switch(irData.getTrueRegistrationType())
+                switch (irData.getTrueRegistrationType())
                 {
                     case CARRIER:
                         r.setRegistrationType("carrier_dealer");
@@ -80,6 +95,7 @@ public class IRRenewalResource
                     default:
                         break;
                 }
+                updateCarrierTypeFromMigratedRegistrations(r);
 
                 r.setOriginalDateExpiry(irData.getExpiryDate());
 
@@ -151,6 +167,61 @@ public class IRRenewalResource
         {
             // Required search parameter not found
             throw new WebApplicationException(Status.BAD_REQUEST);
+        }
+    }
+    
+    /**
+     * Attempt to update the Carrier Type (aka "Registration Type") for an 
+     * IR Renewal with the latest data from the old registration.  This only
+     * became necessary in March 2016, when active IR registrations were
+     * migrated into this service, and must be done so that we don't charge the
+     * customer twice for changing their Carrier Type.
+     * @param templateReg The template registration to update.
+     */
+    private void updateCarrierTypeFromMigratedRegistrations(Registration templateReg)
+    {
+        try
+        {
+            log.info("Attempting to check for updated Carrier Type in IR Renewal");
+            
+            DB db = dbHelper.getConnection();
+            if (db == null)
+            {
+                throw new RuntimeException("No access to Mongo database");
+            }
+            if (!db.isAuthenticated())
+            {
+                throw new RuntimeException("Not authenticated against database");
+            }
+
+            // Create MONGOJACK connection to the Registrations Mongo document collection.
+            JacksonDBCollection<Registration, String> registrations = JacksonDBCollection.wrap(
+                    db.getCollection(Registration.COLLECTION_NAME), Registration.class, String.class);
+
+            // Try to find a single registration matching the IR number.
+            Registration expiringReg = registrations.findOne(
+                    DBQuery.is("regIdentifier", templateReg.getOriginalRegistrationNumber().trim()));
+
+            // Update the new registration with the current (old) Carrier Type.
+            if (expiringReg == null)
+            {
+                throw new RuntimeException("Cannot find old registration with IR Renewal number");
+            }
+            String expiringRegRegistrationType = expiringReg.getRegistrationType();
+            if ((expiringRegRegistrationType == null) || expiringRegRegistrationType.isEmpty())
+            {
+                throw new RuntimeException("Old registration does not have the Carrier Type set");
+                
+            }
+            log.info(String.format("Updating IR Renewal Carrier Type: was %s, now %s",
+                    templateReg.getRegistrationType(), expiringRegRegistrationType));
+            templateReg.setRegistrationType(expiringRegRegistrationType);
+
+            // Carrier type has been successfully updated.
+        }
+        catch (Exception e)
+        {
+            log.severe(String.format("Unexpected error whilst trying to update IR Renewal Carrier type: %s", e.getMessage()));
         }
     }
 }
