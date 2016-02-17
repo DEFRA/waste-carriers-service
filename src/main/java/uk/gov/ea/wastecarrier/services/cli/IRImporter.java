@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import com.mongodb.DB;
 import net.vz.mongodb.jackson.JacksonDBCollection;
@@ -26,8 +27,11 @@ import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.core.Address;
+import uk.gov.ea.wastecarrier.services.core.FinanceDetails;
 import uk.gov.ea.wastecarrier.services.core.KeyPerson;
 import uk.gov.ea.wastecarrier.services.core.MetaData;
+import uk.gov.ea.wastecarrier.services.core.Order;
+import uk.gov.ea.wastecarrier.services.core.OrderItem;
 
 /**
  * Imports registration records from CSV files.  It is intended to be used only
@@ -41,7 +45,7 @@ import uk.gov.ea.wastecarrier.services.core.MetaData;
 public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
 {
     // Private static members.
-    private static final SecureRandom accessCodeRnd = new SecureRandom();
+    private static final SecureRandom RND_SOURCE = new SecureRandom();
     
     // Private constants and enumerations.
     private static final int ACCESS_CODE_LENGTH = 6;
@@ -100,6 +104,7 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
         
     // Private instance members set during command execution.
     private SimpleDateFormat dateParser;
+    private int nActions = 0, nRecommendations = 0;
 
     /**
      * Constructor.  Sets command name and description only.
@@ -191,6 +196,13 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
         List<Registration>importedRegistrations = new ArrayList<Registration>();
         int errorCount = importRecordsFromCsvFile(importedRegistrations, namespace.getString("source"));
         
+        // Print a summary of the number of Errors, Actions and Recommendations.
+        System.out.println();
+        System.out.println(String.format("Total number of Errors: %d", errorCount));
+        System.out.println(String.format("Total number of Actions: %d", nActions));
+        System.out.println(String.format("Total number of Recommendations: %d", nRecommendations));
+        System.out.println(String.format("Total number of Registrations ready for import: %d", importedRegistrations.size()));
+        
         // Write the registrations to the database ONLY if all records were
         // successfully read in.
         System.out.println();
@@ -224,13 +236,14 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
     private int importRecordsFromCsvFile(List<Registration> importedRegistrations, String source) throws Exception
     {
         CSVReader reader = null;
-        String[] rowData;
+        String[] rowData, previousRowData;
         int rowIndex = 0, errorCount = 0;
         
         try
         {
             reader = new CSVReader(new FileReader(source));
             Registration registration = null;
+            previousRowData = null;
             
             while ((rowData = reader.readNext()) != null)
             {
@@ -245,18 +258,29 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
                 {
                     System.out.println(String.format("Skipping row %d; looks like a header row.", rowIndex));
                 }
+                else if (rowData.length != (CsvColumn.Status.index() + 1))
+                {
+                    throw new RuntimeException(String.format("Aborting import: unexpected number of columns in row %d", rowIndex));
+                }
+                else if (Arrays.deepEquals(rowData, previousRowData))
+                {
+                    System.out.println(String.format("Skipping row %d; it is identical to the previous row", rowIndex));
+                }
+                else if (!"ACTIVE".equals(rowData[CsvColumn.Status.index()]))
+                {
+                    System.out.println(String.format("Skipping row %d; status is %s and not ACTIVE (%s)", rowIndex,
+                            rowData[CsvColumn.Status.index()], rowData[CsvColumn.RegID.index()]));
+                }
                 else
                 {
                     // We expect this row to contain valid data; attempt to
                     // process it.
                     try
                     {
-                        // Check row contains expected number of columns, and
-                        // that Registration ID column 'appears' valid.
-                        if (rowData.length != (CsvColumn.Status.index() + 1))
-                        {
-                            throw new RuntimeException("unexpected number of columns");
-                        }
+                        // Update our record of the "previous" row.
+                        previousRowData = rowData;
+                        
+                        // Check that Registration ID column 'appears' valid.
                         assertMinStringLength(rowData[CsvColumn.RegID.index()], "REGIDENTIFIER", 10);
                         
                         // Either place the data from this row into a new
@@ -268,7 +292,8 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
                         }
                         else if (registration.getRegIdentifier().equals(rowData[CsvColumn.RegID.index()]))
                         {
-                            updateRegistrationWithPersonData(registration, rowData);
+                            updateRegistrationWithContactPersonData(registration, rowData);
+                            updateRegistrationWithKeyPersonData(registration, rowData);
                         }
                         else
                         {
@@ -290,7 +315,7 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
                         String exceptionMessage = e.getMessage();
                         String message = String.format("Failed to import data from row %d: %s.", rowIndex, exceptionMessage);
                         System.out.println(message);
-                        if ((exceptionMessage == null) || exceptionMessage.isEmpty())
+                        if (stringIsNullOrEmpty(exceptionMessage))
                         {
                             System.out.println("Unexpected error: stack trace follows...");
                             e.printStackTrace(System.out);
@@ -361,8 +386,15 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
         {
             registration.setKeyPeople(new ArrayList<KeyPerson>());
         }
-        updateRegistrationWithPersonData(registration, dataRow);
-          
+        updateRegistrationWithContactPersonData(registration, dataRow);
+        updateRegistrationWithKeyPersonData(registration, dataRow);
+        
+        // Add Finance Details if an Upper Tier registration.
+        if (registration.getTier() == Registration.RegistrationTier.UPPER)
+        {
+            addDummyFinanceDetails(registration);
+        }
+        
         // Return the Registration as extracted from this row.  It may need to
         // be updated with Key Person data from a subsequent row, but we'll
         // handle this elsewhere.
@@ -370,10 +402,11 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
     }
     
     /**
-     * Asserts that the number of Key People for a registration is appropriate
+     * Checks that the number of Key People for a registration is appropriate
      * for the Business Type, and that a Contact first + last name has been
-     * imported.  If all tests pass the Registration is saved.  If any test
-     * fails, the error is logged but no exception is thrown.
+     * imported.  Missing or invalid data is filled-in with dummy data, and
+     * warnings to fix this manually later are issued.  If any error occurs it
+     * is logged but no Exception is thrown.
      * @param importedRegistrations A list to save the new Registration to if it
      * is valid.
      * @param reg The registration object to check, and save if valid.
@@ -385,16 +418,13 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
         
         try
         {
-            // Assert a contact name (first + last) was found.
-            String firstName = reg.getFirstName();
-            String lastName = reg.getLastName();
-            if ((firstName == null) || firstName.isEmpty())
+            // Provide a dummy contact name if no real name was found.
+            if (stringIsNullOrEmpty(reg.getFirstName()) || stringIsNullOrEmpty(reg.getLastName()))
             {
-                throw new RuntimeException("no contact first name found");
-            }
-            if ((lastName == null) || lastName.isEmpty())
-            {
-                throw new RuntimeException("no contact last name found");
+                nActions++;
+                reg.setFirstName("The");
+                reg.setLastName("Waste Carrier Registrant");
+                System.out.println(String.format("Action: correct the Contact Name for %s", reg.getRegIdentifier()));
             }
 
             // Validate the Key People list.  This only applies to Upper Tier registrations.
@@ -432,7 +462,7 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
             String exceptionMessage = e.getMessage();
             String message = String.format("Failed to import registraiton %s: %s.", reg.getRegIdentifier(), exceptionMessage);
             System.out.println(message);
-            if ((exceptionMessage == null) || exceptionMessage.isEmpty())
+            if (stringIsNullOrEmpty(exceptionMessage))
             {
                 System.out.println("Unexpected error: stack trace follows...");
                 e.printStackTrace(System.out);
@@ -457,6 +487,56 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
         {
             throw new RuntimeException(String.format("value in %s is too short", colName));
         }
+    }
+    
+    /**
+     * Checks if a string is null, empty or contains only whitespace.
+     * @param s The string to check.
+     * @return True if the string is null, empty or contains only whitespace;
+     * otherwise False.
+     */
+    private boolean stringIsNullOrEmpty(String s)
+    {
+        return ((s == null) || s.trim().isEmpty());
+    }
+    
+    /**
+     * Converts a string to title case.  Any letter that does not immediately
+     * follow another letter is treated as the start of a new word.
+     * @param s The string to convert.
+     * @return The input string converted into title case, or an empty string
+     * if the input is null or contains only whitespace.
+     */
+    private String toTitleCase(String s)
+    {
+        if (stringIsNullOrEmpty(s))
+        {
+            return "";
+        }
+        else
+        {
+            StringBuilder sb = new StringBuilder();
+            boolean makeNextCharUppercase = true;
+            
+            for (char c : s.trim().toCharArray())
+            {
+                sb.append(makeNextCharUppercase ? Character.toUpperCase(c) : Character.toLowerCase(c));
+                makeNextCharUppercase = !Character.isLetter(c);
+            }
+            
+            return sb.toString();
+        }
+    }
+    
+    /**
+     * Safely converts a string to upper case.
+     * @param s The string to convert.
+     * @return The string converted to upper case, or an empty string if the
+     * input is null or contains only whitespace
+     */
+    private String safeToUpperCase(String s)
+    {
+        return (stringIsNullOrEmpty(s) ? "" : s.trim().toUpperCase());
     }
     
     // Sets the Tier from a string.
@@ -534,7 +614,7 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
         
         // Set email address if provided.
         String emailAddress = dataRow[CsvColumn.ContactEmail.index()];
-        if ((emailAddress != null) && !emailAddress.isEmpty())
+        if (!stringIsNullOrEmpty(emailAddress))
         {
             reg.setContactEmail(emailAddress);
         }
@@ -543,7 +623,7 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
         StringBuilder accessCode = new StringBuilder(ACCESS_CODE_LENGTH);
         for (int n = 0; n < ACCESS_CODE_LENGTH; n++)
         {
-            accessCode.append(ACCESS_CODE_CHARS.charAt(accessCodeRnd.nextInt(ACCESS_CODE_CHARS_LENGTH)));
+            accessCode.append(ACCESS_CODE_CHARS.charAt(RND_SOURCE.nextInt(ACCESS_CODE_CHARS_LENGTH)));
         }
         reg.setAccessCode(accessCode.toString());
         
@@ -573,10 +653,6 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
         reg.setExpires_on(expiryDate);
                 
         // Set registration metadata.
-        if (!"ACTIVE".equals(dataRow[CsvColumn.Status.index()]))
-        {
-            throw new RuntimeException("STATUS column contains value other than 'ACTIVE'");
-        }
         MetaData md = new MetaData();
         md.setAnotherString("Imported-from-IR");
         md.setStatus(MetaData.RegistrationStatus.ACTIVE);
@@ -596,34 +672,88 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
     // Sets the addresses for a registration.
     private void setAddresses(Registration reg, String[] dataRow)
     {
-        // Validate addresses have expected data.
-        assertMinStringLength(dataRow[CsvColumn.RegAddrBuilding.index()], "REG_HOUSENUMBER", 1);
-        assertMinStringLength(dataRow[CsvColumn.RegAddrTown.index()], "REG_TOWNCITY", 2);
-        assertMinStringLength(dataRow[CsvColumn.RegAddrPostcode.index()], "REG_POSTCODE", 5);
+        // Prevent repetitive address warnings.
+        boolean regAddrWarningIssued = false, postalAddrWarningIssued = false;
         
-        assertMinStringLength(dataRow[CsvColumn.PostAddrBuilding.index()], "POST_HOUSENUMBER", 1);
-        assertMinStringLength(dataRow[CsvColumn.PostAddrTown.index()], "POST_TOWNCITY", 2);
-        assertMinStringLength(dataRow[CsvColumn.PostAddrPostcode.index()], "POST_POSTCODE", 5);
+        // Check that both addresses have a postcode; issue an Action if not.
+        // Ideally we want a premises number / name and town to always be
+        // present, but a large proportion of IR data is missing one or both of
+        // these fields so we silently ignore this.
+        if (stringIsNullOrEmpty(dataRow[CsvColumn.RegAddrPostcode.index()]))
+        {
+            nActions++;
+            regAddrWarningIssued = true;
+            System.out.println(String.format("Action: fix the missing postcode in the Registered Address for %s", reg.getRegIdentifier()));
+        }
+        if (stringIsNullOrEmpty(dataRow[CsvColumn.PostAddrPostcode.index()]))
+        {
+            nActions++;
+            postalAddrWarningIssued = true;
+            System.out.println(String.format("Action: fix the missing postcode in the Postal Address for %s", reg.getRegIdentifier()));
+        }
         
         // Create and populate Registered address.
         Address regAddr = new Address();
         regAddr.setAddressType(Address.addressType.REGISTERED);
         regAddr.setAddressMode("manual-uk");
-        regAddr.setHouseNumber(dataRow[CsvColumn.RegAddrBuilding.index()]);
-        regAddr.setTownCity(dataRow[CsvColumn.RegAddrTown.index()]);
-        regAddr.setPostcode(dataRow[CsvColumn.RegAddrPostcode.index()]);
+        regAddr.setHouseNumber(toTitleCase(dataRow[CsvColumn.RegAddrBuilding.index()]));
+        regAddr.setTownCity(toTitleCase(dataRow[CsvColumn.RegAddrTown.index()]));
+        regAddr.setPostcode(safeToUpperCase(dataRow[CsvColumn.RegAddrPostcode.index()]));
         setAddressLines(regAddr, dataRow, CsvColumn.RegAddrLine1.index());
-        regAddr.setEasting(dataRow[CsvColumn.RegAddrEasting.index()]);
-        regAddr.setNorthing(dataRow[CsvColumn.RegAddrNorthing.index()]);
+        if (stringIsNullOrEmpty(dataRow[CsvColumn.RegAddrEasting.index()]) || stringIsNullOrEmpty(dataRow[CsvColumn.RegAddrNorthing.index()]))
+        {
+            if (!regAddrWarningIssued)
+            {
+                nRecommendations++;
+                regAddrWarningIssued = true;
+                System.out.println(String.format("Recommendation: improve the Registered Address for %s", reg.getRegIdentifier()));
+            }
+        }
+        else
+        {
+            regAddr.setEasting(dataRow[CsvColumn.RegAddrEasting.index()]);
+            regAddr.setNorthing(dataRow[CsvColumn.RegAddrNorthing.index()]);
+        }
+        
+        // If there was no premises and no address lines, issue a warning (Registered address).
+        if (stringIsNullOrEmpty(regAddr.getHouseNumber()) && stringIsNullOrEmpty(regAddr.getAddressLine1()))
+        {
+            if (stringIsNullOrEmpty(regAddr.getPostcode()) && stringIsNullOrEmpty(regAddr.getTownCity()))
+            {
+                throw new RuntimeException(String.format("Registered Address is completely empty for %s", reg.getRegIdentifier()));
+            }
+            else if (!regAddrWarningIssued)
+            {
+                nRecommendations++;
+                regAddrWarningIssued = true;  // Intentional unused assignment, in case of future edits.
+                System.out.println(String.format("Recommendation: improve the Registered Address for %s", reg.getRegIdentifier()));
+            }
+        }
         
         // Create and populate Postal address.
         Address postalAddr = new Address();
         postalAddr.setAddressType(Address.addressType.POSTAL);
-        postalAddr.setHouseNumber(dataRow[CsvColumn.PostAddrBuilding.index()]);
-        postalAddr.setTownCity(dataRow[CsvColumn.PostAddrTown.index()]);
-        postalAddr.setPostcode(dataRow[CsvColumn.PostAddrPostcode.index()]);
+        postalAddr.setHouseNumber(toTitleCase(dataRow[CsvColumn.PostAddrBuilding.index()]));
+        postalAddr.setTownCity(toTitleCase(dataRow[CsvColumn.PostAddrTown.index()]));
+        postalAddr.setPostcode(safeToUpperCase(dataRow[CsvColumn.PostAddrPostcode.index()]));
         setAddressLines(postalAddr, dataRow, CsvColumn.PostAddrLine1.index());
         
+        // If there was no premises and no address lines, issue a warning (Contact address).
+        if (stringIsNullOrEmpty(postalAddr.getHouseNumber()) && stringIsNullOrEmpty(postalAddr.getAddressLine1()))
+        {
+            if (stringIsNullOrEmpty(postalAddr.getPostcode()) && stringIsNullOrEmpty(postalAddr.getTownCity()))
+            {
+                throw new RuntimeException(String.format("Postal Address is completely empty for %s", reg.getRegIdentifier()));
+            }
+            else if (!postalAddrWarningIssued)
+            {
+                nRecommendations++;
+                postalAddrWarningIssued = true;  // Intentional unused assignment, in case of future edits.
+                System.out.println(String.format("Recommendation: improve the Postal Address for %s", reg.getRegIdentifier()));
+            }
+        }
+        
+        // Save the address data to the registration.
         reg.setAddresses(Arrays.asList(regAddr, postalAddr));
     }
     
@@ -648,26 +778,18 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
         
         // Use the result to populate the address object.  Fail if we didn't 
         // find at least one non-empty line.
-        if ((nonEmptyLines[0] == null) || nonEmptyLines[0].isEmpty())
+        address.setAddressLine1(toTitleCase(nonEmptyLines[0]));
+        if (!stringIsNullOrEmpty(nonEmptyLines[1]))
         {
-            throw new RuntimeException("All ADDRESSLINE columns are empty.");
+            address.setAddressLine2(toTitleCase(nonEmptyLines[1]));
         }
-        else
+        if (!stringIsNullOrEmpty(nonEmptyLines[2]))
         {
-            address.setAddressLine1(nonEmptyLines[0]);
+            address.setAddressLine3(toTitleCase(nonEmptyLines[2]));
         }
-        
-        if ((nonEmptyLines[1] != null) && !nonEmptyLines[1].isEmpty())
+        if (!stringIsNullOrEmpty(nonEmptyLines[3]))
         {
-            address.setAddressLine2(nonEmptyLines[1]);
-        }
-        if ((nonEmptyLines[2] != null) && !nonEmptyLines[2].isEmpty())
-        {
-            address.setAddressLine3(nonEmptyLines[2]);
-        }
-        if ((nonEmptyLines[3] != null) && !nonEmptyLines[3].isEmpty())
-        {
-            address.setAddressLine4(nonEmptyLines[3]);
+            address.setAddressLine4(toTitleCase(nonEmptyLines[3]));
         }
     }
     
@@ -681,21 +803,35 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
         // limited company, then set company number.
         if (COMPANY.equals(businessType))
         {
-            assertMinStringLength(dataRow[CsvColumn.CompanyNo.index()], "COMPANYNO", 6);
-            reg.setCompanyNo(dataRow[CsvColumn.CompanyNo.index()]);
+            if (stringIsNullOrEmpty(dataRow[CsvColumn.CompanyNo.index()]))
+            {
+                nRecommendations++;
+                System.out.println(String.format("Recommendation: add the Company Number for %s", reg.getRegIdentifier()));
+            }
+            else
+            {
+                reg.setCompanyNo(dataRow[CsvColumn.CompanyNo.index()]);
+                int regNumLength = dataRow[CsvColumn.CompanyNo.index()].length();
+                if (!((regNumLength == 6) || (regNumLength == 8)))
+                {
+                    nRecommendations++;
+                    System.out.println(String.format("Recommendation: check the Company Number for %s", reg.getRegIdentifier()));
+                }
+            }
         }
         
         // Take the orgnisation name from the Business Name column if possible,
         // or the Post Name column (sole trader and public body only) otherwise.
         String businessName = dataRow[CsvColumn.BusinessName.index()];
-        String postAddrName = dataRow[CsvColumn.PostAddrName.index()];
-        if (businessName.length() > 2)
+        String applicantName = dataRow[CsvColumn.ApplicantName.index()];
+        if ((businessName != null) && (businessName.length() > 2))
         {
             reg.setCompanyName(businessName);
         }
-        else if ((postAddrName.length() > 2) && (SOLE_TRADER.equals(businessType) || PUBLIC_BODY.equals(businessType)))
+        else if ((applicantName != null) && (applicantName.length() > 2) &&
+                (SOLE_TRADER.equals(businessType) || PUBLIC_BODY.equals(businessType)))
         {
-            reg.setCompanyName(postAddrName);
+            reg.setCompanyName(applicantName);
         }
         else
         {
@@ -703,42 +839,66 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
         }
     }
     
-    // Updates a Registration with data from the person-related columns in the
-    // CSV file.  These columns may contain data about a Key Person, and/or
-    // the contact name for this Registration.
-    private void updateRegistrationWithPersonData(Registration reg, String[] dataRow)
+    // Updates a Registration with Contact Name data, if this row of the CSV
+    // file contains this type of data.
+    private void updateRegistrationWithContactPersonData(Registration reg, String[] dataRow)
     {
-        // Extract some key values for easier manipulation.
-        String businessType = reg.getBusinessType();
-        String personPosition = dataRow[CsvColumn.Position.index()];
+        // Get the Postal Address for this Registration.
+        Address postalAddr = reg.getFirstAddressByType(Address.addressType.POSTAL);
+        if (postalAddr == null)
+        {
+            throw new RuntimeException("Unexpected error: registration is missing a postal address");
+        }
         
         // Decide if the person on this row of the CSV file should be used as
         // the main contact for this Registration, and store their name if so.
-        boolean useAsContact = "Contact".equalsIgnoreCase(personPosition);
-        if (useAsContact && PUBLIC_BODY.equals(businessType))
-        {
-            // Public Bodies seem to have multiple Contact people.  We try to
-            // select the best one by ideally choosing the Person whose surname
-            // appears in the "Applicant" column.
-            boolean isBestContact = dataRow[CsvColumn.ApplicantName.index()].toLowerCase()
-                    .contains(dataRow[CsvColumn.Lastname.index()].toLowerCase());
-            
-            // But in case we don't find anyone matching that criteria, we'll
-            // default to the first Contact we find.
-            String existingContactLastname = reg.getLastName();
-            boolean noExistingConact = (existingContactLastname == null) || existingContactLastname.isEmpty();
-            
-            // Use this Person if either condition is met.
-            useAsContact = isBestContact || noExistingConact;
-        }
-        
-        if (useAsContact)
+        // In cases where there are multiple Contacts, we simply use the first.
+        if (stringIsNullOrEmpty(reg.getLastName()) && "Contact".equalsIgnoreCase(dataRow[CsvColumn.Position.index()]))
         {
             assertMinStringLength(dataRow[CsvColumn.Firstname.index()], "FIRSTNAME", 1);
             assertMinStringLength(dataRow[CsvColumn.Lastname.index()], "SURNAME", 2);
             reg.setFirstName(dataRow[CsvColumn.Firstname.index()]);
             reg.setLastName(dataRow[CsvColumn.Lastname.index()]);
+            postalAddr.setFirstName(dataRow[CsvColumn.Firstname.index()]);
+            postalAddr.setLastName(dataRow[CsvColumn.Lastname.index()]);
         }
+        
+        // For Person type records only, the IR export does not contain a
+        // separate row for the Contact.  So we have to try to parse the Post
+        // Name column into a First and Last name.
+        if (SOLE_TRADER.equals(reg.getBusinessType()) && !stringIsNullOrEmpty(dataRow[CsvColumn.PostAddrName.index()]))
+        {
+            String[] nameParts = dataRow[CsvColumn.PostAddrName.index()].split("\\s+");
+            if ((nameParts != null) && (nameParts.length > 0))
+            {
+                StringBuilder firstNames = new StringBuilder();
+                for (int n = 0, nMax = nameParts.length - 1; n < nMax; n++)
+                {
+                    if (n > 0)
+                    {
+                        firstNames.append(" ");
+                    }
+                    firstNames.append(nameParts[n]);
+                }
+                
+                String firstName = firstNames.toString();
+                String lastName = nameParts[nameParts.length - 1];
+                
+                reg.setFirstName(firstName);
+                reg.setLastName(lastName);
+                postalAddr.setFirstName(firstName);
+                postalAddr.setLastName(lastName);
+            }
+        }
+    }
+    
+    // Updates a Registration with Key Person data, if this row of the CSV file
+    // contains this type of data.
+    private void updateRegistrationWithKeyPersonData(Registration reg, String[] dataRow)
+    {
+        // Extract some values for easier manipulation.
+        String businessType = reg.getBusinessType();
+        String personPosition = dataRow[CsvColumn.Position.index()];
         
         // Key People are only applicable on Upper Tier registrations.
         if (reg.getTier() == Registration.RegistrationTier.UPPER)
@@ -776,7 +936,12 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
                 }
                 catch (ParseException e)
                 {
-                    throw new RuntimeException("cannot parse person's Date Of Birth", e);
+                    nActions++;
+                    System.out.println(String.format("Action: correct the Date Of Birth for %s %s in %s",
+                            dataRow[CsvColumn.Firstname.index()], dataRow[CsvColumn.Lastname.index()], reg.getRegIdentifier()));
+                    
+                    // Rails app will error without a DoB, so lets create a fake one for now.
+                    personDateOfBirth = new Date(0, 0, 1);
                 }
 
                 // Add this person to the list of Key People.
@@ -788,8 +953,41 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
 
                 ArrayList<KeyPerson> keyPeople = (ArrayList<KeyPerson>)reg.getKeyPeople();
                 keyPeople.add(keyPerson);
-                reg.setKeyPeople(keyPeople);
             }
         }
+    }
+    
+    /**
+     * Creates the bare minimum Finance Details required for an Upper Tier
+     * registration to function correctly in the service.
+     * @param reg The Registration to add Finance Details to.
+     */
+    private void addDummyFinanceDetails(Registration reg)
+    {
+        OrderItem dummyOrderItem = new OrderItem();
+        dummyOrderItem.setAmount(0);
+        dummyOrderItem.setCurrency("GBP");
+        dummyOrderItem.setDescription("Import from IR");
+        dummyOrderItem.setType(OrderItem.OrderItemType.IR_IMPORT);
+        dummyOrderItem.setReference("Reg: " + reg.getRegIdentifier());
+        
+        Order dummyOrder = new Order();
+        dummyOrder.setOrderId(UUID.randomUUID().toString());
+        dummyOrder.setOrderCode(Integer.toString(RND_SOURCE.nextInt(999999999)));  // Add an upper bound to avoid negative numbers.
+        dummyOrder.setPaymentMethod(Order.PaymentMethod.OFFLINE);
+        dummyOrder.setMerchantId("n/a");
+        dummyOrder.setWorldPayStatus("n/a");
+        dummyOrder.setTotalAmount(0);
+        dummyOrder.setCurrency("GBP");
+        dummyOrder.setDateCreated(reg.getMetaData().getDateRegistered());
+        dummyOrder.setDateLastUpdated(new Date());
+        dummyOrder.setDescription("Import from IR");
+        dummyOrder.setOrderItems(Arrays.asList(dummyOrderItem));
+        
+        FinanceDetails dummyFinanceDetails = new FinanceDetails();
+        dummyFinanceDetails.setBalance(0);
+        dummyFinanceDetails.setOrders(Arrays.asList(dummyOrder));
+        
+        reg.setFinanceDetails(dummyFinanceDetails);
     }
 }
