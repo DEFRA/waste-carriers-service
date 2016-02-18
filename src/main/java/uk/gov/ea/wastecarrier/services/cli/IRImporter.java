@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.UUID;
 
 import com.mongodb.DB;
@@ -162,6 +163,7 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
         
         // Create a date parser.
         dateParser = new SimpleDateFormat(namespace.getString("dateFormat"));
+        dateParser.setTimeZone(TimeZone.getTimeZone("UTC"));
         
         // Get database configuration, read in from YAML file.
         DatabaseConfiguration dbConfig = configuration.getDatabase();
