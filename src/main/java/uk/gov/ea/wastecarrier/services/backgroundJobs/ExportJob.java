@@ -200,6 +200,7 @@ public class ExportJob implements Job
         return new String[] {
             "Registration number",
             "Organisation name",
+            "UPRN",
             "Building",
             "Address line 1",
             "Address line 2",
@@ -236,6 +237,7 @@ public class ExportJob implements Job
             writer.writeNext(new String[] {
                 reg.getRegIdentifier(),     // IR Permission number
                 reg.getCompanyName(),       // Business name
+                registeredAddress.getUprn(),
                 registeredAddress.getHouseNumber(),
                 registeredAddress.getAddressLine1(),
                 registeredAddress.getAddressLine2(),
