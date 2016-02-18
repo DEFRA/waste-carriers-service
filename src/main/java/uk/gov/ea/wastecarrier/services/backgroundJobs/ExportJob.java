@@ -1,5 +1,6 @@
 package uk.gov.ea.wastecarrier.services.backgroundJobs;
 
+import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobKey;
 import org.quartz.JobDataMap;
@@ -28,6 +29,7 @@ import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
  * Reporting systems.  This job also updates Registration status (ACTIVE,
  * EXPIRED etc).  This job is normally run once daily.
  */
+@DisallowConcurrentExecution
 public class ExportJob implements Job
 {
     // Public 'constants' used in the JobDataMap, which passes configuration
@@ -198,6 +200,7 @@ public class ExportJob implements Job
         return new String[] {
             "Registration number",
             "Organisation name",
+            "UPRN",
             "Building",
             "Address line 1",
             "Address line 2",
@@ -234,6 +237,7 @@ public class ExportJob implements Job
             writer.writeNext(new String[] {
                 reg.getRegIdentifier(),     // IR Permission number
                 reg.getCompanyName(),       // Business name
+                registeredAddress.getUprn(),
                 registeredAddress.getHouseNumber(),
                 registeredAddress.getAddressLine1(),
                 registeredAddress.getAddressLine2(),
