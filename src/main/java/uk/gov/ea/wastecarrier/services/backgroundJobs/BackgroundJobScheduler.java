@@ -6,6 +6,8 @@ import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobKey;
 import org.quartz.Trigger;
 import org.quartz.impl.StdSchedulerFactory;
 
@@ -14,6 +16,7 @@ import static org.quartz.TriggerBuilder.newTrigger;
 import static org.quartz.CronScheduleBuilder.cronSchedule;
 
 import java.util.logging.Logger;
+import java.util.List;
 
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 
@@ -37,14 +40,13 @@ public class BackgroundJobScheduler implements Managed
     private final static Logger log = Logger.getLogger(BackgroundJobScheduler.class.getName());
     
     // Private string constants.
-    private static final String JOB_GROUP = "WasteCarriersService";
+    private static final String EXPORT_JOB = "ExportJob";
+    private static final String CRON_GROUP = "CronJobs";
+    private static final String MANUAL_GROUP = "ManuallyTriggeredJobs";
     
     // Private instance members relating to Quartz.
     private Scheduler scheduler;
     private Trigger manualJobTrigger;
-    
-    // Private instance members storing Quartz jobs.
-    private JobDetail exportJob;
     
     // Private instance members storing job configuration.
     private ExportJobConfiguration exportJobConfig;
@@ -99,41 +101,78 @@ public class BackgroundJobScheduler implements Managed
     }
     
     /**
+     * Checks if a job with the specified name is currently executing.
+     * @param jobName The name of the job to check for.
+     * @return True if a job with the specified name is executing; False otherwise.
+     */
+    private boolean isJobExecuting(String jobName)
+    {
+        boolean result = false;
+        
+        if (scheduler != null)
+        {
+            try
+            {
+                List<JobExecutionContext> currentJobs = scheduler.getCurrentlyExecutingJobs();
+                if ((currentJobs != null) && !currentJobs.isEmpty())
+                {
+                    for (JobExecutionContext job : currentJobs)
+                    {
+                        JobDetail jobDetail = job.getJobDetail();
+                        if (jobDetail != null)
+                        {
+                            JobKey jobKey = jobDetail.getKey();
+                            if ((jobKey != null) && jobName.equals(jobKey.getName()))
+                            {
+                                result = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (SchedulerException e)
+            {
+                log.warning("Unexpected error whilst checking if job already executing");
+            }
+        }
+        
+        return result;
+    }
+    
+    /**
      * Returns a Quartz JobDetail object defining the "Export" job, which
      * exports data from the Waste Carriers database to files for the electronic
      * Public Register and for a Reporting Snapshot.
+     * @param jobGroup The group to place the job in.
      * @return A Quartz JobDetail object defining the "Export" job.
      */
-    private JobDetail getExportJob() throws RuntimeException
+    private JobDetail getExportJob(String jobGroup) throws RuntimeException
     {
-        // We re-use a single JobDetail regardless how many times it is used.
-        if (exportJob == null)
+        if (databaseConfig == null)
         {
-            if (databaseConfig == null)
-            {
-                logAndThrowRuntimeException("Database configuration has not been set.");
-            }
-            
-            if (exportJobConfig == null)
-            {
-                logAndThrowRuntimeException("Export Job configuration has not been set.");
-            }
-            
-            exportJob = newJob(ExportJob.class)
-                 .withIdentity("ExportJob", JOB_GROUP)
-                 .build();
-            
-            JobDataMap dataMap = exportJob.getJobDataMap();
-            dataMap.put(ExportJob.DATABASE_HOST, databaseConfig.getHost());
-            dataMap.put(ExportJob.DATABASE_PORT, databaseConfig.getPort());
-            dataMap.put(ExportJob.DATABASE_NAME, databaseConfig.getName());
-            dataMap.put(ExportJob.DATABASE_USERNAME, databaseConfig.getUsername());
-            dataMap.put(ExportJob.DATABASE_PASSWORD, databaseConfig.getPassword());
-            dataMap.put(ExportJob.EPR_EXPORT_FILE, exportJobConfig.getEprExportFile());
-            dataMap.put(ExportJob.EPR_DATE_FORMAT, exportJobConfig.getEprExportDateFormat());
-            dataMap.put(ExportJob.REPORTING_EXPORT_PATH, exportJobConfig.getReportingExportPath());
-            dataMap.put(ExportJob.REPORTING_DATE_FORMAT, exportJobConfig.getReportingExportDateFormat());
+            logAndThrowRuntimeException("Database configuration has not been set.");
         }
+
+        if (exportJobConfig == null)
+        {
+            logAndThrowRuntimeException("Export Job configuration has not been set.");
+        }
+
+        JobDetail exportJob = newJob(ExportJob.class)
+            .withIdentity(EXPORT_JOB, jobGroup)
+            .build();
+
+        JobDataMap dataMap = exportJob.getJobDataMap();
+        dataMap.put(ExportJob.DATABASE_HOST, databaseConfig.getHost());
+        dataMap.put(ExportJob.DATABASE_PORT, databaseConfig.getPort());
+        dataMap.put(ExportJob.DATABASE_NAME, databaseConfig.getName());
+        dataMap.put(ExportJob.DATABASE_USERNAME, databaseConfig.getUsername());
+        dataMap.put(ExportJob.DATABASE_PASSWORD, databaseConfig.getPassword());
+        dataMap.put(ExportJob.EPR_EXPORT_FILE, exportJobConfig.getEprExportFile());
+        dataMap.put(ExportJob.EPR_DATE_FORMAT, exportJobConfig.getEprExportDateFormat());
+        dataMap.put(ExportJob.REPORTING_EXPORT_PATH, exportJobConfig.getReportingExportPath());
+        dataMap.put(ExportJob.REPORTING_DATE_FORMAT, exportJobConfig.getReportingExportDateFormat());
         
         return exportJob;
     }
@@ -150,7 +189,7 @@ public class BackgroundJobScheduler implements Managed
         if (manualJobTrigger == null)
         {
             manualJobTrigger = newTrigger() 
-                .withIdentity("ManualJobTrigger", JOB_GROUP)
+                .withIdentity("ManualJobTrigger", MANUAL_GROUP)
                 .startNow()
                 .build();
         }
@@ -172,7 +211,11 @@ public class BackgroundJobScheduler implements Managed
         {
             try
             {
-                scheduler.scheduleJob(getExportJob(), getManualJobTrigger());
+                if (isJobExecuting(EXPORT_JOB))
+                {
+                    throw new RuntimeException("Export Job is already executing");
+                }
+                scheduler.scheduleJob(getExportJob(MANUAL_GROUP), getManualJobTrigger());
             }
             catch (SchedulerException e)
             {
@@ -204,8 +247,8 @@ public class BackgroundJobScheduler implements Managed
             // provided in the Export Job configuration.
             if ((cronExpression != null) && !cronExpression.isEmpty())
             {
-                scheduler.scheduleJob(getExportJob(), newTrigger()
-                        .withIdentity("ScheduledExport", JOB_GROUP)
+                scheduler.scheduleJob(getExportJob(CRON_GROUP), newTrigger()
+                        .withIdentity("ScheduledExport", CRON_GROUP)
                         .withSchedule(
                                 cronSchedule(cronExpression)
                                 .withMisfireHandlingInstructionFireAndProceed()
