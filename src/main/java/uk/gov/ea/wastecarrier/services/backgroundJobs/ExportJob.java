@@ -55,6 +55,9 @@ public class ExportJob implements Job
     // Private instance members, initialised inside execute().
     private SimpleDateFormat eprDateFormatter;
     private SimpleDateFormat reportingDateFormatter;
+    
+    // Private members referencing files we'll write to.
+    private CSVWriter eprWriter = null;
 
     /**
      * Public empty constructor, for Quartz.
@@ -159,12 +162,11 @@ public class ExportJob implements Job
             database.getCollection(Registration.COLLECTION_NAME), Registration.class, String.class);
             
         // Make sure we don't leak resources, even on an exception.
-        CSVWriter eprExport = null;
         try
         {
             // Initialise the EPR export.
-            eprExport = new CSVWriter(new FileWriter(eprExportFile));
-            eprExport.writeNext(getEprColumnTitles());
+            eprWriter = new CSVWriter(new FileWriter(eprExportFile));
+            eprWriter.writeNext(getEprColumnTitles());
 
             // Initialise the Reporting Snapshot exports.
             // TODO: complete this.
@@ -173,18 +175,14 @@ public class ExportJob implements Job
             DBCursor<Registration> dbcur = registrations.find();
             for (Registration r : dbcur)
             {
-                // TODO: Proper error handling and reporting.
-                Address registeredAddress = r.getFirstAddressByType(Address.addressType.REGISTERED);
-                Address postalAddress = r.getFirstAddressByType(Address.addressType.POSTAL);
-
-                exportRegistrationForEpr(eprExport, r, registeredAddress);
+                exportRegistrationForEpr(r);
             }
         }
         finally
         {
-            if (eprExport != null)
+            if (eprWriter != null)
             {
-                eprExport.close();
+                eprWriter.close();
             }
         }
         
@@ -222,39 +220,50 @@ public class ExportJob implements Job
     
     /**
      * Exports details of a registration to a CSV file in the format used for
-     * the electronic Public Register.
-     * @param writer An object providing write access to a CSV file.
+     * the electronic Public Register.  Any exceptions are handled within the
+     * function.
      * @param reg The registration record to export.
-     * @param registeredAddress The registered address for the registration.
      */
-    private void exportRegistrationForEpr(CSVWriter writer, Registration reg, Address registeredAddress)
+    private void exportRegistrationForEpr(Registration reg)
     {
-        MetaData metaData = reg.getMetaData();
-        
-        if ((metaData != null) && reg.goesOnPublicRegister())
+        try
         {
-            boolean isUpper = (reg.getTier() == Registration.RegistrationTier.UPPER);
-            writer.writeNext(new String[] {
-                reg.getRegIdentifier(),     // IR Permission number
-                reg.getCompanyName(),       // Business name
-                registeredAddress.getUprn(),
-                registeredAddress.getHouseNumber(),
-                registeredAddress.getAddressLine1(),
-                registeredAddress.getAddressLine2(),
-                registeredAddress.getAddressLine3(),
-                registeredAddress.getAddressLine4(),
-                registeredAddress.getTownCity(),
-                registeredAddress.getPostcode(),
-                registeredAddress.getCountry(),
-                registeredAddress.getEasting(),
-                registeredAddress.getNorthing(),
-                reg.getBusinessType(),                                          // Sole trader, Partnership etc.
-                reg.getTier().name(),                                           // UPPER or LOWER (tier).
-                isUpper ? reg.getRegistrationType() : "carrier_broker_dealer",  // Carrier / Broker / Dealer status.
-                eprDateFormatter.format(metaData.getDateActivated()),           // Registration date.
-                isUpper ? eprDateFormatter.format(reg.getExpires_on()) : "",    // Expiry date.
-                COMPANY.equals(reg.getBusinessType()) ? reg.getCompanyNo() : "" // Company number.
-            });
+            MetaData metaData = reg.getMetaData();
+            Address registeredAddress = reg.getFirstAddressByType(Address.addressType.REGISTERED);
+
+            if ((metaData == null) || (registeredAddress == null))
+            {
+                log.warning(String.format("Cannot export %s to ePR because Metadata or Registered Address is missing", reg.getRegIdentifier()));
+            }
+            else if (reg.goesOnPublicRegister())
+            {
+                boolean isUpper = (reg.getTier() == Registration.RegistrationTier.UPPER);
+                eprWriter.writeNext(new String[] {
+                    reg.getRegIdentifier(),     // IR Permission number
+                    reg.getCompanyName(),       // Business name
+                    registeredAddress.getUprn(),
+                    registeredAddress.getHouseNumber(),
+                    registeredAddress.getAddressLine1(),
+                    registeredAddress.getAddressLine2(),
+                    registeredAddress.getAddressLine3(),
+                    registeredAddress.getAddressLine4(),
+                    registeredAddress.getTownCity(),
+                    registeredAddress.getPostcode(),
+                    registeredAddress.getCountry(),
+                    registeredAddress.getEasting(),
+                    registeredAddress.getNorthing(),
+                    reg.getBusinessType(),                                          // Sole trader, Partnership etc.
+                    reg.getTier().name(),                                           // UPPER or LOWER (tier).
+                    isUpper ? reg.getRegistrationType() : "carrier_broker_dealer",  // Carrier / Broker / Dealer status.
+                    eprDateFormatter.format(metaData.getDateActivated()),           // Registration date.
+                    isUpper ? eprDateFormatter.format(reg.getExpires_on()) : "",    // Expiry date.
+                    COMPANY.equals(reg.getBusinessType()) ? reg.getCompanyNo() : "" // Company number.
+                });
+            }
+        }
+        catch (Exception e)
+        {
+            log.warning(String.format("Unexpected exception writing registration to ePR export: %s", e.getMessage()));
         }
     }
 }
