@@ -25,7 +25,7 @@ public class ExportJobConfiguration extends Configuration {
 
     @NotEmpty
     @JsonProperty
-    private String reportingExportDateFormat = "yyyy-MM-dd";
+    private String reportingExportDateFormat = "yyyy-MM-dd'T'HH:mm'Z'";
 
     @NotEmpty
     @JsonProperty

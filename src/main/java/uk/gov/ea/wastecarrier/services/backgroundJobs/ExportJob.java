@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 import java.text.SimpleDateFormat;
+import java.util.TimeZone;
 
 import com.mongodb.DB;
 import net.vz.mongodb.jackson.JacksonDBCollection;
@@ -125,6 +126,8 @@ public class ExportJob implements Job
             // Initialise date formatters from provided configuration.
             eprDateFormatter = new SimpleDateFormat(jobConfig.getString(EPR_DATE_FORMAT));
             reportingDateFormatter = new SimpleDateFormat(jobConfig.getString(REPORTING_DATE_FORMAT));
+            eprDateFormatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+            reportingDateFormatter.setTimeZone(TimeZone.getTimeZone("UTC"));
             
             // Initialise the money formatter from the provided configuration.
             moneyFormatter = new DecimalFormat(jobConfig.getString(REPORTING_MONEY_FORMAT));

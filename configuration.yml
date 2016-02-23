@@ -80,7 +80,7 @@ exportJob:
   # Path to use for Reporting Snapshot exports (note: directory, not file).
   reportingExportPath: WCRS_SERVICES_REPORTING_EXPORT_PATH
   # Date format to use for Reporting Snapshot exports.
-  reportingExportDateFormat: "yyyy-MM-dd"
+  reportingExportDateFormat: "yyyy-MM-dd'T'HH:mm'Z'"
   # Money format to use for Reporting Snapshot exports.
   reportingExportMoneyFormat: "0.00"
   # Cron expression for scheduled job exectuion.  Leave empty to make the job
