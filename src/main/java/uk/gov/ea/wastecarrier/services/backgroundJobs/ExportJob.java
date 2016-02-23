@@ -277,6 +277,14 @@ public class ExportJob implements Job
             ordersCsvFile = createCsvFileWriter(getReportingSnapshotFileWithPath(jobConfig, "orders.csv"));
             orderItemsCsvFile = createCsvFileWriter(getReportingSnapshotFileWithPath(jobConfig, "order_items.csv"));
             paymentsCsvFile = createCsvFileWriter(getReportingSnapshotFileWithPath(jobConfig, "payments.csv"));
+            
+            registrationsCsvFile.writeNext(getRegistrationExportColumnTitles());
+            addressesCsvFile.writeNext(getAddressesExportColumnTitles());
+            keyPeopleCsvFile.writeNext(getKeyPeopleExportColumnTitles());
+            signOffsCsvFile.writeNext(getSignOffsExportColumnTitles());
+            ordersCsvFile.writeNext(getOrdersExportColumnTitles());
+            orderItemsCsvFile.writeNext(getOrderItemsExportColumnTitles());
+            paymentsCsvFile.writeNext(getPaymentExportColumnTitles());
 
             // Process all registrations in the database.
             DBCursor<Registration> dbcur = registrations.find();
@@ -398,6 +406,48 @@ public class ExportJob implements Job
     }
     
     /**
+     * Returns an array of column titles for the Registrations component of the
+     * Reporting Snapshot export.
+     * @return An array of strings, one per CSV-file column.
+     */
+    private String[] getRegistrationExportColumnTitles()
+    {
+        return new String[] {
+            "RegistrationUID",
+            "RegistrationNumber",
+            "RenewedRegistrationNumber",
+            "Tier",
+            "OrganisationType",
+            "RegistrationType",
+            "OrganisationName",
+            "CompanyNumber",
+            "ContactFirstName",
+            "ContactLastName",
+            "ContactPhoneNumber",
+            "ContactEmail",
+            "AccountEmail",
+            "Status",
+            "Balance",
+            "RevokedReason",
+            "RegistrationTimestamp",
+            "ActivationTimestamp",
+            "ExpiryTimestamp",
+            "LastModifiedTimestamp",
+            
+            "Route",
+            "OtherBusinesses",
+            "IsMainService",
+            "ConstructionWaste",
+            "OnlyAMF",
+            "Declaration",
+            "DeclaredConvictions",
+            
+            "OrganisationFlaggedForReview",
+            "ReviewFlagTimestamp"
+        };
+    }
+    
+    /**
      * Exports details of a registration to a group of CSV files in the format
      * used for the reporting snapshot.  Any exceptions are handed within the
      * function.
@@ -474,6 +524,32 @@ public class ExportJob implements Job
     }
     
     /**
+     * Returns an array of column titles for the Addresses component of the
+     * Reporting Snapshot export.
+     * @return An array of strings, one per CSV-file column.
+     */
+    private String[] getAddressesExportColumnTitles()
+    {
+        return new String[] {
+            "RegistrationUID",
+            "AddressType",
+            "UPRN",
+            "Premises",
+            "AddressLine1",
+            "AddressLine2",
+            "AddressLine3",
+            "AddressLine4",
+            "TownCity",
+            "Postcode",
+            "Country",
+            "Easting",
+            "Northing",
+            "CorrespondentFirstName",
+            "CorrespondentLastName"
+        };
+    }
+    
+    /**
      * Exports all the addresses for a registration to the Reporting Snapshot
      * files.
      * @param reg The registration to export data for.
@@ -520,6 +596,21 @@ public class ExportJob implements Job
     }
     
     /**
+     * Returns an array of column titles for the Sign-Offs component of the
+     * Reporting Snapshot export.
+     * @return An array of strings, one per CSV-file column.
+     */
+    private String[] getSignOffsExportColumnTitles()
+    {
+        return new String[] {
+            "RegistrationUID",
+            "Confirmed",
+            "ConfirmedBy",
+            "Timestamp"
+        };
+    }
+    
+    /**
      * Exports all the conviction sign-offs for a registration to the Reporting
      * Snapshot files.
      * @param reg The registration to export data for.
@@ -552,6 +643,24 @@ public class ExportJob implements Job
         }
         
         return noErrors;
+    }
+    
+    /**
+     * Returns an array of column titles for the Key People component of the
+     * Reporting Snapshot export.
+     * @return An array of strings, one per CSV-file column.
+     */
+    private String[] getKeyPeopleExportColumnTitles()
+    {
+        return new String[] {
+            "RegistrationUID",
+            "PersonType",
+            "FirstName",
+            "LastName",
+            "Position",
+            "FlaggedForReview",
+            "ReviewFlagTimestamp"
+        };
     }
     
     /**
@@ -595,6 +704,65 @@ public class ExportJob implements Job
     }
     
     /**
+     * Returns an array of column titles for the Orders component of the
+     * Reporting Snapshot export.
+     * @return An array of strings, one per CSV-file column.
+     */
+    private String[] getOrdersExportColumnTitles()
+    {
+        return new String[] {
+            "RegistrationUID",
+            "OrderUID",
+            "OrderCode",
+            "PaymentMethod",
+            "TotalCharge",
+            "Description",
+            "MerchantID",
+            "CreationTimestamp",
+            "LastModifiedTimestamp",
+            "LastModifiedBy"
+        };
+    }
+    
+    /**
+     * Returns an array of column titles for the Order Items component of the
+     * Reporting Snapshot export.
+     * @return An array of strings, one per CSV-file column.
+     */
+    private String[] getOrderItemsExportColumnTitles()
+    {
+        return new String[] {
+            "RegistrationUID",
+            "OrderUID",
+            "ItemType",
+            "ItemCharge",
+            "Description",
+            "Reference",
+            "LastModifiedTimestamp"
+        };
+    }
+    
+    /**
+     * Returns an array of column titles for the Payments component of the
+     * Reporting Snapshot export.
+     * @return An array of strings, one per CSV-file column.
+     */
+    private String[] getPaymentExportColumnTitles()
+    {
+        return new String[] {
+            "RegistrationUID",
+            "OrderKey",
+            "PaymentType",
+            "Amount",
+            "Reference",
+            "Comment",
+            "PaymentReceivedTimestamp",
+            "PaymentEnteredTimestamp",
+            "LastModifiedBy"
+        };
+    }
+    
+    /**
      * Exports all the Financial Details associated with a registration to the
      * Reporting Snapshot files.
      * @param reg The registration to export data for.
@@ -632,7 +800,6 @@ public class ExportJob implements Job
                         paymentsCsvFile.writeNext(new String[] {
                             Integer.toString(registrationUid),
                             payment.getOrderKey(),
-                            payment.getCurrency(),
                             safelyGetEnumName(payment.getPaymentType()),
                             safelyFormatMoney(moneyFormatter, payment.getAmount()),
                             payment.getRegistrationReference(),
@@ -670,7 +837,6 @@ public class ExportJob implements Job
                 Integer.toString(registrationUid),
                 Integer.toString(orderUid),
                 order.getOrderCode(),
-                order.getCurrency(),
                 safelyGetEnumName(order.getPaymentMethod()),
                 safelyFormatMoney(moneyFormatter, order.getTotalAmount()),
                 order.getDescription(),
@@ -690,7 +856,6 @@ public class ExportJob implements Job
                         Integer.toString(registrationUid),
                         Integer.toString(orderUid),
                         safelyGetEnumName(item.getType()),
-                        item.getCurrency(),
                         safelyFormatMoney(moneyFormatter, item.getAmount()),
                         item.getDescription(),
                         item.getReference(),
