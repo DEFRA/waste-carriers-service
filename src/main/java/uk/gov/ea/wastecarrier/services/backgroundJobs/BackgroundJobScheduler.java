@@ -173,6 +173,7 @@ public class BackgroundJobScheduler implements Managed
         dataMap.put(ExportJob.EPR_DATE_FORMAT, exportJobConfig.getEprExportDateFormat());
         dataMap.put(ExportJob.REPORTING_EXPORT_PATH, exportJobConfig.getReportingExportPath());
         dataMap.put(ExportJob.REPORTING_DATE_FORMAT, exportJobConfig.getReportingExportDateFormat());
+        dataMap.put(ExportJob.REPORTING_MONEY_FORMAT, exportJobConfig.getReportingExportMoneyFormat());
         
         return exportJob;
     }

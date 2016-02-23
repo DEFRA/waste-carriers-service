@@ -27,6 +27,10 @@ public class ExportJobConfiguration extends Configuration {
     @JsonProperty
     private String reportingExportDateFormat = "yyyy-MM-dd";
 
+    @NotEmpty
+    @JsonProperty
+    private String reportingExportMoneyFormat = "0.00";
+    
     @JsonProperty
     private String cronExpression;
     
@@ -64,6 +68,15 @@ public class ExportJobConfiguration extends Configuration {
     public String getReportingExportDateFormat()
     {
         return reportingExportDateFormat;
+    }
+    
+    /**
+     * Gets the money export format to use (Reporting Snapshot only).
+     * @return The reportingExportMoneyFormat.
+     */
+    public String getReportingExportMoneyFormat()
+    {
+        return reportingExportMoneyFormat;
     }
     
     /**

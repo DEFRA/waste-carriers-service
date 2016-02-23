@@ -55,6 +55,7 @@ public class ExportJob implements Job
 
     public static final String REPORTING_EXPORT_PATH = "reporting_export_path";
     public static final String REPORTING_DATE_FORMAT = "reporting_date_format";
+    public static final String REPORTING_MONEY_FORMAT = "reporting_money_format";
 
     // Constants used in string fields of the Registration object.
     private static final String COMPANY = "limitedCompany";
@@ -119,10 +120,14 @@ public class ExportJob implements Job
             log.fine(String.format("--> The EPR date format is %s", jobConfig.getString(EPR_DATE_FORMAT)));
             log.fine(String.format("--> The Reporting export path is %s", jobConfig.getString(REPORTING_EXPORT_PATH)));
             log.fine(String.format("--> The Reporting date format is %s", jobConfig.getString(REPORTING_DATE_FORMAT)));
+            log.fine(String.format("--> The Reporting money format is %s", jobConfig.getString(REPORTING_MONEY_FORMAT)));
             
             // Initialise date formatters from provided configuration.
             eprDateFormatter = new SimpleDateFormat(jobConfig.getString(EPR_DATE_FORMAT));
             reportingDateFormatter = new SimpleDateFormat(jobConfig.getString(REPORTING_DATE_FORMAT));
+            
+            // Initialise the money formatter from the provided configuration.
+            moneyFormatter = new DecimalFormat(jobConfig.getString(REPORTING_MONEY_FORMAT));
             
             // Build a database helper using the provided configuration.
             DatabaseHelper dbHelper = new DatabaseHelper(new DatabaseConfiguration(

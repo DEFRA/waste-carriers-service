@@ -81,6 +81,8 @@ exportJob:
   reportingExportPath: WCRS_SERVICES_REPORTING_EXPORT_PATH
   # Date format to use for Reporting Snapshot exports.
   reportingExportDateFormat: "yyyy-MM-dd"
+  # Money format to use for Reporting Snapshot exports.
+  reportingExportMoneyFormat: "0.00"
   # Cron expression for scheduled job exectuion.  Leave empty to make the job
   # run on a manual trigger only.  Default is daily at 9pm.
   cronExpression: "0 0 21 * * ?"
