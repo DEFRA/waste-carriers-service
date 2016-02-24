@@ -28,8 +28,6 @@ import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
  * 
  * Jobs can either be scheduled using a crontab syntax, or triggered via a
  * DropWizard Task.
- * 
- * TODO: Crontab-style scheduling.
  */
 public class BackgroundJobScheduler implements Managed
 {
@@ -41,6 +39,7 @@ public class BackgroundJobScheduler implements Managed
     
     // Private string constants.
     private static final String EXPORT_JOB = "ExportJob";
+    private static final String REG_STATUS_JOB = "RegistrationStatusJob";
     private static final String CRON_GROUP = "CronJobs";
     private static final String MANUAL_GROUP = "ManuallyTriggeredJobs";
     
@@ -50,6 +49,7 @@ public class BackgroundJobScheduler implements Managed
     
     // Private instance members storing job configuration.
     private ExportJobConfiguration exportJobConfig;
+    private RegistrationStatusJobConfiguration regStatusJobConfig;
     private DatabaseConfiguration databaseConfig;
     
     /**
@@ -78,7 +78,7 @@ public class BackgroundJobScheduler implements Managed
     }
     
     /**
-     * Sets the configuration to use when executing the Export background job.
+     * Sets the configuration to use for the Export background job.
      * This configuration should be set before the first job is started, and
      * the configuration should not usually be changed again.
      * @param configuration The configuration to use for the Export job.
@@ -86,6 +86,18 @@ public class BackgroundJobScheduler implements Managed
     public void setExportJobConfiguration(ExportJobConfiguration configuration)
     {
         exportJobConfig = configuration;
+    }
+    
+    /**
+     * Sets the configuration to use for the Registration Status background job.
+     * This configuration should be set before the first job is started, and
+     * the configuration should not usually be changed again.
+     * @param configuration The configuration to use for the Registration Status
+     * job.
+     */
+    public void setRegistrationStatusJobConfiguration(RegistrationStatusJobConfiguration configuration)
+    {
+        regStatusJobConfig = configuration;
     }
     
     /**
@@ -179,6 +191,40 @@ public class BackgroundJobScheduler implements Managed
     }
     
     /**
+     * Returns a Quartz JobDetail object defining the "Registration Status" job,
+     * which updates the status of Registrations, expiring them at the
+     * appropriate time.
+     * @param jobGroup The group to place the job in.
+     * @return A Quartz JobDetail object defining the "Registration Status" job.
+     * @throws RuntimeException 
+     */
+    private JobDetail getRegistrationStatusJob(String jobGroup) throws RuntimeException
+    {
+        if (databaseConfig == null)
+        {
+            logAndThrowRuntimeException("Database configuration has not been set.");
+        }
+        
+        if (regStatusJobConfig == null)
+        {
+            logAndThrowRuntimeException("Registration Status Job configuration has not been set.");
+        }
+        
+        JobDetail regStatusJob = newJob(RegistrationStatusJob.class)
+                .withIdentity(REG_STATUS_JOB, jobGroup)
+                .build();
+        
+        JobDataMap dataMap = regStatusJob.getJobDataMap();
+        dataMap.put(RegistrationStatusJob.DATABASE_HOST, databaseConfig.getHost());
+        dataMap.put(RegistrationStatusJob.DATABASE_PORT, databaseConfig.getPort());
+        dataMap.put(RegistrationStatusJob.DATABASE_NAME, databaseConfig.getName());
+        dataMap.put(RegistrationStatusJob.DATABASE_USERNAME, databaseConfig.getUsername());
+        dataMap.put(RegistrationStatusJob.DATABASE_PASSWORD, databaseConfig.getPassword());
+        
+        return regStatusJob;
+    }
+    
+    /**
      * Returns a Quartz Trigger object that schedules a job for immediate
      * execution.
      * @return A Quartz Trigger object that schedules a job for immediate
@@ -226,6 +272,33 @@ public class BackgroundJobScheduler implements Managed
     }
     
     /**
+     * Manually schedules the Registration Status job for immediate execution.
+     * @throws RuntimeException 
+     */
+    public void startRegistrationStatusJob() throws RuntimeException
+    {
+        if (scheduler == null)
+        {
+            logAndThrowRuntimeException("Cannot start Registration Status job because the Scheduler has not been started.");
+        }
+        else
+        {
+            try
+            {
+                if (isJobExecuting(REG_STATUS_JOB))
+                {
+                    throw new RuntimeException("Registration Status Job is already executing");
+                }
+                scheduler.scheduleJob(getRegistrationStatusJob(MANUAL_GROUP), getManualJobTrigger());
+            }
+            catch (SchedulerException e)
+            {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+    
+    /**
      * If a cron expression for execution of the Export Job has been set in the
      * service configuration then we setup the execution schedule here.
      * @throws SchedulerException 
@@ -245,7 +318,7 @@ public class BackgroundJobScheduler implements Managed
             }
             
             // Only schedule the Export Job if a cron expression has been
-            // provided in the Export Job configuration.
+            // provided in the job configuration.
             if ((cronExpression != null) && !cronExpression.isEmpty())
             {
                 scheduler.scheduleJob(getExportJob(CRON_GROUP), newTrigger()
@@ -270,6 +343,51 @@ public class BackgroundJobScheduler implements Managed
     }
     
     /**
+     * If a cron expression for execution of the Registration Status Job has
+     * been set in the service configuration then we setup the execution
+     * schedule here.
+     * @throws SchedulerException 
+     */
+    private void scheduleRegistrationStatusJob() throws SchedulerException
+    {
+        boolean scheduled = false;
+        
+        // Only schedule if we have Registration Status Job configuration.
+        if (regStatusJobConfig != null)
+        {
+            // Attempt to get cron expression, and trim any white-space.
+            String cronExpression = regStatusJobConfig.getCronExpression();
+            if (cronExpression != null)
+            {
+                cronExpression = cronExpression.trim();
+            }
+            
+            // Only schedule the Registration Status Job if a cron expression
+            // has been provided in the job configuration.
+            if ((cronExpression != null) && !cronExpression.isEmpty())
+            {
+                scheduler.scheduleJob(getRegistrationStatusJob(CRON_GROUP), newTrigger()
+                        .withIdentity("ScheduledRegistrationStatus", CRON_GROUP)
+                        .withSchedule(
+                                cronSchedule(cronExpression)
+                                .withMisfireHandlingInstructionFireAndProceed()
+                        )
+                        .build()
+                );
+                
+                scheduled = true;
+                log.info(String.format("Registration Status Job has been setup with cron schedule: %s", cronExpression));
+            }
+        }
+        
+        // Log an informative message if the Registration Status Job isn't scheduled.
+        if (!scheduled)
+        {
+            log.info("Registration Status Job is not scheduled for execution; will be started by manual trigger only");
+        }
+    }
+    
+    /**
      * Called by DropWizard to start the managed module.  Starts the Quartz
      * scheduler engine.
      * @throws Exception 
@@ -287,6 +405,7 @@ public class BackgroundJobScheduler implements Managed
             
             // Setup any jobs that will run on a schedule.
             scheduleExportJob();
+            scheduleRegistrationStatusJob();
         }
         else
         {

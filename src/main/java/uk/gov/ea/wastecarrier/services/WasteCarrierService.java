@@ -21,6 +21,7 @@ import uk.gov.ea.wastecarrier.services.tasks.Indexer;
 import uk.gov.ea.wastecarrier.services.tasks.LocationPopulator;
 import uk.gov.ea.wastecarrier.services.backgroundJobs.BackgroundJobScheduler;
 import uk.gov.ea.wastecarrier.services.backgroundJobs.ExportJobStarter;
+import uk.gov.ea.wastecarrier.services.backgroundJobs.RegistrationStatusJobStarter;
 
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
@@ -133,9 +134,11 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration>
         BackgroundJobScheduler dailyJobScheduler = BackgroundJobScheduler.getInstance();
         dailyJobScheduler.setDatabaseConfiguration(dbConfig);
         dailyJobScheduler.setExportJobConfiguration(configuration.getExportJobConfiguration());
+        dailyJobScheduler.setRegistrationStatusJobConfiguration(configuration.getRegistrationStatusJobConfiguration());
         environment.manage(dailyJobScheduler);
         
         environment.addTask(new ExportJobStarter("start-exportJob"));
+        environment.addTask(new RegistrationStatusJobStarter("start-registrationStatusJob"));
         
         //Add a task to ensure that indexes have been defined in the database.
         EnsureDatabaseIndexesTask ensureDbIndexesTask = new EnsureDatabaseIndexesTask("EnsureDatabaseIndexes", dao);

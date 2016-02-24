@@ -86,6 +86,10 @@ exportJob:
   # Cron expression for scheduled job exectuion.  Leave empty to make the job
   # run on a manual trigger only.  Default is daily at 9pm.
   cronExpression: "0 0 21 * * ?"
-  
+
+registrationStatusJob:
+  # Cron expression for scheduled job exectuion.  Leave empty to make the job
+  # run on a manual trigger only.  Default is daily at 8pm.
+  cronExpression: "0 0 20 * * ?"
  
 # more properties go here
