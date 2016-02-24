@@ -22,6 +22,7 @@ import uk.gov.ea.wastecarrier.services.tasks.LocationPopulator;
 import uk.gov.ea.wastecarrier.services.backgroundJobs.BackgroundJobScheduler;
 import uk.gov.ea.wastecarrier.services.backgroundJobs.ExportJobStarter;
 import uk.gov.ea.wastecarrier.services.backgroundJobs.RegistrationStatusJobStarter;
+import uk.gov.ea.wastecarrier.services.backgroundJobs.BackgroundJobMetricsReporter;
 
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
@@ -137,6 +138,7 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration>
         dailyJobScheduler.setRegistrationStatusJobConfiguration(configuration.getRegistrationStatusJobConfiguration());
         environment.manage(dailyJobScheduler);
         
+        environment.addTask(new BackgroundJobMetricsReporter("get-jobMetrics"));
         environment.addTask(new ExportJobStarter("start-exportJob"));
         environment.addTask(new RegistrationStatusJobStarter("start-registrationStatusJob"));
         

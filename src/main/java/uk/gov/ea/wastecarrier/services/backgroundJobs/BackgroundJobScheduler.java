@@ -8,6 +8,7 @@ import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobKey;
+import org.quartz.SchedulerMetaData;
 import org.quartz.Trigger;
 import org.quartz.impl.StdSchedulerFactory;
 
@@ -15,6 +16,7 @@ import static org.quartz.JobBuilder.newJob;
 import static org.quartz.TriggerBuilder.newTrigger;
 import static org.quartz.CronScheduleBuilder.cronSchedule;
 
+import java.io.PrintWriter;
 import java.util.logging.Logger;
 import java.util.List;
 
@@ -432,6 +434,51 @@ public class BackgroundJobScheduler implements Managed
         else
         {
             log.warning("Attempted to stop Background Job Scheduler when it isn't started.  Doing nothing.");
+        }
+    }
+    
+    /**
+     * Prints some basic metrics to the specified writer.  Used by the
+     * BackgroundJobMetricsReporter.
+     * @param out An object to write the metrics to.
+     */
+    public void reportMetrics(PrintWriter out)
+    {
+        out.println("\n** Scheduler **");
+        
+        if (scheduler == null)
+        {
+            out.println("The scheduler is not running; no metrics to report.");
+        }
+        else
+        {
+            try
+            {
+                SchedulerMetaData smd = scheduler.getMetaData();
+                out.println(String.format("Scheduler running since %s", BackgroundJobMetricsReporter.formatDate(smd.getRunningSince())));
+                out.println(String.format("Number of jobs executed: %d", smd.getNumberOfJobsExecuted()));
+                out.println(String.format("Thread pool size: %d", smd.getThreadPoolSize()));
+                
+                List<JobExecutionContext> currentJobs = scheduler.getCurrentlyExecutingJobs();
+                if ((currentJobs != null) && !currentJobs.isEmpty())
+                {
+                    out.println("Currently-executing jobs:");
+                    for (JobExecutionContext job : currentJobs)
+                    {
+                        out.println(String.format(" - %s (running for %dms)",
+                                job.getJobDetail().getKey().toString(),
+                                job.getJobRunTime()));
+                    }
+                }
+                else
+                {
+                    out.println("No jobs are currently executing.");
+                }
+            }
+            catch (SchedulerException ex)
+            {
+                out.println("Exception whilst attempting to report scheduler metrics.");
+            }
         }
     }
 }

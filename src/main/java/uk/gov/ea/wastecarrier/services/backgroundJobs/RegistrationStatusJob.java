@@ -12,6 +12,7 @@ import com.mongodb.BasicDBObject;
 import net.vz.mongodb.jackson.JacksonDBCollection;
 import net.vz.mongodb.jackson.WriteResult;
 
+import java.io.PrintWriter;
 import java.util.Date;
 import java.util.logging.Logger;
 
@@ -39,6 +40,11 @@ public class RegistrationStatusJob implements Job
     // Private static members.
     private final static Logger log = Logger.getLogger(RegistrationStatusJob.class.getName());
     
+    // Private members used to provide job metrics.
+    private static Date lastStartTime = null;
+    private static int lastRunTimeMS = -1;
+    private static int expiredCount = 0;
+    
     /**
      * Public empty constructor, for Quartz.
      */
@@ -48,6 +54,45 @@ public class RegistrationStatusJob implements Job
     }
 
     /**
+     * Resets metrics we store about this job.
+     */
+    private void resetJobMetrics()
+    {
+        lastStartTime = new Date();
+        lastRunTimeMS = -1;
+        expiredCount = 0;
+    }
+    
+    /**
+     * Prints some basic metrics to the specified writer.  Used by the
+     * BackgroundJobMetricsReporter.
+     * @param out An object to write the metrics to.
+     */
+    public static void reportMetrics(PrintWriter out)
+    {
+        out.println("\n** Registration Status job **");
+        
+        if (lastStartTime == null)
+        {
+            out.println("The registration status job has not yet been run.");
+        }
+        else if (lastRunTimeMS < 0)
+        {
+            out.println("The registration status job is currently running.");
+            out.println(String.format("Start time: %s", BackgroundJobMetricsReporter.formatDate(lastStartTime)));
+        }
+        else
+        {
+            int msPerMin = 1000 * 60;
+            int minutes = lastRunTimeMS / msPerMin;
+            int seconds = (lastRunTimeMS - (minutes * msPerMin)) / 1000;
+            out.println(String.format("Last started: %s", BackgroundJobMetricsReporter.formatDate(lastStartTime)));
+            out.println(String.format("Last run-time: %d minutes %02d seconds", minutes, seconds));
+            out.println(String.format("Number of registrations that were expired: %d", expiredCount));
+        }
+    }
+    
+    /**
      * Quartz entry point.  Executes this job.
      * @param context Job configuration passed in by Quartz.
      * @throws JobExecutionException 
@@ -55,6 +100,8 @@ public class RegistrationStatusJob implements Job
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException
     {
+        resetJobMetrics();
+        
         try
         {
             // Record the start of the job execution.
@@ -95,6 +142,9 @@ public class RegistrationStatusJob implements Job
             
             // Do useful work...
             expireRegistrations(registrations);
+            
+            // Almost done; lets calculate job execution duration.
+            lastRunTimeMS = (int)((new Date()).getTime() - lastStartTime.getTime());
             
             // Finished successfully.
             log.info("Successfully completed execution of the Registration Status job");
@@ -138,12 +188,15 @@ public class RegistrationStatusJob implements Job
         // Expire all relevant registrations.
         WriteResult<Registration, String> result = registrations.updateMulti(query, update);
         
-        // Process the results.
+        // Check for errors.
         String updateError = result.getError();
         if (updateError != null)
         {
             log.warning(String.format("MongoJack error expiring registrations: %s", updateError));
         }
-        log.info(String.format("Number of registrations expired: %d", result.getN()));
+        
+        // Handle metrics.
+        expiredCount = result.getN();
+        log.info(String.format("Number of registrations expired: %d", expiredCount));
     }
 }
