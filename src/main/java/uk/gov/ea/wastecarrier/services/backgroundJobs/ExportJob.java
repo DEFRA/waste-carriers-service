@@ -82,9 +82,11 @@ public class ExportJob implements Job
     private int registrationUid = 0;
     private int orderUid = 0;
 
-    // Private members counting the number of records that we fail to process.
-    private int eprExportFailCount = 0;
-    private int reportingExportFailCount = 0;
+    // Private members used to provide job metrics.
+    private static Date lastStartTime = null;
+    private static int lastRunTimeMS = -1;
+    private static int eprExportFailCount = 0;
+    private static int reportingExportFailCount = 0;
     
     /**
      * Public empty constructor, for Quartz.
@@ -93,7 +95,48 @@ public class ExportJob implements Job
     {
         // Nothing to do; "initialisation" is done inside execute().
     }
-
+    
+    /**
+     * Resets metrics we store about this job.
+     */
+    private void resetJobMetrics()
+    {
+        lastStartTime = new Date();
+        lastRunTimeMS = -1;
+        eprExportFailCount = 0;
+        reportingExportFailCount = 0;
+    }
+    
+    /**
+     * Prints some basic metrics to the specified writer.  Used by the
+     * BackgroundJobMetricsReporter.
+     * @param out An object to write the metrics to.
+     */
+    public static void reportMetrics(PrintWriter out)
+    {
+        out.println("\n** Export job **");
+        
+        if (lastStartTime == null)
+        {
+            out.println("The export job has not yet been run.");
+        }
+        else if (lastRunTimeMS < 0)
+        {
+            out.println("The export job is currently running.");
+            out.println(String.format("Start time: %s", BackgroundJobMetricsReporter.formatDate(lastStartTime)));
+        }
+        else
+        {
+            int msPerMin = 1000 * 60;
+            int minutes = lastRunTimeMS / msPerMin;
+            int seconds = (lastRunTimeMS - (minutes * msPerMin)) / 1000;
+            out.println(String.format("Last started: %s", BackgroundJobMetricsReporter.formatDate(lastStartTime)));
+            out.println(String.format("Last run-time: %d minutes %02d seconds", minutes, seconds));
+            out.println(String.format("Number of registrations that generated an error during ePR export: %d", eprExportFailCount));
+            out.println(String.format("Number of registrations that generated an error during Reporting Snapshot export: %d", reportingExportFailCount));
+        }
+    }
+    
     /**
      * Quartz entry point.  Executes this job.
      * @param context Job configuration passed in by Quartz.
@@ -102,6 +145,8 @@ public class ExportJob implements Job
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException
     {
+        resetJobMetrics();
+        
         try
         {
             // Record the start of the job execution.
@@ -152,6 +197,9 @@ public class ExportJob implements Job
             
             // Do useful work...
             processAllRegistrations(db, jobConfig);
+            
+            // Almost done; lets calculate job execution duration.
+            lastRunTimeMS = (int)((new Date()).getTime() - lastStartTime.getTime());
             
             // Finished successfully.
             log.info("Successfully completed execution of the Export job");
