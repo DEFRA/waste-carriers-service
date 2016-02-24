@@ -152,11 +152,15 @@ public class ExportJob implements Job
             
             // Do useful work...
             processAllRegistrations(db, jobConfig);
+            
+            // Finished successfully.
+            log.info("Successfully completed execution of the Export job");
         }
         catch (Exception ex)
         {
             // Quartz only allows us to throw a JobExecutionException from this
             // method, so we wrap all other exceptions.
+            log.severe(String.format("Unexpected exception during Export job: %s", ex.getMessage()));
             throw new JobExecutionException(ex);
         }
     }
