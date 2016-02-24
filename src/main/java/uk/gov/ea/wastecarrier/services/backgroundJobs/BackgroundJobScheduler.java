@@ -424,6 +424,7 @@ public class BackgroundJobScheduler implements Managed
         if (scheduler != null)
         {
             log.fine("Shutting-down the Background Job Scheduler...");
+            log.info("Waiting for any current background jobs to finish executing...");
             scheduler.shutdown(true);
             scheduler = null;
             log.fine("... done");
