@@ -7,8 +7,6 @@ import org.hibernate.validator.constraints.NotEmpty;
 /**
  * Stores configuration for the Export Job, which exports data for use in an
  * electronic Public Register (ePR) and for Reporting.
- * The job also updates the status of registrations which have expired since the
- * last run of this job.
  */
 public class ExportJobConfiguration extends Configuration {
     @NotEmpty

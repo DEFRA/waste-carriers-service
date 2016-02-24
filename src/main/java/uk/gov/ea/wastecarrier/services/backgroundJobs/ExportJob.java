@@ -37,8 +37,7 @@ import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
 /**
  * Quartz job which exports data from the Waste Carriers database to flat files
  * which are then used to populate the electronic Public Register (ePR) and
- * Reporting systems.  This job also updates Registration status (ACTIVE,
- * EXPIRED etc).  This job is normally run once daily.
+ * Reporting systems.  This job is normally run once daily.
  */
 @DisallowConcurrentExecution
 public class ExportJob implements Job
@@ -86,7 +85,6 @@ public class ExportJob implements Job
     // Private members counting the number of records that we fail to process.
     private int eprExportFailCount = 0;
     private int reportingExportFailCount = 0;
-    private int statusUpdateFailCount = 0;
     
     /**
      * Public empty constructor, for Quartz.
@@ -241,8 +239,7 @@ public class ExportJob implements Job
     /**
      * Iterates over all registrations in the database, processing each in turn.
      * If appropriate, the registration details will be exported to one or more
-     * of the export files.  The status of the registration (active, expired etc.)
-     * will also be updated depending upon the current date.
+     * of the export files.
      * @param database A Mongo database object providing access to the
      * registration data.
      * @param jobConfig Configuration options for the execution of this job.
