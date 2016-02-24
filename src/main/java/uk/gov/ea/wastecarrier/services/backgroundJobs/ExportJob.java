@@ -284,7 +284,10 @@ public class ExportJob implements Job
             paymentsCsvFile.writeNext(getPaymentExportColumnTitles());
 
             // Process all registrations in the database.
-            DBCursor<Registration> dbcur = registrations.find();
+            // IMPORTANT: As this cursor will be quite long-lived, we need to
+            // enable the "snapshot" option to ensure each document is returned
+            // only once.
+            DBCursor<Registration> dbcur = registrations.find().snapshot();
             for (Registration reg : dbcur)
             {
                 registrationUid++;
