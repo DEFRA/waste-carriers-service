@@ -7,8 +7,6 @@ import org.hibernate.validator.constraints.NotEmpty;
 /**
  * Stores configuration for the Export Job, which exports data for use in an
  * electronic Public Register (ePR) and for Reporting.
- * The job also updates the status of registrations which have expired since the
- * last run of this job.
  */
 public class ExportJobConfiguration extends Configuration {
     @NotEmpty
@@ -25,8 +23,12 @@ public class ExportJobConfiguration extends Configuration {
 
     @NotEmpty
     @JsonProperty
-    private String reportingExportDateFormat = "yyyy-MM-dd";
+    private String reportingExportDateFormat = "yyyy-MM-dd'T'HH:mm'Z'";
 
+    @NotEmpty
+    @JsonProperty
+    private String reportingExportMoneyFormat = "0.00";
+    
     @JsonProperty
     private String cronExpression;
     
@@ -64,6 +66,15 @@ public class ExportJobConfiguration extends Configuration {
     public String getReportingExportDateFormat()
     {
         return reportingExportDateFormat;
+    }
+    
+    /**
+     * Gets the money export format to use (Reporting Snapshot only).
+     * @return The reportingExportMoneyFormat.
+     */
+    public String getReportingExportMoneyFormat()
+    {
+        return reportingExportMoneyFormat;
     }
     
     /**

@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import uk.gov.ea.wastecarrier.services.backgroundJobs.ExportJobConfiguration;
+import uk.gov.ea.wastecarrier.services.backgroundJobs.RegistrationStatusJobConfiguration;
 
 public class WasteCarrierConfiguration extends Configuration {
     @Valid
@@ -50,6 +51,11 @@ public class WasteCarrierConfiguration extends Configuration {
     @JsonProperty
     private ExportJobConfiguration exportJob = new ExportJobConfiguration();
     
+    @Valid
+    @NotNull
+    @JsonProperty
+    private RegistrationStatusJobConfiguration registrationStatusJob = new RegistrationStatusJobConfiguration();
+    
     public MessageQueueConfiguration getMessageQueueConfiguration() {
         return messageQueue;
     }
@@ -81,5 +87,9 @@ public class WasteCarrierConfiguration extends Configuration {
     
     public ExportJobConfiguration getExportJobConfiguration() {
         return exportJob;
+    }
+    
+    public RegistrationStatusJobConfiguration getRegistrationStatusJobConfiguration() {
+        return registrationStatusJob;
     }
 }
