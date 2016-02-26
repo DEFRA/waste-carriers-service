@@ -15,6 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
 import com.mongodb.DB;
+import com.mongodb.MongoClient;
 import net.vz.mongodb.jackson.JacksonDBCollection;
 import net.vz.mongodb.jackson.DBCursor;
 
@@ -147,6 +148,8 @@ public class ExportJob implements Job
     {
         resetJobMetrics();
         
+        DatabaseHelper dbHelper = null;
+        
         try
         {
             // Record the start of the job execution.
@@ -176,7 +179,7 @@ public class ExportJob implements Job
             moneyFormatter = new DecimalFormat(jobConfig.getString(REPORTING_MONEY_FORMAT));
             
             // Build a database helper using the provided configuration.
-            DatabaseHelper dbHelper = new DatabaseHelper(new DatabaseConfiguration(
+            dbHelper = new DatabaseHelper(new DatabaseConfiguration(
                 jobConfig.getString(DATABASE_HOST),
                 jobConfig.getInt(DATABASE_PORT),
                 jobConfig.getString(DATABASE_NAME),
@@ -210,6 +213,17 @@ public class ExportJob implements Job
             // method, so we wrap all other exceptions.
             log.severe(String.format("Unexpected exception during Export job: %s", ex.getMessage()));
             throw new JobExecutionException(ex);
+        }
+        finally
+        {
+            if (dbHelper != null)
+            {
+                MongoClient mongo = dbHelper.getMongoClient();
+                if (mongo != null)
+                {
+                    mongo.close();
+                }
+            }
         }
     }
     
