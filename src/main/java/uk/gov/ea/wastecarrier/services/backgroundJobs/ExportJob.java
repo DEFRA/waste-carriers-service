@@ -315,6 +315,9 @@ public class ExportJob implements Job
     {
         log.info("Beginning processing all Registration records");
         
+        // A cursor we will use later.
+        DBCursor<Registration> dbcur = null;
+        
         // Create MONGOJACK connection to the database.
         JacksonDBCollection<Registration, String> registrations = JacksonDBCollection.wrap(
             database.getCollection(Registration.COLLECTION_NAME), Registration.class, String.class);
@@ -353,7 +356,7 @@ public class ExportJob implements Job
             // IMPORTANT: As this cursor will be quite long-lived, we need to
             // enable the "snapshot" option to ensure each document is returned
             // only once.
-            DBCursor<Registration> dbcur = registrations.find().snapshot();
+            dbcur = registrations.find().snapshot();
             for (Registration reg : dbcur)
             {
                 registrationUid++;
@@ -363,6 +366,13 @@ public class ExportJob implements Job
         }
         finally
         {
+            // Release Mongo resource.
+            if (dbcur != null)
+            {
+                dbcur.close();
+            }
+            
+            // Release Reporting Snapshot export files.
             closeCsvWriterQuietly(registrationsCsvFile);
             registrationsCsvFile = null;
             closeCsvWriterQuietly(addressesCsvFile);
@@ -378,6 +388,7 @@ public class ExportJob implements Job
             closeCsvWriterQuietly(paymentsCsvFile);
             paymentsCsvFile = null;
             
+            // Release ePR export file.
             closeCsvWriterQuietly(eprCsvFile);
             eprCsvFile = null;  // Deliberate unused assignment.
         }
