@@ -9,6 +9,7 @@ import org.quartz.JobKey;
 
 import com.mongodb.DB;
 import com.mongodb.BasicDBObject;
+import com.mongodb.MongoClient;
 import net.vz.mongodb.jackson.JacksonDBCollection;
 import net.vz.mongodb.jackson.WriteResult;
 
@@ -102,6 +103,8 @@ public class RegistrationStatusJob implements Job
     {
         resetJobMetrics();
         
+        DatabaseHelper dbHelper = null;
+        
         try
         {
             // Record the start of the job execution.
@@ -117,7 +120,7 @@ public class RegistrationStatusJob implements Job
             ));
             
             // Build a database helper using the provided configuration.
-            DatabaseHelper dbHelper = new DatabaseHelper(new DatabaseConfiguration(
+            dbHelper = new DatabaseHelper(new DatabaseConfiguration(
                 jobConfig.getString(DATABASE_HOST),
                 jobConfig.getInt(DATABASE_PORT),
                 jobConfig.getString(DATABASE_NAME),
@@ -155,6 +158,17 @@ public class RegistrationStatusJob implements Job
             // method, so we wrap all other exceptions.
             log.severe(String.format("Unexpected exception during Registration Status job: %s", ex.getMessage()));
             throw new JobExecutionException(ex);
+        }
+        finally
+        {
+            if (dbHelper != null)
+            {
+                MongoClient mongo = dbHelper.getMongoClient();
+                if (mongo != null)
+                {
+                    mongo.close();
+                }
+            }
         }
     }
     
