@@ -85,11 +85,11 @@ exportJob:
   reportingExportMoneyFormat: "0.00"
   # Cron expression for scheduled job exectuion.  Leave empty to make the job
   # run on a manual trigger only.  Default is daily at 9pm.
-  cronExpression: "0 0 21 * * ?"
+  cronExpression: WCRS_SERVICES_EXPORT_JOB_CRON_SCHEDULE
 
 registrationStatusJob:
   # Cron expression for scheduled job exectuion.  Leave empty to make the job
   # run on a manual trigger only.  Default is daily at 8pm.
-  cronExpression: "0 0 20 * * ?"
+  cronExpression: WCRS_SERVICES_STATUS_JOB_CRON_SCHEDULE
  
 # more properties go here
