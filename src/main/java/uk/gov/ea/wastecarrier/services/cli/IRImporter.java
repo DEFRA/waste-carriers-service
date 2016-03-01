@@ -448,9 +448,9 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
                 }
                 else if (PARTNERSHIP.equals(businessType))
                 {
-                    if (keyPeople.size() < 2)
+                    if (keyPeople.size() == 1)
                     {
-                        throw new RuntimeException("need at least 2 Key People for Partnership registration");
+                        System.out.println(String.format("Warning: %s is being added as a Partnership with only one partner", reg.getRegIdentifier()));
                     }
                 }
             }
