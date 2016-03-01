@@ -833,12 +833,11 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
         // or the Post Name column (sole trader and public body only) otherwise.
         String businessName = dataRow[CsvColumn.BusinessName.index()];
         String applicantName = dataRow[CsvColumn.ApplicantName.index()];
-        if ((businessName != null) && (businessName.length() > 2))
+        if (!stringIsNullOrEmpty(businessName))
         {
             reg.setCompanyName(businessName);
         }
-        else if ((applicantName != null) && (applicantName.length() > 2) &&
-                (SOLE_TRADER.equals(businessType) || PUBLIC_BODY.equals(businessType)))
+        else if ((!stringIsNullOrEmpty(applicantName)) && (!COMPANY.equals(businessType)))
         {
             reg.setCompanyName(applicantName);
         }
