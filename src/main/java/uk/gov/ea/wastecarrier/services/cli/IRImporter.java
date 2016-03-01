@@ -448,9 +448,9 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
                 }
                 else if (PARTNERSHIP.equals(businessType))
                 {
-                    if (keyPeople.size() < 2)
+                    if (keyPeople.size() == 1)
                     {
-                        throw new RuntimeException("need at least 2 Key People for Partnership registration");
+                        System.out.println(String.format("Warning: %s is being added as a Partnership with only one partner", reg.getRegIdentifier()));
                     }
                 }
             }
@@ -611,8 +611,15 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
     {
         // Set phone number.
         String phoneNumber = dataRow[CsvColumn.PhoneNumber.index()];
-        assertMinStringLength(phoneNumber, "PHONENUMBER", 8);
-        reg.setPhoneNumber(phoneNumber);
+        if (stringIsNullOrEmpty(phoneNumber) || (phoneNumber.length() < 7))
+        {
+            System.out.println(String.format("Recommended: add or correct the contact phone number for %s", reg.getRegIdentifier()));
+        }
+        if (!stringIsNullOrEmpty(phoneNumber))
+        {
+            reg.setPhoneNumber(phoneNumber);
+        }
+
         
         // Set email address if provided.
         String emailAddress = dataRow[CsvColumn.ContactEmail.index()];
@@ -826,12 +833,11 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
         // or the Post Name column (sole trader and public body only) otherwise.
         String businessName = dataRow[CsvColumn.BusinessName.index()];
         String applicantName = dataRow[CsvColumn.ApplicantName.index()];
-        if ((businessName != null) && (businessName.length() > 2))
+        if (!stringIsNullOrEmpty(businessName))
         {
             reg.setCompanyName(businessName);
         }
-        else if ((applicantName != null) && (applicantName.length() > 2) &&
-                (SOLE_TRADER.equals(businessType) || PUBLIC_BODY.equals(businessType)))
+        else if ((!stringIsNullOrEmpty(applicantName)) && (!COMPANY.equals(businessType)))
         {
             reg.setCompanyName(applicantName);
         }
