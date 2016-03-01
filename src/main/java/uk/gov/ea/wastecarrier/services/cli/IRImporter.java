@@ -611,8 +611,15 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
     {
         // Set phone number.
         String phoneNumber = dataRow[CsvColumn.PhoneNumber.index()];
-        assertMinStringLength(phoneNumber, "PHONENUMBER", 8);
-        reg.setPhoneNumber(phoneNumber);
+        if (stringIsNullOrEmpty(phoneNumber) || (phoneNumber.length() < 7))
+        {
+            System.out.println(String.format("Recommended: add or correct the contact phone number for %s", reg.getRegIdentifier()));
+        }
+        if (!stringIsNullOrEmpty(phoneNumber))
+        {
+            reg.setPhoneNumber(phoneNumber);
+        }
+
         
         // Set email address if provided.
         String emailAddress = dataRow[CsvColumn.ContactEmail.index()];
