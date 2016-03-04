@@ -954,6 +954,7 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
 
                 // Add this person to the list of Key People.
                 KeyPerson keyPerson = new KeyPerson();
+                keyPerson.setPersonType(KeyPerson.PersonType.KEY);
                 keyPerson.setFirstName(dataRow[CsvColumn.Firstname.index()]);
                 keyPerson.setLastName(dataRow[CsvColumn.Lastname.index()]);
                 keyPerson.setDateOfBirth(personDateOfBirth);
