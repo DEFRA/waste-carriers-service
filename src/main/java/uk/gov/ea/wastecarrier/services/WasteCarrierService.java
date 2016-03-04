@@ -129,7 +129,7 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration>
         environment.manage(new ElasticSearchManaged(esClient));
 
         // Add Indexing functionality to clean Elastic Search Indexes and perform re-index of all data.
-        environment.addTask(new Indexer("indexer", dbConfig, esConfig, esClient));
+        environment.addTask(new Indexer("indexer", dbConfig, esConfig));
 
         // Add managed component and tasks for Background Scheduled Jobs.
         BackgroundJobScheduler dailyJobScheduler = BackgroundJobScheduler.getInstance();

@@ -43,28 +43,23 @@ import com.yammer.dropwizard.tasks.Task;
  * E.g. curl -X POST http://localhost:9091/tasks/indexer -d 'all'
  * Which performs a full system wipe and recreate
  *
- * @author Steve
- *
  */
 public class Indexer extends Task
 {
+    // Configuration set at start-up.
     private final DatabaseHelper databaseHelper;
-
     private final ElasticSearchConfiguration elasticSearch;
     
-    /**
-     * The ElasticSearch Client (TransportClient to connect to the cluster; shared, singleton)
-     */
-    //private final Client esClient;
-    
+    // Standard logger.
     private static Logger log = Logger.getLogger(Indexer.class.getName());
 
-    public Indexer(String name, DatabaseConfiguration database, ElasticSearchConfiguration elasticSearch, Client esClient)
+    // Constructor.  Initialises the task by storing the configuration it
+    // needs when the task is run.
+    public Indexer(String name, DatabaseConfiguration database, ElasticSearchConfiguration elasticSearch)
     {
         super(name);
         this.databaseHelper = new DatabaseHelper(database);
         this.elasticSearch = elasticSearch;
-        //this.esClient = esClient;
     }
 
     /**
