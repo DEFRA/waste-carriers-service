@@ -1,25 +1,28 @@
 package uk.gov.ea.wastecarrier.services.tasks;
 
+import com.yammer.dropwizard.tasks.Task;
 import static com.yammer.dropwizard.testing.JsonHelpers.asJson;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.logging.Logger;
-
+import com.google.common.collect.ImmutableMultimap;
+import com.mongodb.DB;
 import net.vz.mongodb.jackson.DBCursor;
 import net.vz.mongodb.jackson.JacksonDBCollection;
 
-import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
+import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
+import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
+import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
+import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
 import org.elasticsearch.action.admin.indices.flush.FlushRequest;
+import org.elasticsearch.action.admin.indices.flush.FlushResponse;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
-import org.elasticsearch.action.bulk.BulkRequestBuilder;
-import org.elasticsearch.action.bulk.BulkResponse;
+import org.elasticsearch.action.admin.indices.refresh.RefreshResponse;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.ElasticsearchException;
 
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.ElasticSearchConfiguration;
@@ -27,22 +30,21 @@ import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.elasticsearch.ElasticSearchUtils;
 import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
 
-import com.google.common.collect.ImmutableMultimap;
-import com.mongodb.DB;
-import com.yammer.dropwizard.tasks.Task;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
- * The Indexer class enables a reset/refresh of the data contained with the Elastic search records, it does this by
- * performing a entire purge of the registration data and recreating it from the mongoDB
+ * Provides a way to create an index in Elastic Search for registrations, and
+ * re-index all registration data in Mongo in bulk.  Also provides a way to
+ * index individual registrations when they are changed via the web interface.
  *
- * E.g. curl -X POST http://localhost:9091/tasks/indexer
- * Which performs a partial delete/recreate for entries currently
- * in the database
- *
- * Also can use Optional parameters of -d 'all'
- * E.g. curl -X POST http://localhost:9091/tasks/indexer -d 'all'
- * Which performs a full system wipe and recreate
- *
+ * Example usage:
+ * curl -X POST http://localhost:9091/tasks/indexer -d '@bin/registration_mapping.json'
+ * where the JSON file (and preceding '-d' parameter) are optional, but allow
+ * the object mapping in ElasticSearch to be set manually.  If this option is
+ * not used then ElasticSearch's dynamic mapping will be used.
  */
 public class Indexer extends Task
 {
@@ -63,153 +65,214 @@ public class Indexer extends Task
     }
 
     /**
-     * Performs the ElasticSearch Indexing operation Used Via the administration ports to index all of the registrations
-     * found in the mongo database
+     * Utility method to write a message to the log, and output the same message
+     * to a PrintWriter.
+     * @param logLevel The level to log the message at (severe, info, etc).
+     * @param out An object allowing formatted messages to be returned to the
+     * REST call originator.
+     * @param message The string to log and output.
+     */
+    private void outputAndLogMessage(Level logLevel, PrintWriter out, String message)
+    {
+        log.log(logLevel, message);
+        out.println(message);
+    }
+    
+    /**
+     * Drops and re-creates the Registrations index in Elastic Search, and
+     * re-indexes all registrations in the Mongo database.
      *
-     * Usage:
-     * curl -X POST http://[SERVER]:[ADMINPORT]/tasks/[this.getName()] [OPTIONAL -d 'all']
-     *
-     * E.g. curl -X POST http://localhost:9091/tasks/indexer -d 'all'
-     *
-     * -d 'all' - Performs a delete all record operation, if not provided only the records currently
-     * found will be updated.
-     *
+     * Example usage:
+     * curl -X POST http://localhost:9091/tasks/indexer -d '@bin/registration_mapping.json'
      */
     @Override
     public void execute(ImmutableMultimap<String, String> arg0, PrintWriter out) throws Exception
     {
-        out.append("Running Complete re-Indexing operation of Elastic Search records...\n");
+        outputAndLogMessage(Level.INFO, out, "Dropping and rebuilding the Registrations index in Elastic Search");
 
-        // Determine if Delete All is required
-        boolean deleteAll = false;
-        // Determine if re-index is required
-        boolean reIndex = true;
-        /*
-         * Use: curl -X POST http://localhost:9091/tasks/indexer -d 'all' to delete all records.
-         */
-        for (String s : arg0.keys())
+        // Process task parameters.
+        String indexMapping = null;
+        for (String parameter : arg0.keys())
         {
-            if (s.equals("all"))
+            if (parameter.startsWith("{"))
             {
-                deleteAll = true;
-                log.info("Performing Delete All operation");
-                out.append("Performing Delete All operation\n");
-            }
-            else if (s.equals("deleteAll"))
-            {
-                deleteAll = true;
-                reIndex = false;
-                log.info("Only performing Delete All operation");
-                out.append("Only performing Delete All operation\n");
+                outputAndLogMessage(Level.INFO, out, "Using string supplied by REST caller for index mapping");
+                indexMapping = parameter;
             }
         }
-
-        // Get All Registration records from the database
-        DB db = this.databaseHelper.getConnection();
-        if (db != null)
+        
+        // Create a connection to Elastic Search, and make sure we dispose of it.
+        TransportClient esClient = ElasticSearchUtils.getNewTransportClient(elasticSearch);
+        try
         {
-            if (!db.isAuthenticated())
+            boolean noErrors = true;
+            
+            // Check we can connect to the Mongo Database.
+            DB db = this.databaseHelper.getConnection();
+            if (noErrors && (db == null))
             {
-                throw new RuntimeException("Error: Could not authenticate user");
+                noErrors = false;
+                outputAndLogMessage(Level.WARNING, out, "Error: No database connection available; aborting.");
+            }
+            if (noErrors && !db.isAuthenticated())
+            {
+                noErrors = false;
+                outputAndLogMessage(Level.WARNING, out, "Error: Could not authenticate against database; aborting.");
+            }
+            
+            // Start by completely deleting the old index.
+            if (noErrors && !deleteElasticSearchRegistrationsIndex(esClient, out))
+            {
+                noErrors = false;
+                outputAndLogMessage(Level.WARNING, out, "Aborting");
             }
 
-            TransportClient newClient = ElasticSearchUtils.getNewTransportClient(elasticSearch);
-            // If requested, Delete all Registration indexes
-            if (deleteAll)
+            // Create the new index.
+            if (noErrors && !createElasticSearchRegistrationsIndex(esClient, out, indexMapping))
             {
-                DeleteIndexResponse delete = newClient.admin().indices()
-                        .delete(new DeleteIndexRequest(Registration.COLLECTION_NAME)).actionGet();
-                if (!delete.isAcknowledged())
-                {
-                    log.severe("Index wasn't deleted");
-                    out.append("Error: Index wasn't deleted\n");
-                }
+                noErrors = false;
+                outputAndLogMessage(Level.WARNING, out, "Aborting");
             }
 
             // Create MONGOJACK connection to the database
             JacksonDBCollection<Registration, String> registrations = JacksonDBCollection.wrap(
                     db.getCollection(Registration.COLLECTION_NAME), Registration.class, String.class);
 
-            // Attempt to retrieve all registrations
-            DBCursor<Registration> dbcur = registrations.find();
-            for (Registration r : dbcur)
+            // Index all registrations.
+            if (noErrors)
             {
-                // Update records only if not doing all records
-                if (!deleteAll)
+                int successCount = 0, failCount = 0;
+                DBCursor<Registration> dbcur = registrations.find().snapshot();
+                for (Registration registration : dbcur)
                 {
-                    deleteElasticSearchIndex(elasticSearch, r);
+                    try {
+                        esClient.prepareIndex(Registration.COLLECTION_NAME, Registration.COLLECTION_SINGULAR_NAME, registration.getId())
+                                .setSource(asJson(registration))
+                                .execute()
+                                .actionGet();
+                        successCount++;
+                    }
+                    catch (IOException ioEx)
+                    {
+                        failCount++;
+                        outputAndLogMessage(Level.WARNING, out, String.format("Failed to index registration %s: %s",
+                                registration.getRegIdentifier(), ioEx.getMessage()));
+                    }
                 }
-                // Update records if reIndex is true
-                if (reIndex)
+                
+                outputAndLogMessage(Level.INFO, out, String.format("Successfully indexed %d registrations", successCount));
+                if (failCount > 0)
                 {
-                    BulkResponse bulkResponse = createElasticSearchIndex(newClient, r);
-                    if (bulkResponse.hasFailures())
-                    {
-                        // process failures by iterating through each bulk response item
-                        log.severe(bulkResponse.buildFailureMessage());
-                        throw new RuntimeException("Error: Could not create index in ElasticSearch: "
-                                + bulkResponse.buildFailureMessage());
-                    }
-                    else
-                    {
-                        log.info("createdIndex for: " + r.getId());
-                    }
+                    outputAndLogMessage(Level.WARNING, out, String.format("Warning: %d registrations could not be indexed", failCount));
                 }
             }
 
-            // Supposed to do this after records re-added
-            if (deleteAll && reIndex)
-            {
-                //Note: As of version 0.90.5, flushing should be performed separately from refreshing.
-                //See https://github.com/elasticsearch/elasticsearch/issues/3689
-                log.info("Delete and Re-Index: Flushing the ElasticSearch registrations index.");
-                newClient.admin().indices().flush(new FlushRequest(Registration.COLLECTION_NAME)).actionGet();
-                log.info("Flushed the index. Now refreshing the index.");
-                newClient.admin().indices().refresh(new RefreshRequest(Registration.COLLECTION_NAME)).actionGet();
-                log.info("The index has been refreshed.");
-            }
-            
-            log.info("Closing the ElasticSearch Client after use.");
-            newClient.close();
-        } else {
-            //No database connection...
-            log.severe("No MongoDB database connection available - could not index!");
+            // Finish up.
+            flushAndRefreshElasticSearch(esClient, out);
+            outputAndLogMessage(Level.INFO, out, "Indexer finishing cleanly");
         }
-        out.append("Done\n");
+        finally
+        {
+            log.info("Closing the ElasticSearch Client after use.");
+            esClient.close();
+        }
     }
 
     /**
-     * Performs a create index operation on the Elastic Search records for the provided registration
-     *
-     * @param client, the ElasticSearch Client to connect with
-     * @param reg, the Registration object to add to the records
-     * @return a BulkResponse object, which contains the response from the server. This is returned directly
-     * as to enable different behavior to each calling client
+     * Deletes any existing "Registrations" index in Elastic Search.
+     * @param esClient A client connection to Elastic Search.
+     * @param out An object used to send text output back to the REST caller.
+     * @return TRUE if successful; otherwise FALSE.
      */
-    public static BulkResponse createElasticSearchIndex(Client client, Registration reg)
+    private boolean deleteElasticSearchRegistrationsIndex(Client esClient, PrintWriter out)
     {
-        log.info("Entering createElasticSearchIndex() - preparing bulk request. Registration ID = " + reg.getId());
-        BulkRequestBuilder bulkRequest = client.prepareBulk();
+        boolean success = true;
         
-        // either use client#prepare, or use Requests# to directly build index/delete requests
-        try
-        {
-            log.info("Adding a prepareIndex request.");
-            bulkRequest.add(client.prepareIndex(Registration.COLLECTION_NAME, Registration.COLLECTION_SINGULAR_NAME, reg.getId()).setSource(
-                    asJson(reg)));
-        }
-        catch (IOException e1)
-        {
-            log.severe("Caught IOException while adding to bulk request: " + e1.getMessage());
-            e1.printStackTrace();
-            log.severe("Error in creating reg from object: " + e1.getMessage());
-        }
+        IndicesExistsResponse ieResponse = esClient.admin().indices().prepareExists(Registration.COLLECTION_NAME).get();
+        if (ieResponse.isExists())
+        {        
+            DeleteIndexRequest request = new DeleteIndexRequest(Registration.COLLECTION_NAME);
+            DeleteIndexResponse reponse = esClient.admin().indices().delete(request).actionGet();
 
-        log.info("Executing the bulk request.");
-        BulkResponse bulkResponse = bulkRequest.execute().actionGet();
-        log.info("Returning the bulk response.");
-        return bulkResponse;
+            if (!reponse.isAcknowledged())
+            {
+                success = false;
+                outputAndLogMessage(Level.SEVERE, out, "Error: failed to delete the registrations index in ElasticSearch");
+            }
+        }
+        
+        return success;
     }
+    
+    /**
+     * Creates a new "Registrations" index in Elastic Search.
+     * @param esClient A client connection to Elastic Search.
+     * @param out An object used to send text output back to the REST caller.
+     * @return TRUE if successful; otherwise FALSE.
+     */
+    private boolean createElasticSearchRegistrationsIndex(Client esClient, PrintWriter out, String mapping)
+    {
+        boolean success = true;
+        CreateIndexResponse response;
+        
+        if ((mapping != null) && !mapping.trim().isEmpty())
+        {
+            outputAndLogMessage(Level.INFO, out, "Attempting to create new Registrations index with the provided mapping");
+            CreateIndexRequestBuilder request = esClient.admin().indices()
+                    .prepareCreate(Registration.COLLECTION_NAME)
+                    .addMapping(Registration.COLLECTION_SINGULAR_NAME, mapping);
+            response = request.execute().actionGet();
+        }
+        else
+        {
+            outputAndLogMessage(Level.INFO, out, "Attempting to create new Registrations index with dynamic mapping");
+            CreateIndexRequest request = new CreateIndexRequest(Registration.COLLECTION_NAME);
+            response = esClient.admin().indices().create(request).actionGet();
+        }
+        
+        if (!response.isAcknowledged())
+        {
+            success = false;
+            outputAndLogMessage(Level.SEVERE, out, "Error: failed to create the Registrations index in ElasticSearch");
+        }
+        
+        return success;
+    }
+    
+    /**
+     * Flushes and Refreshes the "Registrations" index in Elastic Search.
+     * @param esClient A client connection to Elastic Search.
+     * @param out An object used to send text output back to the REST caller.
+     */
+    private void flushAndRefreshElasticSearch(Client esClient, PrintWriter out)
+    {
+        // Flush.
+        log.info("Flushing the Registrations index in ElasticSearch");
+        FlushRequest flushRequest = new FlushRequest(Registration.COLLECTION_NAME);
+        FlushResponse flushResult = esClient.admin().indices().flush(flushRequest).actionGet();
+        if (flushResult.getFailedShards() > 0)
+        {
+            outputAndLogMessage(Level.WARNING, out, "Flush index operation failed on one or more shards");
+        }
+        else
+        {
+            outputAndLogMessage(Level.INFO, out, "Flush index was successful");
+        }
+        
+        // Refresh.
+        log.info("Refreshing the Registrations index in ElasticSearch");
+        RefreshRequest refreshRequest = new RefreshRequest(Registration.COLLECTION_NAME);
+        RefreshResponse refreshResult = esClient.admin().indices().refresh(refreshRequest).actionGet();
+        if (refreshResult.getFailedShards() > 0)
+        {
+            outputAndLogMessage(Level.WARNING, out, "Refresh index operation failed on one or more shards");
+        }
+        else
+        {
+            outputAndLogMessage(Level.INFO, out, "Refresh index was successful");
+        }
+    }
+    
     
     /**
      * Index (i.e. insert or update) the registration into ElasticSearch,
@@ -232,7 +295,7 @@ public class Indexer extends Task
         }
     }
 
-
+    
     /**
      * Index (i.e. insert) the registration into ElasticSearch, using the given ElasticSearch Client (TransportClient)
      * @param esConfig the ElasticSearch Configuration
