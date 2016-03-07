@@ -44,7 +44,7 @@ import java.util.logging.Level;
  * curl -X POST http://localhost:9091/tasks/indexer -d '@bin/registration_mapping.json'
  * where the JSON file (and preceding '-d' parameter) are optional, but allow
  * the object mapping in ElasticSearch to be set manually.  If this option is
- * not used then ElasticSearch's dynamic mapping will be used.
+ * not specified then ElasticSearch's dynamic mapping will be applied instead.
  */
 public class Indexer extends Task
 {
@@ -88,7 +88,7 @@ public class Indexer extends Task
     @Override
     public void execute(ImmutableMultimap<String, String> arg0, PrintWriter out) throws Exception
     {
-        outputAndLogMessage(Level.INFO, out, "Dropping and rebuilding the Registrations index in Elastic Search");
+        outputAndLogMessage(Level.INFO, out, "Dropping and rebuilding the registrations index in Elastic Search");
 
         // Process task parameters.
         String indexMapping = null;
@@ -112,12 +112,12 @@ public class Indexer extends Task
             if (noErrors && (db == null))
             {
                 noErrors = false;
-                outputAndLogMessage(Level.WARNING, out, "Error: No database connection available; aborting.");
+                outputAndLogMessage(Level.SEVERE, out, "Error: No database connection available; aborting.");
             }
             if (noErrors && !db.isAuthenticated())
             {
                 noErrors = false;
-                outputAndLogMessage(Level.WARNING, out, "Error: Could not authenticate against database; aborting.");
+                outputAndLogMessage(Level.SEVERE, out, "Error: Could not authenticate against database; aborting.");
             }
             
             // Start by completely deleting the old index.
@@ -134,7 +134,7 @@ public class Indexer extends Task
                 outputAndLogMessage(Level.WARNING, out, "Aborting");
             }
 
-            // Create MONGOJACK connection to the database
+            // Create a MongoJack connection to the database.
             JacksonDBCollection<Registration, String> registrations = JacksonDBCollection.wrap(
                     db.getCollection(Registration.COLLECTION_NAME), Registration.class, String.class);
 
@@ -145,7 +145,8 @@ public class Indexer extends Task
                 DBCursor<Registration> dbcur = registrations.find().snapshot();
                 for (Registration registration : dbcur)
                 {
-                    try {
+                    try
+                    {
                         esClient.prepareIndex(Registration.COLLECTION_NAME, Registration.COLLECTION_SINGULAR_NAME, registration.getId())
                                 .setSource(asJson(registration))
                                 .execute()
@@ -179,7 +180,7 @@ public class Indexer extends Task
     }
 
     /**
-     * Deletes any existing "Registrations" index in Elastic Search.
+     * Deletes any existing "registrations" index in Elastic Search.
      * @param esClient A client connection to Elastic Search.
      * @param out An object used to send text output back to the REST caller.
      * @return TRUE if successful; otherwise FALSE.
@@ -205,9 +206,11 @@ public class Indexer extends Task
     }
     
     /**
-     * Creates a new "Registrations" index in Elastic Search.
+     * Creates a new "registrations" index in Elastic Search.
      * @param esClient A client connection to Elastic Search.
      * @param out An object used to send text output back to the REST caller.
+     * @param mapping Optional string.  If present, is used to set the index
+     *   mapping used by ElasticSearch.
      * @return TRUE if successful; otherwise FALSE.
      */
     private boolean createElasticSearchRegistrationsIndex(Client esClient, PrintWriter out, String mapping)
@@ -217,7 +220,7 @@ public class Indexer extends Task
         
         if ((mapping != null) && !mapping.trim().isEmpty())
         {
-            outputAndLogMessage(Level.INFO, out, "Attempting to create new Registrations index with the provided mapping");
+            outputAndLogMessage(Level.INFO, out, "Attempting to create new registrations index with the provided mapping");
             CreateIndexRequestBuilder request = esClient.admin().indices()
                     .prepareCreate(Registration.COLLECTION_NAME)
                     .addMapping(Registration.COLLECTION_SINGULAR_NAME, mapping);
@@ -225,7 +228,7 @@ public class Indexer extends Task
         }
         else
         {
-            outputAndLogMessage(Level.INFO, out, "Attempting to create new Registrations index with dynamic mapping");
+            outputAndLogMessage(Level.INFO, out, "Attempting to create new registrations index with dynamic mapping");
             CreateIndexRequest request = new CreateIndexRequest(Registration.COLLECTION_NAME);
             response = esClient.admin().indices().create(request).actionGet();
         }
@@ -233,21 +236,21 @@ public class Indexer extends Task
         if (!response.isAcknowledged())
         {
             success = false;
-            outputAndLogMessage(Level.SEVERE, out, "Error: failed to create the Registrations index in ElasticSearch");
+            outputAndLogMessage(Level.SEVERE, out, "Error: failed to create the registrations index in ElasticSearch");
         }
         
         return success;
     }
     
     /**
-     * Flushes and Refreshes the "Registrations" index in Elastic Search.
+     * Flushes and Refreshes the "registrations" index in Elastic Search.
      * @param esClient A client connection to Elastic Search.
      * @param out An object used to send text output back to the REST caller.
      */
     private void flushAndRefreshElasticSearch(Client esClient, PrintWriter out)
     {
         // Flush.
-        log.info("Flushing the Registrations index in ElasticSearch");
+        log.info("Flushing the registrations index in ElasticSearch");
         FlushRequest flushRequest = new FlushRequest(Registration.COLLECTION_NAME);
         FlushResponse flushResult = esClient.admin().indices().flush(flushRequest).actionGet();
         if (flushResult.getFailedShards() > 0)
@@ -260,7 +263,7 @@ public class Indexer extends Task
         }
         
         // Refresh.
-        log.info("Refreshing the Registrations index in ElasticSearch");
+        log.info("Refreshing the registrations index in ElasticSearch");
         RefreshRequest refreshRequest = new RefreshRequest(Registration.COLLECTION_NAME);
         RefreshResponse refreshResult = esClient.admin().indices().refresh(refreshRequest).actionGet();
         if (refreshResult.getFailedShards() > 0)
