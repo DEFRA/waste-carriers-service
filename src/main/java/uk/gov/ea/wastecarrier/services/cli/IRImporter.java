@@ -951,17 +951,33 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
                     // Rails app will error without a DoB, so lets create a fake one for now.
                     personDateOfBirth = new Date(0, 0, 1);
                 }
+                
+                // Have we already added this person from a previous row in the
+                // file?  This could be from 2 or more rows ago.
+                ArrayList<KeyPerson> keyPeople = (ArrayList<KeyPerson>)reg.getKeyPeople();
+                boolean isNewPerson = true;
+                for (KeyPerson otherPerson : keyPeople)
+                {
+                    if (dataRow[CsvColumn.Firstname.index()].equals(otherPerson.getFirstName())
+                            && dataRow[CsvColumn.Lastname.index()].equals(otherPerson.getLastName())
+                            && personDateOfBirth.equals(otherPerson.getDateOfBirth()))
+                    {
+                        isNewPerson = false;
+                        System.out.println(String.format("Skipping repeated Key Person for registraiton %s", reg.getRegIdentifier()));
+                    }
+                }
 
                 // Add this person to the list of Key People.
-                KeyPerson keyPerson = new KeyPerson();
-                keyPerson.setPersonType(KeyPerson.PersonType.KEY);
-                keyPerson.setFirstName(dataRow[CsvColumn.Firstname.index()]);
-                keyPerson.setLastName(dataRow[CsvColumn.Lastname.index()]);
-                keyPerson.setDateOfBirth(personDateOfBirth);
-                keyPerson.setPosition(serrSimPositionName);
-
-                ArrayList<KeyPerson> keyPeople = (ArrayList<KeyPerson>)reg.getKeyPeople();
-                keyPeople.add(keyPerson);
+                if (isNewPerson)
+                {
+                    KeyPerson keyPerson = new KeyPerson();
+                    keyPerson.setPersonType(KeyPerson.PersonType.KEY);
+                    keyPerson.setFirstName(dataRow[CsvColumn.Firstname.index()]);
+                    keyPerson.setLastName(dataRow[CsvColumn.Lastname.index()]);
+                    keyPerson.setDateOfBirth(personDateOfBirth);
+                    keyPerson.setPosition(serrSimPositionName);
+                    keyPeople.add(keyPerson);
+                }
             }
         }
     }
