@@ -47,7 +47,6 @@ public class BackgroundJobScheduler implements Managed
     
     // Private instance members relating to Quartz.
     private Scheduler scheduler;
-    private Trigger manualJobTrigger;
     
     // Private instance members storing job configuration.
     private ExportJobConfiguration exportJobConfig;
@@ -234,16 +233,10 @@ public class BackgroundJobScheduler implements Managed
      */
     private Trigger getManualJobTrigger()
     {
-        // We re-use a single Trigger regardless how many times it is used.
-        if (manualJobTrigger == null)
-        {
-            manualJobTrigger = newTrigger() 
+        return newTrigger() 
                 .withIdentity("ManualJobTrigger", MANUAL_GROUP)
                 .startNow()
                 .build();
-        }
-        
-        return manualJobTrigger;
     }
     
     /**
