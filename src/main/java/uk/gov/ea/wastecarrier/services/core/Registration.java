@@ -812,6 +812,10 @@ public class Registration
      */
     public boolean goesOnPublicRegister()
     {
-        return ((metaData != null) && (metaData.getStatus() == MetaData.RegistrationStatus.ACTIVE));
+        return ((metaData != null)
+                && (metaData.getStatus() == MetaData.RegistrationStatus.ACTIVE)
+                && (companyName != null)
+                && (!companyName.trim().isEmpty())
+        );
     }
 }
