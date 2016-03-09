@@ -491,8 +491,8 @@ public class ExportJob implements Job
                     registeredAddress.getTownCity(),
                     registeredAddress.getPostcode(),
                     registeredAddress.getCountry(),
-                    registeredAddress.getEasting(),
-                    registeredAddress.getNorthing(),
+                    registeredAddress.getFirstOrOnlyEasting(),
+                    registeredAddress.getFirstOrOnlyNorthing(),
                     reg.getBusinessType(),                                                    // Sole trader, Partnership etc.
                     reg.getTier().name(),                                                     // UPPER or LOWER (tier).
                     isUpper ? reg.getRegistrationType() : "carrier_broker_dealer",            // Carrier / Broker / Dealer status.

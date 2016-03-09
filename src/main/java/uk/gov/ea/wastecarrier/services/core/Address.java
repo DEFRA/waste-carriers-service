@@ -1,5 +1,6 @@
 package uk.gov.ea.wastecarrier.services.core;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
@@ -235,16 +236,47 @@ public class Address {
         this.royalMailUpdateDate = royalMailUpdateDate;
     }
 
+    /**
+     * Helper that returns the input string up to the first occurrence of the
+     * specified character, or the full string if the character does not occur.
+     * @param s The string to scan.
+     * @param c The character to scan for.
+     * @return A string as described above.
+     */
+    private String getStringUpToChar(String s, Character c)
+    {
+        String result = s;
+        if (result != null)
+        {
+            int endIndex = s.indexOf(c);
+            if (endIndex != -1)
+            {
+                result = result.substring(0, endIndex);
+            }
+        }
+        return result;
+    }
+    
     public String getEasting() {
         return easting;
+    }
+    
+    @JsonIgnore
+    public String getFirstOrOnlyEasting() {
+        return getStringUpToChar(easting, '|');
     }
 
     public void setEasting(String easting) {
         this.easting = easting;
     }
-
+    
     public String getNorthing() {
         return northing;
+    }
+    
+    @JsonIgnore
+    public String getFirstOrOnlyNorthing() {
+        return getStringUpToChar(northing, '|');
     }
 
     public void setNorthing(String northing) {
