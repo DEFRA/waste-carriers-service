@@ -248,7 +248,7 @@ public class Address {
         String result = s;
         if (result != null)
         {
-            int endIndex = s.indexOf(c);
+            int endIndex = result.indexOf(c);
             if (endIndex != -1)
             {
                 result = result.substring(0, endIndex);
