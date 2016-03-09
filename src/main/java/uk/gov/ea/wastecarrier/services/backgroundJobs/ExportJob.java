@@ -684,8 +684,8 @@ public class ExportJob implements Job
                         addr.getTownCity(),
                         addr.getPostcode(),
                         addr.getCountry(),
-                        addr.getEasting(),
-                        addr.getNorthing(),
+                        addr.getFirstOrOnlyEasting(),
+                        addr.getFirstOrOnlyNorthing(),
                         addr.getFirstName(),
                         addr.getLastName()
                     });
