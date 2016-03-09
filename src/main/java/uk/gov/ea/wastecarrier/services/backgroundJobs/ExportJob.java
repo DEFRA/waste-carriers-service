@@ -292,6 +292,35 @@ public class ExportJob implements Job
     }
     
     /**
+     * Gets the Company Number for a registration, returning null if the raw
+     * company number does not appear to be valid.
+     * @param registration The registration to retrieve the company number for.
+     * @return A string containing the company number, or null if the raw
+     *   company number does not appear to be valid.
+     */
+    private String safelyGetValidCompanyNumberForEpr(Registration registration)
+    {
+        String result = null;
+        
+        if ((registration != null) && COMPANY.equals(registration.getBusinessType()))
+        {
+            result = registration.getCompanyNo();
+            if (result != null)
+            {
+                result = result.trim();
+                
+                // Check if the company number contains only zeroes.
+                if (result.matches("^0+$"))
+                {
+                    result = null;
+                }
+            }
+        }
+        
+        return result;
+    }
+    
+    /**
      * Prepends the Reporting Snapshot export path to the specified filename.
      * @param jobConfig The Quartz JobDataMap object provided to this job.
      * @param filename The filename (without any path) to use.
@@ -469,7 +498,7 @@ public class ExportJob implements Job
                     isUpper ? reg.getRegistrationType() : "carrier_broker_dealer",            // Carrier / Broker / Dealer status.
                     safelyFormatDate(eprDateFormatter, metaData.getDateActivated()),          // Registration date.
                     isUpper ? safelyFormatDate(eprDateFormatter, reg.getExpires_on()) : null, // Expiry date.
-                    COMPANY.equals(reg.getBusinessType()) ? reg.getCompanyNo() : null         // Company number.
+                    safelyGetValidCompanyNumberForEpr(reg)                                    // Company number.
                 });
             }
         }
