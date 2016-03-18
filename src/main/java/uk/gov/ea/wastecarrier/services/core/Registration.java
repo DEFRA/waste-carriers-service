@@ -666,11 +666,11 @@ public class Registration
      */
     public Address getFirstAddressByType(Address.addressType addressType)
     {
-        if (addresses != null)
+        if ((addresses != null) && (addressType != null))
         {
             for (Address thisAddress : addresses)
             {
-                if (thisAddress.getAddressType().equals(addressType))
+                if (addressType.equals(thisAddress.getAddressType()))
                 {
                     return thisAddress;
                 }
