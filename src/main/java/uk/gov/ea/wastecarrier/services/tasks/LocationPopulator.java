@@ -75,20 +75,16 @@ public class LocationPopulator extends Task
             PostcodeRegistry pr = new PostcodeRegistry(PostcodeRegistry.POSTCODE_FROM.FILE, pathToPostcodeFile);
             
             // for each registration, get out postcode
-            for (Registration r : dbcur) {
-
-                Address regAddress = null;
-                for (Iterator<Address> address = r.getAddresses().iterator(); address.hasNext();) {
-                    Address thisAddress = address.next();
-                    if (thisAddress.getAddressType().equals(Address.addressType.REGISTERED)) {
-                        regAddress = thisAddress;
-                        break;
-                    }
-                }
-                if (regAddress != null) {
+            for (Registration r : dbcur)
+            {
+                Address regAddress = r.getFirstAddressByType(Address.addressType.REGISTERED);
+                
+                if (regAddress != null)
+                {
                     // Unfortunately we have addressMode hard coded> we could have put it into an enum but was a valid
                     // addressMode is null and/or blank!
-                    if (regAddress.getAddressMode() == "manual-foreign") {
+                    if (regAddress.getAddressMode() == "manual-foreign")
+                    {
                         log.warning("Non-UK Address assumed as Postcode could not be found in the address, Using default location of X:1, Y:1");
                         regAddress.setLocation( new Location(1, 1));
 
@@ -97,7 +93,8 @@ public class LocationPopulator extends Task
                         tmpMD.setAnotherString("Non-UK Address Assumed");
                         r.setMetaData(tmpMD);
                     }
-                    else {
+                    else
+                    {
                         Double[] xyCoords = pr.getXYCoords(regAddress.getPostcode());
                         regAddress.setLocation( new Location( xyCoords[0], xyCoords[1]));
                     }
@@ -105,14 +102,17 @@ public class LocationPopulator extends Task
                     // Update database with XY information
                     WriteResult<Registration, String> result = registrations.updateById(r.getId(), r);
 
-                    if (String.valueOf("").equals(result.getError())) {
+                    if (String.valueOf("").equals(result.getError()))
+                    {
                         throw new WebApplicationException(Status.NOT_MODIFIED);
                     }
-                    else {
+                    else
+                    {
                         log.info(String.format("Updated Registration id: %s", r.getId()));
                     }
                 }
-                else {
+                else
+                {
                     log.warning(String.format("Registration with no REGISTERED address: %s, %s", r.getRegIdentifier(), r.getId()));
                 }
             }
