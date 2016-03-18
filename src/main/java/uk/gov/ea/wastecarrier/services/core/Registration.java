@@ -670,9 +670,12 @@ public class Registration
         {
             for (Address thisAddress : addresses)
             {
-                if (addressType.equals(thisAddress.getAddressType()))
+                if (thisAddress != null)
                 {
-                    return thisAddress;
+                    if (addressType.equals(thisAddress.getAddressType()))
+                    {
+                        return thisAddress;
+                    }
                 }
             }
         }
