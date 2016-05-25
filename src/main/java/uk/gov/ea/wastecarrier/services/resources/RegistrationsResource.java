@@ -603,54 +603,11 @@ public class RegistrationsResource
             // Update Registration to include sequential identifier.
             updateRegistrationIdentifier(reg, db);
             
-            // If upper tier, create an initial Order to represent fees/charges the user has to pay
+            // If upper tier, create an empty set of finance details.
             if (RegistrationTier.UPPER.equals(reg.getTier()))
             {
-                // Work out if this registration should be treated as a valid IR renewal.
-                Date ir_expiry = new Date();
-                ir_expiry.setHours(23);
-                ir_expiry.setMinutes(59);
-                ir_expiry.setSeconds(59);
-
-                boolean isIRRenewal = (
-                    PaymentHelper.isIRRenewal(reg) &&
-                    (reg.getOriginalDateExpiry() != null) &&
-                    (reg.getOriginalDateExpiry().after(ir_expiry))
-                );
-
-
                 FinanceDetails financeDetails = new FinanceDetails();
                 reg.setFinanceDetails(financeDetails);
-                Order order = new Order();
-                order.setOrderId(UUID.randomUUID().toString());
-                Date now = new Date();
-                
-                // Details will be updated when the user proceeds past the order page.
-                order.setCurrency("GBP");
-                order.setDescription(isIRRenewal ? "Waste Carrier Registration IR-renewal" : "New Waste Carrier Registration");
-                order.setOrderCode(String.valueOf(now.getTime() / 1000L));
-                order.setPaymentMethod(Order.PaymentMethod.UNKNOWN);
-                order.setDateCreated(now);
-                order.setDateLastUpdated(now);
-                
-                // Create order item for registration.
-                OrderItem item = new OrderItem();
-                item.setAmount(isIRRenewal ? 10500 : 15400);
-                item.setCurrency("GBP");
-                item.setDescription(isIRRenewal ? "Renewal of Registration" : "Initial Registration");
-                item.setReference("Reg: " + reg.getRegIdentifier());
-                item.setType(isIRRenewal ? OrderItem.OrderItemType.RENEW : OrderItem.OrderItemType.NEW);
-                
-                // Add registraiton fee to order.
-                List<OrderItem> orderItems = new ArrayList<OrderItem>();
-                orderItems.add(item);
-                order.setOrderItems(orderItems);
-                order.setTotalAmount(item.getAmount());
-                
-                // Add order to registration.
-                List<Order> orders = new ArrayList<Order>();
-                orders.add(order);
-                reg.getFinanceDetails().setOrders(orders);
             }
 
             // If user has declared convictions or we have matched convictions
