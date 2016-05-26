@@ -146,7 +146,6 @@ public class AppTest extends TestCase
 	{
 	    final Registration reg = getFullRegistrationDetails(new Registration());
 	    String asJson = asJson(reg);
-			System.out.println("*********************************************************");
 	    System.out.println("actual:  " + asJson);
 	    System.out.println("expected:" + jsonFixture("fixtures/fullRegistration.json"));
 	    assertEquals("a Registration can be serialized to JSON",
