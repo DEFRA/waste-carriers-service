@@ -560,11 +560,21 @@ public class RegistrationsResource
                 log.severe("New registration to be inserted is missing a uuid - preventing accidental duplicate inserts.");
                 throw new WebApplicationException(Status.PRECONDITION_FAILED);
             }
+            
+            // Possible bug?  Some registrations get persisted to the database
+            // with no value in the metaData.route field.  Try to block these.
+            MetaData currentMetaData = reg.getMetaData();
+            if ((currentMetaData == null) || (currentMetaData.getRoute() == null))
+            {
+                log.warning("Incoming registration with missing route field");
+                throw new WebApplicationException(Status.BAD_REQUEST);
+            }
+            
             /*
              * Insert registration details into the database
              */
             // Update Registration MetaData to include current time
-            reg.setMetaData(new MetaData(MetaData.getCurrentDateTime(), "userDetailAddedAtRegistration", reg.getMetaData().getRoute()));
+            reg.setMetaData(new MetaData(MetaData.getCurrentDateTime(), "userDetailAddedAtRegistration", currentMetaData.getRoute()));
 
             // Update Registration Location to include location, derived from postcode
             Address regAddress = null;
