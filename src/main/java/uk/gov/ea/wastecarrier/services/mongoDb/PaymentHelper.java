@@ -11,6 +11,7 @@ import uk.gov.ea.wastecarrier.services.core.Settings;
 import uk.gov.ea.wastecarrier.services.core.MetaData.RegistrationStatus;
 import uk.gov.ea.wastecarrier.services.core.Registration.RegistrationTier;
 import uk.gov.ea.wastecarrier.services.core.User;
+import uk.gov.ea.wastecarrier.services.core.FinanceDetails;
 
 public class PaymentHelper
 {
@@ -26,7 +27,7 @@ public class PaymentHelper
     public boolean isReadyToBeActivated(Registration registration, User user)
     {
         boolean result = false;
-        
+
         // Can only be activated if currently pending or refused.
         if (registration.getMetaData().getStatus().equals(RegistrationStatus.PENDING)
                 || registration.getMetaData().getStatus().equals(RegistrationStatus.REFUSED))
@@ -52,7 +53,7 @@ public class PaymentHelper
 
         return result;
     }
-    
+
     public boolean isReadyToBeRenewed(Registration registration)
     {
         if (registration.getRenewalRequested() != null && registration.getRenewalRequested().equalsIgnoreCase("true")) {
@@ -85,23 +86,24 @@ public class PaymentHelper
         }
         else
         {
-            result = registration.getFinanceDetails().getBalance() == 0;
+            FinanceDetails fd = registration.getFinanceDetails();
+            result = ((fd != null) && (fd.getOrders() != null) && (fd.getOrders().size() > 0) && (fd.getBalance() == 0));
         }
 
         return result;
     }
-    
+
     public Registration setupRegistrationForActivation(Registration registration)
     {
         // Make registration active
         MetaData md = registration.getMetaData();
         md.setLastModified(MetaData.getCurrentDateTime());
-        
+
         // Update Activation status and time
         md = makeActive(md);
-        
+
         registration.setMetaData(md);
-        
+
         if (registration.getTier().equals(RegistrationTier.UPPER))
         {
             // Set expires on date
@@ -109,7 +111,7 @@ public class PaymentHelper
         }
         return registration;
     }
-    
+
     /**
      * Updates the MetaData to give it an active status
      * @param md
@@ -126,7 +128,7 @@ public class PaymentHelper
         }
         return md;
     }
-    
+
     /**
      * Create an updated expired date depending on registration type and the
      * settings provided
