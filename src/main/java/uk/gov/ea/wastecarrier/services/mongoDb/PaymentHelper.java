@@ -1,4 +1,4 @@
-            package uk.gov.ea.wastecarrier.services.mongoDb;
+package uk.gov.ea.wastecarrier.services.mongoDb;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -56,7 +56,8 @@ public class PaymentHelper
 
     public boolean isReadyToBeRenewed(Registration registration)
     {
-        if (registration.getRenewalRequested() != null && registration.getRenewalRequested().equalsIgnoreCase("true")) {
+        if (registration.getRenewalRequested() != null && registration.getRenewalRequested().equalsIgnoreCase("true"))
+        {
             // Renewal requested
             return true;
         }
@@ -114,8 +115,6 @@ public class PaymentHelper
 
     /**
      * Updates the MetaData to give it an active status
-     * @param md
-     * @return
      */
     private MetaData makeActive(MetaData md)
     {
@@ -132,7 +131,6 @@ public class PaymentHelper
     /**
      * Create an updated expired date depending on registration type and the
      * settings provided
-     * @return
      */
     private Date getExpiryDate(Registration registration)
     {
@@ -141,7 +139,7 @@ public class PaymentHelper
         Date expiryDate = null;
 
         // Detect standard or IR renewal
-        if(isIRRenewal(registration))
+        if (isIRRenewal(registration))
         {
             // Set expiry date to X years from current expiry date
             Calendar newExpiryDate = new GregorianCalendar();
@@ -156,11 +154,16 @@ public class PaymentHelper
             // Set expiry date to X years from now
             Calendar cal = Calendar.getInstance();
             String type = regPeriodList[1];
-            if (type.equalsIgnoreCase("YEARS")) {
+            if (type.equalsIgnoreCase("YEARS"))
+            {
                 cal.add(Calendar.YEAR, length);
-            } else if (type.equalsIgnoreCase("MONTHS")) {
+            }
+            else if (type.equalsIgnoreCase("MONTHS"))
+            {
                 cal.add(Calendar.MONTH, length);
-            } else if (type.equalsIgnoreCase("DAYS")) {
+            }
+            else if (type.equalsIgnoreCase("DAYS"))
+            {
                 cal.add(Calendar.DAY_OF_MONTH, length);
             }
 
@@ -174,7 +177,7 @@ public class PaymentHelper
     {
         Boolean result = false;
 
-        if(registration.getOriginalRegistrationNumber() != null)
+        if (registration.getOriginalRegistrationNumber() != null)
         {
             String regNo = registration.getOriginalRegistrationNumber().trim();
 
