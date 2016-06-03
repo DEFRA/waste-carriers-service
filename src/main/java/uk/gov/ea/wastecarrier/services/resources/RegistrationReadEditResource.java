@@ -2,7 +2,6 @@ package uk.gov.ea.wastecarrier.services.resources;
 
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.ElasticSearchConfiguration;
-import uk.gov.ea.wastecarrier.services.MessageQueueConfiguration;
 import uk.gov.ea.wastecarrier.services.SettingsConfiguration;
 import uk.gov.ea.wastecarrier.services.core.MetaData;
 import uk.gov.ea.wastecarrier.services.core.Registration;
@@ -46,7 +45,6 @@ import java.util.logging.Logger;
 @Consumes(MediaType.APPLICATION_JSON)
 public class RegistrationReadEditResource
 {
-    private MessageQueueConfiguration messageQueue;
     private DatabaseHelper databaseHelper;
     //Note: not re-using Clients, instantiating fresh clients instead.
     //private Client esClient;
@@ -63,14 +61,10 @@ public class RegistrationReadEditResource
      * @param mQConfig
      * @param database
      */
-    public RegistrationReadEditResource(MessageQueueConfiguration mQConfig,
+    public RegistrationReadEditResource(
     		DatabaseConfiguration database, DatabaseConfiguration userDatabase, ElasticSearchConfiguration elasticSearch, 
     		Client esClient, SettingsConfiguration settingConfig)
     {
-        this.messageQueue = mQConfig;
-
-    	log.fine("> messageQueue: " + this.messageQueue);
-
         this.databaseHelper = new DatabaseHelper(database);
         this.esConfig = elasticSearch;
         this.regDao = new RegistrationsMongoDao(new DatabaseHelper(database));

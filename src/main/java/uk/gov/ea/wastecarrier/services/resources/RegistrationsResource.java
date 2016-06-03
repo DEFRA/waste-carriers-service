@@ -28,13 +28,11 @@ import org.elasticsearch.search.sort.SortOrder;
 import org.mongojack.DBSort;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.ElasticSearchConfiguration;
-import uk.gov.ea.wastecarrier.services.MessageQueueConfiguration;
 import uk.gov.ea.wastecarrier.services.core.*;
 import uk.gov.ea.wastecarrier.services.core.Registration.RegistrationTier;
 import uk.gov.ea.wastecarrier.services.elasticsearch.ElasticSearchUtils;
 import uk.gov.ea.wastecarrier.services.mongoDb.AccountHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
-import uk.gov.ea.wastecarrier.services.mongoDb.PaymentHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.SearchHelper;
 import uk.gov.ea.wastecarrier.services.tasks.Indexer;
@@ -58,7 +56,6 @@ import java.util.logging.Logger;
 @Consumes(MediaType.APPLICATION_JSON)
 public class RegistrationsResource
 {
-    private final MessageQueueConfiguration messageQueue;
     private final DatabaseHelper databaseHelper;
     private final ElasticSearchConfiguration elasticSearch;
     /* Note: We are not using the shared ES TransportClient for the time being,
@@ -77,15 +74,11 @@ public class RegistrationsResource
      * @param database
      */
     public RegistrationsResource(
-            MessageQueueConfiguration mQConfig,
             DatabaseConfiguration database,
             ElasticSearchConfiguration elasticSearch,
             Client esClient,
             String postcodeFilePath)
     {
-        this.messageQueue = mQConfig;
-        log.fine("> messageQueue: " + this.messageQueue);
-        
         this.databaseHelper = new DatabaseHelper(database);
         this.elasticSearch = elasticSearch;
         this.postcodeRegistry = new PostcodeRegistry(PostcodeRegistry.POSTCODE_FROM.FILE, postcodeFilePath);

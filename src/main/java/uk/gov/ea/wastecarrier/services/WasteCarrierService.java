@@ -72,7 +72,6 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration>
     @Override
     public void run(WasteCarrierConfiguration configuration, Environment environment)
     {
-        final MessageQueueConfiguration mQConfig = configuration.getMessageQueueConfiguration();
         final DatabaseConfiguration dbConfig = configuration.getDatabase();
         final DatabaseConfiguration userDbConfig = configuration.getUserDatabase();
         final ElasticSearchConfiguration esConfig = configuration.getElasticSearch();
@@ -94,9 +93,9 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration>
         esClient = ElasticSearchUtils.getNewTransportClient(esConfig);
 
         // Add Create Resource.
-        environment.addResource(new RegistrationsResource(mQConfig, dbConfig, esConfig, esClient, postcodeFilePath));
+        environment.addResource(new RegistrationsResource(dbConfig, esConfig, esClient, postcodeFilePath));
         // Add Read Resource.
-        environment.addResource(new RegistrationReadEditResource(mQConfig, dbConfig, userDbConfig, esConfig, esClient, sConfig));
+        environment.addResource(new RegistrationReadEditResource(dbConfig, userDbConfig, esConfig, esClient, sConfig));
         // Add Version Resource.
         environment.addResource(new RegistrationVersionResource());
 

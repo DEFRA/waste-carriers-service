@@ -1,10 +1,5 @@
 # Default parameters defined in WasteCarrierConfiguration
 
-# messageQueue complex parameter to show class of different configuration types MessageQueueConfiguration
-messageQueue:
-  host: WCRS_SERVICES_MQ_HOST
-  port: WCRS_SERVICES_MQ_PORT
-
 # Added standard logging information
 logging:
   # ...
@@ -103,5 +98,3 @@ registrationStatusJob:
   # Cron expression for scheduled job exectuion.  Leave empty to make the job
   # run on a manual trigger only.  Default is daily at 8pm.
   cronExpression: WCRS_SERVICES_STATUS_JOB_CRON_SCHEDULE
-
-# more properties go here
