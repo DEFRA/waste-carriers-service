@@ -431,7 +431,7 @@ public class RegistrationsResource
             {
                 if (!db.isAuthenticated())
                 {
-                    log.info("Database not authenticated, access forbidden");
+                    log.severe("Database not authenticated, access forbidden");
                     throw new WebApplicationException(Status.UNAUTHORIZED);
                 }
                 
@@ -564,7 +564,7 @@ public class RegistrationsResource
             
             if (!reg.validateUuid())
             {
-                log.warning("New registration to be inserted is missing a uuid - preventing accidental duplicate inserts.");
+                log.severe("New registration to be inserted is missing a uuid - preventing accidental duplicate inserts.");
                 throw new WebApplicationException(Status.PRECONDITION_FAILED);
             }
             /*
@@ -591,7 +591,7 @@ public class RegistrationsResource
             }
             else
             {
-                log.warning("Non-UK Address assumed as Postcode could not be found in the registration, Using default location of X:1, Y:1");
+                log.info("Non-UK Address assumed as Postcode could not be found in the registration, Using default location of X:1, Y:1");
                 regAddress.setLocation( new Location(1, 1));
                 
                 // Update MetaData to include a message to state location information set to default

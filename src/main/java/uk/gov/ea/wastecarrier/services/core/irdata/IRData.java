@@ -214,8 +214,8 @@ public class IRData
 				message += s + ",";
 			}
 			message += "]";
-			log.severe("Could not parse date '" + dateAsString + "' for row: " + message + ", type : " + type);
-			log.severe("It is likely that a preceding column includes an unquoted comma; please fix the CSV file.");
+			log.warning("Could not parse date '" + dateAsString + "' for row: " + message + ", type : " + type);
+			log.warning("It is likely that a preceding column includes an unquoted comma; please fix the CSV file.");
 		}
 		return d;
 	}

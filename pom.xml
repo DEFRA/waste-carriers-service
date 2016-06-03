@@ -60,6 +60,11 @@
             <artifactId>quartz</artifactId>
             <version>2.2.2</version>
         </dependency>
+        <dependency>
+            <groupId>net.anthavio</groupId>
+            <artifactId>airbrake-logback</artifactId>
+            <version>1.0.1</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

@@ -85,7 +85,7 @@ public class LocationPopulator extends Task
                     // addressMode is null and/or blank!
                     if (regAddress.getAddressMode() == "manual-foreign")
                     {
-                        log.warning("Non-UK Address assumed as Postcode could not be found in the address, Using default location of X:1, Y:1");
+                        log.info("Non-UK Address assumed as Postcode could not be found in the address, Using default location of X:1, Y:1");
                         regAddress.setLocation( new Location(1, 1));
 
                         // Update MetaData to include a message to state location information set to default

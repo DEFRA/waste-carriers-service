@@ -68,7 +68,7 @@ public class RegistrationHelper {
 			}
 			else
 			{
-				log.info("Could not find an expiry date for Upper tier registration: " + registration.getId());
+				log.warning("Could not find an expiry date for Upper tier registration: " + registration.getId());
 				log.info("Marking registration as expired as the expiry date cannot be found");
 				return true;
 			}

@@ -146,7 +146,7 @@ public class RegistrationReadEditResource
 			}
 			catch (IllegalArgumentException e)
 			{
-				log.warning("Caught exception: " + e.getMessage() + " - Cannot find Registration ID: " + id);
+				log.severe("Caught exception: " + e.getMessage() + " - Cannot find Registration ID: " + id);
 				throw new WebApplicationException(Status.NOT_FOUND);
 			}
 		}
@@ -227,7 +227,7 @@ public class RegistrationReadEditResource
 				}
 				catch (IllegalArgumentException e)
 				{
-					log.warning("Catching exception while trying to update registration: " + e.getMessage());
+					log.severe("Catching exception while trying to update registration: " + e.getMessage());
 					log.warning("Cannot find Registration ID: " + id);
 					throw new WebApplicationException(Status.NOT_FOUND);
 				}
@@ -310,7 +310,7 @@ public class RegistrationReadEditResource
 			}
 			catch (IllegalArgumentException e)
 			{
-				log.warning("Caught exception: " + e.getMessage() + " Cannot find Registration ID: " + id);
+				log.severe("Caught exception: " + e.getMessage() + " Cannot find Registration ID: " + id);
 				throw new WebApplicationException(Status.NOT_FOUND);
 			}
 		}

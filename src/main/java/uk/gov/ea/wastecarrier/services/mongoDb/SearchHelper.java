@@ -141,7 +141,7 @@ public class SearchHelper {
             throw new WebApplicationException(Response.Status.SERVICE_UNAVAILABLE);
         }
         if (!db.isAuthenticated()) {
-            log.info("Database not authenticated, access forbidden");
+            log.severe("Database not authenticated, access forbidden");
             throw new WebApplicationException(Response.Status.UNAUTHORIZED);
         }
         return db;
