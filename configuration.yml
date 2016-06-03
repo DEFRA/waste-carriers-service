@@ -67,6 +67,18 @@ settings:
   # renew period (in months)
   registrationRenewPeriod: WCRS_REGISTRATION_RENEWAL_WINDOW
 
+airbrake:
+  url: WCRS_SERVICES_AIRBRAKE_URL
+  apiKey: WCRS_SERVICES_AIRBRAKE_API_KEY
+  environmentName: WCRS_SERVICES_AIRBRAKE_ENVNAME
+  # The 'threshold' here can take values: OFF, ERROR, WARN, INFO, DEBUG, TRACE
+  # or ALL.  If no value is provided, or the value is unrecognised, by default
+  # we only forward messages at ERROR severity.
+  threshold: WARN 
+  # Other values you can set for Airbrake integration, but not required:
+  # enabled: true or false (default = true)
+  # exceptionsOnly: true or false (default = false)
+  
 # IrRenewals brings a very limitted set of data into Waste Carriers to allow
 # IR customers to "renew" in the service.
 irRenewals:
