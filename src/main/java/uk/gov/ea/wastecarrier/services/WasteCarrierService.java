@@ -249,8 +249,8 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration>
                 net.anthavio.airbrake.AirbrakeLogbackAppender.Notify.EXCEPTIONS :
                 net.anthavio.airbrake.AirbrakeLogbackAppender.Notify.ALL);
         
-        // Add a filter so that we only send messages of the require severity
-        // to Airbrake.
+        // Add a filter so that we only send messages above a certain severity
+        // level to Airbrake.
         ch.qos.logback.classic.filter.ThresholdFilter filter = new ch.qos.logback.classic.filter.ThresholdFilter();
         filter.setLevel(config.getThreshold());
         airbrakeAppender.addFilter(filter);

@@ -8,8 +8,9 @@ import java.util.logging.Logger;
 import java.io.PrintWriter;
 
 /**
- * This class exist solely to allow an exception to be generated on demand so as
- * to test exception handling, particularly AirBrake / Errbit integration.
+ * This class exists solely to allow an exception to be generated on demand, so
+ * that we can test exception handling, particularly AirBrake / Errbit
+ * integration.
  */ 
 public class ExceptionTester extends Task
 {
