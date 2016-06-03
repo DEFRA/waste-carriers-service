@@ -74,7 +74,7 @@ airbrake:
   # The 'threshold' here can take values: OFF, ERROR, WARN, INFO, DEBUG, TRACE
   # or ALL.  If no value is provided, or the value is unrecognised, by default
   # we only forward messages at ERROR severity.
-  threshold: WARN 
+  threshold: WCRS_SERVICES_AIRBRAKE_THRESHOLD 
   # Other values you can set for Airbrake integration, but not required:
   # enabled: true or false (default = true)
   # exceptionsOnly: true or false (default = false)
