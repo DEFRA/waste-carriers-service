@@ -66,7 +66,9 @@ public class OrdersMongoDao
             Order existingOrder = registration.getFinanceDetails().getOrderForOrderCode(order.getOrderCode());
             if (existingOrder != null)
             {
-                log.info("The registration already has a order for order code " + order.getOrderCode() + ". Not adding order again.");
+                // TT: Changed this logging level to SEVERE as I suspect we ought
+                // to handle this differently?
+                log.severe("The registration already has a order for order code " + order.getOrderCode() + ". Not adding order again.");
                 return order;
             }
             

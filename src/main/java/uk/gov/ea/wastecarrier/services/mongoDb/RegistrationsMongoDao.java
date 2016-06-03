@@ -123,7 +123,7 @@ public class RegistrationsMongoDao
 			}
 			catch (IllegalArgumentException e)
 			{
-				log.warning("Caught exception: " + e.getMessage() + " - Cannot find Registration ID: " + id);
+				log.severe("Caught exception: " + e.getMessage() + " - Cannot find Registration ID: " + id);
 				throw new WebApplicationException(Status.NOT_FOUND);
 			}
 		}
@@ -174,7 +174,7 @@ public class RegistrationsMongoDao
 				}
 				catch (IllegalArgumentException e)
 				{
-					log.warning("Caught exception: " + e.getMessage() + " - Cannot find Registration ID: " + reg.getId());
+					log.severe("Caught exception: " + e.getMessage() + " - Cannot find Registration ID: " + reg.getId());
 					throw new WebApplicationException(Status.NOT_FOUND);
 				}
 			}

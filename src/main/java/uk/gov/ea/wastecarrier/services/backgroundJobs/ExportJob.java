@@ -800,7 +800,7 @@ public class ExportJob implements Job
                 }
                 catch (Exception ex)
                 {
-                    log.warning(String.format("Error exporting sign-off to reporting snapshot: %s", ex.getMessage()));
+                    log.warning(String.format("Error exporting Key People to reporting snapshot: %s", ex.getMessage()));
                     noErrors = false;
                 }
             }

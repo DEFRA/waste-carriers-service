@@ -99,7 +99,7 @@ public class IRRenewalResource
 
                 r.setOriginalDateExpiry(irData.getExpiryDate());
 
-                log.info("IR get type: " + irData.getIrType());
+                log.fine("IR get type: " + irData.getIrType());
                 switch (irData.getIrType())
                 {
                     case COMPANY:
@@ -221,7 +221,7 @@ public class IRRenewalResource
         }
         catch (Exception e)
         {
-            log.severe(String.format("Unexpected error whilst trying to update IR Renewal Carrier type: %s", e.getMessage()));
+            log.warning(String.format("Unexpected error whilst trying to update IR Renewal Carrier type: %s", e.getMessage()));
         }
     }
 }

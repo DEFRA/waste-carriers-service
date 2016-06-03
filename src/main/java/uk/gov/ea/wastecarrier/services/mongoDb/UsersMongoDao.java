@@ -38,12 +38,10 @@ public class UsersMongoDao
 	 */
 	public UsersMongoDao(DatabaseConfiguration database)
 	{
-		log.info("GGG *** GGG");
 		log.info("host = " + database.getHost());
 		log.info("port = " + database.getPort());
 		log.info("name = " + database.getName());
 		log.info("username = " + database.getUsername());
-		//log.info("password = " + database.getPassword());
 		
 		log.fine("Constructing DAO with databaseHelper.");
 		this.databaseHelper = new DatabaseHelper(database);
@@ -52,7 +50,7 @@ public class UsersMongoDao
 	public User getUserById(String id)
 	{
 		
-    	log.info("Retrieving user with id = " + id);
+    	log.fine("Retrieving user with id = " + id);
     	
     	// Use id to lookup record in database return registration details
     	DB db = databaseHelper.getConnection();
@@ -89,7 +87,7 @@ public class UsersMongoDao
 	public User getUserByEmail(String email)
 	{
 		
-    	log.info("Retrieving user with email = " + email);
+    	log.fine("Retrieving user with email = " + email);
     	
     	// Use id to lookup record in database return registration details
     	DB db = databaseHelper.getConnection();

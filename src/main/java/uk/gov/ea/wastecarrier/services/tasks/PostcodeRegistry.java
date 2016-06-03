@@ -95,13 +95,11 @@ public class PostcodeRegistry
 		}
 		catch (FileNotFoundException e)
 		{
-			log.info("File not Found: " + e.getMessage());
-			e.printStackTrace();
+			log.severe("File not Found: " + e.getMessage());
 		}
 		catch (IOException e)
 		{
-			log.info("IO Exception: " + e.getMessage());
-			e.printStackTrace();
+			log.severe("IO Exception: " + e.getMessage());
 		}
 		finally
 		{
