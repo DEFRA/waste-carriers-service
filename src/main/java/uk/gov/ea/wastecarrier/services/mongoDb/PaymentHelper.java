@@ -1,8 +1,11 @@
-            package uk.gov.ea.wastecarrier.services.mongoDb;
+package uk.gov.ea.wastecarrier.services.mongoDb;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.logging.Logger;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response.Status;
 
 import uk.gov.ea.wastecarrier.services.core.MetaData;
 import uk.gov.ea.wastecarrier.services.core.MetaData.RouteType;
@@ -15,6 +18,8 @@ import uk.gov.ea.wastecarrier.services.core.FinanceDetails;
 
 public class PaymentHelper
 {
+    private Logger log = Logger.getLogger(PaymentHelper.class.getName());
+    
     public static final String IR_REGISTRATION_NO_PREFIX = "CB/";
 
     private Settings settings;
@@ -28,35 +33,52 @@ public class PaymentHelper
     {
         boolean result = false;
 
+        MetaData metaData = registration.getMetaData();
+        if (metaData == null)
+        {
+            log.warning("Registration is missing metaData field");
+            throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+        }
+        
+        RegistrationStatus status = metaData.getStatus();
+        RegistrationTier tier = registration.getTier();
+        RouteType route = metaData.getRoute();
+
+        if ((status == null) || (tier == null) || (route == null))
+        {
+            log.warning("Registration is missing status OR tier OR route field");
+            throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+        }
+
         // Can only be activated if currently pending or refused.
-        if (registration.getMetaData().getStatus().equals(RegistrationStatus.PENDING)
-                || registration.getMetaData().getStatus().equals(RegistrationStatus.REFUSED))
+        if (status.equals(RegistrationStatus.PENDING) || status.equals(RegistrationStatus.REFUSED))
         {
             // Only activate if no money is owed, and no convictions checks are pending.
             if (isBalanceValid(registration) && !RegistrationHelper.isAwaitingConvictionConfirmation(registration))
             {
                 // Assisted Digital registrations are activated immediately, as
                 // are Upper Tier registrations.
-                if (registration.getMetaData().getRoute().equals(RouteType.ASSISTED_DIGITAL)
-                        || registration.getTier().equals(RegistrationTier.UPPER))
+                if (route.equals(RouteType.ASSISTED_DIGITAL) || tier.equals(RegistrationTier.UPPER))
                 {
                     result = true;
                 }
+
                 // Lower Tier non-AD registrations can only become active once
                 // the account holder has validated their account.
-                else if (registration.getTier().equals(RegistrationTier.LOWER))
+                else if (tier.equals(RegistrationTier.LOWER))
                 {
                     result = isUserValid(user);
                 }
             }
         }
-
+        
         return result;
     }
 
     public boolean isReadyToBeRenewed(Registration registration)
     {
-        if (registration.getRenewalRequested() != null && registration.getRenewalRequested().equalsIgnoreCase("true")) {
+        if (registration.getRenewalRequested() != null && registration.getRenewalRequested().equalsIgnoreCase("true"))
+        {
             // Renewal requested
             return true;
         }
@@ -114,8 +136,6 @@ public class PaymentHelper
 
     /**
      * Updates the MetaData to give it an active status
-     * @param md
-     * @return
      */
     private MetaData makeActive(MetaData md)
     {
@@ -132,7 +152,6 @@ public class PaymentHelper
     /**
      * Create an updated expired date depending on registration type and the
      * settings provided
-     * @return
      */
     private Date getExpiryDate(Registration registration)
     {
@@ -141,7 +160,7 @@ public class PaymentHelper
         Date expiryDate = null;
 
         // Detect standard or IR renewal
-        if(isIRRenewal(registration))
+        if (isIRRenewal(registration))
         {
             // Set expiry date to X years from current expiry date
             Calendar newExpiryDate = new GregorianCalendar();
@@ -156,11 +175,16 @@ public class PaymentHelper
             // Set expiry date to X years from now
             Calendar cal = Calendar.getInstance();
             String type = regPeriodList[1];
-            if (type.equalsIgnoreCase("YEARS")) {
+            if (type.equalsIgnoreCase("YEARS"))
+            {
                 cal.add(Calendar.YEAR, length);
-            } else if (type.equalsIgnoreCase("MONTHS")) {
+            }
+            else if (type.equalsIgnoreCase("MONTHS"))
+            {
                 cal.add(Calendar.MONTH, length);
-            } else if (type.equalsIgnoreCase("DAYS")) {
+            }
+            else if (type.equalsIgnoreCase("DAYS"))
+            {
                 cal.add(Calendar.DAY_OF_MONTH, length);
             }
 
@@ -174,7 +198,7 @@ public class PaymentHelper
     {
         Boolean result = false;
 
-        if(registration.getOriginalRegistrationNumber() != null)
+        if (registration.getOriginalRegistrationNumber() != null)
         {
             String regNo = registration.getOriginalRegistrationNumber().trim();
 
