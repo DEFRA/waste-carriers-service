@@ -566,7 +566,7 @@ public class RegistrationsResource
             MetaData currentMetaData = reg.getMetaData();
             if ((currentMetaData == null) || (currentMetaData.getRoute() == null))
             {
-                log.warning("Incoming registration with missing route field");
+                log.severe("Incoming registration with missing route field");
                 throw new WebApplicationException(Status.BAD_REQUEST);
             }
             
