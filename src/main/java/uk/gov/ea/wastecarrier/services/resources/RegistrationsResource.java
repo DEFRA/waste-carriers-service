@@ -606,11 +606,17 @@ public class RegistrationsResource
             // Update Registration to include sequential identifier.
             updateRegistrationIdentifier(reg, db);
             
-            // If upper tier, create an empty set of finance details.
+            // If upper tier, assert that Finance Details are provided and that
+            // they contain (at least) one order.
             if (RegistrationTier.UPPER.equals(reg.getTier()))
             {
-                FinanceDetails financeDetails = new FinanceDetails();
-                reg.setFinanceDetails(financeDetails);
+                if ((reg.getFinanceDetails() == null) ||
+                        (reg.getFinanceDetails().getOrders() == null) ||
+                        (reg.getFinanceDetails().getOrders().size() < 1))
+                {
+                    log.severe("Incoming upper-tier registration with no initial order present");
+                    throw new WebApplicationException(Status.BAD_REQUEST);
+                }
             }
 
             // If user has declared convictions or we have matched convictions
