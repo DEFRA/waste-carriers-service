@@ -160,11 +160,11 @@ public class PaymentHelper
         Date expiryDate = null;
 
         // Detect standard or IR renewal
-        if (isIRRenewal(registration))
+        if (isIRRenewal(registration) && irRenewalWasMadeBeforeDeadline(registration))
         {
             // Set expiry date to X years from current expiry date
             Calendar newExpiryDate = new GregorianCalendar();
-
+            
             newExpiryDate.setTime(registration.getOriginalDateExpiry());
             newExpiryDate.add(Calendar.YEAR, length);
 
@@ -194,7 +194,7 @@ public class PaymentHelper
         return expiryDate;
     }
 
-    public static boolean isIRRenewal(Registration registration)
+    private static boolean isIRRenewal(Registration registration)
     {
         Boolean result = false;
 
@@ -207,8 +207,15 @@ public class PaymentHelper
 
         return result;
     }
+    
+    private static boolean irRenewalWasMadeBeforeDeadline(Registration registration)
+    {
+        Date previousRegExpiryDate = registration.getOriginalDateExpiry();
+        Date applicationDate = registration.getMetaData().getDateRegistered();
+        return applicationDate.before(previousRegExpiryDate);
+    }
 
-    public static boolean isIRRegistrationType(String regNo)
+    private static boolean isIRRegistrationType(String regNo)
     {
         return regNo.startsWith(IR_REGISTRATION_NO_PREFIX);
     }
