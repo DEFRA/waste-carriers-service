@@ -66,8 +66,8 @@ public class IRRenewalMongoDao
 				return irData;
 			}
 			
-			log.info("Failed to find company with number:" + registrationNumber);
-			throw new WebApplicationException(Status.NOT_FOUND);
+			log.info("Failed to find company with number: " + registrationNumber);
+			throw new WebApplicationException(Status.NO_CONTENT);
 			
 		}
 		// If reached here, no IR data found
