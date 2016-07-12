@@ -1,7 +1,7 @@
 
-#waste-exemplar-services
+#waste-carriers-service
 
-Waste Carriers Registration Services application.
+Waste Carriers Registration Service application.
 
 The Waste Carrier Registrations Service allows businesses, who deal with waste and thus have to register according to the regulations, to register online. Once registered, businesses can sign in again to edit their registrations if needed.
 
@@ -16,7 +16,7 @@ This application and its associated Maven and Eclipse project implement the serv
 
 Clone the repository, copying the project into a working directory:
 
-	$ git clone https://github.com/EnvironmentAgency/waste-exemplar-services.git
+	$ git clone https://github.com/EnvironmentAgency/waste-carriers-service.git
 
 
 ##Prerequisites
@@ -31,11 +31,11 @@ Clone the repository, copying the project into a working directory:
 
 ##Dependents
 
-* The waste-exemplar-frontend application, which is implemented in Ruby on Rails, is the client of the services exposed by this application. 
+* The waste-carriers-frontend application, which is implemented in Ruby on Rails, is the client of the services exposed by this application.
 
 ##Configuration
 
-The service uses a Dropwizard configuration file (configuration.yml) which in turn refers to environment variables. 
+The service uses a Dropwizard configuration file (configuration.yml) which in turn refers to environment variables.
 You may want or need to set the following environment variables, e.g. in your ~/.bash_profile (if you are a Mac or Linux user):
 
 export WCRS_SERVICES_DB_HOST="localhost"
@@ -55,7 +55,7 @@ Using Maven:
 
 ##Startup
 
-Start the service by providing the name of the jar file, the command 'server', and the name of the configuration file. 
+Start the service by providing the name of the jar file, the command 'server', and the name of the configuration file.
 You can also override parameters such as https port numbers using the Java '-D' option. Example:
 
     $ java -Ddw.http.port=9090 -Ddw.http.adminPort=9091 -jar target/waste-exemplar-services-1.1.2.jar server configuration_gmueller.yml
@@ -89,7 +89,7 @@ Startup ElasticSearch (0.90.5) for local development:
 
 Note: more recent versions of ElasticSearch are started without the '-f' parameter.
 
-However, always make sure that when the ElasticSearch server version is upgraded, also upgrade the client libraries 
+However, always make sure that when the ElasticSearch server version is upgraded, also upgrade the client libraries
 as well to use the same version.
 
 
