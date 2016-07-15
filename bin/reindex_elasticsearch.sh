@@ -17,10 +17,10 @@ fi
 
 # First, make records searchable via postcode.
 echo "Adding post-code lookup information"
-curl --ipv4 -X POST http://localhost:${WCRS_SERVICES_ADMIN_PORT}/tasks/location
+curl --ipv4 --silent -X POST http://localhost:${WCRS_SERVICES_ADMIN_PORT}/tasks/location
 
 # Then index all registrations in Elastic Search.
 echo "Indexing registrations in Elastic Search"
-curl --ipv4 -X POST http://localhost:${WCRS_SERVICES_ADMIN_PORT}/tasks/indexer -d '@registration_mapping.json'
+curl --ipv4 --silent -X POST http://localhost:${WCRS_SERVICES_ADMIN_PORT}/tasks/indexer -d '@registration_mapping.json'
 
 exit 0
