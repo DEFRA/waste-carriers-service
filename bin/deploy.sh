@@ -27,8 +27,6 @@ if [[ -z "${WCRS_SERVICES_HOME}" ]]; then env_alert WCRS_SERVICES_HOME; fi
 if [[ -z "${WCRS_SERVICES_SOURCE}" ]]; then env_alert WCRS_SERVICES_SOURCE; fi
 if [[ -z "${WCRS_SERVICES_PORT}" ]]; then env_alert WCRS_SERVICES_PORT; fi
 if [[ -z "${WCRS_SERVICES_ADMIN_PORT}" ]]; then env_alert WCRS_SERVICES_ADMIN_PORT; fi
-if [[ -z "${WCRS_SERVICES_MQ_HOST}" ]]; then env_alert WCRS_SERVICES_MQ_HOST; fi
-if [[ -z "${WCRS_SERVICES_MQ_PORT}" ]]; then env_alert WCRS_SERVICES_MQ_PORT; fi
 if [[ -z "${WCRS_REGSDB_HOST}" ]]; then env_alert WCRS_REGSDB_HOST; fi
 if [[ -z "${WCRS_REGSDB_PORT1}" ]]; then env_alert WCRS_REGSDB_PORT1; fi
 if [[ -z "${WCRS_REGSDB_NAME}" ]]; then env_alert WCRS_REGSDB_NAME; fi
@@ -48,6 +46,10 @@ if [[ -z "${WCRS_SERVICES_EPR_EXPORT_FILE}" ]]; then env_alert WCRS_SERVICES_EPR
 if [[ -z "${WCRS_SERVICES_REPORTING_EXPORT_PATH}" ]]; then env_alert WCRS_SERVICES_REPORTING_EXPORT_PATH; fi
 if [[ -z "${WCRS_SERVICES_EXPORT_JOB_CRON_SCHEDULE}" ]]; then env_alert WCRS_SERVICES_EXPORT_JOB_CRON_SCHEDULE; fi
 if [[ -z "${WCRS_SERVICES_STATUS_JOB_CRON_SCHEDULE}" ]]; then env_alert WCRS_SERVICES_STATUS_JOB_CRON_SCHEDULE; fi
+if [[ -z "${WCRS_SERVICES_AIRBRAKE_URL}" ]]; then env_alert WCRS_SERVICES_AIRBRAKE_URL; fi
+if [[ -z "${WCRS_SERVICES_AIRBRAKE_API_KEY}" ]]; then env_alert WCRS_SERVICES_AIRBRAKE_API_KEY; fi
+if [[ -z "${WCRS_SERVICES_AIRBRAKE_ENVNAME}" ]]; then env_alert WCRS_SERVICES_AIRBRAKE_ENVNAME; fi
+if [[ -z "${WCRS_SERVICES_AIRBRAKE_THRESHOLD}" ]]; then env_alert WCRS_SERVICES_AIRBRAKE_THRESHOLD; fi
 
 ##Disable cron job or service will be restarted during deploy
 sudo crontab -u servicecheck /home/servicecheck/off
@@ -154,10 +156,6 @@ sed -i "s/WCRS_SERVICES_PORT/${WCRS_SERVICES_PORT}/g" \
        "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
 sed -i "s/WCRS_SERVICES_ADMIN_PORT/${WCRS_SERVICES_ADMIN_PORT}/g" \
        "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
-sed -i "s/WCRS_SERVICES_MQ_HOST/${WCRS_SERVICES_MQ_HOST}/g" \
-       "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
-sed -i "s/WCRS_SERVICES_MQ_PORT/${WCRS_SERVICES_MQ_PORT}/g" \
-       "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
 sed -i "s/WCRS_REGSDB_HOST/${WCRS_REGSDB_HOST}/g" \
        "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
 sed -i "s/WCRS_REGSDB_PORT1/${WCRS_REGSDB_PORT1}/g" \
@@ -195,6 +193,14 @@ sed -i "s|WCRS_SERVICES_REPORTING_EXPORT_PATH|${WCRS_SERVICES_REPORTING_EXPORT_P
 sed -i "s/WCRS_SERVICES_EXPORT_JOB_CRON_SCHEDULE/${WCRS_SERVICES_EXPORT_JOB_CRON_SCHEDULE}/g" \
        "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
 sed -i "s/WCRS_SERVICES_STATUS_JOB_CRON_SCHEDULE/${WCRS_SERVICES_STATUS_JOB_CRON_SCHEDULE}/g" \
+       "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
+sed -i "s#WCRS_SERVICES_AIRBRAKE_URL#${WCRS_SERVICES_AIRBRAKE_URL}#g" \
+       "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
+sed -i "s/WCRS_SERVICES_AIRBRAKE_API_KEY/${WCRS_SERVICES_AIRBRAKE_API_KEY}/g" \
+       "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
+sed -i "s/WCRS_SERVICES_AIRBRAKE_ENVNAME/${WCRS_SERVICES_AIRBRAKE_ENVNAME}/g" \
+       "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
+sed -i "s/WCRS_SERVICES_AIRBRAKE_THRESHOLD/${WCRS_SERVICES_AIRBRAKE_THRESHOLD}/g" \
        "${WCRS_SERVICES_HOME}/${RELEASE_DIR}/conf/configuration.yml"
 
 

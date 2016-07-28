@@ -164,7 +164,7 @@ public class Indexer extends Task
                 outputAndLogMessage(Level.INFO, out, String.format("Successfully indexed %d registrations", successCount));
                 if (failCount > 0)
                 {
-                    outputAndLogMessage(Level.WARNING, out, String.format("Warning: %d registrations could not be indexed", failCount));
+                    outputAndLogMessage(Level.SEVERE, out, String.format("Warning: %d registrations could not be indexed", failCount));
                 }
             }
 
@@ -255,7 +255,7 @@ public class Indexer extends Task
         FlushResponse flushResult = esClient.admin().indices().flush(flushRequest).actionGet();
         if (flushResult.getFailedShards() > 0)
         {
-            outputAndLogMessage(Level.WARNING, out, "Flush index operation failed on one or more shards");
+            outputAndLogMessage(Level.SEVERE, out, "Flush index operation failed on one or more shards");
         }
         else
         {
@@ -268,7 +268,7 @@ public class Indexer extends Task
         RefreshResponse refreshResult = esClient.admin().indices().refresh(refreshRequest).actionGet();
         if (refreshResult.getFailedShards() > 0)
         {
-            outputAndLogMessage(Level.WARNING, out, "Refresh index operation failed on one or more shards");
+            outputAndLogMessage(Level.SEVERE, out, "Refresh index operation failed on one or more shards");
         }
         else
         {

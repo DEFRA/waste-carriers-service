@@ -56,11 +56,7 @@ public class DatabaseHelper
 			}
 			catch (Exception e)
 			{
-				log.severe("Could not connect to database: " + e.getMessage() + "\n\nStackTrace:");
-				for (StackTraceElement k : e.getStackTrace())
-				{
-					log.severe(">>" + k.toString());
-				}
+				log.severe("Could not connect to database: " + e.getMessage());
 				return null;
 			}
 		}
@@ -78,11 +74,7 @@ public class DatabaseHelper
 			}
 			catch (Exception e)
 			{
-				log.severe("Database connection not Found: " + e.getMessage() + "\n\nStackTrace:");
-				for (StackTraceElement k : e.getStackTrace())
-				{
-					log.info("! " + k.toString());
-				}
+				log.severe("Database connection not Found: " + e.getMessage());
 				db = null;
 				return null;
 			}
@@ -109,11 +101,7 @@ public class DatabaseHelper
 			}
 			catch (UnknownHostException e)
 			{
-				log.severe("Cannot find Host: " + e.getMessage() + "\n\nStackTrace:");
-				for (StackTraceElement k : e.getStackTrace())
-				{
-					log.severe(">>" + k.toString());
-				}
+				log.severe("Cannot find Host: " + e.getMessage());
 				mongoClient = null;
 			}
 			return mongoClient;

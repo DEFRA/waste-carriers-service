@@ -39,3 +39,6 @@ runConfig/WasteCarrierService.launch
 
 bin/georg_snippets.txt
 Jenkins_Services_Env_Vars.sh
+
+# Netbeans IDE files
+nbactions.xml

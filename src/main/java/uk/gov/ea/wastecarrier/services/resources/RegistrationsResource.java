@@ -28,13 +28,11 @@ import org.elasticsearch.search.sort.SortOrder;
 import org.mongojack.DBSort;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.ElasticSearchConfiguration;
-import uk.gov.ea.wastecarrier.services.MessageQueueConfiguration;
 import uk.gov.ea.wastecarrier.services.core.*;
 import uk.gov.ea.wastecarrier.services.core.Registration.RegistrationTier;
 import uk.gov.ea.wastecarrier.services.elasticsearch.ElasticSearchUtils;
 import uk.gov.ea.wastecarrier.services.mongoDb.AccountHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
-import uk.gov.ea.wastecarrier.services.mongoDb.PaymentHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.SearchHelper;
 import uk.gov.ea.wastecarrier.services.tasks.Indexer;
@@ -58,7 +56,6 @@ import java.util.logging.Logger;
 @Consumes(MediaType.APPLICATION_JSON)
 public class RegistrationsResource
 {
-    private final MessageQueueConfiguration messageQueue;
     private final DatabaseHelper databaseHelper;
     private final ElasticSearchConfiguration elasticSearch;
     /* Note: We are not using the shared ES TransportClient for the time being,
@@ -77,15 +74,11 @@ public class RegistrationsResource
      * @param database
      */
     public RegistrationsResource(
-            MessageQueueConfiguration mQConfig,
             DatabaseConfiguration database,
             ElasticSearchConfiguration elasticSearch,
             Client esClient,
             String postcodeFilePath)
     {
-        this.messageQueue = mQConfig;
-        log.fine("> messageQueue: " + this.messageQueue);
-        
         this.databaseHelper = new DatabaseHelper(database);
         this.elasticSearch = elasticSearch;
         this.postcodeRegistry = new PostcodeRegistry(PostcodeRegistry.POSTCODE_FROM.FILE, postcodeFilePath);
@@ -431,7 +424,7 @@ public class RegistrationsResource
             {
                 if (!db.isAuthenticated())
                 {
-                    log.info("Database not authenticated, access forbidden");
+                    log.severe("Database not authenticated, access forbidden");
                     throw new WebApplicationException(Status.UNAUTHORIZED);
                 }
                 
@@ -564,14 +557,24 @@ public class RegistrationsResource
             
             if (!reg.validateUuid())
             {
-                log.warning("New registration to be inserted is missing a uuid - preventing accidental duplicate inserts.");
+                log.severe("New registration to be inserted is missing a uuid - preventing accidental duplicate inserts.");
                 throw new WebApplicationException(Status.PRECONDITION_FAILED);
             }
+            
+            // Possible bug?  Some registrations get persisted to the database
+            // with no value in the metaData.route field.  Try to block these.
+            MetaData currentMetaData = reg.getMetaData();
+            if ((currentMetaData == null) || (currentMetaData.getRoute() == null))
+            {
+                log.severe("Incoming registration with missing route field");
+                throw new WebApplicationException(Status.BAD_REQUEST);
+            }
+            
             /*
              * Insert registration details into the database
              */
             // Update Registration MetaData to include current time
-            reg.setMetaData(new MetaData(MetaData.getCurrentDateTime(), "userDetailAddedAtRegistration", reg.getMetaData().getRoute()));
+            reg.setMetaData(new MetaData(MetaData.getCurrentDateTime(), "userDetailAddedAtRegistration", currentMetaData.getRoute()));
 
             // Update Registration Location to include location, derived from postcode
             Address regAddress = null;
@@ -591,7 +594,7 @@ public class RegistrationsResource
             }
             else
             {
-                log.warning("Non-UK Address assumed as Postcode could not be found in the registration, Using default location of X:1, Y:1");
+                log.info("Non-UK Address assumed as Postcode could not be found in the registration, Using default location of X:1, Y:1");
                 regAddress.setLocation( new Location(1, 1));
                 
                 // Update MetaData to include a message to state location information set to default
@@ -603,54 +606,17 @@ public class RegistrationsResource
             // Update Registration to include sequential identifier.
             updateRegistrationIdentifier(reg, db);
             
-            // If upper tier, create an initial Order to represent fees/charges the user has to pay
+            // If upper tier, assert that Finance Details are provided and that
+            // they contain (at least) one order.
             if (RegistrationTier.UPPER.equals(reg.getTier()))
             {
-                // Work out if this registration should be treated as a valid IR renewal.
-                Date ir_expiry = new Date();
-                ir_expiry.setHours(23);
-                ir_expiry.setMinutes(59);
-                ir_expiry.setSeconds(59);
-
-                boolean isIRRenewal = (
-                    PaymentHelper.isIRRenewal(reg) &&
-                    (reg.getOriginalDateExpiry() != null) &&
-                    (reg.getOriginalDateExpiry().after(ir_expiry))
-                );
-
-
-                FinanceDetails financeDetails = new FinanceDetails();
-                reg.setFinanceDetails(financeDetails);
-                Order order = new Order();
-                order.setOrderId(UUID.randomUUID().toString());
-                Date now = new Date();
-                
-                // Details will be updated when the user proceeds past the order page.
-                order.setCurrency("GBP");
-                order.setDescription(isIRRenewal ? "Waste Carrier Registration IR-renewal" : "New Waste Carrier Registration");
-                order.setOrderCode(String.valueOf(now.getTime() / 1000L));
-                order.setPaymentMethod(Order.PaymentMethod.UNKNOWN);
-                order.setDateCreated(now);
-                order.setDateLastUpdated(now);
-                
-                // Create order item for registration.
-                OrderItem item = new OrderItem();
-                item.setAmount(isIRRenewal ? 10500 : 15400);
-                item.setCurrency("GBP");
-                item.setDescription(isIRRenewal ? "Renewal of Registration" : "Initial Registration");
-                item.setReference("Reg: " + reg.getRegIdentifier());
-                item.setType(isIRRenewal ? OrderItem.OrderItemType.RENEW : OrderItem.OrderItemType.NEW);
-                
-                // Add registraiton fee to order.
-                List<OrderItem> orderItems = new ArrayList<OrderItem>();
-                orderItems.add(item);
-                order.setOrderItems(orderItems);
-                order.setTotalAmount(item.getAmount());
-                
-                // Add order to registration.
-                List<Order> orders = new ArrayList<Order>();
-                orders.add(order);
-                reg.getFinanceDetails().setOrders(orders);
+                if ((reg.getFinanceDetails() == null) ||
+                        (reg.getFinanceDetails().getOrders() == null) ||
+                        (reg.getFinanceDetails().getOrders().size() < 1))
+                {
+                    log.severe("Incoming upper-tier registration with no initial order present");
+                    throw new WebApplicationException(Status.BAD_REQUEST);
+                }
             }
 
             // If user has declared convictions or we have matched convictions

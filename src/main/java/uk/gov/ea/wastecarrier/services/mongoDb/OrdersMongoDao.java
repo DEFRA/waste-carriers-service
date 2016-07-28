@@ -66,7 +66,9 @@ public class OrdersMongoDao
             Order existingOrder = registration.getFinanceDetails().getOrderForOrderCode(order.getOrderCode());
             if (existingOrder != null)
             {
-                log.info("The registration already has a order for order code " + order.getOrderCode() + ". Not adding order again.");
+                // TT: Changed this logging level to SEVERE as I suspect we ought
+                // to handle this differently?
+                log.severe("The registration already has a order for order code " + order.getOrderCode() + ". Not adding order again.");
                 return order;
             }
             
@@ -146,7 +148,18 @@ public class OrdersMongoDao
         WriteResult<Registration, String> result;
         result = registrations.update(query1, DBUpdate.set(FinanceDetails.COLLECTION_NAME + "." + Order.COLLECTION_NAME + ".$", order));
         
-        if (result.getError() == null)
+        // Check that the operation proceeded as intended.
+        if (result.getError() != null)
+        {
+            log.severe("Error occured while updating registration with an order: " + result.getError());
+            throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+        }
+        else if (result.getN() == 0)
+        {
+            log.severe("Attempt to update registration/order that doesn't currently exist in the database.");
+            throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+        }
+        else
         {
             // Find registration after adding order
             Registration foundReg = registrations.findOneById(registrationId);
@@ -161,11 +174,5 @@ public class OrdersMongoDao
                 throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
             }
         }
-        else
-        {
-            log.severe("Error occured while updating registration with a order, " + result.getError());
-            throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
-        }
     }
-
 }

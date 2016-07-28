@@ -206,7 +206,7 @@ public class RegistrationStatusJob implements Job
         String updateError = result.getError();
         if (updateError != null)
         {
-            log.warning(String.format("MongoJack error expiring registrations: %s", updateError));
+            log.severe(String.format("MongoJack error expiring registrations: %s", updateError));
         }
         
         // Handle metrics.

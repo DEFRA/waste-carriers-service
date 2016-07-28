@@ -14,11 +14,6 @@ public class WasteCarrierConfiguration extends Configuration {
     @Valid
     @NotNull
     @JsonProperty
-    private MessageQueueConfiguration messageQueue = new MessageQueueConfiguration();
-
-    @Valid
-    @NotNull
-    @JsonProperty
     private DatabaseConfiguration database = new DatabaseConfiguration();
 
     @Valid
@@ -56,10 +51,11 @@ public class WasteCarrierConfiguration extends Configuration {
     @JsonProperty
     private RegistrationStatusJobConfiguration registrationStatusJob = new RegistrationStatusJobConfiguration();
     
-    public MessageQueueConfiguration getMessageQueueConfiguration() {
-        return messageQueue;
-    }
+    @Valid
+    @JsonProperty
+    private AirbrakeLogbackConfiguration airbrake = new AirbrakeLogbackConfiguration();
 
+    
     public DatabaseConfiguration getDatabase() {
         return database;
     }
@@ -91,5 +87,9 @@ public class WasteCarrierConfiguration extends Configuration {
     
     public RegistrationStatusJobConfiguration getRegistrationStatusJobConfiguration() {
         return registrationStatusJob;
+    }
+    
+    public AirbrakeLogbackConfiguration getAirbrakeLogbackConfiguration() {
+        return airbrake;
     }
 }
