@@ -161,7 +161,7 @@ public class IRRenewalResource
                 return r;
             }
             log.info("Failed to find company with number:" + registrationNumber);
-            throw new WebApplicationException(Status.NOT_FOUND);
+            throw new WebApplicationException(Status.NO_CONTENT);
         }
         else
         {
