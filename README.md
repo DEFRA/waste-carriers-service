@@ -1,5 +1,5 @@
 
-#waste-exemplar-services
+# Waste Carriers Services (Java)
 
 Waste Carriers Registration Services application.
 
