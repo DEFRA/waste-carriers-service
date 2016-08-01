@@ -11,6 +11,7 @@ import java.io.*;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
@@ -88,6 +89,12 @@ public class ExportJob implements Job
     private static int lastRunTimeMS = -1;
     private static int eprExportFailCount = 0;
     private static int reportingExportFailCount = 0;
+    
+    // Used to remove embedded new-lines from strings in the export.
+    private static final Pattern newlinePattern = Pattern.compile("\\n+");
+    
+    // Used for sanitising strings (should remove all Unicode non-printable characters).
+    private static final Pattern sanitiserPattern = Pattern.compile("\\p{C}");
     
     /**
      * Public empty constructor, for Quartz.
@@ -332,6 +339,42 @@ public class ExportJob implements Job
     }
     
     /**
+     * Sanitises newline characters in a single string, replacing them with
+     * something suitable for a CSV export.  Should be used on each string where
+     * an embedded newline character could reasonably be expected, but no point
+     * in applying to strings where this is not the case.
+     * @param input A string to sanitise from embedded newlines.
+     * @return A sanitised string.
+     */
+    private String sanitiseNewlines(String input)
+    {
+        return (input == null) ? null : newlinePattern.matcher(input).replaceAll(". ");
+    }
+    
+    /**
+     * Sanitises an array of strings, removing all Unicode non-printable characters.
+     * Should be applied to all CSV output that could contain user-entered data.
+     * @param input An array of strings to sanitise.
+     * @return A sanitised array of strings.
+     */
+    private String[] sanitiseStrings(String[] input)
+    {
+        String[] result = null;
+        
+        if ((input != null) && (input.length > 0))
+        {
+            int nItems = input.length;
+            result = new String[nItems];
+            for (int n = 0; n < nItems; n++)
+            {
+                result[n] = (input[n] == null) ? null : sanitiserPattern.matcher(input[n]).replaceAll("");
+            }
+        }
+        
+        return result;
+    }
+    
+    /**
      * Iterates over all registrations in the database, processing each in turn.
      * If appropriate, the registration details will be exported to one or more
      * of the export files.
@@ -479,7 +522,7 @@ public class ExportJob implements Job
             {
                 boolean isUpper = (reg.getTier() == Registration.RegistrationTier.UPPER);
                 
-                eprCsvFile.writeNext(new String[] {
+                eprCsvFile.writeNext(sanitiseStrings(new String[] {
                     reg.getRegIdentifier(),     // Permit number
                     reg.getCompanyName(),       // Business name
                     registeredAddress.getUprn(),
@@ -499,7 +542,7 @@ public class ExportJob implements Job
                     safelyFormatDate(eprDateFormatter, metaData.getDateActivated()),          // Registration date.
                     isUpper ? safelyFormatDate(eprDateFormatter, reg.getExpires_on()) : null, // Expiry date.
                     safelyGetValidCompanyNumberForEpr(reg)                                    // Company number.
-                });
+                }));
             }
         }
         catch (Exception ex)
@@ -576,7 +619,7 @@ public class ExportJob implements Job
             }
             else
             {
-                registrationsCsvFile.writeNext(new String[] {
+                registrationsCsvFile.writeNext(sanitiseStrings(new String[] {
                     // The "interesting" fields.
                     Integer.toString(registrationUid),      // A "unique ID"
                     reg.getRegIdentifier(),                 // Permit number
@@ -593,7 +636,7 @@ public class ExportJob implements Job
                     reg.getAccountEmail(),
                     safelyGetEnumName(metaData.getStatus()),
                     (financeDetails != null) ? safelyFormatMoney(moneyFormatter, financeDetails.getBalance()) : null,
-                    metaData.getRevokedReason(),
+                    sanitiseNewlines(metaData.getRevokedReason()),
                     safelyFormatDate(reportingDateFormatter, metaData.getDateRegistered()),
                     safelyFormatDate(reportingDateFormatter, metaData.getDateActivated()),
                     safelyFormatDate(reportingDateFormatter, reg.getExpires_on()),
@@ -611,7 +654,7 @@ public class ExportJob implements Job
                     // Organisation conviction search.
                     (csr != null) ? safelyGetEnumName(csr.getMatchResult()) : null,
                     (csr != null) ? safelyFormatDate(reportingDateFormatter, csr.getSearchedAt()) : null
-                });
+                }));
                 
                 if (!exportRegistrationAddresses(reg) || !exportRegistrationSignOffs(reg)
                         || !exportRegistrationKeyPeople(reg) || !exportRegistrationFinanceDetails(reg))
@@ -672,7 +715,7 @@ public class ExportJob implements Job
             {
                 try
                 {
-                    addressesCsvFile.writeNext(new String[] {
+                    addressesCsvFile.writeNext(sanitiseStrings(new String[] {
                         Integer.toString(registrationUid),
                         safelyGetEnumName(addr.getAddressType()),
                         addr.getUprn(),
@@ -688,7 +731,7 @@ public class ExportJob implements Job
                         addr.getFirstOrOnlyNorthing(),
                         addr.getFirstName(),
                         addr.getLastName()
-                    });
+                    }));
                 }
                 catch (Exception ex)
                 {
@@ -733,12 +776,12 @@ public class ExportJob implements Job
             {
                 try
                 {
-                    signOffsCsvFile.writeNext(new String[] {
+                    signOffsCsvFile.writeNext(sanitiseStrings(new String[] {
                         Integer.toString(registrationUid),
                         signOff.getConfirmed(),
                         signOff.getConfirmedBy(),
                         safelyFormatDate(reportingDateFormatter, signOff.getConfirmedAt())
-                    });
+                    }));
                 }
                 catch (Exception ex)
                 {
@@ -788,7 +831,7 @@ public class ExportJob implements Job
                 {
                     ConvictionSearchResult csr = keyPerson.getConvictionSearchResult();
                     
-                    keyPeopleCsvFile.writeNext(new String[] {
+                    keyPeopleCsvFile.writeNext(sanitiseStrings(new String[] {
                         Integer.toString(registrationUid),
                         safelyGetEnumName(keyPerson.getPersonType()),
                         keyPerson.getFirstName(),
@@ -796,7 +839,7 @@ public class ExportJob implements Job
                         keyPerson.getPosition(),
                         (csr != null) ? safelyGetEnumName(csr.getMatchResult()) : null,
                         (csr != null) ? safelyFormatDate(reportingDateFormatter, csr.getSearchedAt()) : null
-                    });
+                    }));
                 }
                 catch (Exception ex)
                 {
@@ -903,17 +946,17 @@ public class ExportJob implements Job
                 {
                     try
                     {
-                        paymentsCsvFile.writeNext(new String[] {
+                        paymentsCsvFile.writeNext(sanitiseStrings(new String[] {
                             Integer.toString(registrationUid),
                             payment.getOrderKey(),
                             safelyGetEnumName(payment.getPaymentType()),
                             safelyFormatMoney(moneyFormatter, payment.getAmount()),
                             payment.getRegistrationReference(),
-                            payment.getComment(),
+                            sanitiseNewlines(payment.getComment()),
                             safelyFormatDate(reportingDateFormatter, payment.getDateReceived()),
                             safelyFormatDate(reportingDateFormatter, payment.getDateEntered()),
                             payment.getUpdatedByUser()
-                        });
+                        }));
                     }
                     catch (Exception ex)
                     {
@@ -939,18 +982,18 @@ public class ExportJob implements Job
         try
         {
             // Export the Order itself.
-            ordersCsvFile.writeNext(new String[] {
+            ordersCsvFile.writeNext(sanitiseStrings(new String[] {
                 Integer.toString(registrationUid),
                 Integer.toString(orderUid),
                 order.getOrderCode(),
                 safelyGetEnumName(order.getPaymentMethod()),
                 safelyFormatMoney(moneyFormatter, order.getTotalAmount()),
-                order.getDescription(),
+                sanitiseNewlines(order.getDescription()),
                 order.getMerchantId(),
                 safelyFormatDate(reportingDateFormatter, order.getDateCreated()),
                 safelyFormatDate(reportingDateFormatter, order.getDateLastUpdated()),
                 order.getUpdatedByUser()
-            });
+            }));
             
             // Export all the items within the Order.
             List<OrderItem> orderItems = order.getOrderItems();
@@ -958,15 +1001,15 @@ public class ExportJob implements Job
             {
                 for (OrderItem item : orderItems)
                 {
-                    orderItemsCsvFile.writeNext(new String[] {
+                    orderItemsCsvFile.writeNext(sanitiseStrings(new String[] {
                         Integer.toString(registrationUid),
                         Integer.toString(orderUid),
                         safelyGetEnumName(item.getType()),
                         safelyFormatMoney(moneyFormatter, item.getAmount()),
-                        item.getDescription(),
+                        sanitiseNewlines(item.getDescription()),
                         item.getReference(),
                         safelyFormatDate(reportingDateFormatter, item.getLastUpdated())
-                    });
+                    }));
                 }
             }
         }
