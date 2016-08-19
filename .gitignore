@@ -42,3 +42,6 @@ Jenkins_Services_Env_Vars.sh
 
 # Netbeans IDE files
 nbactions.xml
+
+# Default log location for the service (useful when running on a Vagrant box)
+logs/**

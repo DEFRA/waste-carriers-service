@@ -109,7 +109,7 @@ public class PaymentHelper
         else
         {
             FinanceDetails fd = registration.getFinanceDetails();
-            result = ((fd != null) && (fd.getOrders() != null) && (fd.getOrders().size() > 0) && (fd.getBalance() == 0));
+            result = ((fd != null) && (fd.getOrders() != null) && (fd.getOrders().size() > 0) && (fd.getBalance() <= 0));
         }
 
         return result;
