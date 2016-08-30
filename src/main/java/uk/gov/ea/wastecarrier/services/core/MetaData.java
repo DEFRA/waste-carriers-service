@@ -39,6 +39,8 @@ public class MetaData {
 	 * INACTIVE: Registration has been deleted from the register by the registrant
 	 *
 	 */
+        
+        // TODO in next CI: Remove the "ACTIVATE" item; it is unused.
 	public enum RegistrationStatus {
 	    PENDING, ACTIVATE, ACTIVE, REVOKED, EXPIRED, INACTIVE, REFUSED
 	}
