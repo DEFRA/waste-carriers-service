@@ -79,7 +79,7 @@ Start MongoDB with authentication:
 
 The service uses an ElasticSearch database for complex and flexible search operations.
 
-Startup ElasticSearch (0.90.5) for local development:
+Startup ElasticSearch for local development:
 
 	$ bin/elasticsearch -f
 
