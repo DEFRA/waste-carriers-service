@@ -31,10 +31,7 @@ import uk.gov.ea.wastecarrier.services.ElasticSearchConfiguration;
 import uk.gov.ea.wastecarrier.services.core.*;
 import uk.gov.ea.wastecarrier.services.core.Registration.RegistrationTier;
 import uk.gov.ea.wastecarrier.services.elasticsearch.ElasticSearchUtils;
-import uk.gov.ea.wastecarrier.services.mongoDb.AccountHelper;
-import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
-import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationHelper;
-import uk.gov.ea.wastecarrier.services.mongoDb.SearchHelper;
+import uk.gov.ea.wastecarrier.services.mongoDb.*;
 import uk.gov.ea.wastecarrier.services.tasks.Indexer;
 import uk.gov.ea.wastecarrier.services.tasks.PostcodeRegistry;
 
@@ -56,6 +53,7 @@ import java.util.logging.Logger;
 @Consumes(MediaType.APPLICATION_JSON)
 public class RegistrationsResource
 {
+    private final RegistrationsMongoDao dao;
     private final DatabaseHelper databaseHelper;
     private final ElasticSearchConfiguration elasticSearch;
     /* Note: We are not using the shared ES TransportClient for the time being,
@@ -70,7 +68,6 @@ public class RegistrationsResource
 
     /**
      *
-     * @param mQConfig
      * @param database
      */
     public RegistrationsResource(
@@ -80,6 +77,7 @@ public class RegistrationsResource
             String postcodeFilePath)
     {
         this.databaseHelper = new DatabaseHelper(database);
+        this.dao = new RegistrationsMongoDao(this.databaseHelper);
         this.elasticSearch = elasticSearch;
         this.postcodeRegistry = new PostcodeRegistry(PostcodeRegistry.POSTCODE_FROM.FILE, postcodeFilePath);
         
@@ -93,6 +91,15 @@ public class RegistrationsResource
         //esClient.close();
     };
 
+    @GET
+    @Timed
+    @Path("/{registrationNumber}")
+    public Registration fetch(@PathParam("registrationNumber") String registrationNumber) {
+
+        Registration reg = dao.findRegistration(registrationNumber);
+
+        return reg;
+    }
 
     /**
      * Gets a list of registrations. If a YYY is provided then a list limited by YYY is returned, otherwise the entire
