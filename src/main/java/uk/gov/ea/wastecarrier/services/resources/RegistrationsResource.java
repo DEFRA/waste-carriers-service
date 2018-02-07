@@ -101,6 +101,16 @@ public class RegistrationsResource
         return reg;
     }
 
+    @GET
+    @Timed
+    @Path("/original/{registrationNumber}")
+    public Registration fetchWithOriginalRegNumber(@PathParam("registrationNumber") String registrationNumber) {
+
+        Registration reg = dao.findRegistrationWithOriginalRegNumber(registrationNumber);
+
+        return reg;
+    }
+
     /**
      * Gets a list of registrations. If a YYY is provided then a list limited by YYY is returned, otherwise the entire
      * registration details are returned.
