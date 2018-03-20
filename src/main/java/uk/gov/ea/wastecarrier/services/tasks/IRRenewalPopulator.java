@@ -213,7 +213,7 @@ public class IRRenewalPopulator extends Task
                 "Company",
                 "IR Company Name",
                 "",
-                "07713745"};
+                "10926928"};
         this.irDataList.add(new CompanyIRData(testCompanyData));
 
         String testIndividualData[] = {"CB/AN9999YY/R002",
