@@ -9,7 +9,7 @@ logging:
 
   #Redefining logging levels for selected classes and packages
   loggers:
-    "org.elasticsearch.client.transport": TRACE
+    "org.elasticsearch.client.transport": WARN
 
   # Settings for logging to stdout.
   console:

@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
+import net.vz.mongodb.jackson.DBQuery;
 import net.vz.mongodb.jackson.JacksonDBCollection;
 import net.vz.mongodb.jackson.WriteResult;
 
@@ -91,6 +92,104 @@ public class RegistrationsMongoDao
 		}
 	
 	}
+
+	public Registration findRegistration(String registrationNumber)
+	{
+		Registration foundReg;
+
+		log.info("Finding registration with reg identifier = " + registrationNumber);
+
+		DB db = databaseHelper.getConnection();
+		if (db != null)
+		{
+			if (!db.isAuthenticated())
+			{
+				log.severe("Find registration - Could not authenticate against MongoDB!");
+				throw new WebApplicationException(Status.FORBIDDEN);
+			}
+
+			// Create MONGOJACK connection to the database
+			JacksonDBCollection<Registration, String> registrations = JacksonDBCollection.wrap(
+					db.getCollection(Registration.COLLECTION_NAME),
+					Registration.class,
+					String.class
+			);
+
+			// Query to find matching reference number
+            DBQuery.Query paramQuery = DBQuery.is("regIdentifier", registrationNumber);
+
+			try
+			{
+				foundReg = registrations.findOne(paramQuery);
+			}
+			catch (IllegalArgumentException e)
+			{
+				log.severe("Caught exception: " + e.getMessage() + " - Cannot find Registration: " + registrationNumber);
+				throw new WebApplicationException(Status.NOT_FOUND);
+			}
+		}
+        else
+        {
+            log.severe("Find registration - Could not obtain connection to MongoDB!");
+            throw new WebApplicationException(Status.SERVICE_UNAVAILABLE);
+        }
+
+		if (foundReg == null)
+		{
+			log.info("Failed to find registration with number: " + registrationNumber);
+			throw new WebApplicationException(Status.NO_CONTENT);
+		}
+		return foundReg;
+	}
+
+	public Registration findRegistrationWithOriginalRegNumber(String registrationNumber)
+	{
+		Registration foundReg;
+
+		log.info("Finding registration with original registration number = " + registrationNumber);
+
+		DB db = databaseHelper.getConnection();
+		if (db != null)
+		{
+			if (!db.isAuthenticated())
+			{
+				log.severe("Find registration with original reg number - Could not authenticate against MongoDB!");
+				throw new WebApplicationException(Status.FORBIDDEN);
+			}
+
+			// Create MONGOJACK connection to the database
+			JacksonDBCollection<Registration, String> registrations = JacksonDBCollection.wrap(
+					db.getCollection(Registration.COLLECTION_NAME),
+					Registration.class,
+					String.class
+			);
+
+			// Query to find matching reference number
+			DBQuery.Query paramQuery = DBQuery.is("originalRegistrationNumber", registrationNumber);
+
+			try
+			{
+				foundReg = registrations.findOne(paramQuery);
+			}
+			catch (IllegalArgumentException e)
+			{
+				log.severe("Caught exception: " + e.getMessage() + " - Cannot find Registration with original reg number: " + registrationNumber);
+				throw new WebApplicationException(Status.NOT_FOUND);
+			}
+		}
+		else
+		{
+			log.severe("Find registration - Could not obtain connection to MongoDB!");
+			throw new WebApplicationException(Status.SERVICE_UNAVAILABLE);
+		}
+
+		if (foundReg == null)
+		{
+			log.info("Failed to find registration with number: " + registrationNumber);
+			throw new WebApplicationException(Status.NO_CONTENT);
+		}
+		return foundReg;
+	}
 	
 	/**
 	 * Return the registration with the given id
@@ -133,12 +232,7 @@ public class RegistrationsMongoDao
 			throw new WebApplicationException(Status.SERVICE_UNAVAILABLE);
 		}
 	}
-	
-	/**
-	 * Return the registration with the given id
-	 * @param id
-	 * @return
-	 */
+
 	public Registration updateRegistration(Registration reg)
 	{
 		
