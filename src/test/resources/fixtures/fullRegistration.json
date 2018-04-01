@@ -69,7 +69,7 @@
   "accessCode":"ABCDEF",
   "expires_on":1512000000000,
   "originalRegistrationNumber":"OLDREG123",
-  "originalDateExpiry":1437994800000,
+  "originalDateExpiry":1437998400000,
   "renewalRequested": "false",
   "conviction_sign_offs":null,
   "reg_uuid": "1234567890",
@@ -78,7 +78,7 @@
     "position":"Director",
     "first_name":"John",
     "last_name":"Smith",
-    "dob":-3600000,
+    "dob":0,
     "person_type":"KEY"
   }],
   "total_fee":"164",
