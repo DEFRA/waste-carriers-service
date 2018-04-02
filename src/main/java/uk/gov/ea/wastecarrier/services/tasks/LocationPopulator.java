@@ -3,9 +3,9 @@ package uk.gov.ea.wastecarrier.services.tasks;
 import com.google.common.collect.ImmutableMultimap;
 import com.mongodb.DB;
 import com.yammer.dropwizard.tasks.Task;
-import net.vz.mongodb.jackson.DBCursor;
-import net.vz.mongodb.jackson.JacksonDBCollection;
-import net.vz.mongodb.jackson.WriteResult;
+import org.mongojack.DBCursor;
+import org.mongojack.JacksonDBCollection;
+import org.mongojack.WriteResult;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.core.Address;
 import uk.gov.ea.wastecarrier.services.core.Location;
@@ -59,11 +59,6 @@ public class LocationPopulator extends Task
         // Get All Registration records from the database
         DB db = this.databaseHelper.getConnection();
         if (db != null) {
-
-            if (!db.isAuthenticated()) {
-                throw new RuntimeException("Error: Could not authenticate user");
-            }
-
             // Create MONGOJACK connection to the database
             JacksonDBCollection<Registration, String> registrations = JacksonDBCollection.wrap(
                     db.getCollection(Registration.COLLECTION_NAME), Registration.class, String.class);
@@ -100,16 +95,13 @@ public class LocationPopulator extends Task
                     }
 
                     // Update database with XY information
-                    WriteResult<Registration, String> result = registrations.updateById(r.getId(), r);
-
-                    if (String.valueOf("").equals(result.getError()))
-                    {
+                    try {
+                        registrations.updateById(r.getId(), r);
+                    } catch (Exception e) {
                         throw new WebApplicationException(Status.NOT_MODIFIED);
                     }
-                    else
-                    {
-                        log.info(String.format("Updated Registration id: %s", r.getId()));
-                    }
+
+                    log.info(String.format("Updated Registration id: %s", r.getId()));
                 }
                 else
                 {
