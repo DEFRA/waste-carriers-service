@@ -17,8 +17,8 @@ import java.util.TimeZone;
 
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
-import net.vz.mongodb.jackson.JacksonDBCollection;
-import net.vz.mongodb.jackson.DBCursor;
+import org.mongojack.JacksonDBCollection;
+import org.mongojack.DBCursor;
 
 import au.com.bytecode.opencsv.CSVWriter;
 import java.text.DecimalFormat;
@@ -199,10 +199,6 @@ public class ExportJob implements Job
             if (db == null)
             {
                 throw new RuntimeException("Error: No database connection available; aborting.");
-            }
-            if (!db.isAuthenticated())
-            {
-                throw new RuntimeException("Error: Could not authenticate against database; aborting.");
             }
             
             // Do useful work...
