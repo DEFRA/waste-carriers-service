@@ -6,13 +6,15 @@ import java.util.logging.Logger;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
-import net.vz.mongodb.jackson.DBUpdate;
-import net.vz.mongodb.jackson.JacksonDBCollection;
-import net.vz.mongodb.jackson.WriteResult;
-
-import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
+import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
+import com.mongodb.BasicDBObject;
+
+import org.mongojack.DBQuery;
+import org.mongojack.DBUpdate;
+import org.mongojack.JacksonDBCollection;
+import org.mongojack.WriteResult;
 
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.core.FinanceDetails;
@@ -29,7 +31,7 @@ public class OrdersMongoDao
     
     /**
      * Constructor with arguments
-     * @param databaseHelper the DatabaseHelper
+     * @param database the DatabaseConfiguration
      */
     public OrdersMongoDao(DatabaseConfiguration database)
     {
@@ -43,11 +45,6 @@ public class OrdersMongoDao
         DB db = databaseHelper.getConnection();
         if (db != null)
         {
-            if (!db.isAuthenticated())
-            {
-                throw new WebApplicationException(Status.FORBIDDEN);
-            }
-            
             // Generate order id
             order.setOrderId(UUID.randomUUID().toString());
             
@@ -61,7 +58,6 @@ public class OrdersMongoDao
              * Before adding the order, verify that this order (identified by its orderCode)
              * has not already been received.
              */
-            
             Registration registration = registrations.findOneById(registrationId);
             Order existingOrder = registration.getFinanceDetails().getOrderForOrderCode(order.getOrderCode());
             if (existingOrder != null)
@@ -77,27 +73,11 @@ public class OrdersMongoDao
              */
             WriteResult<Registration, String> result = registrations.updateById(registrationId,
                     DBUpdate.push(FinanceDetails.COLLECTION_NAME + "." + Order.COLLECTION_NAME, order));
-            
-            if (result.getError() == null)
-            {
-                // Find registration after adding order, This updates the balance in the database
-                Registration foundReg = registrations.findOneById(registrationId);
-                result = registrations.updateById(registrationId, foundReg);
-                if (result.getError() == null)
-                {
-                    return order;
-                }
-                else
-                {
-                    log.severe("Error occured while updating registration after orders placed, " + result.getError());
-                    throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
-                }
-            }
-            else
-            {
-                log.severe("Error occured while updating registration with a order, " + result.getError());
-                throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
-            }
+
+            // Find registration after adding order, This updates the balance in the database
+            Registration foundReg = registrations.findOneById(registrationId);
+            registrations.updateById(registrationId, foundReg);
+            return order;
         }
         else
         {
@@ -117,11 +97,6 @@ public class OrdersMongoDao
             throw new WebApplicationException(Status.SERVICE_UNAVAILABLE);
         }
 
-        if (!db.isAuthenticated())
-        {
-            throw new WebApplicationException(Status.FORBIDDEN);
-        }
-        
         /*
          * Create MONGOJACK connection to the database
          */
@@ -132,7 +107,6 @@ public class OrdersMongoDao
          * Update registration with order information into the database
          * Using the positional operator ('.$.') to update the given Order sub-document within the orders array/list of the registration
          */
-        
         Registration registration = registrations.findOneById(registrationId);
         if (registration == null)
         {
@@ -140,21 +114,16 @@ public class OrdersMongoDao
         }
         
         // New way to update an order, by finding the order to update and calling DBUpdate.set directly
-        DBObject query1 = new BasicDBObject();
-        query1.put("regIdentifier", registration.getRegIdentifier());
-        query1.put("financeDetails.orders.orderId", orderId);
-        
+        DBQuery.Query query = DBQuery
+                .is("regIdentifier", registration.getRegIdentifier())
+                .is("financeDetails.orders.orderId", orderId);
+
         // Update order attributes
         WriteResult<Registration, String> result;
-        result = registrations.update(query1, DBUpdate.set(FinanceDetails.COLLECTION_NAME + "." + Order.COLLECTION_NAME + ".$", order));
+        result = registrations.update(query, DBUpdate.set(FinanceDetails.COLLECTION_NAME + "." + Order.COLLECTION_NAME + ".$", order));
         
         // Check that the operation proceeded as intended.
-        if (result.getError() != null)
-        {
-            log.severe("Error occured while updating registration with an order: " + result.getError());
-            throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
-        }
-        else if (result.getN() == 0)
+        if (result.getN() == 0)
         {
             log.severe("Attempt to update registration/order that doesn't currently exist in the database.");
             throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
@@ -163,16 +132,8 @@ public class OrdersMongoDao
         {
             // Find registration after adding order
             Registration foundReg = registrations.findOneById(registrationId);
-            result = registrations.updateById(registrationId, foundReg);
-            if (result.getError() == null)
-            {
-                return order;
-            }
-            else
-            {
-                log.severe("Error occured while updating registration after updating order, " + result.getError());
-                throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
-            }
+            registrations.updateById(registrationId, foundReg);
+            return order;
         }
     }
 }
