@@ -5,8 +5,8 @@ import static com.yammer.dropwizard.testing.JsonHelpers.asJson;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.mongodb.DB;
-import net.vz.mongodb.jackson.DBCursor;
-import net.vz.mongodb.jackson.JacksonDBCollection;
+import org.mongojack.DBCursor;
+import org.mongojack.JacksonDBCollection;
 
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
@@ -113,11 +113,6 @@ public class Indexer extends Task
             {
                 noErrors = false;
                 outputAndLogMessage(Level.SEVERE, out, "Error: No database connection available; aborting.");
-            }
-            if (noErrors && !db.isAuthenticated())
-            {
-                noErrors = false;
-                outputAndLogMessage(Level.SEVERE, out, "Error: Could not authenticate against database; aborting.");
             }
             
             // Start by completely deleting the old index.
