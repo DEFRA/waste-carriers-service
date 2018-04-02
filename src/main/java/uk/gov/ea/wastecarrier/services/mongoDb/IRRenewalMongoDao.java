@@ -5,12 +5,11 @@ import java.util.logging.Logger;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
-import net.vz.mongodb.jackson.DBQuery;
-import net.vz.mongodb.jackson.JacksonDBCollection;
-import net.vz.mongodb.jackson.WriteResult;
-import net.vz.mongodb.jackson.DBQuery.Query;
-
 import com.mongodb.DB;
+
+import org.mongojack.DBQuery;
+import org.mongojack.JacksonDBCollection;
+import org.mongojack.WriteResult;
 
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.core.irdata.CompanyIRData;
@@ -30,8 +29,7 @@ public class IRRenewalMongoDao
 	/**
 	 * Constructor with arguments
 	 * 
-	 * @param databaseHelper
-	 *            the DatabaseHelper
+	 * @param database the DatabaseConfiguration
 	 */
 	public IRRenewalMongoDao(DatabaseConfiguration database)
 	{
@@ -41,22 +39,16 @@ public class IRRenewalMongoDao
 
 	public IRData findIRData(String registrationNumber)
 	{
-		
 		log.info("Param GET Method Detected - findIRData limited by registrationNumber");
 		DB db = databaseHelper.getConnection();
 		if (db != null)
 		{
-			if (!db.isAuthenticated())
-			{
-				throw new WebApplicationException(Status.FORBIDDEN);
-			}
-			
 			// Create MONGOJACK connection to the database via different IRData types
 			JacksonDBCollection<IRData, String> genericIRrenewalData = JacksonDBCollection.wrap(
 					db.getCollection(IRData.COLLECTION_NAME), IRData.class, String.class);
 			
 			// Query to find matching reference number
-			Query paramQuery = getMatchingReferenceNumberQuery(registrationNumber);
+            DBQuery.Query paramQuery = getMatchingReferenceNumberQuery(registrationNumber);
 			
 			// Search for matching registration
 			IRData irData = genericIRrenewalData.findOne(paramQuery);
@@ -76,22 +68,16 @@ public class IRRenewalMongoDao
 	
 	public CompanyIRData findOneCompanyIRData(String registrationNumber)
 	{
-		
 		log.info("Param GET Method Detected - findOneCompanyIRData limited by registrationNumber");
 		DB db = databaseHelper.getConnection();
 		if (db != null)
-		{
-			if (!db.isAuthenticated())
-			{
-				throw new WebApplicationException(Status.FORBIDDEN);
-			}
-			
+        {
 			// Create MONGOJACK connection to the database via different IRData types
 			JacksonDBCollection<CompanyIRData, String> irRenewalData = JacksonDBCollection.wrap(
 					db.getCollection(IRData.COLLECTION_NAME), CompanyIRData.class, String.class);
 			
 			// Query to find matching reference number
-			Query paramQuery = getMatchingReferenceNumberQuery(registrationNumber);
+            DBQuery.Query paramQuery = getMatchingReferenceNumberQuery(registrationNumber);
 			
 			// Search for matching registration
 			CompanyIRData irData = irRenewalData.findOne(paramQuery);
@@ -110,22 +96,16 @@ public class IRRenewalMongoDao
 	
 	public IndividualIRData findOneIndividualIRData(String registrationNumber)
 	{
-		
 		log.info("Param GET Method Detected - findOneIndividualIRData limited by registrationNumber");
 		DB db = databaseHelper.getConnection();
 		if (db != null)
 		{
-			if (!db.isAuthenticated())
-			{
-				throw new WebApplicationException(Status.FORBIDDEN);
-			}
-			
 			// Create MONGOJACK connection to the database via different IRData types
 			JacksonDBCollection<IndividualIRData, String> irRenewalData = JacksonDBCollection.wrap(
 					db.getCollection(IRData.COLLECTION_NAME), IndividualIRData.class, String.class);
 			
 			// Query to find matching reference number
-			Query paramQuery = getMatchingReferenceNumberQuery(registrationNumber);
+            DBQuery.Query paramQuery = getMatchingReferenceNumberQuery(registrationNumber);
 			
 			// Search for matching registration
 			IndividualIRData irData = irRenewalData.findOne(paramQuery);
@@ -148,17 +128,12 @@ public class IRRenewalMongoDao
 		DB db = databaseHelper.getConnection();
 		if (db != null)
 		{
-			if (!db.isAuthenticated())
-			{
-				throw new WebApplicationException(Status.FORBIDDEN);
-			}
-			
 			// Create MONGOJACK connection to the database via different IRData types
 			JacksonDBCollection<PartnersIRData, String> irRenewalData = JacksonDBCollection.wrap(
 					db.getCollection(IRData.COLLECTION_NAME), PartnersIRData.class, String.class);
 			
 			// Query to find matching reference number
-			Query paramQuery = getMatchingReferenceNumberQuery(registrationNumber);
+            DBQuery.Query paramQuery = getMatchingReferenceNumberQuery(registrationNumber);
 			
 			// Search for matching registration
 			PartnersIRData irData = irRenewalData.findOne(paramQuery);
@@ -181,17 +156,12 @@ public class IRRenewalMongoDao
 		DB db = databaseHelper.getConnection();
 		if (db != null)
 		{
-			if (!db.isAuthenticated())
-			{
-				throw new WebApplicationException(Status.FORBIDDEN);
-			}
-			
 			// Create MONGOJACK connection to the database via different IRData types
 			JacksonDBCollection<PublicBodyIRData, String> irRenewalData = JacksonDBCollection.wrap(
 					db.getCollection(IRData.COLLECTION_NAME), PublicBodyIRData.class, String.class);
 			
 			// Query to find matching reference number
-			Query paramQuery = getMatchingReferenceNumberQuery(registrationNumber);
+            DBQuery.Query paramQuery = getMatchingReferenceNumberQuery(registrationNumber);
 			
 			// Search for matching registration
 			PublicBodyIRData irData = irRenewalData.findOne(paramQuery);
@@ -208,7 +178,7 @@ public class IRRenewalMongoDao
 		return null; 
 	}
 	
-	private Query getMatchingReferenceNumberQuery(String registrationNumber)
+	private DBQuery.Query getMatchingReferenceNumberQuery(String registrationNumber)
 	{
 		// Query to find matching reference number
 		return DBQuery.is("referenceNumber", registrationNumber);
@@ -220,11 +190,6 @@ public class IRRenewalMongoDao
 		DB db = databaseHelper.getConnection();
 		if (db != null)
 		{
-			if (!db.isAuthenticated())
-			{
-				throw new WebApplicationException(Status.FORBIDDEN);
-			}
-			
 			WriteResult<?, String> result;
 			if (irData instanceof CompanyIRData) 
 			{
@@ -288,40 +253,32 @@ public class IRRenewalMongoDao
 				result = renewalData.insert(irData);
 			}
 
-			if (result.getError() == null)
-			{
-				// Get unique ID out of response, and find updated record
-				String id = result.getSavedId();
-				/*
-				 * Alternative long hand for getting id:
-				 * String id = result.getDbObject().get("_id").toString();
-				 */
-				log.fine("Added to the database with otherId: " + id);
-				
-				IRData resObject = null;
-				if (result.getSavedObject() instanceof CompanyIRData)
-				{
-					resObject = (CompanyIRData) result.getSavedObject();
-				}
-				else if (result.getSavedObject() instanceof IndividualIRData)
-				{
-					resObject = (IndividualIRData) result.getSavedObject();
-				}
-				else if (result.getSavedObject() instanceof PartnersIRData)
-				{
-					resObject = (PartnersIRData) result.getSavedObject();
-				}
-				else if (result.getSavedObject() instanceof PublicBodyIRData)
-				{
-					resObject = (PublicBodyIRData) result.getSavedObject();
-				}
-				log.fine("Added = " + resObject.getReferenceNumber() + " to the database with id:" + resObject.getId());
-			}
-			else
-			{
-				log.severe("Error occured while updating registration with a order, " + result.getError());
-				throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
-			}
+            // Get unique ID out of response, and find updated record
+            String id = result.getSavedId();
+            /*
+             * Alternative long hand for getting id:
+             * String id = result.getDbObject().get("_id").toString();
+             */
+            log.fine("Added to the database with otherId: " + id);
+
+            IRData resObject = null;
+            if (result.getSavedObject() instanceof CompanyIRData)
+            {
+                resObject = (CompanyIRData) result.getSavedObject();
+            }
+            else if (result.getSavedObject() instanceof IndividualIRData)
+            {
+                resObject = (IndividualIRData) result.getSavedObject();
+            }
+            else if (result.getSavedObject() instanceof PartnersIRData)
+            {
+                resObject = (PartnersIRData) result.getSavedObject();
+            }
+            else if (result.getSavedObject() instanceof PublicBodyIRData)
+            {
+                resObject = (PublicBodyIRData) result.getSavedObject();
+            }
+            log.fine("Added = " + resObject.getReferenceNumber() + " to the database with id:" + resObject.getId());
 		}
 		else
 		{
@@ -336,18 +293,12 @@ public class IRRenewalMongoDao
 		DB db = databaseHelper.getConnection();
 		if (db != null)
 		{
-			if (!db.isAuthenticated())
-			{
-				throw new WebApplicationException(Status.FORBIDDEN);
-			}
-			
 			// Create MONGOJACK connection to the database
 			JacksonDBCollection<IRData, String> renewalData = JacksonDBCollection.wrap(
 					db.getCollection(IRData.COLLECTION_NAME), IRData.class, String.class);
 
 			renewalData.drop();
 			log.info("Dropped ir data from database");
-
 		}
 		else
 		{
