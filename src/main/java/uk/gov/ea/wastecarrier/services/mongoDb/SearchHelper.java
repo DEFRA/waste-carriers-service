@@ -1,21 +1,25 @@
 package uk.gov.ea.wastecarrier.services.mongoDb;
 
+import java.util.*;
+import java.util.logging.Logger;
+
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
+
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
-import net.vz.mongodb.jackson.JacksonDBCollection;
+
+import org.mongojack.JacksonDBCollection;
+
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
 import org.joda.time.format.DateTimeParser;
-import uk.gov.ea.wastecarrier.services.core.Registration;
 
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
-import java.util.*;
-import java.util.logging.Logger;
+import uk.gov.ea.wastecarrier.services.core.Registration;
 
 public class SearchHelper {
 
@@ -29,12 +33,12 @@ public class SearchHelper {
     public List<Registration> toRegistrationList(DBCursor cursor) {
         JacksonDBCollection<Registration, Object> jackColl = JacksonDBCollection
                 .wrap(cursor.getCollection(), Registration.class);
-        net.vz.mongodb.jackson.DBCursor<Registration> jackCursor = new net.vz.mongodb.jackson.DBCursor<Registration>(
+        org.mongojack.DBCursor<Registration> jackCursor = new org.mongojack.DBCursor<Registration>(
                 jackColl, cursor);
         return toList(jackCursor);
     }
 
-    private <T> List<T> toList(net.vz.mongodb.jackson.DBCursor<T> cursor) {
+    private <T> List<T> toList(org.mongojack.DBCursor<T> cursor) {
         List<T> returnList = new LinkedList<T>();
         for (T r : cursor) {
             returnList.add(r);
@@ -139,10 +143,6 @@ public class SearchHelper {
             // Database connection is null - not available???
             log.severe("Database not available, check the database is running");
             throw new WebApplicationException(Response.Status.SERVICE_UNAVAILABLE);
-        }
-        if (!db.isAuthenticated()) {
-            log.severe("Database not authenticated, access forbidden");
-            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
         }
         return db;
     }
