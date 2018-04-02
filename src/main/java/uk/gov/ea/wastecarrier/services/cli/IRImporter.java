@@ -15,7 +15,7 @@ import java.util.TimeZone;
 import java.util.UUID;
 
 import com.mongodb.DB;
-import net.vz.mongodb.jackson.JacksonDBCollection;
+import org.mongojack.JacksonDBCollection;
 
 import au.com.bytecode.opencsv.CSVReader;
 import net.sourceforge.argparse4j.impl.Arguments;
@@ -182,10 +182,6 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
         if (db == null)
         {
             throw new RuntimeException("Error: No database connection available; aborting.");
-        }
-        if (!db.isAuthenticated())
-        {
-            throw new RuntimeException("Error: Could not authenticate against database; aborting.");
         }
         
         // Create MONGOJACK connection to the database.
