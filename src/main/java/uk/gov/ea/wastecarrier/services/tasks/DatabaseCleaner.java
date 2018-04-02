@@ -16,9 +16,9 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 
-import net.vz.mongodb.jackson.DBCursor;
-import net.vz.mongodb.jackson.JacksonDBCollection;
-import net.vz.mongodb.jackson.WriteResult;
+import org.mongojack.DBCursor;
+import org.mongojack.JacksonDBCollection;
+import org.mongojack.WriteResult;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.ElasticSearchConfiguration;
 import uk.gov.ea.wastecarrier.services.core.Registration;
@@ -70,11 +70,6 @@ public class DatabaseCleaner extends Task
 		DB db = this.databaseHelper.getConnection();
 		if (db != null)
 		{
-			if (!db.isAuthenticated())
-			{
-				throw new RuntimeException("Error: Could not authenticate user");
-			}
-
 			// Create MONGOJACK connection to the database
 			JacksonDBCollection<Registration, String> registrations = JacksonDBCollection.wrap(
 					db.getCollection(Registration.COLLECTION_NAME), Registration.class, String.class);
@@ -92,33 +87,27 @@ public class DatabaseCleaner extends Task
 			// for each registration, get ID and delete
 			for (Registration r : dbcur)
 			{
-				WriteResult<Registration, String> result = registrations.removeById(r.getId());
-				
-				if (String.valueOf("").equals(result.getError()))
-				{
+				try {
+					registrations.removeById(r.getId());
+				} catch (Exception e) {
 					throw new WebApplicationException(Status.NOT_MODIFIED);
 				}
-				else
-				{
-					log.fine("Deleted Registration id: " + r.getId() + " from DB");
-					
-					//Indexer.deleteElasticSearchIndex(elasticSearch, r);
-					DeleteResponse deleteResponse = null;
-					try {
-						//client = ElasticSearchUtils.getNewTransportClient(esConfig);
-						// Delete Index after creation
-						deleteResponse = client
-								.prepareDelete(Registration.COLLECTION_NAME, Registration.COLLECTION_SINGULAR_NAME, r.getId()).setOperationThreaded(false)
-								.execute().actionGet();
-						log.fine("deleted: " + deleteResponse.getId());
-						log.info("Deleted reg: " + r.getId() + " from DB");
-						out.append("Deleted reg: " + r.getId() + " from DB\n");
-					} catch (ElasticsearchException e) {
-						log.severe("Encountered Exception while deleting from ElasticSearch: " + e.getDetailedMessage());
-					} finally {
-						log.info("Closing ElasticSearchClient after use");
-						//client.close();
-					}
+
+				log.fine("Deleted Registration id: " + r.getId() + " from DB");
+
+				DeleteResponse deleteResponse = null;
+				try {
+					// Delete Index after creation
+					deleteResponse = client
+							.prepareDelete(Registration.COLLECTION_NAME, Registration.COLLECTION_SINGULAR_NAME, r.getId()).setOperationThreaded(false)
+							.execute().actionGet();
+					log.fine("deleted: " + deleteResponse.getId());
+					log.info("Deleted reg: " + r.getId() + " from DB");
+					out.append("Deleted reg: " + r.getId() + " from DB\n");
+				} catch (ElasticsearchException e) {
+					log.severe("Encountered Exception while deleting from ElasticSearch: " + e.getDetailedMessage());
+				} finally {
+					log.info("Closing ElasticSearchClient after use");
 				}
 			}
 				
@@ -141,11 +130,8 @@ public class DatabaseCleaner extends Task
 					// Remove Registration from Elastic search
 					Registration tmpReg = new Registration();
 					tmpReg.setId(sh.getId());
-					//Indexer.deleteElasticSearchIndex(elasticSearch, tmpReg);
-					//TransportClient client = null;
 					DeleteResponse deleteResponse = null;
 					try {
-						//client = ElasticSearchUtils.getNewTransportClient(esConfig);
 						// Delete Index after creation
 						deleteResponse = client
 								.prepareDelete(Registration.COLLECTION_NAME, Registration.COLLECTION_SINGULAR_NAME, sh.getId()).setOperationThreaded(false)
