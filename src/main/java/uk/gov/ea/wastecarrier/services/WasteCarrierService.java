@@ -128,18 +128,15 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration>
         mongoClient = dbHelper.getMongoClient();
 
         // Test authentication.
-        DB db = mongoClient.getDB(dbConfig.getName());
-        char[] pword = dbConfig.getPassword().toCharArray();
         try
         {
-            boolean auth = db.authenticate(dbConfig.getUsername(), pword);
-            log.info("Is Authenticated: " + auth);
+            dbHelper.getConnection();
         }
         catch (MongoException e)
         {
             log.severe("Could not connect to Database: " + e.getMessage() + ", continuing to startup.");
         }
-        environment.addHealthCheck(new MongoHealthCheck(mongoClient));
+        environment.addHealthCheck(new MongoHealthCheck(dbConfig));
 
         // Add Database management features.
         environment.manage(new MongoManaged(mongoClient));
