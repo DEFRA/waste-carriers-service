@@ -43,8 +43,8 @@ public class RegistrationsMongoDaoTest extends TestCase {
 		String dbUser = System.getenv("WCRS_SERVICES_DB_USER");
 		String dbPassword = System.getenv("WCRS_SERVICES_DB_PASSWD");
 		DatabaseConfiguration dbConfig = new DatabaseConfiguration(dbHost, dbPort, dbName, dbUser, dbPassword);
-		DatabaseHelper databaseHelper = new DatabaseHelper(dbConfig);
-		dao = new RegistrationsMongoDao(databaseHelper);
+
+		dao = new RegistrationsMongoDao(dbConfig);
 		
 		ordersDao = new OrdersMongoDao(dbConfig);
 		

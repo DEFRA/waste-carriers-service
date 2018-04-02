@@ -77,7 +77,7 @@ public class RegistrationsResource
             String postcodeFilePath)
     {
         this.databaseHelper = new DatabaseHelper(database);
-        this.dao = new RegistrationsMongoDao(this.databaseHelper);
+        this.dao = new RegistrationsMongoDao(database);
         this.elasticSearch = elasticSearch;
         this.postcodeRegistry = new PostcodeRegistry(PostcodeRegistry.POSTCODE_FROM.FILE, postcodeFilePath);
         

@@ -122,8 +122,9 @@ public class WasteCarrierService extends Service<WasteCarrierConfiguration>
          */
 
         // Add Database Heath checks.
+        RegistrationsMongoDao dao = new RegistrationsMongoDao(dbConfig);
+
         DatabaseHelper dbHelper = new DatabaseHelper(dbConfig);
-        RegistrationsMongoDao dao = new RegistrationsMongoDao(dbHelper);
         mongoClient = dbHelper.getMongoClient();
 
         // Test authentication.

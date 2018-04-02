@@ -67,7 +67,7 @@ public class RegistrationReadEditResource
     {
         this.databaseHelper = new DatabaseHelper(database);
         this.esConfig = elasticSearch;
-        this.regDao = new RegistrationsMongoDao(new DatabaseHelper(database));
+        this.regDao = new RegistrationsMongoDao(database);
         this.paymentHelper = new PaymentHelper(new Settings(settingConfig));
         this.userDao = new UsersMongoDao(userDatabase);
         //this.esClient = esClient;

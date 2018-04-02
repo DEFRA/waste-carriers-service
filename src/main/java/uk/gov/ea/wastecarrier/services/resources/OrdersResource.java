@@ -53,7 +53,7 @@ public class OrdersResource
             SettingsConfiguration settingConfig, ElasticSearchConfiguration elasticSearch)
     {
         dao = new OrdersMongoDao(database);
-        regDao = new RegistrationsMongoDao(new DatabaseHelper(database));
+        regDao = new RegistrationsMongoDao(database);
         userDao = new UsersMongoDao(userDatabase);
         esConfig = elasticSearch;
         paymentHelper = new PaymentHelper(new Settings(settingConfig));

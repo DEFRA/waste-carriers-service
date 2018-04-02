@@ -17,6 +17,7 @@ import org.mongojack.DBQuery;
 import org.mongojack.JacksonDBCollection;
 import org.mongojack.WriteResult;
 
+import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 
 /**
@@ -35,12 +36,12 @@ public class RegistrationsMongoDao
 	
 	/**
 	 * Constructor with arguments
-	 * @param databaseHelper the DatabaseHelper
+	 * @param database the DatabaseConfiguration
 	 */
-	public RegistrationsMongoDao(DatabaseHelper databaseHelper)
+	public RegistrationsMongoDao(DatabaseConfiguration database)
 	{
 		log.fine("Constructing DAO with databaseHelper.");
-		this.databaseHelper = databaseHelper;
+		this.databaseHelper = new DatabaseHelper(database);
 	}
 	
 	
