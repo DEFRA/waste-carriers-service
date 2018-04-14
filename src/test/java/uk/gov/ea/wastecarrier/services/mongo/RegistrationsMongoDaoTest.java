@@ -3,7 +3,15 @@
  */
 package uk.gov.ea.wastecarrier.services.mongo;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
 import junit.framework.TestCase;
+import org.bson.Document;
+import org.mongojack.DBCursor;
+import org.mongojack.DBQuery;
+import org.mongojack.JacksonDBCollection;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.core.*;
 import uk.gov.ea.wastecarrier.services.core.MetaData.RegistrationStatus;
@@ -33,22 +41,21 @@ public class RegistrationsMongoDaoTest extends TestCase {
 	 * @see junit.framework.TestCase#setUp()
 	 */
 	//TODO RE-enable after variables have been set up on the Jenkins server
-	protected void donNotSetUp() throws Exception {
-		//super.setUp();
-		
+	protected void setUp() throws Exception {
 		//TODO Get config from DW config files
-		String dbHost = System.getenv("WCRS_SERVICES_DB_HOST");
-		int dbPort = Integer.valueOf(System.getenv("WCRS_SERVICES_DB_PORT"));
-		String dbName = System.getenv("WCRS_SERVICES_DB_NAME");
-		String dbUser = System.getenv("WCRS_SERVICES_DB_USER");
-		String dbPassword = System.getenv("WCRS_SERVICES_DB_PASSWD");
-		DatabaseConfiguration dbConfig = new DatabaseConfiguration(dbHost, dbPort, dbName, dbUser, dbPassword);
+		String host = System.getenv("WCRS_SERVICES_DB_HOST");
+        int port = Integer.valueOf(System.getenv("WCRS_SERVICES_DB_PORT"));
+		String name = System.getenv("WCRS_SERVICES_DB_NAME");
+		String username = System.getenv("WCRS_SERVICES_DB_USER");
+		String password = System.getenv("WCRS_SERVICES_DB_PASSWD");
 
-		dao = new RegistrationsMongoDao(dbConfig);
+		DatabaseConfiguration config = new DatabaseConfiguration(host, port, name, username, password);
+
+		this.dao = new RegistrationsMongoDao(config);
 		
-		ordersDao = new OrdersMongoDao(dbConfig);
+		this.ordersDao = new OrdersMongoDao(config);
 		
-		paymentsDao = new PaymentsMongoDao(dbConfig);
+		this.paymentsDao = new PaymentsMongoDao(config);
 	}
 
 	/**
@@ -63,8 +70,9 @@ public class RegistrationsMongoDaoTest extends TestCase {
 	 */
 	//TODO RE-enable tests
 	public void testGetNumberOfRegistrationsTotal() {
-		//long total = dao.getNumberOfRegistrationsTotal();
-		//System.out.println("total = " + total);
+		long total = dao.getNumberOfRegistrationsTotal();
+		System.out.println(total);
+        System.out.println("Test complete: GetNumberOfRegistrationsTotal");
 	}
 
 	/**
