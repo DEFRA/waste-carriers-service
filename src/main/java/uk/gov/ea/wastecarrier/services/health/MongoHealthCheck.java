@@ -2,9 +2,9 @@ package uk.gov.ea.wastecarrier.services.health;
 
 import java.util.Set;
 
+import com.codahale.metrics.health.HealthCheck;
 import com.mongodb.DB;
 
-import com.yammer.metrics.core.HealthCheck;
 
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
@@ -20,7 +20,6 @@ public class MongoHealthCheck extends HealthCheck {
     private DatabaseHelper databaseHelper;
 
     public MongoHealthCheck(DatabaseConfiguration database) {
-        super("MongoHealthCheck");
         this.databaseHelper = new DatabaseHelper(database);
     }
 

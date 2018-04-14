@@ -2,10 +2,9 @@ package uk.gov.ea.wastecarrier.services.tasks;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.mongodb.DB;
-import com.yammer.dropwizard.tasks.Task;
+import io.dropwizard.servlets.tasks.Task;
 import org.mongojack.DBCursor;
 import org.mongojack.JacksonDBCollection;
-import org.mongojack.WriteResult;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.core.Address;
 import uk.gov.ea.wastecarrier.services.core.Location;
@@ -16,7 +15,6 @@ import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 import java.io.PrintWriter;
-import java.util.Iterator;
 import java.util.logging.Logger;
 
 /**

@@ -3,7 +3,7 @@ package uk.gov.ea.wastecarrier.services;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
-import com.yammer.dropwizard.config.Configuration;
+import io.dropwizard.Configuration;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.NotEmpty;
 

@@ -3,9 +3,9 @@
  */
 package uk.gov.ea.wastecarrier.services.elasticsearch;
 
+import io.dropwizard.lifecycle.Managed;
 import org.elasticsearch.client.Client;
 
-import com.yammer.dropwizard.lifecycle.Managed;
 
 /**
  * Managed class to close the singleton ElasticSearch TransportClient on
@@ -26,17 +26,11 @@ public class ElasticSearchManaged implements Managed {
 		this.esClient = esClient;
 	}
 
-	/**
-	 * @see com.yammer.dropwizard.lifecycle.Managed#start()
-	 */
 	@Override
 	public void start() throws Exception {
 		// Do nothing
 	}
 
-	/**
-	 * @see com.yammer.dropwizard.lifecycle.Managed#stop()
-	 */
 	@Override
 	public void stop() throws Exception {
 		esClient.close();

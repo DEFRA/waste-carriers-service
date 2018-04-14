@@ -1,7 +1,7 @@
 package uk.gov.ea.wastecarrier.services.backgroundJobs;
 
-import com.yammer.dropwizard.tasks.Task;
 import com.google.common.collect.ImmutableMultimap;
+import io.dropwizard.servlets.tasks.Task;
 
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;

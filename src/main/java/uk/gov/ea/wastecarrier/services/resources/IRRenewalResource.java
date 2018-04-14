@@ -1,5 +1,6 @@
 package uk.gov.ea.wastecarrier.services.resources;
 
+import com.codahale.metrics.annotation.Timed;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.core.Registration.RegistrationTier;
@@ -11,7 +12,6 @@ import uk.gov.ea.wastecarrier.services.core.irdata.PublicBodyIRData;
 import uk.gov.ea.wastecarrier.services.mongoDb.IRRenewalMongoDao;
 
 import com.google.common.base.Optional;
-import com.yammer.metrics.annotation.Timed;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;

@@ -1,11 +1,12 @@
 package uk.gov.ea.wastecarrier.services.resources;
 
+import com.codahale.metrics.annotation.Timed;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Optional;
 import com.mongodb.*;
-import com.yammer.metrics.annotation.Timed;
+
 import org.mongojack.DBCursor;
 import org.mongojack.DBQuery;
 import org.mongojack.DBQuery.Query;

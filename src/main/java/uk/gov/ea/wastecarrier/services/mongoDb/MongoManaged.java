@@ -1,7 +1,7 @@
 package uk.gov.ea.wastecarrier.services.mongoDb;
 
 import com.mongodb.MongoClient;
-import com.yammer.dropwizard.lifecycle.Managed;
+import io.dropwizard.lifecycle.Managed;
 
 public class MongoManaged implements Managed {
 

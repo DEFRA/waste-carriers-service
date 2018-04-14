@@ -1,5 +1,6 @@
 package uk.gov.ea.wastecarrier.services.resources;
 
+import com.codahale.metrics.annotation.Timed;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.ElasticSearchConfiguration;
 import uk.gov.ea.wastecarrier.services.SettingsConfiguration;
@@ -15,7 +16,6 @@ import uk.gov.ea.wastecarrier.services.mongoDb.UsersMongoDao;
 import uk.gov.ea.wastecarrier.services.tasks.Indexer;
 
 import com.mongodb.DB;
-import com.yammer.metrics.annotation.Timed;
 
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;

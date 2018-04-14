@@ -1,7 +1,7 @@
 package uk.gov.ea.wastecarrier.services.backgroundJobs;
 
-import com.yammer.dropwizard.config.Configuration;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.dropwizard.Configuration;
 
 /**
  * Stores configuration for the Registration Status job, which updates the

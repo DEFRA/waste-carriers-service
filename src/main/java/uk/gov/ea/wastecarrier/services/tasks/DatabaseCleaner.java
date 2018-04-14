@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
+import io.dropwizard.servlets.tasks.Task;
 import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.search.SearchResponse;
@@ -18,7 +19,6 @@ import org.elasticsearch.search.SearchHit;
 
 import org.mongojack.DBCursor;
 import org.mongojack.JacksonDBCollection;
-import org.mongojack.WriteResult;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.ElasticSearchConfiguration;
 import uk.gov.ea.wastecarrier.services.core.Registration;
@@ -27,7 +27,6 @@ import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.mongodb.DB;
-import com.yammer.dropwizard.tasks.Task;
 
 /**
  * The DatabaseCleaner clears the registrations in the mongoDB database and ensure elastic search

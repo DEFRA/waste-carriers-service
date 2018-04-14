@@ -1,10 +1,9 @@
 package uk.gov.ea.wastecarrier.services.tasks;
 
-import com.yammer.dropwizard.tasks.Task;
-import static com.yammer.dropwizard.testing.JsonHelpers.asJson;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMultimap;
 import com.mongodb.DB;
+import io.dropwizard.servlets.tasks.Task;
 import org.mongojack.DBCursor;
 import org.mongojack.JacksonDBCollection;
 
@@ -51,6 +50,8 @@ public class Indexer extends Task
     // Configuration set at start-up.
     private final DatabaseHelper databaseHelper;
     private final ElasticSearchConfiguration elasticSearch;
+
+    private static final ObjectMapper objectMapper = new ObjectMapper();
     
     // Standard logger.
     private static Logger log = Logger.getLogger(Indexer.class.getName());
@@ -143,7 +144,7 @@ public class Indexer extends Task
                     try
                     {
                         esClient.prepareIndex(Registration.COLLECTION_NAME, Registration.COLLECTION_SINGULAR_NAME, registration.getId())
-                                .setSource(asJson(registration))
+                                .setSource(objectMapper.writeValueAsString(registration))
                                 .execute()
                                 .actionGet();
                         successCount++;
@@ -306,7 +307,7 @@ public class Indexer extends Task
         IndexResponse indexResponse = null;
         try {
             indexResponse = client.prepareIndex(Registration.COLLECTION_NAME, Registration.COLLECTION_SINGULAR_NAME, reg.getId())
-                    .setSource(asJson(reg)).execute().actionGet();
+                    .setSource(objectMapper.writeValueAsString(reg)).execute().actionGet();
             log.info("indexResponse: id = " + indexResponse.getId());
             log.info("indexResponse: version = " + indexResponse.getVersion());
         } catch (ElasticsearchException e) {

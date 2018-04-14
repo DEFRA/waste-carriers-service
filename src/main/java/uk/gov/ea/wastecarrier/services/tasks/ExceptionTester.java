@@ -1,7 +1,7 @@
 package uk.gov.ea.wastecarrier.services.tasks;
 
-import com.yammer.dropwizard.tasks.Task;
 import com.google.common.collect.ImmutableMultimap;
+import io.dropwizard.servlets.tasks.Task;
 
 import java.util.logging.Logger;
 

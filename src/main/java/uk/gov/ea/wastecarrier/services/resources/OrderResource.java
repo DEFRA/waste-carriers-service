@@ -1,11 +1,10 @@
 package uk.gov.ea.wastecarrier.services.resources;
 
+import com.codahale.metrics.annotation.Timed;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.core.Order;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.mongoDb.OrdersMongoDao;
-
-import com.yammer.metrics.annotation.Timed;
 
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;

@@ -6,7 +6,7 @@ import org.elasticsearch.client.transport.NoNodeAvailableException;
 
 import uk.gov.ea.wastecarrier.services.core.Registration;
 
-import com.yammer.metrics.core.HealthCheck;
+import com.codahale.metrics.health.HealthCheck;
 
 /**
  * HeathCheck Class for Monitoring the status of the ElasticSearch Service
@@ -18,7 +18,6 @@ public class ElasticSearchHealthCheck extends HealthCheck {
     private Client esClient;
 
     public ElasticSearchHealthCheck(Client elasticSearchClient) {
-        super("ElasticSearch");
         esClient = elasticSearchClient;
     }
 
