@@ -1,24 +1,48 @@
 # Default parameters defined in WasteCarrierConfiguration
+# http://www.dropwizard.io/1.3.1/docs/manual/configuration.html#man-configuration
 
 # Added standard logging information
 logging:
-  # ...
-
   #standard logging level (should usually be INFO)
   level: INFO
+  appenders:
+    # Settings for logging to stdout.
+    - type: console
+      # The lowest level of events to print to the console.
+      threshold: ALL
+      # The time zone to which event timestamps will be converted.
+      timeZone: UTC
+    # Setting for logging to file
+    - type: file
+      # The lowest level of events to write to the file.
+      threshold: INFO
+      # The filename where current events are logged.
+      currentLogFilename: run.log
+      # Whether or not to archive old events in separate files.
+      archive: true
+      # The filename pattern for archived files. If the pattern ends with
+      # .gz or .zip, files will be compressed as they are archived.
+      archivedLogFilenamePattern: run-archive-%d.log.gz
+      # The number of archived files to keep.
+      archivedFileCount: 5
+      # The time zone to which event timestamps will be converted.
+      timeZone: UTC
 
-  #Redefining logging levels for selected classes and packages
-  loggers:
-    "org.elasticsearch.client.transport": WARN
-
-  # Settings for logging to stdout.
-  console:
-
-    # If true, write log statements to stdout.
-    enabled: true
-
-    # Do not display log statements below this threshold to stdout.
-    threshold: ALL
+server:
+  # The port on which the HTTP server listens for service requests.
+  # Because Java cannot drop privileges in a POSIX system, these
+  # ports cannot be in the range 1-1024. A port value of 0 will
+  # make the OS use an arbitrary unused port.
+  applicationConnectors:
+    - type: http
+      port: WCRS_SERVICES_PORT
+  # The port on which the HTTP server listens for administrative
+  # requests. Subject to the same limitations as "port". If this is
+  # set to the same value as port, the admin routes will be mounted
+  # under /admin.
+  adminConnectors:
+    - type: http
+      port: WCRS_SERVICES_ADMIN_PORT
 
 # added database connection properties, DatabaseConfiguration
 database:
@@ -42,19 +66,6 @@ elasticSearch:
   # Can also specify a size for the maximum number of results to return in a given query
   # By default the 100 is used, but can be overridden here if specified
   #size: 100
-
-http:
-  # The port on which the HTTP server listens for service requests.
-  # Because Java cannot drop privileges in a POSIX system, these
-  # ports cannot be in the range 1-1024. A port value of 0 will
-  # make the OS use an arbitrary unused port.
-  port: WCRS_SERVICES_PORT
-
-  # The port on which the HTTP server listens for administrative
-  # requests. Subject to the same limitations as "port". If this is
-  # set to the same value as port, the admin routes will be mounted
-  # under /admin.
-  adminPort: WCRS_SERVICES_ADMIN_PORT
 
 settings:
   # registration period (in years)
