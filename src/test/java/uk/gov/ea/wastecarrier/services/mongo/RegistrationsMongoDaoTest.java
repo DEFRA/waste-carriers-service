@@ -8,14 +8,16 @@ import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-import org.mongojack.WriteResult;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.core.*;
 import uk.gov.ea.wastecarrier.services.core.MetaData.RegistrationStatus;
 import uk.gov.ea.wastecarrier.services.core.MetaData.RouteType;
 import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
-import uk.gov.ea.wastecarrier.services.mongoDb.OrdersMongoDao;
-import uk.gov.ea.wastecarrier.services.mongoDb.PaymentsMongoDao;
 import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationsMongoDao;
 
 import java.nio.charset.StandardCharsets;
@@ -24,10 +26,6 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 /**
  * Tests (involving the MongoDB database) for the Registrations DAO.
  */
@@ -35,8 +33,6 @@ import static org.junit.Assert.assertTrue;
 public class RegistrationsMongoDaoTest {
 
 	private static RegistrationsMongoDao dao;
-	private static OrdersMongoDao ordersDao;
-	private static PaymentsMongoDao paymentsDao;
 	private static DatabaseHelper helper;
 
 	private static final String lowerTierRegNumber = "CBDL99999";
@@ -53,8 +49,6 @@ public class RegistrationsMongoDaoTest {
 
 		helper = new DatabaseHelper(config);
 		dao = new RegistrationsMongoDao(config);
-		ordersDao = new OrdersMongoDao(config);
-		paymentsDao = new PaymentsMongoDao(config);
 	}
 
     /**
@@ -127,7 +121,7 @@ public class RegistrationsMongoDaoTest {
         //long total = dao.getNumberOfRegistrationsPending();
         //System.out.println("total = " + total);
     }
-	
+
 	//TODO Re-enable tests
 	public void doNotTestInsertAndGetRegistration()
 	{
@@ -135,57 +129,9 @@ public class RegistrationsMongoDaoTest {
 		Registration savedRegistration = dao.insertRegistration(registration);
 		String id = savedRegistration.getId();
 		assertTrue("The registration must have an id", id != null && !id.isEmpty());
-		
+
 		Registration foundRegistration = dao.getRegistration(id);
 		assertNotNull("The registrationmust not be null", foundRegistration);
-	}
-	
-	//TODO Re-enable tests
-	public void doNotTestOrdersAndPayments()
-	{
-		Registration registration = dao.insertRegistration(initializeSampleUpperTierRegistration());
-		String id = registration.getId();
-		
-		Order order = new Order();
-		order.setPaymentMethod(Order.PaymentMethod.UNKNOWN);
-		order.setDescription("Initial registration");
-		order.setOrderCode("1234");
-		order.setCurrency("GBP");
-		order.setTotalAmount(15400);
-		order.setWorldPayStatus("NEW");
-		order.setDateCreated(new Date());
-				
-		ordersDao.addOrder(id, order);
-		
-		registration = dao.getRegistration(id);
-		
-		assertEquals("The registration must now have an order", registration.getFinanceDetails().getOrders().size(), 1);
-
-		Order anotherOrder = new Order();
-		anotherOrder.setPaymentMethod(Order.PaymentMethod.OFFLINE);
-		anotherOrder.setDescription("Some other order for this registration");
-		anotherOrder.setOrderCode("2345");
-		anotherOrder.setCurrency("GBP");
-		anotherOrder.setTotalAmount(2000);
-		anotherOrder.setWorldPayStatus("NEW");
-		anotherOrder.setDateCreated(new Date());
-		ordersDao.addOrder(id, anotherOrder);
-
-		Order savedOrder = registration.getFinanceDetails().getOrders().get(0);
-		
-		assertEquals("The order has a status", "NEW", savedOrder.getWorldPayStatus());
-		
-		savedOrder.setWorldPayStatus("UPDATED");
-		savedOrder.setPaymentMethod(Order.PaymentMethod.ONLINE);
-		
-		ordersDao.updateOrder(id, "1234", savedOrder);
-		
-		registration = dao.getRegistration(id);
-		assertEquals("The registration must still have two orders", registration.getFinanceDetails().getOrders().size(), 2);
-		Order updatedOrder = registration.getFinanceDetails().getOrders().get(0);
-		assertEquals("The order status has been updated in the database", "UPDATED", updatedOrder.getWorldPayStatus());
-		assertEquals("The payment method has been updated", "ONLINE", updatedOrder.getPaymentMethod().toString());
-		
 	}
 
 	private Registration initializeSampleUpperTierRegistration()
