@@ -122,54 +122,6 @@ public class RegistrationsMongoDaoTest {
         //System.out.println("total = " + total);
     }
 
-	//TODO Re-enable tests
-	public void doNotTestInsertAndGetRegistration()
-	{
-		Registration registration = initializeSampleUpperTierRegistration();
-		Registration savedRegistration = dao.insertRegistration(registration);
-		String id = savedRegistration.getId();
-		assertTrue("The registration must have an id", id != null && !id.isEmpty());
-
-		Registration foundRegistration = dao.getRegistration(id);
-		assertNotNull("The registrationmust not be null", foundRegistration);
-	}
-
-	private Registration initializeSampleUpperTierRegistration()
-	{
-		Registration reg = new Registration();
-		reg.setTier(Registration.RegistrationTier.UPPER);
-		reg.setRegistrationType("carrier_dealer");
-		reg.setBusinessType("soleTrader");
-		reg.setOtherBusinesses("yes");
-		reg.setIsMainService("yes");
-		reg.setOnlyAMF("no");
-		reg.setCompanyName("Upper Waste Carriers");
-		ArrayList<Address> addresses = new ArrayList<Address>();
-		Address regAddress = new Address();
-		regAddress.setAddressType(Address.addressType.REGISTERED);
-		regAddress.setHouseNumber("123");
-		regAddress.setAddressLine1("Upper Street");
-		regAddress.setTownCity("Bristol");
-		regAddress.setPostcode("BS1 5AH");
-		reg.setAddresses(addresses);
-		reg.setFirstName("Joe");
-		reg.setLastName("Bloggs");
-		reg.setPosition("Chief Waster");
-		reg.setPhoneNumber("0123 456 789");
-		reg.setRegIdentifier("CBDU" + System.currentTimeMillis());
-        reg.setDeclaredConvictions("no");
-		reg.setDeclaration("1");
-		reg.setAccountEmail("upper@example.com");
-		reg.setFinanceDetails(new FinanceDetails());
-		reg.getFinanceDetails().setOrders(new ArrayList<Order>());
-		reg.getFinanceDetails().setPayments(new ArrayList<Payment>());
-		reg.setMetaData(new MetaData());
-		reg.getMetaData().setDateRegistered(new Date());
-		reg.getMetaData().setStatus(RegistrationStatus.ACTIVE);
-		reg.getMetaData().setRoute(RouteType.DIGITAL);
-		return reg;
-	}
-
 	private Registration generateLowerTier() {
 	    Registration reg = new Registration();
 
