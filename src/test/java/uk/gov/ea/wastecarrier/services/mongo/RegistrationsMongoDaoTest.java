@@ -113,15 +113,6 @@ public class RegistrationsMongoDaoTest {
         );
     }
 
-    /**
-     * Test method for {@link uk.gov.ea.wastecarrier.services.mongoDb.RegistrationsMongoDao#getNumberOfRegistrationsPending()}.
-     */
-    //TODO Re-enable tests
-    public void doNotTestGetNumberOfRegistrationsPending() {
-        //long total = dao.getNumberOfRegistrationsPending();
-        //System.out.println("total = " + total);
-    }
-
 	private Registration generateLowerTier() {
 	    Registration reg = new Registration();
 

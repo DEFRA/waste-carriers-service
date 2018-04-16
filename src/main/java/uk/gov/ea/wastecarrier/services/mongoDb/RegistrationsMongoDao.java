@@ -253,17 +253,6 @@ public class RegistrationsMongoDao
 		return count;
 	}
 
-	/**
-	 * 
-	 * @return the number of pending registrations in the database.
-	 */
-	public long getNumberOfRegistrationsPending() {
-		log.info("Getting number of pending registrations");
-		BasicDBObject query = new BasicDBObject("metaData.status", "PENDING");
-		long count = getRegistrationsCollection().count(query);
-		log.info("The number of pending registrations is: " + count);
-		return count;
-	}
 	
 	/**
 	 * Ensure that the indexes have been defined.
