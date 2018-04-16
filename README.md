@@ -79,9 +79,14 @@ Once the application server is started you should be able to access the services
 
 ## Run Tests
 
+The project doesn't have an extensive suite of unit tests. The tests that do exist are specifically to check that the service is communicating with MongoDb. So they are not run automatically during a maven build (`mvn package`) but can be called manually. Before running the tests though you need to have sourced some environment variables. Unfortunately the unit tests can't read from the config file so key details about MongoDb need to be provided as environment variables.
+
 ```bash
+source test_env_vars.sh
 mvn test
 ```
+
+Once you've run the environment variable script, you won't need to do it again until you open a new terminal session.
 
 ## Postcode data
 
