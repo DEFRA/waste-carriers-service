@@ -10,6 +10,12 @@ The service is implemented as a frontend web application, with a service API and
 
 This application and its associated Maven and Eclipse project implement the service layer and the associated RESTful services API.
 
+## Prerequisites
+
+- Java 7 JDK - for building the services layer
+- [MongoDB](http://www.mongodb.org) (version 2.4) - to store registrations and user accounts
+- [ElasticSearch](http://www.elasticsearch.org) (version 1.4.1) - for full-text search
+
 ## Installation
 
 Clone the repository, copying the project into a working directory:
@@ -17,13 +23,6 @@ Clone the repository, copying the project into a working directory:
 ```bash
 git clone https://github.com/DEFRA/waste-carriers-service.git
 ```
-
-## Prerequisites
-
-- Java 7 JDK - for building the services layer
-- [Maven](http://maven.apache.org/) (version 3.0 or above) - for building the services layer
-- [MongoDB](http://www.mongodb.org) (version 2.4) - to store registrations and user accounts
-- [ElasticSearch](http://www.elasticsearch.org) (version 1.4.1) - for full-text search
 
 ## Dependents
 
@@ -46,11 +45,15 @@ Alternatively, you can create another local configuration file with your values 
 
 ## Build
 
-Using Maven
+The project uses [Maven](https://maven.apache.org/) as its build tool, and [Maven Wrapper](https://github.com/takari/maven-wrapper) to handle getting a version of Maven on your machine to build the project.
+
+So to build the project call
 
 ```bash
-mvn clean package
+./mvnw clean package
 ```
+
+The normal command on a machine where Maven is installed is `mvn clean package`.
 
 ## Startup
 
