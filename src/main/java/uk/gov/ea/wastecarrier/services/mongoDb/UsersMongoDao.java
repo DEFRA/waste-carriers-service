@@ -70,11 +70,6 @@ public class UsersMongoDao
             throw new WebApplicationException(Status.SERVICE_UNAVAILABLE);
         }
 
-        if (foundUser == null)
-        {
-            log.info("Failed to find user with email: " + email);
-            throw new WebApplicationException(Status.NO_CONTENT);
-        }
         return foundUser;
 	}
 }
