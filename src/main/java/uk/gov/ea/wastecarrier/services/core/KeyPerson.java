@@ -1,5 +1,6 @@
 package uk.gov.ea.wastecarrier.services.core;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -9,6 +10,7 @@ import java.util.Date;
  * Simple POJO for containing details on key persons
  * e.g. directors and partners.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class KeyPerson {
 
     public enum PersonType {

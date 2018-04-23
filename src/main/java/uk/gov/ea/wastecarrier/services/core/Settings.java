@@ -1,10 +1,12 @@
 package uk.gov.ea.wastecarrier.services.core;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import uk.gov.ea.wastecarrier.services.SettingsConfiguration;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Settings {
 	
 	public final static String COLLECTION_SINGULAR_NAME = "setting";
