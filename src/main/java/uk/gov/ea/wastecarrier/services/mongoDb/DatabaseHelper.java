@@ -1,13 +1,12 @@
 package uk.gov.ea.wastecarrier.services.mongoDb;
 
-import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.mongodb.*;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 
-import com.mongodb.DB;
-import com.mongodb.MongoClient;
+import com.mongodb.client.MongoDatabase;
 
 /**
  * This class is intended to make the various database connections and operations simple by handling the database 
@@ -48,10 +47,8 @@ public class DatabaseHelper
 			// Use existing connection
 			try
 			{
-				// Check database status
-				//getMongoClient().getDatabaseNames();
 				// Use existing connection
-				log.logp(Level.FINE, DatabaseHelper.class.getName(), "getConnection", "Returning cachced connection");
+				log.logp(Level.FINE, DatabaseHelper.class.getName(), "getConnection", "Returning cached connection");
 				return db;
 			}
 			catch (Exception e)
@@ -68,9 +65,7 @@ public class DatabaseHelper
 			try
 			{
 				// Get Specific database
-				db = mc.getDB( dbConfig.getName() );
-				// Authenticate connection
-				db.authenticate(dbConfig.getUsername(), dbConfig.getPassword().toCharArray());
+				db = mc.getDB(dbConfig.getName());
 			}
 			catch (Exception e)
 			{
@@ -95,15 +90,17 @@ public class DatabaseHelper
 		}
 		else
 		{
-			try
-			{
-				setMongoClient(new MongoClient( dbConfig.getHost() , dbConfig.getPort() ));
-			}
-			catch (UnknownHostException e)
-			{
-				log.severe("Cannot find Host: " + e.getMessage());
-				mongoClient = null;
-			}
+            MongoCredential credential = MongoCredential.createCredential(
+                    dbConfig.getUsername(),
+                    dbConfig.getName(),
+                    dbConfig.getPassword().toCharArray()
+            );
+            ServerAddress server = new ServerAddress(dbConfig.getHost(), dbConfig.getPort());
+            MongoClientOptions options = MongoClientOptions.builder().build();
+            MongoClient client = new MongoClient(server, credential, options);
+
+            setMongoClient(client);
+
 			return mongoClient;
 		}
 	}

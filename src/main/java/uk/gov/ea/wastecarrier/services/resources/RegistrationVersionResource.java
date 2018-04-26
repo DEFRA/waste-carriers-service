@@ -12,9 +12,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.codahale.metrics.annotation.Timed;
 import uk.gov.ea.wastecarrier.services.core.Version;
-
-import com.yammer.metrics.annotation.Timed;
 
 /**
  * Reports the current version.

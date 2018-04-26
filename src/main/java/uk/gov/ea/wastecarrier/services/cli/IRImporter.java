@@ -1,8 +1,5 @@
 package uk.gov.ea.wastecarrier.services.cli;
 
-import com.yammer.dropwizard.cli.ConfiguredCommand;
-import com.yammer.dropwizard.config.Bootstrap;
-
 import java.io.*;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
@@ -15,7 +12,9 @@ import java.util.TimeZone;
 import java.util.UUID;
 
 import com.mongodb.DB;
-import net.vz.mongodb.jackson.JacksonDBCollection;
+import io.dropwizard.cli.ConfiguredCommand;
+import io.dropwizard.setup.Bootstrap;
+import org.mongojack.JacksonDBCollection;
 
 import au.com.bytecode.opencsv.CSVReader;
 import net.sourceforge.argparse4j.impl.Arguments;
@@ -182,10 +181,6 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
         if (db == null)
         {
             throw new RuntimeException("Error: No database connection available; aborting.");
-        }
-        if (!db.isAuthenticated())
-        {
-            throw new RuntimeException("Error: Could not authenticate against database; aborting.");
         }
         
         // Create MONGOJACK connection to the database.

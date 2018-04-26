@@ -8,15 +8,16 @@ import java.util.logging.Logger;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
-import net.vz.mongodb.jackson.DBQuery;
-import net.vz.mongodb.jackson.JacksonDBCollection;
-import net.vz.mongodb.jackson.WriteResult;
-
-import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
+import com.mongodb.BasicDBObject;
 
+import org.mongojack.DBQuery;
+import org.mongojack.JacksonDBCollection;
+import org.mongojack.WriteResult;
+
+import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 
 /**
@@ -34,21 +35,13 @@ public class RegistrationsMongoDao
 	private DatabaseHelper databaseHelper;
 	
 	/**
-	 * Default constructor.
-	 */
-	public RegistrationsMongoDao()
-	{
-		log.fine("Entering empty DAO constructor");
-	}
-	
-	/**
 	 * Constructor with arguments
-	 * @param databaseHelper the DatabaseHelper
+	 * @param database the DatabaseConfiguration
 	 */
-	public RegistrationsMongoDao(DatabaseHelper databaseHelper)
+	public RegistrationsMongoDao(DatabaseConfiguration database)
 	{
 		log.fine("Constructing DAO with databaseHelper.");
-		this.databaseHelper = databaseHelper;
+		this.databaseHelper = new DatabaseHelper(database);
 	}
 	
 	
@@ -66,11 +59,6 @@ public class RegistrationsMongoDao
 		DB db = databaseHelper.getConnection();
 		if (db != null)
 		{
-			if (!db.isAuthenticated())
-			{
-				throw new WebApplicationException(Status.FORBIDDEN);
-			}
-			
 			// Create MONGOJACK connection to the database
 			JacksonDBCollection<Registration, String> registrations = JacksonDBCollection.wrap(
 					db.getCollection(Registration.COLLECTION_NAME), Registration.class, String.class);
@@ -102,12 +90,6 @@ public class RegistrationsMongoDao
 		DB db = databaseHelper.getConnection();
 		if (db != null)
 		{
-			if (!db.isAuthenticated())
-			{
-				log.severe("Find registration - Could not authenticate against MongoDB!");
-				throw new WebApplicationException(Status.FORBIDDEN);
-			}
-
 			// Create MONGOJACK connection to the database
 			JacksonDBCollection<Registration, String> registrations = JacksonDBCollection.wrap(
 					db.getCollection(Registration.COLLECTION_NAME),
@@ -151,12 +133,6 @@ public class RegistrationsMongoDao
 		DB db = databaseHelper.getConnection();
 		if (db != null)
 		{
-			if (!db.isAuthenticated())
-			{
-				log.severe("Find registration with original reg number - Could not authenticate against MongoDB!");
-				throw new WebApplicationException(Status.FORBIDDEN);
-			}
-
 			// Create MONGOJACK connection to the database
 			JacksonDBCollection<Registration, String> registrations = JacksonDBCollection.wrap(
 					db.getCollection(Registration.COLLECTION_NAME),
@@ -202,15 +178,9 @@ public class RegistrationsMongoDao
     	log.info("Retrieving registration  with id = " + id);
     	
     	// Use id to lookup record in database return registration details
-    	DB db = databaseHelper.getConnection();
+		DB db = databaseHelper.getConnection();
 		if (db != null)
 		{	
-			if (!db.isAuthenticated())
-			{
-				log.severe("Get registration - Could not authenticate against MongoDB!");
-				throw new WebApplicationException(Status.FORBIDDEN);
-			}
-			
 			// Create MONGOJACK connection to the database
 			JacksonDBCollection<Registration, String> registrations = JacksonDBCollection.wrap(
 					db.getCollection(Registration.COLLECTION_NAME), Registration.class, String.class);
@@ -239,15 +209,9 @@ public class RegistrationsMongoDao
     	log.info("Updating registration  with id = " + reg.getId());
     	
     	// Use id to lookup record in database return registration details
-    	DB db = databaseHelper.getConnection();
+		DB db = databaseHelper.getConnection();
 		if (db != null)
 		{	
-			if (!db.isAuthenticated())
-			{
-				log.severe("Update registration - Could not authenticate against MongoDB!");
-				throw new WebApplicationException(Status.FORBIDDEN);
-			}
-			
 			// Create MONGOJACK connection to the database
 			JacksonDBCollection<Registration, String> registrations = JacksonDBCollection.wrap(
 					db.getCollection(Registration.COLLECTION_NAME), Registration.class, String.class);
@@ -255,28 +219,19 @@ public class RegistrationsMongoDao
 			// If object found
 			WriteResult<Registration, String> result = registrations.updateById(reg.getId(), reg);
 			log.fine("Found result: '" + result + "' " );
-			
-			if (!String.valueOf("").equals(result.getError()))
-			{
-				// did not error, so continue
-				try
-				{
-					// Make a second request for the updated full registration details to be returned
-					Registration savedObject = registrations.findOneById(reg.getId());
-					
-					return savedObject;
-				}
-				catch (IllegalArgumentException e)
-				{
-					log.severe("Caught exception: " + e.getMessage() + " - Cannot find Registration ID: " + reg.getId());
-					throw new WebApplicationException(Status.NOT_FOUND);
-				}
-			}
-			else
-			{
-				log.severe("Error while updating registration with ID " + reg.getId() + " in MongoDB. Result error:" + result.getError());
-				throw new WebApplicationException(Status.NOT_MODIFIED);
-			}
+
+            try
+            {
+                // Make a second request for the updated full registration details to be returned
+                Registration savedObject = registrations.findOneById(reg.getId());
+
+                return savedObject;
+            }
+            catch (IllegalArgumentException e)
+            {
+                log.severe("Caught exception: " + e.getMessage() + " - Cannot find Registration ID: " + reg.getId());
+                throw new WebApplicationException(Status.NOT_FOUND);
+            }
 			
 		}
 		else
@@ -293,22 +248,11 @@ public class RegistrationsMongoDao
 	 */
 	public long getNumberOfRegistrationsTotal() {
 		log.info("Getting total number of registrations");
-		long count = getRegistrationsCollection().getCount();
+		long count = getRegistrationsCollection().count();
 		log.info("The total number of registrations is: " + count);
 		return count;
 	}
 
-	/**
-	 * 
-	 * @return the number of pending registrations in the database.
-	 */
-	public long getNumberOfRegistrationsPending() {
-		log.info("Getting number of pending registrations");
-		DBObject query = new BasicDBObject("metaData.status", "PENDING");
-		long count = getRegistrationsCollection().getCount(query);
-		log.info("The number of pending registrations is: " + count);
-		return count;
-	}
 	
 	/**
 	 * Ensure that the indexes have been defined.
@@ -321,10 +265,10 @@ public class RegistrationsMongoDao
 	 */
 	public void ensureIndexes() {
 		log.info("Ensuring registration indexes...");
-		DBObject keys = new BasicDBObject("uuid", 1);
-		DBObject options = new BasicDBObject("unique", true).append("sparse", true);
+        DBObject keys = new BasicDBObject("uuid", 1);
+        DBObject options = new BasicDBObject("unique", true).append("sparse", true);
 
-		getRegistrationsCollection().ensureIndex(keys, options);
+		getRegistrationsCollection().createIndex(keys, options);
 		log.info("Ensured registration indexes.");
 	}
 	

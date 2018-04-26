@@ -10,8 +10,8 @@ import org.quartz.JobKey;
 import com.mongodb.DB;
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
-import net.vz.mongodb.jackson.JacksonDBCollection;
-import net.vz.mongodb.jackson.WriteResult;
+import org.mongojack.JacksonDBCollection;
+import org.mongojack.WriteResult;
 
 import java.io.PrintWriter;
 import java.util.Date;
@@ -134,10 +134,6 @@ public class RegistrationStatusJob implements Job
             {
                 throw new RuntimeException("Error: No database connection available; aborting.");
             }
-            if (!db.isAuthenticated())
-            {
-                throw new RuntimeException("Error: Could not authenticate against database; aborting.");
-            }
             
             // Get access to the Registrations document collection.
             JacksonDBCollection<Registration, String> registrations = JacksonDBCollection.wrap(
@@ -200,17 +196,17 @@ public class RegistrationStatusJob implements Job
         BasicDBObject update = new BasicDBObject("$set", fieldsToSet);
         
         // Expire all relevant registrations.
-        WriteResult<Registration, String> result = registrations.updateMulti(query, update);
-        
-        // Check for errors.
-        String updateError = result.getError();
-        if (updateError != null)
-        {
-            log.severe(String.format("MongoJack error expiring registrations: %s", updateError));
+        WriteResult<Registration, String> result = null;
+        try {
+            result = registrations.updateMulti(query, update);
+        } catch (Exception e) {
+            log.severe(String.format("MongoJack error expiring registrations: %s", e.getMessage()));
         }
         
         // Handle metrics.
-        expiredCount = result.getN();
+        if (result != null) {
+            expiredCount = result.getN();
+        }
         log.info(String.format("Number of registrations expired: %d", expiredCount));
     }
 }

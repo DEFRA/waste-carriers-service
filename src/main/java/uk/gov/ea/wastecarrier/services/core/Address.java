@@ -1,8 +1,8 @@
 package uk.gov.ea.wastecarrier.services.core;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 /**
  * Address represents any one of the addresses enterable into the system

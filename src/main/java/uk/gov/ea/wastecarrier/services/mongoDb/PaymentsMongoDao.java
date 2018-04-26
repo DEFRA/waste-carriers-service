@@ -5,15 +5,16 @@ import java.util.logging.Logger;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
-import net.vz.mongodb.jackson.DBUpdate;
-import net.vz.mongodb.jackson.JacksonDBCollection;
-import net.vz.mongodb.jackson.WriteResult;
+import com.mongodb.DB;
+
+import org.mongojack.DBUpdate;
+import org.mongojack.JacksonDBCollection;
+import org.mongojack.WriteResult;
+
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.core.FinanceDetails;
 import uk.gov.ea.wastecarrier.services.core.Payment;
 import uk.gov.ea.wastecarrier.services.core.Registration;
-
-import com.mongodb.DB;
 
 /**
  * Data access operations for registration payments.
@@ -29,7 +30,7 @@ public class PaymentsMongoDao
     
     /**
      * Constructor with arguments
-     * @param databaseHelper the DatabaseHelper
+     * @param database the DatabaseConfiguration
      */
     public PaymentsMongoDao(DatabaseConfiguration database)
     {
@@ -52,10 +53,6 @@ public class PaymentsMongoDao
         {
             log.severe("Could not establish database connection to MongoDB! Check the database is running");
             throw new WebApplicationException(Status.SERVICE_UNAVAILABLE);
-        }
-        if (!db.isAuthenticated())
-        {
-            throw new WebApplicationException(Status.FORBIDDEN);
         }
         
         /*
@@ -89,10 +86,6 @@ public class PaymentsMongoDao
             log.severe("Could not establish database connection to MongoDB! Check the database is running");
             throw new WebApplicationException(Status.SERVICE_UNAVAILABLE);
         }
-        if (!db.isAuthenticated())
-        {
-            throw new WebApplicationException(Status.FORBIDDEN);
-        }
         
         /*
          * Create MONGOJACK connection to the database
@@ -114,16 +107,8 @@ public class PaymentsMongoDao
          */
         WriteResult<Registration, String> result = registrations.updateById(registrationId,
                 DBUpdate.push(FinanceDetails.COLLECTION_NAME + "." + Payment.COLLECTION_NAME, payment));
-        
-        if (result.getError() == null)
-        {
-            return payment;
-        }
-        else
-        {
-            log.severe("Error occured while updating registration with a payment, " + result.getError());
-            throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
-        }
+
+        return payment;
     }
 
     public void deletePayment(Payment resultPayment)

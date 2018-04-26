@@ -1,12 +1,11 @@
 package uk.gov.ea.wastecarrier.services.tasks;
 
-import com.yammer.dropwizard.tasks.Task;
-import static com.yammer.dropwizard.testing.JsonHelpers.asJson;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMultimap;
 import com.mongodb.DB;
-import net.vz.mongodb.jackson.DBCursor;
-import net.vz.mongodb.jackson.JacksonDBCollection;
+import io.dropwizard.servlets.tasks.Task;
+import org.mongojack.DBCursor;
+import org.mongojack.JacksonDBCollection;
 
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
@@ -51,6 +50,8 @@ public class Indexer extends Task
     // Configuration set at start-up.
     private final DatabaseHelper databaseHelper;
     private final ElasticSearchConfiguration elasticSearch;
+
+    private static final ObjectMapper objectMapper = new ObjectMapper();
     
     // Standard logger.
     private static Logger log = Logger.getLogger(Indexer.class.getName());
@@ -114,11 +115,6 @@ public class Indexer extends Task
                 noErrors = false;
                 outputAndLogMessage(Level.SEVERE, out, "Error: No database connection available; aborting.");
             }
-            if (noErrors && !db.isAuthenticated())
-            {
-                noErrors = false;
-                outputAndLogMessage(Level.SEVERE, out, "Error: Could not authenticate against database; aborting.");
-            }
             
             // Start by completely deleting the old index.
             if (noErrors && !deleteElasticSearchRegistrationsIndex(esClient, out))
@@ -148,7 +144,7 @@ public class Indexer extends Task
                     try
                     {
                         esClient.prepareIndex(Registration.COLLECTION_NAME, Registration.COLLECTION_SINGULAR_NAME, registration.getId())
-                                .setSource(asJson(registration))
+                                .setSource(objectMapper.writeValueAsString(registration))
                                 .execute()
                                 .actionGet();
                         successCount++;
@@ -311,7 +307,7 @@ public class Indexer extends Task
         IndexResponse indexResponse = null;
         try {
             indexResponse = client.prepareIndex(Registration.COLLECTION_NAME, Registration.COLLECTION_SINGULAR_NAME, reg.getId())
-                    .setSource(asJson(reg)).execute().actionGet();
+                    .setSource(objectMapper.writeValueAsString(reg)).execute().actionGet();
             log.info("indexResponse: id = " + indexResponse.getId());
             log.info("indexResponse: version = " + indexResponse.getVersion());
         } catch (ElasticsearchException e) {

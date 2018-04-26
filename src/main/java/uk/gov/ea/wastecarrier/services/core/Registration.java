@@ -1,11 +1,11 @@
 package uk.gov.ea.wastecarrier.services.core;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import net.vz.mongodb.jackson.Id;
-import net.vz.mongodb.jackson.ObjectId;
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.mongojack.Id;
+import org.mongojack.ObjectId;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.Valid;

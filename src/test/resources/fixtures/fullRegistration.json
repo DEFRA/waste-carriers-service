@@ -18,6 +18,15 @@
   "position":"Owner",
   "phoneNumber":"01179345400",
   "contactEmail":"info@example.com",
+  "accountEmail":"jane@example.com",
+  "declaredConvictions":"no",
+  "declaration":"on",
+  "accessCode":"ABCDEF",
+  "originalRegistrationNumber":"OLDREG123",
+  "originalDateExpiry":1437994800000,
+  "renewalRequested": "false",
+  "reg_uuid": "1234567890",
+  "company_no":"12345678",
   "addresses": [{
     "uprn":"340116",
     "addressType":"REGISTERED",
@@ -63,17 +72,6 @@
     "firstName":"Jane",
     "lastName":"Smith"
   }],
-  "accountEmail":"jane@example.com",
-  "declaredConvictions":"no",
-  "declaration":"on",
-  "accessCode":"ABCDEF",
-  "expires_on":1512000000000,
-  "originalRegistrationNumber":"OLDREG123",
-  "originalDateExpiry":1437994800000,
-  "renewalRequested": "false",
-  "conviction_sign_offs":null,
-  "reg_uuid": "1234567890",
-  "company_no":"12345678",
   "key_people":[{
     "position":"Director",
     "first_name":"John",
@@ -84,5 +82,7 @@
   "total_fee":"164",
   "registration_fee":"154",
   "copy_card_fee":"5",
-  "copy_cards":"2"
+  "copy_cards":"2",
+  "expires_on":1512000000000,
+  "conviction_sign_offs":null
 }

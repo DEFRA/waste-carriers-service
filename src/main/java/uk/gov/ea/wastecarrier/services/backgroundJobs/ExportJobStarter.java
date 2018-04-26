@@ -1,12 +1,11 @@
 package uk.gov.ea.wastecarrier.services.backgroundJobs;
 
-import com.yammer.dropwizard.tasks.Task;
-
 import java.io.PrintWriter;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
 import com.google.common.collect.ImmutableMultimap;
+import io.dropwizard.servlets.tasks.Task;
 
 /**
  * DropWizard task that allows the background Export Job to be started manually

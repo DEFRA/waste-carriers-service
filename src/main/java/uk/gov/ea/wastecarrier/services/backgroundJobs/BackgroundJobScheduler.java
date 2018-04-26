@@ -1,7 +1,6 @@
 package uk.gov.ea.wastecarrier.services.backgroundJobs;
 
-import com.yammer.dropwizard.lifecycle.Managed;
-
+import io.dropwizard.lifecycle.Managed;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.JobDataMap;

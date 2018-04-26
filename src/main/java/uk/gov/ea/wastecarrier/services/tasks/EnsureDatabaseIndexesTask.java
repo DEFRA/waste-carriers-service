@@ -6,10 +6,10 @@ package uk.gov.ea.wastecarrier.services.tasks;
 import java.io.PrintWriter;
 import java.util.logging.Logger;
 
+import io.dropwizard.servlets.tasks.Task;
 import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationsMongoDao;
 
 import com.google.common.collect.ImmutableMultimap;
-import com.yammer.dropwizard.tasks.Task;
 
 /**
  * DropWizard task to ensure that indexes have been defined on the MongoDb database collections.
@@ -34,9 +34,6 @@ public class EnsureDatabaseIndexesTask extends Task {
 		this.dao = dao;
 	}
 
-	/**
-	 * @see com.yammer.dropwizard.tasks.Task#execute(com.google.common.collect.ImmutableMultimap, java.io.PrintWriter)
-	 */
 	@Override
 	public void execute(ImmutableMultimap<String, String> parameters,
 			PrintWriter output) throws Exception {

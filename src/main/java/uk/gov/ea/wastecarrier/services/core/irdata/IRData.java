@@ -6,10 +6,10 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.logging.Logger;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import net.vz.mongodb.jackson.Id;
-import net.vz.mongodb.jackson.ObjectId;
+import org.mongojack.Id;
+import org.mongojack.ObjectId;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

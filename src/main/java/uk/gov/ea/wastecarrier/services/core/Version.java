@@ -2,7 +2,7 @@ package uk.gov.ea.wastecarrier.services.core;
 
 import java.util.logging.Logger;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonProperty;

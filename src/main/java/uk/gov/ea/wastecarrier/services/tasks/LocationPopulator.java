@@ -2,10 +2,9 @@ package uk.gov.ea.wastecarrier.services.tasks;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.mongodb.DB;
-import com.yammer.dropwizard.tasks.Task;
-import net.vz.mongodb.jackson.DBCursor;
-import net.vz.mongodb.jackson.JacksonDBCollection;
-import net.vz.mongodb.jackson.WriteResult;
+import io.dropwizard.servlets.tasks.Task;
+import org.mongojack.DBCursor;
+import org.mongojack.JacksonDBCollection;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.core.Address;
 import uk.gov.ea.wastecarrier.services.core.Location;
@@ -16,7 +15,6 @@ import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 import java.io.PrintWriter;
-import java.util.Iterator;
 import java.util.logging.Logger;
 
 /**
@@ -59,11 +57,6 @@ public class LocationPopulator extends Task
         // Get All Registration records from the database
         DB db = this.databaseHelper.getConnection();
         if (db != null) {
-
-            if (!db.isAuthenticated()) {
-                throw new RuntimeException("Error: Could not authenticate user");
-            }
-
             // Create MONGOJACK connection to the database
             JacksonDBCollection<Registration, String> registrations = JacksonDBCollection.wrap(
                     db.getCollection(Registration.COLLECTION_NAME), Registration.class, String.class);
@@ -100,16 +93,13 @@ public class LocationPopulator extends Task
                     }
 
                     // Update database with XY information
-                    WriteResult<Registration, String> result = registrations.updateById(r.getId(), r);
-
-                    if (String.valueOf("").equals(result.getError()))
-                    {
+                    try {
+                        registrations.updateById(r.getId(), r);
+                    } catch (Exception e) {
                         throw new WebApplicationException(Status.NOT_MODIFIED);
                     }
-                    else
-                    {
-                        log.info(String.format("Updated Registration id: %s", r.getId()));
-                    }
+
+                    log.info(String.format("Updated Registration id: %s", r.getId()));
                 }
                 else
                 {

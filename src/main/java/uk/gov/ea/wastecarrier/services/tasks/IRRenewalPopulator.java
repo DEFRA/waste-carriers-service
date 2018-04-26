@@ -2,7 +2,7 @@ package uk.gov.ea.wastecarrier.services.tasks;
 
 import au.com.bytecode.opencsv.CSVReader;
 import com.google.common.collect.ImmutableMultimap;
-import com.yammer.dropwizard.tasks.Task;
+import io.dropwizard.servlets.tasks.Task;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.IRConfiguration;
 import uk.gov.ea.wastecarrier.services.core.irdata.*;
@@ -10,7 +10,6 @@ import uk.gov.ea.wastecarrier.services.mongoDb.IRRenewalMongoDao;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.logging.Logger;
 import java.util.Date;
 import java.text.SimpleDateFormat;

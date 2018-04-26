@@ -1,5 +1,7 @@
 package uk.gov.ea.wastecarrier.services.core;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -11,6 +13,7 @@ import java.util.Date;
  * Audit trail and monitoring purposes
  *
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class MetaData {
 	
     private Date dateRegistered;

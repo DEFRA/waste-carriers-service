@@ -1,16 +1,17 @@
 package uk.gov.ea.wastecarrier.services.resources;
 
+import com.codahale.metrics.annotation.Timed;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Optional;
 import com.mongodb.*;
-import com.yammer.metrics.annotation.Timed;
-import net.vz.mongodb.jackson.DBCursor;
-import net.vz.mongodb.jackson.DBQuery;
-import net.vz.mongodb.jackson.DBQuery.Query;
-import net.vz.mongodb.jackson.JacksonDBCollection;
-import net.vz.mongodb.jackson.WriteResult;
-import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
+
+import org.mongojack.DBCursor;
+import org.mongojack.DBQuery;
+import org.mongojack.DBQuery.Query;
+import org.mongojack.JacksonDBCollection;
+import org.mongojack.WriteResult;
 import org.elasticsearch.action.search.MultiSearchResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
@@ -68,7 +69,7 @@ public class RegistrationsResource
 
     /**
      *
-     * @param database
+     * @param database the DatabaseConfiguration
      */
     public RegistrationsResource(
             DatabaseConfiguration database,
@@ -77,7 +78,7 @@ public class RegistrationsResource
             String postcodeFilePath)
     {
         this.databaseHelper = new DatabaseHelper(database);
-        this.dao = new RegistrationsMongoDao(this.databaseHelper);
+        this.dao = new RegistrationsMongoDao(database);
         this.elasticSearch = elasticSearch;
         this.postcodeRegistry = new PostcodeRegistry(PostcodeRegistry.POSTCODE_FROM.FILE, postcodeFilePath);
         
@@ -106,9 +107,7 @@ public class RegistrationsResource
     @Path("/original/{registrationNumber}")
     public Registration fetchWithOriginalRegNumber(@PathParam("registrationNumber") String registrationNumber) {
 
-        Registration reg = dao.findRegistrationWithOriginalRegNumber(registrationNumber);
-
-        return reg;
+        return dao.findRegistrationWithOriginalRegNumber(registrationNumber);
     }
 
     /**
@@ -439,12 +438,6 @@ public class RegistrationsResource
             DB db = databaseHelper.getConnection();
             if (db != null)
             {
-                if (!db.isAuthenticated())
-                {
-                    log.severe("Database not authenticated, access forbidden");
-                    throw new WebApplicationException(Status.UNAUTHORIZED);
-                }
-                
                 // Database available
                 if (name.isPresent() || postcode.isPresent() || account.isPresent())
                 {
@@ -567,11 +560,6 @@ public class RegistrationsResource
         DB db = databaseHelper.getConnection();
         if (db != null)
         {
-            if (!db.isAuthenticated())
-            {
-                throw new WebApplicationException(Status.FORBIDDEN);
-            }
-            
             if (!reg.validateUuid())
             {
                 log.severe("New registration to be inserted is missing a uuid - preventing accidental duplicate inserts.");
@@ -682,7 +670,9 @@ public class RegistrationsResource
     private void updateRegistrationIdentifier(Registration reg, DB db)
     {
         DBCollection col = db.getCollection(Registration.COUNTERS_COLLECTION_NAME);
-        DBObject query = DBQuery.is("_id", "regid");
+        DBObject query = new BasicDBObject();
+        query.put("_id", "regid");
+
         BasicDBObject incDocument =
                 new BasicDBObject().append("$inc",
                 new BasicDBObject().append("seq", 1));
@@ -695,12 +685,7 @@ public class RegistrationsResource
                     new BasicDBObject().append("_id", "regid")
                                        .append("seq", 1);
             com.mongodb.WriteResult wr = col.insert(newDocument);
-            if (wr.getError() != null)
-            {
-                // Counters collection cannot be found
-                log.severe("Cannot create initial Counters table");
-                throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
-            }
+
             // Re-try find and modify
             dbObj = col.findAndModify(query, incDocument);
         }

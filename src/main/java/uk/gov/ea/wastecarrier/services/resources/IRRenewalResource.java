@@ -1,5 +1,6 @@
 package uk.gov.ea.wastecarrier.services.resources;
 
+import com.codahale.metrics.annotation.Timed;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.core.Registration.RegistrationTier;
@@ -11,7 +12,6 @@ import uk.gov.ea.wastecarrier.services.core.irdata.PublicBodyIRData;
 import uk.gov.ea.wastecarrier.services.mongoDb.IRRenewalMongoDao;
 
 import com.google.common.base.Optional;
-import com.yammer.metrics.annotation.Timed;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -25,8 +25,8 @@ import javax.ws.rs.core.Response.Status;
 import java.util.logging.Logger;
 
 import com.mongodb.DB;
-import net.vz.mongodb.jackson.DBQuery;
-import net.vz.mongodb.jackson.JacksonDBCollection;
+import org.mongojack.DBQuery;
+import org.mongojack.JacksonDBCollection;
 
 import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
 
@@ -188,10 +188,6 @@ public class IRRenewalResource
             if (db == null)
             {
                 throw new RuntimeException("No access to Mongo database");
-            }
-            if (!db.isAuthenticated())
-            {
-                throw new RuntimeException("Not authenticated against database");
             }
 
             // Create MONGOJACK connection to the Registrations Mongo document collection.

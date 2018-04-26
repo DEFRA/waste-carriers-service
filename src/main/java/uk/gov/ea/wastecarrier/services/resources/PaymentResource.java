@@ -8,7 +8,6 @@ import uk.gov.ea.wastecarrier.services.core.Payment;
 import uk.gov.ea.wastecarrier.services.core.Settings;
 import uk.gov.ea.wastecarrier.services.core.User;
 
-import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.PaymentHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.PaymentsMongoDao;
 import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationsMongoDao;
@@ -54,7 +53,7 @@ public class PaymentResource
 			SettingsConfiguration settingConfig,ElasticSearchConfiguration elasticSearch)
 	{
 		dao = new PaymentsMongoDao(database);
-		regDao = new RegistrationsMongoDao(new DatabaseHelper(database));
+		regDao = new RegistrationsMongoDao(database);
 		paymentHelper = new PaymentHelper(new Settings(settingConfig));
 		esConfig = elasticSearch;
 		userDao = new UsersMongoDao(userDatabase);

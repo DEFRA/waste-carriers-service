@@ -12,8 +12,8 @@ This application and its associated Maven and Eclipse project implement the serv
 
 ## Prerequisites
 
-- Java 7 JDK - for building the services layer
-- [MongoDB](http://www.mongodb.org) (version 2.4) - to store registrations and user accounts
+- Java 8 JDK - for building the services layer
+- [MongoDB](http://www.mongodb.org) (version 3.6) - to store registrations and user accounts
 - [ElasticSearch](http://www.elasticsearch.org) (version 1.4.1) - for full-text search
 
 ## Installation
@@ -42,6 +42,10 @@ export WCRS_SERVICES_DB_PASSWD="<your-mongo-password>"
 ```
 
 Alternatively, you can create another local configuration file with your values in it, and refer to this file when starting up the service.
+
+```bash
+java -jar target/waste-exemplar-services*.jar server configuration_local.yml
+```
 
 ## Build
 
@@ -75,9 +79,14 @@ Once the application server is started you should be able to access the services
 
 ## Run Tests
 
+The project doesn't have an extensive suite of unit tests. The tests that do exist are specifically to check that the service is communicating with MongoDb. So they are not run automatically during a maven build (`mvn package`) but can be called manually. Before running the tests though you need to have sourced some environment variables. Unfortunately the unit tests can't read from the config file so key details about MongoDb need to be provided as environment variables.
+
 ```bash
+source test_env_vars.sh
 mvn test
 ```
+
+Once you've run the environment variable script, you won't need to do it again until you open a new terminal session.
 
 ## Postcode data
 
