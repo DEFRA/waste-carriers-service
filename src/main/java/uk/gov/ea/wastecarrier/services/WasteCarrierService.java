@@ -63,7 +63,7 @@ public class WasteCarrierService extends Application<WasteCarrierConfiguration>
 
     @Override
     public String getName() {
-        return "wastecarrier-services";
+        return "waste-carriers-service";
     }
 
     @Override
