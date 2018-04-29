@@ -14,15 +14,11 @@ logging:
       timeZone: UTC
     # Setting for logging to file
     - type: file
-      # The lowest level of events to write to the file.
-      threshold: INFO
       # The filename where current events are logged.
-      currentLogFilename: run.log
-      # Whether or not to archive old events in separate files.
-      archive: true
+      currentLogFilename: ${WCRS_SERVICES_LOGFILE:-/srv/java/waste-carriers-service/logs/run.log}
       # The filename pattern for archived files. If the pattern ends with
       # .gz or .zip, files will be compressed as they are archived.
-      archivedLogFilenamePattern: run-archive-%d.log.gz
+      archivedLogFilenamePattern: ${WCRS_SERVICES_LOGFILE_PATTERN:-/srv/java/waste-carriers-service/logs/run-archive-%d.log.gz}
       # The number of archived files to keep.
       archivedFileCount: 5
       # The time zone to which event timestamps will be converted.
@@ -35,52 +31,52 @@ server:
   # make the OS use an arbitrary unused port.
   applicationConnectors:
     - type: http
-      port: WCRS_SERVICES_PORT
+      port: 8004
   # The port on which the HTTP server listens for administrative
   # requests. Subject to the same limitations as "port". If this is
   # set to the same value as port, the admin routes will be mounted
   # under /admin.
   adminConnectors:
     - type: http
-      port: WCRS_SERVICES_ADMIN_PORT
+      port: 8005
 
 # added database connection properties, DatabaseConfiguration
 database:
-  host: WCRS_REGSDB_HOST
-  port: WCRS_REGSDB_PORT1
-  name: WCRS_REGSDB_NAME
-  username: WCRS_REGSDB_USERNAME
-  password: WCRS_REGSDB_PASSWORD
+  host: ${WCRS_REGSDB_HOST:-localhost}
+  port: ${WCRS_REGSDB_PORT1:-27017}
+  name: ${WCRS_REGSDB_NAME:-waste-carriers}
+  username: ${WCRS_REGSDB_USERNAME:-mongoUser}
+  password: ${WCRS_REGSDB_PASSWORD:-password1234}
 
 # added user database connection properties, DatabaseConfiguration
 userDatabase:
-  host: WCRS_USERSDB_HOST
-  port: WCRS_USERSDB_PORT1
-  name: WCRS_USERSDB_NAME
-  username: WCRS_USERSDB_USERNAME
-  password: WCRS_USERSDB_PASSWORD
+  host: ${WCRS_USERSDB_HOST:-localhost}
+  port: ${WCRS_USERSDB_PORT1:-27017}
+  name: ${WCRS_USERSDB_NAME:-waste-carriers-users}
+  username: ${WCRS_USERSDB_USERNAME:-mongoUser}
+  password: ${WCRS_USERSDB_PASSWORD:-password1234}
 
 elasticSearch:
-  host: WCRS_ELASDB_HOST
-  port: WCRS_ELASDB_PORT_JAVA
+  host: ${WCRS_ELASDB_HOST:-localhost}
+  port: ${WCRS_ELASDB_PORT_JAVA:-9300}
   # Can also specify a size for the maximum number of results to return in a given query
   # By default the 100 is used, but can be overridden here if specified
   #size: 100
 
 settings:
   # registration period (in years)
-  registrationPeriod: WCRS_REGISTRATION_EXPIRES_AFTER
+  registrationPeriod: ${WCRS_REGISTRATION_EXPIRES_AFTER:-3}
   # renew period (in months)
-  registrationRenewPeriod: WCRS_REGISTRATION_RENEWAL_WINDOW
+  registrationRenewPeriod: ${WCRS_REGISTRATION_RENEWAL_WINDOW:-3}
 
 airbrake:
-  url: WCRS_SERVICES_AIRBRAKE_URL
-  apiKey: WCRS_SERVICES_AIRBRAKE_API_KEY
-  environmentName: WCRS_SERVICES_AIRBRAKE_ENVNAME
+  url: ${WCRS_SERVICES_AIRBRAKE_URL}
+  apiKey: ${WCRS_SERVICES_AIRBRAKE_API_KEY}
+  environmentName: ${WCRS_SERVICES_AIRBRAKE_ENVNAME}
   # The 'threshold' here can take values: OFF, ERROR, WARN, INFO, DEBUG, TRACE
   # or ALL.  If no value is provided, or the value is unrecognised, by default
   # we only forward messages at ERROR severity.
-  threshold: WCRS_SERVICES_AIRBRAKE_THRESHOLD 
+  threshold: ${WCRS_SERVICES_AIRBRAKE_THRESHOLD:-ERROR}
   # Other values you can set for Airbrake integration, but not required:
   # enabled: true or false (default = true)
   # exceptionsOnly: true or false (default = false)
@@ -88,24 +84,24 @@ airbrake:
 # IrRenewals brings a very limitted set of data into Waste Carriers to allow
 # IR customers to "renew" in the service.
 irRenewals:
-  irFolderPath: WCRS_SERVICES_IR_RENEWAL_FOLDERPATH
+  irFolderPath: ${WCRS_SERVICES_IR_RENEWAL_FOLDERPATH:-/srv/java/waste-carriers-service/irdata/}
 
 exportJob:
   # File to use for EPR exports (note: file, not directory).
-  eprExportFile: WCRS_SERVICES_EPR_EXPORT_FILE
+  eprExportFile: ${WCRS_SERVICES_EPR_EXPORT_FILE:-/srv/java/waste-carriers-service/exports/waste-carriers-epr.csv}
   # Date format to use for EPR exports.
   eprExportDateFormat: "yyyy-MM-dd"
   # Path to use for Reporting Snapshot exports (note: directory, not file).
-  reportingExportPath: WCRS_SERVICES_REPORTING_EXPORT_PATH
+  reportingExportPath: ${WCRS_SERVICES_REPORTING_EXPORT_PATH:-/srv/java/waste-carriers-service/exports}
   # Date format to use for Reporting Snapshot exports.
   reportingExportDateFormat: "yyyy-MM-dd'T'HH:mm'Z'"
   # Money format to use for Reporting Snapshot exports.
   reportingExportMoneyFormat: "0.00"
-  # Cron expression for scheduled job exectuion.  Leave empty to make the job
+  # Cron expression for scheduled job execution.  Leave empty to make the job
   # run on a manual trigger only.  Default is daily at 9pm.
-  cronExpression: WCRS_SERVICES_EXPORT_JOB_CRON_SCHEDULE
+  cronExpression: ${WCRS_SERVICES_EXPORT_JOB_CRON_SCHEDULE:-30 0/15 * * * ?}
 
 registrationStatusJob:
   # Cron expression for scheduled job exectuion.  Leave empty to make the job
   # run on a manual trigger only.  Default is daily at 8pm.
-  cronExpression: WCRS_SERVICES_STATUS_JOB_CRON_SCHEDULE
+  cronExpression: ${WCRS_SERVICES_STATUS_JOB_CRON_SCHEDULE:-0 0/15 * * * ?}
