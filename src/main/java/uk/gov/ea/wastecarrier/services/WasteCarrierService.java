@@ -3,6 +3,8 @@ package uk.gov.ea.wastecarrier.services;
 import java.io.PrintWriter;
 import java.util.logging.Logger;
 
+import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
+import io.dropwizard.configuration.SubstitutingSourceProvider;
 import org.elasticsearch.client.Client;
 
 import uk.gov.ea.wastecarrier.services.cli.IRImporter;
@@ -67,6 +69,13 @@ public class WasteCarrierService extends Application<WasteCarrierConfiguration>
     @Override
     public void initialize(Bootstrap<WasteCarrierConfiguration> bootstrap)
     {
+        bootstrap.setConfigurationSourceProvider(
+                new SubstitutingSourceProvider(
+                        bootstrap.getConfigurationSourceProvider(),
+                        new EnvironmentVariableSubstitutor(false)
+                )
+        );
+
         // Add a command to import IR registrations.
         // This can only be performed when the server is NOT running.
         bootstrap.addCommand(new IRImporter());

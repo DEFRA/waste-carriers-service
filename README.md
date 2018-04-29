@@ -31,20 +31,21 @@ The waste-carriers-frontend application, which is implemented in Ruby on Rails, 
 ## Configuration
 
 The service uses a Dropwizard configuration file (configuration.yml) which in turn refers to environment variables.
-You may want or need to set the following environment variables, e.g. in your ~/.bash_profile (if you are a Mac or Linux user):
+
+You'll need to set the following environment variables before using it. For example
 
 ```bash
-export WCRS_SERVICES_DB_HOST="localhost"
-export WCRS_SERVICES_DB_PORT=27017
-export WCRS_SERVICES_DB_NAME="waste-carriers"
-export WCRS_SERVICES_DB_USER="mongoUser"
-export WCRS_SERVICES_DB_PASSWD="<your-mongo-password>"
+export WCRS_SERVICES_AIRBRAKE_URL="https://myairbrakeinstance.example.com"
+export WCRS_SERVICES_AIRBRAKE_API_KEY="d03r78y5372a11111111111"
+export WCRS_SERVICES_AIRBRAKE_ENVNAME="pre-production"
 ```
+
+Other values in the configuration file have a default, however you can override them by setting the environment variable specified.
 
 Alternatively, you can create another local configuration file with your values in it, and refer to this file when starting up the service.
 
 ```bash
-java -jar target/waste-exemplar-services*.jar server configuration_local.yml
+java -jar target/waste-exemplar-services*.jar server my_configuration.yml
 ```
 
 ## Build
@@ -64,18 +65,18 @@ The normal command on a machine where Maven is installed is `mvn clean package`.
 Start the service by providing the name of the jar file, the command 'server', and the name of the configuration file.
 
 ```bash
-java -jar target/waste-exemplar-services*.jar server  my_configuration.yml
+java -jar target/waste-exemplar-services*.jar server  configuration.yml
 ```
 
 You can also override parameters such as https port numbers using the Java '-D' option.
 
 ```bash
-java -Ddw.http.port=9090 -Ddw.http.adminPort=9091 -jar target/waste-exemplar-services-1.1.2.jar server my_configuration.yml
+java -Ddw.http.port=8004 -Ddw.http.adminPort=8005 -jar target/waste-exemplar-services-1.1.2.jar server my_configuration.yml
 ```
 
 For more details on how to start a Dropwizard service and configuration and startup options, please see the Dropwizard documentation.
 
-Once the application server is started you should be able to access the services application in your browser on <http://localhost:9090/registrations.json>
+Once the application server is started you should be able to access the services application in your browser on <http://localhost:8004/registrations.json>
 
 ## Run Tests
 
