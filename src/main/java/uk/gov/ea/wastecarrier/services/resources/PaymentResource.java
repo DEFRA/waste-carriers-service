@@ -1,7 +1,6 @@
 package uk.gov.ea.wastecarrier.services.resources;
 
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
-import uk.gov.ea.wastecarrier.services.ElasticSearchConfiguration;
 import uk.gov.ea.wastecarrier.services.SettingsConfiguration;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.core.Payment;
@@ -12,7 +11,6 @@ import uk.gov.ea.wastecarrier.services.mongoDb.PaymentHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.PaymentsMongoDao;
 import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationsMongoDao;
 import uk.gov.ea.wastecarrier.services.mongoDb.UsersMongoDao;
-import uk.gov.ea.wastecarrier.services.tasks.Indexer;
 
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
@@ -40,7 +38,6 @@ public class PaymentResource
 	private PaymentsMongoDao dao;
 	private PaymentHelper paymentHelper;
 	private RegistrationsMongoDao regDao;
-	private ElasticSearchConfiguration esConfig;
 	private UsersMongoDao userDao;
 	
 	private Logger log = Logger.getLogger(PaymentResource.class.getName());
@@ -50,12 +47,11 @@ public class PaymentResource
 	 * @param database
 	 */
 	public PaymentResource(DatabaseConfiguration database, DatabaseConfiguration userDatabase,
-			SettingsConfiguration settingConfig,ElasticSearchConfiguration elasticSearch)
+			SettingsConfiguration settingConfig)
 	{
 		dao = new PaymentsMongoDao(database);
 		regDao = new RegistrationsMongoDao(database);
 		paymentHelper = new PaymentHelper(new Settings(settingConfig));
-		esConfig = elasticSearch;
 		userDao = new UsersMongoDao(userDatabase);
 	}
 
@@ -98,10 +94,7 @@ public class PaymentResource
 		}
 		try
 		{
-			Registration savedObject = regDao.updateRegistration(registration);
-			
-			log.info("Re-Index the updated registration in ElasticSearch...");
-			Indexer.indexRegistration(esConfig, savedObject);
+			regDao.updateRegistration(registration);
 		}
 		catch(Exception e)
 		{
