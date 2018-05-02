@@ -56,13 +56,6 @@ userDatabase:
   username: ${WCRS_USERSDB_USERNAME:-mongoUser}
   password: ${WCRS_USERSDB_PASSWORD:-password1234}
 
-elasticSearch:
-  host: ${WCRS_ELASDB_HOST:-localhost}
-  port: ${WCRS_ELASDB_PORT_JAVA:-9300}
-  # Can also specify a size for the maximum number of results to return in a given query
-  # By default the 100 is used, but can be overridden here if specified
-  #size: 100
-
 settings:
   # registration period (in years)
   registrationPeriod: ${WCRS_REGISTRATION_EXPIRES_AFTER:-3}
