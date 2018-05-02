@@ -2,7 +2,6 @@ package uk.gov.ea.wastecarrier.services.resources;
 
 import com.codahale.metrics.annotation.Timed;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
-import uk.gov.ea.wastecarrier.services.ElasticSearchConfiguration;
 import uk.gov.ea.wastecarrier.services.SettingsConfiguration;
 import uk.gov.ea.wastecarrier.services.core.MetaData;
 import uk.gov.ea.wastecarrier.services.core.Registration;
@@ -13,7 +12,6 @@ import uk.gov.ea.wastecarrier.services.mongoDb.PaymentHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationsMongoDao;
 import uk.gov.ea.wastecarrier.services.mongoDb.UsersMongoDao;
-import uk.gov.ea.wastecarrier.services.tasks.Indexer;
 
 import com.mongodb.DB;
 
@@ -29,7 +27,6 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
-import org.elasticsearch.client.Client;
 import org.mongojack.JacksonDBCollection;
 import org.mongojack.WriteResult;
 
@@ -46,9 +43,6 @@ import java.util.logging.Logger;
 public class RegistrationReadEditResource
 {
     private DatabaseHelper databaseHelper;
-    //Note: not re-using Clients, instantiating fresh clients instead.
-    //private Client esClient;
-    private ElasticSearchConfiguration esConfig;
     private RegistrationsMongoDao regDao;
     private UsersMongoDao userDao;
     private PaymentHelper paymentHelper;
@@ -57,15 +51,12 @@ public class RegistrationReadEditResource
     private Logger log = Logger.getLogger(RegistrationReadEditResource.class.getName());
 
     public RegistrationReadEditResource(
-            DatabaseConfiguration database, DatabaseConfiguration userDatabase, ElasticSearchConfiguration elasticSearch,
-            Client esClient, SettingsConfiguration settingConfig)
+            DatabaseConfiguration database, DatabaseConfiguration userDatabase, SettingsConfiguration settingConfig)
     {
         this.databaseHelper = new DatabaseHelper(database);
-        this.esConfig = elasticSearch;
         this.regDao = new RegistrationsMongoDao(database);
         this.paymentHelper = new PaymentHelper(new Settings(settingConfig));
         this.userDao = new UsersMongoDao(userDatabase);
-        //this.esClient = esClient;
     }
 
     /**
@@ -116,16 +107,9 @@ public class RegistrationReadEditResource
                 }
                 else
                 {
-                    // Remove Registration from Elastic search
-                    Registration tmpReg = new Registration();
-                    tmpReg.setId(id);
-                    Indexer.deleteElasticSearchIndex(esConfig, tmpReg);
-                    log.info("Deleted:" + id + " from Elastic Search");
-
                     log.info("Valid ID format, but Cannot find Registration for ID: " + id);
                     throw new WebApplicationException(Status.NOT_FOUND);
                 }
-
             }
             catch (IllegalArgumentException e)
             {
@@ -192,10 +176,6 @@ public class RegistrationReadEditResource
                 savedObject = registrations.findOneById(id);
                 log.fine("Found Updated Registration, Details include:- CompanyName:" + savedObject.getCompanyName());
 
-                // Perform another create index operation which should override previous index information
-                log.info("Indexing the updated registration in ElasticSearch...");
-                Indexer.indexRegistration(esConfig, savedObject);
-
                 return savedObject;
             }
             catch (IllegalArgumentException e)
@@ -245,19 +225,11 @@ public class RegistrationReadEditResource
                     registrations.removeById(id);
                     log.info("Deleted registration with ID:" + foundReg.getId() + " from MongoDB");
 
-                    // Remove Registration from Elastic search
-                    Indexer.deleteElasticSearchIndex(esConfig, foundReg);
-                    log.info("Deleted registration with ID:" + foundReg.getId() + " from Elastic Search");
                     // Operation completed
                     return null;
                 }
                 log.info("Valid ID format, but Cannot find Registration for ID: " + id);
 
-                // Also Delete from Elastic Search if not found in database
-                Registration tmpReg = new Registration();
-                tmpReg.setId(id);
-                Indexer.deleteElasticSearchIndex(esConfig, tmpReg);
-                log.info("Deleted:" + id + " from Elastic Search");
                 throw new WebApplicationException(Status.NOT_FOUND);
             }
             catch (IllegalArgumentException e)
