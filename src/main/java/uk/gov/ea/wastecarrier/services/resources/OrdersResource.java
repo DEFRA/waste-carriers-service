@@ -1,7 +1,6 @@
 package uk.gov.ea.wastecarrier.services.resources;
 
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
-import uk.gov.ea.wastecarrier.services.ElasticSearchConfiguration;
 import uk.gov.ea.wastecarrier.services.SettingsConfiguration;
 import uk.gov.ea.wastecarrier.services.core.Order;
 import uk.gov.ea.wastecarrier.services.core.Registration;
@@ -12,7 +11,6 @@ import uk.gov.ea.wastecarrier.services.mongoDb.OrdersMongoDao;
 import uk.gov.ea.wastecarrier.services.mongoDb.PaymentHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationsMongoDao;
 import uk.gov.ea.wastecarrier.services.mongoDb.UsersMongoDao;
-import uk.gov.ea.wastecarrier.services.tasks.Indexer;
 
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
@@ -39,7 +37,6 @@ public class OrdersResource
     private OrdersMongoDao dao;
     private RegistrationsMongoDao regDao;
     private UsersMongoDao userDao;
-    private ElasticSearchConfiguration esConfig;
     private PaymentHelper paymentHelper;
     
     private Logger log = Logger.getLogger(OrdersResource.class.getName());
@@ -49,12 +46,11 @@ public class OrdersResource
      * @param database
      */
     public OrdersResource(DatabaseConfiguration database, DatabaseConfiguration userDatabase,
-            SettingsConfiguration settingConfig, ElasticSearchConfiguration elasticSearch)
+            SettingsConfiguration settingConfig)
     {
         dao = new OrdersMongoDao(database);
         regDao = new RegistrationsMongoDao(database);
         userDao = new UsersMongoDao(userDatabase);
-        esConfig = elasticSearch;
         paymentHelper = new PaymentHelper(new Settings(settingConfig));
     }
 
@@ -86,10 +82,7 @@ public class OrdersResource
             registration = paymentHelper.setupRegistrationForActivation(registration);
             try
             {
-                Registration savedObject = regDao.updateRegistration(registration);
-                
-                log.info("Re-Index the updated registration in ElasticSearch...");
-                Indexer.indexRegistration(esConfig, savedObject);
+                regDao.updateRegistration(registration);
             }
             catch(Exception e)
             {
@@ -101,9 +94,6 @@ public class OrdersResource
                 throw new WebApplicationException(Status.NOT_MODIFIED);
             }
         }
-        
-        log.info("Re-Index the registration (with new order) in ElasticSearch");
-        Indexer.indexRegistration(esConfig, registration);
         
         return resultOrder;
     }
