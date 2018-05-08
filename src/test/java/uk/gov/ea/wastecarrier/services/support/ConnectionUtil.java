@@ -1,6 +1,7 @@
-package uk.gov.ea.wastecarrier.services;
+package uk.gov.ea.wastecarrier.services.support;
 
 import com.mongodb.DBCollection;
+import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationsMongoDao;
 import uk.gov.ea.wastecarrier.services.mongoDb.SearchHelper;

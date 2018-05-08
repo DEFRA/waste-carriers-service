@@ -5,6 +5,8 @@ import org.junit.runners.MethodSorters;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.mongoDb.AccountSearch;
 
+import uk.gov.ea.wastecarrier.services.support.*;
+
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -44,7 +46,6 @@ public class AccountSearchTest {
 
     /**
      * Deletes any registrations we have created during testing
-     * @throws Exception
      */
     @After
     public void deleteRegistration() {

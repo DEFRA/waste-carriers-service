@@ -1,12 +1,12 @@
-package uk.gov.ea.wastecarrier.services.mongo;
+package uk.gov.ea.wastecarrier.services;
 
 import org.junit.*;
 import org.junit.runners.MethodSorters;
 
-import uk.gov.ea.wastecarrier.services.ConnectionUtil;
-import uk.gov.ea.wastecarrier.services.RegistrationBuilder;
 import uk.gov.ea.wastecarrier.services.core.*;
 import uk.gov.ea.wastecarrier.services.core.MetaData.RegistrationStatus;
+
+import uk.gov.ea.wastecarrier.services.support.*;
 
 import java.util.Date;
 
@@ -26,7 +26,6 @@ public class RegistrationsMongoDaoTest {
 
     /**
      * Deletes any registrations we have created during testing
-     * @throws Exception
      */
 	@AfterClass
     public static void runOnceAfter() {

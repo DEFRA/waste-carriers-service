@@ -1,4 +1,4 @@
-package uk.gov.ea.wastecarrier.services;
+package uk.gov.ea.wastecarrier.services.support;
 
 import uk.gov.ea.wastecarrier.services.core.*;
 
