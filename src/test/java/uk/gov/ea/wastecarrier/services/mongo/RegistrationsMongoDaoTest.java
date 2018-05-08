@@ -10,21 +10,17 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
+import uk.gov.ea.wastecarrier.services.RegistrationBuilder;
 import uk.gov.ea.wastecarrier.services.core.*;
 import uk.gov.ea.wastecarrier.services.core.MetaData.RegistrationStatus;
-import uk.gov.ea.wastecarrier.services.core.MetaData.RouteType;
 import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationsMongoDao;
 
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Date;
-import java.util.UUID;
+
 
 /**
  * Tests (involving the MongoDB database) for the Registrations DAO.
@@ -82,7 +78,8 @@ public class RegistrationsMongoDaoTest {
      */
     @Test
     public void test2_insertRegistration() {
-        Registration reg = dao.insertRegistration(generateLowerTier());
+        Registration reg = new RegistrationBuilder().regIdentifier(lowerTierRegNumber).buildLowerTier();
+        reg = dao.insertRegistration(reg);
         String id = reg.getId();
         assertTrue("The registration is inserted", id != null && !id.isEmpty());
     }
@@ -112,100 +109,4 @@ public class RegistrationsMongoDaoTest {
                 reg.getMetaData().getStatus()
         );
     }
-
-	private Registration generateLowerTier() {
-	    Registration reg = new Registration();
-
-	    reg.setUuid(generateUUID());
-	    reg.setRegIdentifier(lowerTierRegNumber);
-	    reg.setTier(Registration.RegistrationTier.LOWER);
-	    reg.setBusinessType("soleTrader");
-	    reg.setOtherBusinesses("no");
-	    reg.setConstructionWaste("no");
-	    reg.setCompanyName("WCR Service test LT");
-	    reg.setFirstName("Jason");
-	    reg.setLastName("Isaac");
-	    reg.setPhoneNumber("01179345400");
-	    reg.setContactEmail("jason@example.com");
-	    reg.setAccountEmail("jason@example.com");
-	    reg.setDeclaration("1");
-
-        ArrayList<Address> addresses = new ArrayList<Address>();
-        addresses.add(generateAddress(Address.addressType.REGISTERED));
-        addresses.add(generateAddress(Address.addressType.POSTAL));
-        reg.setAddresses(addresses);
-
-        reg.setMetaData(generateMetaData(RegistrationStatus.PENDING));
-
-        reg.setFinanceDetails(generateFinanceDetails());
-
-	    return reg;
-    }
-
-    private Address generateAddress(Address.addressType type) {
-	    Address addr = new Address();
-
-	    addr.setAddressType(type);
-        addr.setHouseNumber("123");
-        addr.setAddressLine1("Upper Street");
-        addr.setTownCity("Bristol");
-        addr.setPostcode("BS1 5AH");
-
-        if (type == Address.addressType.POSTAL) {
-            addr.setFirstName("Jason");
-            addr.setLastName("Isaac");
-        }
-
-        return addr;
-    }
-
-    private MetaData generateMetaData(RegistrationStatus status) {
-	    MetaData data = new MetaData();
-
-        data.setRoute(RouteType.DIGITAL);
-        data.setDateRegistered(new Date());
-        data.setLastModified(data.getDateRegistered());
-
-	    if (status == RegistrationStatus.ACTIVE) {
-            data.setStatus(RegistrationStatus.PENDING);
-            data.setDateActivated(new Date());
-        } else {
-            data.setStatus(RegistrationStatus.PENDING);
-        }
-
-	    return data;
-    }
-
-    private FinanceDetails generateFinanceDetails() {
-	    FinanceDetails details = new FinanceDetails();
-        Order order = new Order();
-        order.setOrderCode(Long.toString(new Date().getTime()));
-        order.setOrderCode(order.getOrderId());
-        order.setPaymentMethod(Order.PaymentMethod.ONLINE);
-        order.setMerchantId("EASERRSIMECOM");
-        order.setTotalAmount(0);
-        order.setCurrency("GBP");
-        order.setDateCreated(new Date());
-        order.setWorldPayStatus("IN_PROGRESS");
-        order.setDateLastUpdated(order.getDateCreated());
-        order.setUpdatedByUser("agent@defra.gsi.gov.uk");
-
-        ArrayList<Order> orders = new ArrayList<Order>();
-        orders.add(order);
-        details.setOrders(orders);
-
-	    details.setBalance(0);
-
-	    return details;
-    }
-
-    private String generateUUID() {
-        String uuid = UUID.randomUUID().toString();
-
-        return Base64
-                .getUrlEncoder()
-                .withoutPadding()
-                .encodeToString(uuid.getBytes(StandardCharsets.UTF_8));
-    }
-	
 }
