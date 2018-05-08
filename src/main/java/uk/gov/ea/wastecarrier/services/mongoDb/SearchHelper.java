@@ -38,8 +38,19 @@ public class SearchHelper {
         return toList(jackCursor);
     }
 
-    private <T> List<T> toList(org.mongojack.DBCursor<T> cursor) {
-        List<T> returnList = new LinkedList<T>();
+    public JacksonDBCollection<Registration, String> getRegistrations() {
+        DB db = getDatabase();
+
+        // Create MONGOJACK connection to the database
+        return JacksonDBCollection.wrap(
+                db.getCollection(Registration.COLLECTION_NAME),
+                Registration.class,
+                String.class
+        );
+    }
+
+    public <T> List<T> toList(org.mongojack.DBCursor<T> cursor) {
+        List<T> returnList = new LinkedList<>();
         for (T r : cursor) {
             returnList.add(r);
         }
@@ -131,7 +142,7 @@ public class SearchHelper {
         return "NULL".equals(value) ? null : value;
     }
 
-    protected DBCollection getRegistrationsCollection() {
+    public DBCollection getRegistrationsCollection() {
         return getDatabase().getCollection(Registration.COLLECTION_NAME);
     }
 

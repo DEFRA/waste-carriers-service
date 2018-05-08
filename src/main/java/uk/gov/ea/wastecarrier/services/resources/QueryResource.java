@@ -2,6 +2,7 @@ package uk.gov.ea.wastecarrier.services.resources;
 
 import com.google.common.base.Optional;
 import com.mongodb.MongoException;
+import org.hibernate.validator.constraints.NotEmpty;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.core.CopyCards;
 import uk.gov.ea.wastecarrier.services.core.Payment;
@@ -140,5 +141,25 @@ public class QueryResource {
         }
 
         return searchresults;
+    }
+
+    @GET
+    @Path("/account")
+    public List<Registration> queryAccountEmail(
+            @QueryParam("accountEmail") @NotEmpty String accountEmail
+    ) {
+        log.fine("Get Method Detected at /query/account");
+        List<Registration> searchResults;
+
+        try {
+            AccountSearch search = new AccountSearch(new SearchHelper(this.databaseHelper), accountEmail);
+
+            searchResults = search.execute();
+        } catch (MongoException e) {
+            log.severe("Query error: " + e.getMessage());
+            throw new WebApplicationException(Response.Status.SERVICE_UNAVAILABLE);
+        }
+
+        return searchResults;
     }
 }

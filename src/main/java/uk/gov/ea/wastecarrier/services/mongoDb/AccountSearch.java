@@ -1,68 +1,40 @@
 package uk.gov.ea.wastecarrier.services.mongoDb;
 
-
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCursor;
+import org.mongojack.DBQuery;
+import org.mongojack.JacksonDBCollection;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 
-import java.util.*;
-import java.util.logging.Level;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Logger;
 
-public class AccountHelper {
+public class AccountSearch {
 
     private SearchHelper searchHelper;
-    private Logger log = Logger.getLogger(AccountHelper.class.getName());
+    private Logger log = Logger.getLogger(AccountSearch.class.getName());
 
-    public String accountEmail;
-    public Set<String> status;
+    private String accountEmail;
 
-    public AccountHelper(SearchHelper searchHelper) {
-
+    public AccountSearch(SearchHelper searchHelper, String accountEmail) {
         this.searchHelper = searchHelper;
+        this.accountEmail = accountEmail;
     }
 
-    public List<Registration> getRegistrations() {
+    public List<Registration> execute() {
 
-        Map<String, Object> queryProps = authorQueryProperties();
+        JacksonDBCollection<Registration, String> registrations = this.searchHelper.getRegistrations();
 
-        DBCursor cursor = getRegistrationCursorForAccount(queryProps);
+        // Query to find registrations with matching accountEmail
+        DBQuery.Query query = DBQuery.is("accountEmail", this.accountEmail);
 
-        return searchHelper.toRegistrationList(cursor);
-    }
+        List<Registration> results = new LinkedList<>();
 
-    private DBCursor getRegistrationCursorForAccount(Map<String, Object> queryProps) {
-
-        BasicDBObject query = new BasicDBObject();
-
-        if (queryProps != null) {
-            for (Map.Entry<String, Object> entry : queryProps.entrySet()) {
-                Object value = entry.getValue();
-                if (value instanceof String[]) {
-                    BasicDBObject inQuery = new BasicDBObject("$in", value);
-                    query.append(entry.getKey(), inQuery);
-                } else {
-                    query.append(entry.getKey(), value);
-                }
-            }
+        try {
+            results = searchHelper.toList(registrations.find(query));
+        } catch (IllegalArgumentException e) {
+            log.severe("Caught exception: " + e.getMessage() + " - Cannot find accountEmail " + this.accountEmail);
         }
 
-        if (log.isLoggable(Level.INFO)) {
-            log.info(query.toString());
-        }
-        return searchHelper.getRegistrationsCollection().find(query);
+        return results;
     }
-
-    private Map<String, Object> authorQueryProperties() {
-
-        Map<String, Object> queryProps = new HashMap<String, Object>();
-        Collection<String> accountEmailProp = new ArrayList<String>();
-        accountEmailProp.add(accountEmail);
-
-        searchHelper.addOptionalQueryProperty("accountEmail", accountEmailProp, queryProps);
-        searchHelper.addOptionalQueryProperty("metaData.status", this.status, queryProps);
-
-        return queryProps;
-    }
-
 }
