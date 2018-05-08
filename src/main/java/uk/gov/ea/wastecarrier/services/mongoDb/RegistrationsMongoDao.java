@@ -123,49 +123,6 @@ public class RegistrationsMongoDao
 		}
 		return foundReg;
 	}
-
-	public Registration findRegistrationWithOriginalRegNumber(String registrationNumber)
-	{
-		Registration foundReg;
-
-		log.info("Finding registration with original registration number = " + registrationNumber);
-
-		DB db = databaseHelper.getConnection();
-		if (db != null)
-		{
-			// Create MONGOJACK connection to the database
-			JacksonDBCollection<Registration, String> registrations = JacksonDBCollection.wrap(
-					db.getCollection(Registration.COLLECTION_NAME),
-					Registration.class,
-					String.class
-			);
-
-			// Query to find matching reference number
-			DBQuery.Query paramQuery = DBQuery.is("originalRegistrationNumber", registrationNumber);
-
-			try
-			{
-				foundReg = registrations.findOne(paramQuery);
-			}
-			catch (IllegalArgumentException e)
-			{
-				log.severe("Caught exception: " + e.getMessage() + " - Cannot find Registration with original reg number: " + registrationNumber);
-				throw new WebApplicationException(Status.NOT_FOUND);
-			}
-		}
-		else
-		{
-			log.severe("Find registration - Could not obtain connection to MongoDB!");
-			throw new WebApplicationException(Status.SERVICE_UNAVAILABLE);
-		}
-
-		if (foundReg == null)
-		{
-			log.info("Failed to find registration with number: " + registrationNumber);
-			throw new WebApplicationException(Status.NO_CONTENT);
-		}
-		return foundReg;
-	}
 	
 	/**
 	 * Return the registration with the given id

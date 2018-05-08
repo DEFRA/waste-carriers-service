@@ -8,6 +8,8 @@ import uk.gov.ea.wastecarrier.services.core.CopyCards;
 import uk.gov.ea.wastecarrier.services.core.Payment;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.mongoDb.*;
+import uk.gov.ea.wastecarrier.services.mongoDb.AccountSearch;
+import uk.gov.ea.wastecarrier.services.mongoDb.OriginalRegNumberSearch;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -144,15 +146,35 @@ public class QueryResource {
     }
 
     @GET
-    @Path("/account")
+    @Path("/account/{accountEmail}")
     public List<Registration> queryAccountEmail(
-            @QueryParam("accountEmail") @NotEmpty String accountEmail
+            @PathParam("accountEmail") @NotEmpty String accountEmail
     ) {
         log.fine("Get Method Detected at /query/account");
         List<Registration> searchResults;
 
         try {
             AccountSearch search = new AccountSearch(new SearchHelper(this.databaseHelper), accountEmail);
+
+            searchResults = search.execute();
+        } catch (MongoException e) {
+            log.severe("Query error: " + e.getMessage());
+            throw new WebApplicationException(Response.Status.SERVICE_UNAVAILABLE);
+        }
+
+        return searchResults;
+    }
+
+    @GET
+    @Path("/originalRegistrationNumber/{originalRegNumber}")
+    public List<Registration> queryOriginalRegNumber(
+            @PathParam("originalRegistrationNumber") @NotEmpty String originalRegNumber
+    ) {
+        log.fine("Get Method Detected at /query/originalRegistrationNumber");
+        List<Registration> searchResults;
+
+        try {
+            OriginalRegNumberSearch search = new OriginalRegNumberSearch(new SearchHelper(this.databaseHelper), originalRegNumber);
 
             searchResults = search.execute();
         } catch (MongoException e) {
