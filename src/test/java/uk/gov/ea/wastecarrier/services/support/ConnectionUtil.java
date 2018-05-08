@@ -4,7 +4,7 @@ import com.mongodb.DBCollection;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationsMongoDao;
-import uk.gov.ea.wastecarrier.services.mongoDb.SearchHelper;
+import uk.gov.ea.wastecarrier.services.search.SearchHelper;
 
 public class ConnectionUtil {
 

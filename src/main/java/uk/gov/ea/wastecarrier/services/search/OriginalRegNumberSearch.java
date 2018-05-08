@@ -1,4 +1,4 @@
-package uk.gov.ea.wastecarrier.services.mongoDb;
+package uk.gov.ea.wastecarrier.services.search;
 
 import org.mongojack.DBQuery;
 import org.mongojack.JacksonDBCollection;

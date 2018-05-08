@@ -8,8 +8,9 @@ import uk.gov.ea.wastecarrier.services.core.CopyCards;
 import uk.gov.ea.wastecarrier.services.core.Payment;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.mongoDb.*;
-import uk.gov.ea.wastecarrier.services.mongoDb.AccountSearch;
-import uk.gov.ea.wastecarrier.services.mongoDb.OriginalRegNumberSearch;
+import uk.gov.ea.wastecarrier.services.search.AccountSearch;
+import uk.gov.ea.wastecarrier.services.search.OriginalRegNumberSearch;
+import uk.gov.ea.wastecarrier.services.search.SearchHelper;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -21,13 +22,13 @@ import java.util.logging.Logger;
 @Path("/query")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class QueryResource {
+public class SearchResource {
 
     private Logger log = Logger.getLogger(OrdersResource.class.getName());
 
     private final DatabaseHelper databaseHelper;
 
-    public QueryResource(DatabaseConfiguration databaseConfiguration) {
+    public SearchResource(DatabaseConfiguration databaseConfiguration) {
         this.databaseHelper = new DatabaseHelper(databaseConfiguration);
     }
 

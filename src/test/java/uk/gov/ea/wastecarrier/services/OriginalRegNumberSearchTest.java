@@ -3,8 +3,7 @@ package uk.gov.ea.wastecarrier.services;
 import org.junit.*;
 import org.junit.runners.MethodSorters;
 import uk.gov.ea.wastecarrier.services.core.Registration;
-import uk.gov.ea.wastecarrier.services.mongoDb.OriginalRegNumberSearch;
-
+import uk.gov.ea.wastecarrier.services.search.OriginalRegNumberSearch;
 import uk.gov.ea.wastecarrier.services.support.*;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package uk.gov.ea.wastecarrier.services.mongoDb;
+package uk.gov.ea.wastecarrier.services.search;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -20,6 +20,7 @@ import org.joda.time.format.DateTimeFormatterBuilder;
 import org.joda.time.format.DateTimeParser;
 
 import uk.gov.ea.wastecarrier.services.core.Registration;
+import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
 
 public class SearchHelper {
 
@@ -84,7 +85,7 @@ public class SearchHelper {
         queryProps.put(propertyName, processed);
     }
 
-    protected void addOptionalQueryProperty(
+    public void addOptionalQueryProperty(
             String propertyName,
             Object propertyValue,
             Map<String, Object> queryProps) {
