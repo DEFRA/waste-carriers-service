@@ -11,24 +11,33 @@ import java.util.*;
  * method overloading to achieve the same effect. To make calling code more
  * explicit we implement the builder pattern e.g.
 
- * Registration reg1 = new RegistrationBuilder().buildLowerTier();
- * Registration reg2 = new RegistrationBuilder().regIdentifier("CBDL1").buildLowerTier();
- * Registration reg3 = new RegistrationBuilder()
+ * Registration reg1 = new RegistrationBuilder(RegistrationBuilder.BuildType.LOWER)
+ *                          .build();
+ * Registration reg2 = new RegistrationBuilder(RegistrationBuilder.BuildType.LOWER)
+ *                          .regIdentifier("CBDL1")
+ *                          .build();
+ * Registration reg3 = new RegistrationBuilder(RegistrationBuilder.BuildType.LOWER)
  *                          .regIdentifier("CBDL1")
  *                          .accountEmail("joan@example.com")
- *                          .buildLowerTier();
+ *                          .build();
  */
 public class RegistrationBuilder {
+
+    private BuildType buildType;
 
     private String regIdentifier;
     private String accountEmail = "jason@example.com";
     private String originalRegNumber = "CB/VM8888WW/A001";
-    private BuildType buildType;
-
+    private String declaredConvictions = "no";
+    private ConvictionSearchResult.MatchResult companyConvictionMatch = ConvictionSearchResult.MatchResult.NO;
+    private ConvictionSearchResult.MatchResult keyPersonConvictionMatch = ConvictionSearchResult.MatchResult.NO;
+    private Date orderCreatedDate = new Date();
+    private Date orderUpdatedDate = this.orderCreatedDate;
 
     public enum BuildType {
         LOWER,
         UPPER,
+        UPPER_COPY,
         IRRENEWAL
     }
 
@@ -54,6 +63,36 @@ public class RegistrationBuilder {
         return this;
     }
 
+    public RegistrationBuilder declaredConvictions(String declaredConvictions)
+    {
+        this.declaredConvictions = declaredConvictions;
+        return this;
+    }
+
+    public RegistrationBuilder companyConvictionMatch(ConvictionSearchResult.MatchResult companyConvictionMatch)
+    {
+        this.companyConvictionMatch = companyConvictionMatch;
+        return this;
+    }
+
+    public RegistrationBuilder keyPersonConvictionMatch(ConvictionSearchResult.MatchResult keyPersonConvictionMatch)
+    {
+        this.keyPersonConvictionMatch = keyPersonConvictionMatch;
+        return this;
+    }
+
+    public RegistrationBuilder orderCreatedDate(Date orderCreatedDate)
+    {
+        this.orderCreatedDate = orderCreatedDate;
+        return this;
+    }
+
+    public RegistrationBuilder orderUpdatedDate(Date orderUpdatedDate)
+    {
+        this.orderUpdatedDate = orderUpdatedDate;
+        return this;
+    }
+
     public Registration build() {
         Registration registration = null;
 
@@ -62,6 +101,9 @@ public class RegistrationBuilder {
                 registration = buildLowerTier();
                 break;
             case UPPER:
+                registration = buildUpperTier();
+                break;
+            case UPPER_COPY:
                 registration = buildUpperTier();
                 break;
             case IRRENEWAL:
@@ -115,7 +157,7 @@ public class RegistrationBuilder {
         reg.setLastName("Isaacs");
         reg.setPhoneNumber("01179345400");
         reg.setContactEmail("jason@example.com");
-        reg.setDeclaredConvictions("no");
+        reg.setDeclaredConvictions(this.declaredConvictions);
         reg.setAccountEmail(this.accountEmail);
         reg.setDeclaration("1");
         reg.setExpires_on(generateExpiryDate());
@@ -133,7 +175,7 @@ public class RegistrationBuilder {
 
         reg.setFinanceDetails(generateFinanceDetails());
 
-        reg.setConvictionSearchResult(generateConvictionSearchResult());
+        reg.setConvictionSearchResult(generateConvictionSearchResult(this.companyConvictionMatch));
 
         return reg;
     }
@@ -184,15 +226,15 @@ public class RegistrationBuilder {
         person.setPosition("Owner");
         person.setDateOfBirth(new Date(-207404198000L));
         person.setPersonType(personType);
-        person.setConvictionSearchResult(generateConvictionSearchResult());
+        person.setConvictionSearchResult(generateConvictionSearchResult(this.keyPersonConvictionMatch));
 
         return person;
     }
 
-    private ConvictionSearchResult generateConvictionSearchResult() {
+    private ConvictionSearchResult generateConvictionSearchResult(ConvictionSearchResult.MatchResult matchResult) {
         ConvictionSearchResult searchResult = new ConvictionSearchResult();
 
-        searchResult.setMatchResult(ConvictionSearchResult.MatchResult.NO);
+        searchResult.setMatchResult(matchResult);
         searchResult.setSearchedAt(new Date());
         searchResult.setConfirmed("no");
 
@@ -253,8 +295,8 @@ public class RegistrationBuilder {
         order.setPaymentMethod(Order.PaymentMethod.ONLINE);
         order.setMerchantId("EASERRSIMECOM");
         order.setCurrency("GBP");
-        order.setDateCreated(new Date());
-        order.setDateLastUpdated(order.getDateCreated());
+        order.setDateCreated(this.orderCreatedDate);
+        order.setDateLastUpdated(this.orderUpdatedDate);
         order.setUpdatedByUser("jason@example.com");
 
         ArrayList<OrderItem> orderItems = new ArrayList<>();
@@ -268,6 +310,13 @@ public class RegistrationBuilder {
                 order.setTotalAmount(15400);
                 order.setWorldPayStatus("AUTHORISED");
                 orderItems.add(generateOrderItem(OrderItem.OrderItemType.NEW));
+                order.setOrderItems(orderItems);
+                break;
+            case UPPER_COPY:
+                order.setTotalAmount(15900);
+                order.setWorldPayStatus("AUTHORISED");
+                orderItems.add(generateOrderItem(OrderItem.OrderItemType.NEW));
+                orderItems.add(generateOrderItem(OrderItem.OrderItemType.COPY_CARDS));
                 order.setOrderItems(orderItems);
                 break;
             case IRRENEWAL:
@@ -293,6 +342,11 @@ public class RegistrationBuilder {
                 orderItem.setDescription("Initial Registration");
                 orderItem.setReference("Initial Registration");
                 break;
+            case COPY_CARDS:
+                orderItem.setAmount(500);
+                orderItem.setDescription("Copy card");
+                orderItem.setReference("Copy card");
+                break;
             case IRRENEW:
                 orderItem.setAmount(10500);
                 orderItem.setDescription("Renewal of Registration");
@@ -317,10 +371,16 @@ public class RegistrationBuilder {
         payment.setComment("Paid via Worldpay");
         payment.setPaymentType(Payment.PaymentType.WORLDPAY);
 
-        if (this.buildType == BuildType.UPPER) {
-            payment.setAmount(15400);
-        } else {
-            payment.setAmount(10500);
+        switch(this.buildType) {
+            case UPPER:
+                payment.setAmount(15400);
+                break;
+            case UPPER_COPY:
+                payment.setAmount(15900);
+                break;
+            case IRRENEWAL:
+                payment.setAmount(10500);
+                break;
         }
 
         return payment;
@@ -331,22 +391,11 @@ public class RegistrationBuilder {
     }
 
     private Date generateExpiryDate(Date startDate) {
-        Calendar calendar = Calendar.getInstance();
-
-        calendar.setTime(startDate);
-        calendar.add(Calendar.YEAR, 3);
-
-        return calendar.getTime();
+        return TestUtil.fromDate(startDate, 3, 0, 0);
     }
 
     private Date generateOriginalExpiryDate() {
-        Calendar calendar = Calendar.getInstance();
-
-        calendar.setTime(new Date());
-        calendar.add(Calendar.YEAR, -2);
-        calendar.add(Calendar.MONTH, -10);
-
-        return calendar.getTime();
+        return TestUtil.fromCurrentDate(-2, -10, 0);
     }
 
     private String generateUUID() {
