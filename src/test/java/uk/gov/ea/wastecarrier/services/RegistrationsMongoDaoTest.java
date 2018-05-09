@@ -20,7 +20,7 @@ public class RegistrationsMongoDaoTest {
 	private static final String lowerTierRegNumber = "CBDL99999";
 
 	@BeforeClass
-    public static void runOnceBefore() {
+    public static void setup() {
         connection = new ConnectionUtil();
 	}
 
@@ -28,7 +28,7 @@ public class RegistrationsMongoDaoTest {
      * Deletes any registrations we have created during testing
      */
 	@AfterClass
-    public static void runOnceAfter() {
+    public static void tearDown() {
         connection.clean();
 	}
 

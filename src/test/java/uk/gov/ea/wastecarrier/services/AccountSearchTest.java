@@ -1,7 +1,6 @@
 package uk.gov.ea.wastecarrier.services;
 
 import org.junit.*;
-import org.junit.runners.MethodSorters;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.search.AccountSearch;
 import uk.gov.ea.wastecarrier.services.support.*;
@@ -10,33 +9,27 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class AccountSearchTest {
 
     private static ConnectionUtil connection;
     private static final String accountEmail = "joe@example.com";
 
     @BeforeClass
-    public static void runOnceBefore() {
+    public static void setup() {
         connection = new ConnectionUtil();
+        createRegistrations();
     }
 
     /**
-     * Create a test registration
-     *
-     * We use this in our subsequent tests to test the search functionality
+     * Deletes any registrations we have created during testing
      */
-    @Before
-    public void createRegistration() {
-        Registration reg = new RegistrationBuilder(RegistrationBuilder.BuildType.LOWER)
-                .accountEmail(this.accountEmail)
-                .build();
-
-        connection.registrationsDao.insertRegistration(reg);
+    @AfterClass
+    public static void tearDown() {
+        connection.clean();
     }
 
     @Test
-    public void test1_searchForRegistration() {
+    public void searchForRegistration() {
         AccountSearch search = new AccountSearch(connection.searchHelper, accountEmail);
         List<Registration> results = search.execute();
         String resultEmail = results.get(0).getAccountEmail();
@@ -44,11 +37,16 @@ public class AccountSearchTest {
     }
 
     /**
-     * Deletes any registrations we have created during testing
+     * Create a test registration
+     *
+     * We use this in our subsequent tests to test the search functionality
      */
-    @After
-    public void deleteRegistration() {
-        connection.clean();
+    private static void createRegistrations() {
+        Registration reg = new RegistrationBuilder(RegistrationBuilder.BuildType.LOWER)
+                .accountEmail(accountEmail)
+                .build();
+
+        connection.registrationsDao.insertRegistration(reg);
     }
 
 }

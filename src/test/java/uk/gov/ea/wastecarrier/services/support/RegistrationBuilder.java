@@ -276,6 +276,11 @@ public class RegistrationBuilder {
                 payments.add(generatePayment(details.getOrders().get(0).getOrderCode()));
                 details.setPayments(payments);
                 break;
+            case UPPER_COPY:
+                details.setBalance(15900);
+                payments.add(generatePayment(details.getOrders().get(0).getOrderCode()));
+                details.setPayments(payments);
+                break;
             case IRRENEWAL:
                 details.setBalance(10500);
                 payments.add(generatePayment(details.getOrders().get(0).getOrderCode()));
