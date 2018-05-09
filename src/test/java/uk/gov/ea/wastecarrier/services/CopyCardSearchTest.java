@@ -16,7 +16,6 @@ import static org.junit.Assert.assertEquals;
 public class CopyCardSearchTest {
 
     private static ConnectionUtil connection;
-    private static SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
     @BeforeClass
     public static void setup() {
@@ -36,8 +35,8 @@ public class CopyCardSearchTest {
     public void searchWithNoFilters() {
         CopyCardSearch search = new CopyCardSearch(
                 connection.searchHelper,
-                dateFormat.format(new Date()),
-                dateFormat.format(new Date()),
+                TestUtil.dateToday(),
+                TestUtil.dateToday(),
                 false,
                 false,
                 0
@@ -52,8 +51,8 @@ public class CopyCardSearchTest {
     public void searchForHasDeclaredConviction() {
         CopyCardSearch search = new CopyCardSearch(
                 connection.searchHelper,
-                dateFormat.format(new Date()),
-                dateFormat.format(new Date()),
+                TestUtil.dateToday(),
+                TestUtil.dateToday(),
                 true,
                 false,
                 0
@@ -75,8 +74,8 @@ public class CopyCardSearchTest {
     public void searchForHasMatchedConvictions() {
         CopyCardSearch search = new CopyCardSearch(
                 connection.searchHelper,
-                dateFormat.format(new Date()),
-                dateFormat.format(new Date()),
+                TestUtil.dateToday(),
+                TestUtil.dateToday(),
                 false,
                 true,
                 0
@@ -100,8 +99,8 @@ public class CopyCardSearchTest {
     public void searchForHasDeclaredAndMatchedConviction() {
         CopyCardSearch search = new CopyCardSearch(
                 connection.searchHelper,
-                dateFormat.format(new Date()),
-                dateFormat.format(new Date()),
+                TestUtil.dateToday(),
+                TestUtil.dateToday(),
                 true,
                 true,
                 0
@@ -118,8 +117,8 @@ public class CopyCardSearchTest {
     public void limitResults() {
         CopyCardSearch search = new CopyCardSearch(
                 connection.searchHelper,
-                dateFormat.format(new Date()),
-                dateFormat.format(new Date()),
+                TestUtil.dateToday(),
+                TestUtil.dateToday(),
                 false,
                 false,
                 1
