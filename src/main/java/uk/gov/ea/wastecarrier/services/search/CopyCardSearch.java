@@ -1,141 +1,86 @@
-package uk.gov.ea.wastecarrier.services.mongoDb;
+package uk.gov.ea.wastecarrier.services.search;
 
-import com.google.common.base.Optional;
-import com.mongodb.BasicDBList;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCursor;
-import org.joda.time.DateTime;
+import org.mongojack.DBQuery;
+import org.mongojack.JacksonDBCollection;
+import uk.gov.ea.wastecarrier.services.core.ConvictionSearchResult;
+import uk.gov.ea.wastecarrier.services.core.OrderItem;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 
 import java.util.*;
 import java.util.logging.Logger;
 
-/**
- * Created by sammoth on 19/05/15.
- */
 public class CopyCardSearch {
     private final static String DATE_FILTER_PROPERTY = "financeDetails.orders.dateLastUpdated";
-    private final static String COMPANY_CONVICTION_MATCH = "convictionSearchResult.matchResult";
-    private final static String KEY_PEOPLE_CONVICTION_MATCH = "keyPeople.convictionSearchResult.matchResult";
+    private final static String COMPANY_CONVICTION_MATCH = "conviction_search_result.match_result";
+    private final static String KEY_PEOPLE_CONVICTION_MATCH = "key_people.conviction_search_result.match_result";
     private final static String COPY_CARDS_MATCH = "financeDetails.orders.orderItems.type";
 
     private SearchHelper searchHelper;
-    private Logger log = Logger.getLogger(RegistrationSearch.class.getName());
+    private Logger log = Logger.getLogger(CopyCardSearch.class.getName());
 
-    public Optional<String> fromDate;
-    public Optional<String> toDate;
-    public Optional<String> declaredConvictions;
-    public Optional<String> convictionCheckMatch;
-    public Optional<Integer> resultCount;
+    private Date fromDate;
+    private Date toDate;
+    private Boolean declaredConvictions;
+    private Boolean convictionCheckMatch;
+    private Integer resultCount;
 
-    public CopyCardSearch(SearchHelper searchHelper) {
-
+    /**
+     * Search for registrations in the database which ordered copy cards between certain dates, and where specified they
+     * match a given filter.
+     * @param searchHelper
+     * @param fromDate order last updated date is equal to or greater than
+     * @param toDate order last updated date is equal to or less than
+     * @param declaredConvictions registrations with a declared conviction
+     * @param convictionCheckMatch registrations with a conviction match (either company or key person)
+     * @param resultCount limit number of results to this
+     */
+    public CopyCardSearch(
+            SearchHelper searchHelper,
+            String fromDate,
+            String toDate,
+            Boolean declaredConvictions,
+            Boolean convictionCheckMatch,
+            Integer resultCount
+    ) {
         this.searchHelper = searchHelper;
+
+        this.fromDate = this.searchHelper.dateStringToDate(fromDate, false).toDate();
+        this.toDate = this.searchHelper.dateStringToDate(toDate, true).toDate();
+        this.declaredConvictions = declaredConvictions;
+        this.convictionCheckMatch = convictionCheckMatch;
+        this.resultCount = resultCount;
     }
 
-    public List<Registration> getCopyCardRegistrations() {
+    public List<Registration> execute() {
 
-        Map<String, Object> queryProps = authorQueryProperties();
+        JacksonDBCollection<Registration, String> registrations = this.searchHelper.getRegistrations();
 
-        BasicDBObject query = new BasicDBObject();
+        DBQuery.Query query = DBQuery.and(DBQuery
+                .greaterThanEquals(DATE_FILTER_PROPERTY, this.fromDate)
+                .lessThanEquals(DATE_FILTER_PROPERTY, this.toDate)
+                .is(COPY_CARDS_MATCH, OrderItem.OrderItemType.COPY_CARDS)
+        );
 
-        applyDateFilters(query);
-        applyConvictionMatchFilter(query);
+        if (this.declaredConvictions) query.and(DBQuery.is("declaredConvictions", "yes"));
 
-        if (queryProps != null) {
-            for (Map.Entry<String, Object> entry : queryProps.entrySet()) {
-                Object value = entry.getValue();
-                if (value instanceof String[]) {
-                    String key = entry.getKey();
-                    BasicDBObject inQuery;
-                    //Sam Griffiths 01-04-2015 check here for Copy Cards requests.
-                    // requires an $all request instead of an $in
-                    if (key.equals(COPY_CARDS_MATCH)) {
-                        inQuery = new BasicDBObject("$all", value);
-                    } else {
-                        inQuery = new BasicDBObject("$in", value);
-                    }
-                    query.append(entry.getKey(), inQuery);
-                } else {
-                    query.append(entry.getKey(), value);
-                }
+        if (this.convictionCheckMatch) {
+            query.or(DBQuery.is(COMPANY_CONVICTION_MATCH, ConvictionSearchResult.MatchResult.YES));
+            query.or(DBQuery.is(KEY_PEOPLE_CONVICTION_MATCH, ConvictionSearchResult.MatchResult.YES));
+        }
+
+        List<Registration> results = new LinkedList<>();
+
+        try {
+            if (this.resultCount == 0) {
+                results = searchHelper.toList(registrations.find(query));
+            } else {
+                results = searchHelper.toList(registrations.find(query).limit(this.resultCount));
             }
+        } catch (IllegalArgumentException e) {
+            log.severe("Caught exception: " + e.getMessage() + " - Cannot find copy cards ");
         }
 
-        DBCursor cursor = searchHelper.getRegistrationsCollection().find(query);
-        applyResultCount(cursor);
-
-        return searchHelper.toRegistrationList(cursor);
+        return results;
 
     }
-
-    protected void applyResultCount(DBCursor cursor) {
-
-        if (resultCount.isPresent())
-        {
-            Integer count = resultCount.get();
-            if ( count != null && !count.equals(0))
-            {
-                cursor.limit(resultCount.get());
-            }
-        }
-    }
-
-    protected void applyConvictionMatchFilter(BasicDBObject query) {
-
-        if (!convictionCheckMatch.isPresent()) {
-            return;
-        }
-
-        BasicDBList or = new BasicDBList();
-        or.add(new BasicDBObject(COMPANY_CONVICTION_MATCH, convictionCheckMatch.get()));
-        or.add(new BasicDBObject(KEY_PEOPLE_CONVICTION_MATCH, convictionCheckMatch.get()));
-
-        query.append("$or", or);
-    }
-
-    protected void applyDateFilters(BasicDBObject query) {
-
-        DateTime from;
-        Date dateFrom = null;
-        DateTime until;
-        Date dateUntil = null;
-
-        if (fromDate.isPresent()) {
-            from = SearchHelper.dateStringToDate(fromDate.get(), false);
-            dateFrom = from.toDate();
-        }
-
-        if (toDate.isPresent()) {
-            until = SearchHelper.dateStringToDate(toDate.get(), true);
-            dateUntil = until.toDate();
-        }
-
-        if (dateFrom != null && dateUntil != null) {
-            query.append(
-                    DATE_FILTER_PROPERTY,
-                    new BasicDBObject("$gt", dateFrom)
-                            .append("$lte", dateUntil));
-        } else if (dateFrom != null) {
-            query.append(DATE_FILTER_PROPERTY, new BasicDBObject("$gt", dateFrom));
-        } else if (dateUntil != null) {
-            query.append(DATE_FILTER_PROPERTY, new BasicDBObject("$lte", dateUntil));
-        }
-
-    }
-
-    private Map<String, Object> authorQueryProperties() {
-
-        Map<String, Object> queryProps = new HashMap<String, Object>();
-
-        if (declaredConvictions.isPresent())
-            searchHelper.addOptionalQueryProperty("declaredConvictions", this.declaredConvictions.get(), queryProps);
-
-        Set<String> copyCards = new HashSet<String>();
-        copyCards.add("COPY_CARDS");
-        searchHelper.addOptionalQueryProperty(COPY_CARDS_MATCH, copyCards, queryProps);
-
-        return queryProps;
-    }
-
 }

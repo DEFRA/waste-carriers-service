@@ -8,6 +8,7 @@ import uk.gov.ea.wastecarrier.services.core.CopyCards;
 import uk.gov.ea.wastecarrier.services.core.Payment;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.mongoDb.*;
+import uk.gov.ea.wastecarrier.services.search.CopyCardSearch;
 import uk.gov.ea.wastecarrier.services.search.AccountSearch;
 import uk.gov.ea.wastecarrier.services.search.OriginalRegNumberSearch;
 import uk.gov.ea.wastecarrier.services.search.SearchHelper;
@@ -19,7 +20,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
-@Path("/query")
+@Path("/search")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class SearchResource {
@@ -47,7 +48,7 @@ public class SearchResource {
             @QueryParam("resultCount") Optional<Integer> resultCount
     ) {
 
-        log.fine("Get Method Detected at /query/registrations");
+        log.fine("Get Method Detected at /search/registrations");
         List<Registration> searchresults;
 
         try {
@@ -87,7 +88,7 @@ public class SearchResource {
             @QueryParam("resultCount") Optional<Integer> resultCount
     ) {
 
-        log.fine("Get Method Detected at /query/payments");
+        log.fine("Get Method Detected at /search/payments");
         List<Registration> searchResults;
 
         try {
@@ -113,37 +114,38 @@ public class SearchResource {
     }
 
     @GET
-    @Path("/" + CopyCards.COLLECTION_NAME)
-    public List<Registration> getRegistrations(
-            @QueryParam("from") Optional<String> from,
-            @QueryParam("until") Optional<String> until,
+    @Path("/copycards")
+    public List<Registration> queryCopyCards(
+            @QueryParam("from") @NotEmpty String from,
+            @QueryParam("until") @NotEmpty String until,
             @QueryParam("declaredConvictions") Optional<String> declaredConvictions,
             @QueryParam("convictionCheckMatch") Optional<String> convictionCheckMatch,
             @QueryParam("resultCount") Optional<Integer> resultCount
     ) {
 
-        log.fine("Get Method Detected at /query/registrations");
-        List<Registration> searchresults;
+        log.fine("Get Method Detected at /search/copycards");
+        List<Registration> searchResults;
 
         try {
-            CopyCardSearch search = new CopyCardSearch(new SearchHelper(this.databaseHelper));
-            search.fromDate = from;
-            search.toDate = until;
-            search.declaredConvictions = declaredConvictions;
-            search.convictionCheckMatch = convictionCheckMatch;
-            search.resultCount = resultCount;
+            Integer extractedResultCount = 0;
+            if (resultCount.isPresent()) extractedResultCount = resultCount.get();
+            CopyCardSearch search = new CopyCardSearch(
+                    new SearchHelper(this.databaseHelper),
+                    from,
+                    until,
+                    declaredConvictions.isPresent(),
+                    convictionCheckMatch.isPresent(),
+                    extractedResultCount
+            );
 
-            searchresults = search.getCopyCardRegistrations();
+            searchResults = search.execute();
 
-            if (searchresults.size() == 0) {
-                log.info("No results found - returning empty list");
-            }
         } catch (MongoException e) {
-            log.severe("Database not found, check the database is running");
+            log.severe("Query error: " + e.getMessage());
             throw new WebApplicationException(Response.Status.SERVICE_UNAVAILABLE);
         }
 
-        return searchresults;
+        return searchResults;
     }
 
     @GET
@@ -151,7 +153,7 @@ public class SearchResource {
     public List<Registration> queryAccountEmail(
             @PathParam("accountEmail") @NotEmpty String accountEmail
     ) {
-        log.fine("Get Method Detected at /query/account");
+        log.fine("Get Method Detected at /search/account");
         List<Registration> searchResults;
 
         try {
@@ -171,7 +173,7 @@ public class SearchResource {
     public List<Registration> queryOriginalRegNumber(
             @PathParam("originalRegistrationNumber") @NotEmpty String originalRegNumber
     ) {
-        log.fine("Get Method Detected at /query/originalRegistrationNumber");
+        log.fine("Get Method Detected at /search/originalRegistrationNumber");
         List<Registration> searchResults;
 
         try {
