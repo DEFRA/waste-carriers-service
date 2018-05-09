@@ -33,6 +33,7 @@ public class RegistrationBuilder {
     private ConvictionSearchResult.MatchResult keyPersonConvictionMatch = ConvictionSearchResult.MatchResult.NO;
     private Date orderCreatedDate = new Date();
     private Date orderUpdatedDate = this.orderCreatedDate;
+    private Date paymentReceived = new Date();
 
     public enum BuildType {
         LOWER,
@@ -90,6 +91,12 @@ public class RegistrationBuilder {
     public RegistrationBuilder orderUpdatedDate(Date orderUpdatedDate)
     {
         this.orderUpdatedDate = orderUpdatedDate;
+        return this;
+    }
+
+    public RegistrationBuilder paymentReceived(Date paymentReceived)
+    {
+        this.paymentReceived = paymentReceived;
         return this;
     }
 
@@ -268,25 +275,21 @@ public class RegistrationBuilder {
         ArrayList<Payment> payments = new ArrayList<>();
 
         switch(this.buildType) {
-            case LOWER:
-                details.setBalance(0);
-                break;
             case UPPER:
-                details.setBalance(15400);
                 payments.add(generatePayment(details.getOrders().get(0).getOrderCode()));
                 details.setPayments(payments);
                 break;
             case UPPER_COPY:
-                details.setBalance(15900);
                 payments.add(generatePayment(details.getOrders().get(0).getOrderCode()));
                 details.setPayments(payments);
                 break;
             case IRRENEWAL:
-                details.setBalance(10500);
                 payments.add(generatePayment(details.getOrders().get(0).getOrderCode()));
                 details.setPayments(payments);
                 break;
         }
+        
+        details.setBalance(0);
 
         return details;
     }
@@ -369,7 +372,7 @@ public class RegistrationBuilder {
         payment.setCurrency("GBP");
         payment.setMac_code("21412936c7dac4ddfa1d60499e20eda7");
         payment.setDateEntered(new Date());
-        payment.setDateReceived(new Date());
+        payment.setDateReceived(this.paymentReceived);
         payment.setRegistrationReference("Worldpay");
         payment.setWorldPayPaymentStatus("AUTHORISED");
         payment.setUpdatedByUser("jason@example.com");
