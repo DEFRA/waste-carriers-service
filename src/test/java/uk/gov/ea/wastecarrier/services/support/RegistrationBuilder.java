@@ -330,7 +330,7 @@ public class RegistrationBuilder {
             case IRRENEWAL:
                 order.setTotalAmount(10500);
                 order.setWorldPayStatus("AUTHORISED");
-                orderItems.add(generateOrderItem(OrderItem.OrderItemType.IRRENEW));
+                orderItems.add(generateOrderItem(OrderItem.OrderItemType.RENEW));
                 order.setOrderItems(orderItems);
                 break;
         }
@@ -355,7 +355,7 @@ public class RegistrationBuilder {
                 orderItem.setDescription("Copy card");
                 orderItem.setReference("Copy card");
                 break;
-            case IRRENEW:
+            case RENEW:
                 orderItem.setAmount(10500);
                 orderItem.setDescription("Renewal of Registration");
                 orderItem.setReference("Renewal of Registration");
