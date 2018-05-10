@@ -6,10 +6,8 @@ import java.util.logging.Logger;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
-import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
 
 import org.mongojack.JacksonDBCollection;
 
@@ -31,15 +29,7 @@ public class SearchHelper {
         this.databaseHelper = databaseHelper;
     }
 
-    public List<Registration> toRegistrationList(DBCursor cursor) {
-        JacksonDBCollection<Registration, Object> jackColl = JacksonDBCollection
-                .wrap(cursor.getCollection(), Registration.class);
-        org.mongojack.DBCursor<Registration> jackCursor = new org.mongojack.DBCursor<Registration>(
-                jackColl, cursor);
-        return toList(jackCursor);
-    }
-
-    public JacksonDBCollection<Registration, String> getRegistrations() {
+    public JacksonDBCollection<Registration, String> registrationsCollection() {
         DB db = getDatabase();
 
         // Create MONGOJACK connection to the database
@@ -58,91 +48,6 @@ public class SearchHelper {
         return returnList;
     }
 
-    protected void addOptionalQueryProperty(
-            String propertyName,
-            Collection<String> propertyValue,
-            Map<String, Object> queryProps) {
-
-        if (propertyValue == null || propertyValue.size() == 0) {
-            return;
-        }
-
-        if (propertyValue.size() == 1) {
-            String value = propertyValue.iterator().next();
-            if (value == null || "".equals(value)) {
-                return;
-            }
-            queryProps.put(propertyName, processQueryValue(value));
-            return;
-        }
-
-        String[] processed = new String[propertyValue.size()];
-        int index = 0;
-        for (String value : propertyValue) {
-            processed[index] = processQueryValue(value);
-            index++;
-        }
-        queryProps.put(propertyName, processed);
-    }
-
-    public void addOptionalQueryProperty(
-            String propertyName,
-            Object propertyValue,
-            Map<String, Object> queryProps) {
-
-        if (propertyValue == null || "".equals(propertyValue)) {
-            return;
-        }
-
-        if (propertyValue instanceof String) {
-            queryProps.put(propertyName, processQueryValue((String) propertyValue));
-        } else {
-            queryProps.put(propertyName, propertyValue);
-        }
-
-    }
-
-    protected void applyOptionalQueryLikeProperties(
-            String propertyName,
-            Collection<String> propertyValue,
-            BasicDBObject query) {
-
-        if (propertyValue == null || propertyValue.size() == 0) {
-            return;
-        }
-
-        if (propertyValue.size() == 1) {
-            String value = propertyValue.iterator().next();
-            if (value == null || "".equals(value)) {
-                return;
-            }
-            String parsedValue = processQueryValue(value);
-            query.append(propertyName, java.util.regex.Pattern.compile(parsedValue));
-            return;
-        }
-
-        for (String value : propertyValue) {
-
-            String parsedValue = processQueryValue(value);
-
-            // For like you have to pass the value in via a regex in order for
-            // the resultant query to be properly formatted. Previously we concatenated
-            // / + value + / which just resulted in Mongo looking for "/value/" and
-            // obviously never finding anything. We essentially need to get it to just be
-            // /value/ (no ") for the query to work and this should do that.
-            BasicDBObject inQuery = new BasicDBObject(
-                    "$in",
-                    java.util.regex.Pattern.compile(parsedValue)
-            );
-
-            query.append(propertyName, inQuery);
-        }
-    }
-
-    private String processQueryValue(String value) {
-        return "NULL".equals(value) ? null : value;
-    }
-
     public DBCollection getRegistrationsCollection() {
         return getDatabase().getCollection(Registration.COLLECTION_NAME);
     }
@@ -157,43 +62,6 @@ public class SearchHelper {
             throw new WebApplicationException(Response.Status.SERVICE_UNAVAILABLE);
         }
         return db;
-    }
-
-    public static String timeToDateTimeString(long time) {
-
-        Calendar cal = Calendar.getInstance();
-        cal.setTimeInMillis(time);
-        StringBuilder dateBuilder = new StringBuilder();
-        int year = cal.get(Calendar.YEAR);
-        int month = cal.get(Calendar.MONTH) + 1;
-        int day = cal.get(Calendar.DAY_OF_MONTH);
-        int hour = cal.get(Calendar.HOUR_OF_DAY);
-        int minute = cal.get(Calendar.MINUTE);
-        int second = cal.get(Calendar.SECOND);
-
-        dateBuilder.append(year + "/");
-        if (month < 10) {
-            dateBuilder.append("0");
-        }
-        dateBuilder.append(month + "/");
-        if (day < 10) {
-            dateBuilder.append("0");
-        }
-        dateBuilder.append(day + " ");
-        if (hour < 10) {
-            dateBuilder.append("0");
-        }
-        dateBuilder.append(hour + ":");
-        if (minute < 10) {
-            dateBuilder.append("0");
-        }
-        dateBuilder.append(minute + ":");
-        if (second < 10) {
-            dateBuilder.append("0");
-        }
-        dateBuilder.append(second);
-
-        return dateBuilder.toString();
     }
 
     /**

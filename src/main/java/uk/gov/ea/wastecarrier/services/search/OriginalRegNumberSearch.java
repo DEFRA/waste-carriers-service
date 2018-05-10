@@ -22,7 +22,7 @@ public class OriginalRegNumberSearch {
 
     public List<Registration> execute() {
 
-        JacksonDBCollection<Registration, String> registrations = this.searchHelper.getRegistrations();
+        JacksonDBCollection<Registration, String> registrations = this.searchHelper.registrationsCollection();
 
         // Query to find registrations with matching accountEmail
         DBQuery.Query query = DBQuery.is("originalRegistrationNumber", this.originalRegNumber);

@@ -60,7 +60,7 @@ public class RegistrationSearch {
 
     public List<Registration> execute() {
 
-        JacksonDBCollection<Registration, String> registrations = this.searchHelper.getRegistrations();
+        JacksonDBCollection<Registration, String> registrations = this.searchHelper.registrationsCollection();
 
         List<Registration> results = new LinkedList<>();
 
