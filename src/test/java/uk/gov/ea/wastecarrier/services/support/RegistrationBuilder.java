@@ -24,6 +24,7 @@ import java.util.*;
 public class RegistrationBuilder {
 
     private BuildType buildType;
+    private Boolean includeCopyCard = false;
 
     private String regIdentifier;
     private String accountEmail = "jason@example.com";
@@ -36,17 +37,20 @@ public class RegistrationBuilder {
     private Date paymentReceived = new Date();
     private Integer paymentAmount = 0;
     private Payment.PaymentType paymentType = Payment.PaymentType.WORLDPAY;
-    private Integer balance = 0;
 
     public enum BuildType {
         LOWER,
         UPPER,
-        UPPER_COPY,
         IRRENEWAL
     }
 
     public RegistrationBuilder(BuildType buildType) {
         this.buildType = buildType;
+    }
+
+    public RegistrationBuilder(BuildType buildType, Boolean includeCopyCard) {
+        this.buildType = buildType;
+        this.includeCopyCard = includeCopyCard;
     }
 
     public RegistrationBuilder regIdentifier(String regIdentifier)
@@ -115,33 +119,7 @@ public class RegistrationBuilder {
         return this;
     }
 
-    public RegistrationBuilder balance(Integer balance)
-    {
-        this.balance = balance;
-        return this;
-    }
-
     public Registration build() {
-        Registration registration = null;
-
-        switch(this.buildType) {
-            case LOWER:
-                registration = buildLowerTier();
-                break;
-            case UPPER:
-                registration = buildUpperTier();
-                break;
-            case UPPER_COPY:
-                registration = buildUpperTier();
-                break;
-            case IRRENEWAL:
-                registration = buildIRRenewal();
-                break;
-        }
-        return registration;
-    }
-
-    private Registration buildLowerTier() {
         Registration reg = new Registration();
 
         reg.setUuid(generateUUID());
@@ -152,69 +130,71 @@ public class RegistrationBuilder {
         reg.setConstructionWaste("no");
         reg.setCompanyName("WCR Service test LT");
         reg.setFirstName("Jason");
-        reg.setLastName("Isaac");
-        reg.setPhoneNumber("01179345400");
-        reg.setContactEmail("jason@example.com");
-        reg.setAccountEmail(this.accountEmail);
-        reg.setDeclaration("1");
-
-        ArrayList<Address> addresses = new ArrayList<>();
-        addresses.add(generateAddress(Address.addressType.REGISTERED));
-        addresses.add(generateAddress(Address.addressType.POSTAL));
-        reg.setAddresses(addresses);
-
-        reg.setMetaData(generateMetaData(MetaData.RegistrationStatus.PENDING));
-
-        reg.setFinanceDetails(generateFinanceDetails());
-
-        return reg;
-    }
-
-    private Registration buildUpperTier() {
-        Registration reg = new Registration();
-
-        reg.setUuid(generateUUID());
-        reg.setRegIdentifier(generateRegIdentifier(Registration.RegistrationTier.UPPER));
-        reg.setTier(Registration.RegistrationTier.UPPER);
-        reg.setBusinessType("soleTrader");
-        reg.setOtherBusinesses("no");
-        reg.setConstructionWaste("yes");
-        reg.setRegistrationType("carrier_broker_dealer");
-        reg.setCompanyName("WCR Service test UT");
-        reg.setFirstName("Jason");
         reg.setLastName("Isaacs");
         reg.setPhoneNumber("01179345400");
         reg.setContactEmail("jason@example.com");
-        reg.setDeclaredConvictions(this.declaredConvictions);
         reg.setAccountEmail(this.accountEmail);
         reg.setDeclaration("1");
-        reg.setExpires_on(generateExpiryDate());
 
         ArrayList<Address> addresses = new ArrayList<>();
         addresses.add(generateAddress(Address.addressType.REGISTERED));
         addresses.add(generateAddress(Address.addressType.POSTAL));
         reg.setAddresses(addresses);
+
+        reg.setMetaData(generateMetaData());
+        reg.setFinanceDetails(generateFinanceDetails());
+
+        switch(this.buildType) {
+            case LOWER:
+                buildLowerTier(reg);
+                break;
+            case UPPER:
+                buildUpperTier(reg);
+                break;
+            case IRRENEWAL:
+                buildIRRenewal(reg);
+                break;
+        }
+        return reg;
+    }
+
+    private void buildLowerTier(Registration reg) {
+        reg.setRegIdentifier(generateRegIdentifier(Registration.RegistrationTier.LOWER));
+        reg.setTier(Registration.RegistrationTier.LOWER);
+
+        reg.setOtherBusinesses("no");
+        reg.setConstructionWaste("no");
+
+        reg.setCompanyName("WCR Service test LT");
+    }
+
+    private Registration buildUpperTier(Registration reg) {
+        reg.setRegIdentifier(generateRegIdentifier(Registration.RegistrationTier.UPPER));
+        reg.setTier(Registration.RegistrationTier.UPPER);
+
+        reg.setOtherBusinesses("no");
+        reg.setConstructionWaste("yes");
+        reg.setRegistrationType("carrier_broker_dealer");
+
+        reg.setCompanyName("WCR Service test UT");
+
+        reg.setDeclaredConvictions(this.declaredConvictions);
+        reg.setExpires_on(generateExpiryDate());
 
         ArrayList<KeyPerson> persons = new ArrayList<>();
         persons.add(generateKeyPerson(KeyPerson.PersonType.KEY));
         reg.setKeyPeople(persons);
-
-        reg.setMetaData(generateMetaData(MetaData.RegistrationStatus.PENDING));
-
-        reg.setFinanceDetails(generateFinanceDetails());
 
         reg.setConvictionSearchResult(generateConvictionSearchResult(this.companyConvictionMatch));
 
         return reg;
     }
 
-    private Registration buildIRRenewal() {
-        Registration reg = buildUpperTier();
+    private void buildIRRenewal(Registration reg) {
+        buildUpperTier(reg);
 
         reg.setOriginalDateExpiry(generateOriginalExpiryDate());
         reg.setOriginalRegistrationNumber(this.originalRegNumber);
-
-        return reg;
     }
 
     private String generateRegIdentifier(Registration.RegistrationTier tierType) {
@@ -300,17 +280,16 @@ public class RegistrationBuilder {
                 payments.add(generatePayment(details.getOrders().get(0).getOrderCode()));
                 details.setPayments(payments);
                 break;
-            case UPPER_COPY:
-                payments.add(generatePayment(details.getOrders().get(0).getOrderCode()));
-                details.setPayments(payments);
-                break;
             case IRRENEWAL:
                 payments.add(generatePayment(details.getOrders().get(0).getOrderCode()));
                 details.setPayments(payments);
                 break;
         }
 
-        details.setBalance(this.balance);
+        // Doesn't actually matter what we set the balance to. When we save the
+        // registration code in the Registration class will determine what the
+        // balance is based on the value of the orders and payments it contains
+        details.setBalance(0);
 
         return details;
     }
@@ -341,19 +320,17 @@ public class RegistrationBuilder {
                 orderItems.add(generateOrderItem(OrderItem.OrderItemType.NEW));
                 order.setOrderItems(orderItems);
                 break;
-            case UPPER_COPY:
-                order.setTotalAmount(15900);
-                order.setWorldPayStatus("AUTHORISED");
-                orderItems.add(generateOrderItem(OrderItem.OrderItemType.NEW));
-                orderItems.add(generateOrderItem(OrderItem.OrderItemType.COPY_CARDS));
-                order.setOrderItems(orderItems);
-                break;
             case IRRENEWAL:
                 order.setTotalAmount(10500);
                 order.setWorldPayStatus("AUTHORISED");
                 orderItems.add(generateOrderItem(OrderItem.OrderItemType.RENEW));
                 order.setOrderItems(orderItems);
                 break;
+        }
+
+        if (this.includeCopyCard) {
+            order.setTotalAmount(order.getTotalAmount() + 500);
+            orderItems.add(generateOrderItem(OrderItem.OrderItemType.COPY_CARDS));
         }
 
         return order;
@@ -407,12 +384,12 @@ public class RegistrationBuilder {
                 case UPPER:
                     payment.setAmount(15400);
                     break;
-                case UPPER_COPY:
-                    payment.setAmount(15900);
-                    break;
                 case IRRENEWAL:
                     payment.setAmount(10500);
                     break;
+            }
+            if (this.includeCopyCard) {
+                payment.setAmount(payment.getAmount() + 500);
             }
         }
 

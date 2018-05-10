@@ -107,10 +107,9 @@ public class CopyCardSearchTest {
         );
 
         List<Registration> results = search.execute();
-        String resultRegIdentifier = results.get(0).getRegIdentifier();
 
         assertEquals("Only one registration is returned", 1, results.size());
-        assertEquals("Matching registration is CBDU8", "CBDU8", resultRegIdentifier);
+        assertEquals("Matching registration is CBDU8", "CBDU8", results.get(0).getRegIdentifier());
     }
 
     @Test
@@ -144,7 +143,7 @@ public class CopyCardSearchTest {
 
         // Create registration with copy cards, but its order updated date is before
         // the date filter
-        reg = new RegistrationBuilder(RegistrationBuilder.BuildType.UPPER_COPY)
+        reg = new RegistrationBuilder(RegistrationBuilder.BuildType.UPPER, true)
                 .regIdentifier("CBDU2")
                 .orderUpdatedDate(TestUtil.fromCurrentDate(0,0,-1))
                 .build();
@@ -152,34 +151,34 @@ public class CopyCardSearchTest {
 
         // Create registration with copy cards, but its order updated date is after
         // the date filter
-        reg = new RegistrationBuilder(RegistrationBuilder.BuildType.UPPER_COPY)
+        reg = new RegistrationBuilder(RegistrationBuilder.BuildType.UPPER, true)
                 .regIdentifier("CBDU3")
                 .orderUpdatedDate(TestUtil.fromCurrentDate(0,0,1))
                 .build();
         connection.registrationsDao.insertRegistration(reg);
 
         // Create registration with copy cards, but no declared or matched convictions
-        reg = new RegistrationBuilder(RegistrationBuilder.BuildType.UPPER_COPY)
+        reg = new RegistrationBuilder(RegistrationBuilder.BuildType.UPPER, true)
                 .regIdentifier("CBDU4")
                 .build();
         connection.registrationsDao.insertRegistration(reg);
 
         // Create registration with copy cards where a conviction has been declared
-        reg = new RegistrationBuilder(RegistrationBuilder.BuildType.UPPER_COPY)
+        reg = new RegistrationBuilder(RegistrationBuilder.BuildType.UPPER, true)
                 .regIdentifier("CBDU5")
                 .declaredConvictions("yes")
                 .build();
         connection.registrationsDao.insertRegistration(reg);
 
         // Create registration with copy cards where the company has been flagged
-        reg = new RegistrationBuilder(RegistrationBuilder.BuildType.UPPER_COPY)
+        reg = new RegistrationBuilder(RegistrationBuilder.BuildType.UPPER, true)
                 .regIdentifier("CBDU6")
                 .companyConvictionMatch(ConvictionSearchResult.MatchResult.YES)
                 .build();
         connection.registrationsDao.insertRegistration(reg);
 
         // Create registration with copy cards where a person has been flagged
-        reg = new RegistrationBuilder(RegistrationBuilder.BuildType.UPPER_COPY)
+        reg = new RegistrationBuilder(RegistrationBuilder.BuildType.UPPER, true)
                 .regIdentifier("CBDU7")
                 .keyPersonConvictionMatch(ConvictionSearchResult.MatchResult.YES)
                 .build();
@@ -187,7 +186,7 @@ public class CopyCardSearchTest {
 
         // Create registration with copy cards where a conviction has been declared
         // and it has also been flagged
-        reg = new RegistrationBuilder(RegistrationBuilder.BuildType.UPPER_COPY)
+        reg = new RegistrationBuilder(RegistrationBuilder.BuildType.UPPER, true)
                 .regIdentifier("CBDU8")
                 .declaredConvictions("yes")
                 .keyPersonConvictionMatch(ConvictionSearchResult.MatchResult.YES)

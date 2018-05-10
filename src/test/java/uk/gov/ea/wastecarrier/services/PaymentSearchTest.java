@@ -410,7 +410,7 @@ public class PaymentSearchTest {
         connection.registrationsDao.insertRegistration(reg);
 
         // Create a new registration with a copy card order and a payment (fully paid)
-        reg = new RegistrationBuilder(RegistrationBuilder.BuildType.UPPER_COPY)
+        reg = new RegistrationBuilder(RegistrationBuilder.BuildType.UPPER, true)
                 .regIdentifier("CBDU8")
                 .paymentType(Payment.PaymentType.BANKTRANSFER)
                 .build();
