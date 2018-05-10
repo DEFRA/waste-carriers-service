@@ -11,9 +11,9 @@ import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.core.MetaData.RegistrationStatus;
 
 public class RegistrationHelper {
-	
-	/** logger for this class. */
-	private static Logger log = Logger.getLogger(RegistrationHelper.class.getName());
+
+    /** logger for this class. */
+    private static Logger log = Logger.getLogger(RegistrationHelper.class.getName());
 
     public static Boolean isAwaitingConvictionConfirmation(Registration registration) {
 
@@ -54,37 +54,37 @@ public class RegistrationHelper {
     }
     
     /**
-	 * Check if today is beyond the expired date
-	 */
+     * Check if today is beyond the expired date
+     */
     public static Boolean hasExpired(Registration registration)
     {
-    	if (registration.getTier() != null && registration.getTier().equals(Registration.RegistrationTier.UPPER))
-    	{
-			Date currentDate = new Date();
-			Date expiresDate = registration.getExpires_on();
-			if (expiresDate != null)
-			{
-				return currentDate.getTime() > expiresDate.getTime();
-			}
-			else
-			{
-				log.warning("Could not find an expiry date for Upper tier registration: " + registration.getId());
-				log.info("Marking registration as expired as the expiry date cannot be found");
-				return true;
-			}
-    	}
-    	return false;
+        if (registration.getTier() != null && registration.getTier().equals(Registration.RegistrationTier.UPPER))
+        {
+            Date currentDate = new Date();
+            Date expiresDate = registration.getExpires_on();
+            if (expiresDate != null)
+            {
+                return currentDate.getTime() > expiresDate.getTime();
+            }
+            else
+            {
+                log.warning("Could not find an expiry date for Upper tier registration: " + registration.getId());
+                log.info("Marking registration as expired as the expiry date cannot be found");
+                return true;
+            }
+        }
+        return false;
     }
     
     /**
-	 * Sets registration as EXPIRED
-	 */
+     * Sets registration as EXPIRED
+     */
     public static Registration setAsExpired(Registration registration)
     {
-		MetaData md = registration.getMetaData();
-		md.setStatus(RegistrationStatus.EXPIRED);
-		md.setLastModified(MetaData.getCurrentDateTime());
-		registration.setMetaData(md);
-		return registration;
+        MetaData md = registration.getMetaData();
+        md.setStatus(RegistrationStatus.EXPIRED);
+        md.setLastModified(MetaData.getCurrentDateTime());
+        registration.setMetaData(md);
+        return registration;
     }
 }

@@ -17,20 +17,20 @@ import static org.junit.Assert.assertTrue;
 public class RegistrationsMongoDaoTest {
 
     private static ConnectionUtil connection;
-	private static final String lowerTierRegNumber = "CBDL99999";
+    private static final String lowerTierRegNumber = "CBDL99999";
 
-	@BeforeClass
+    @BeforeClass
     public static void setup() {
         connection = new ConnectionUtil();
-	}
+    }
 
     /**
      * Deletes any registrations we have created during testing
      */
-	@AfterClass
+    @AfterClass
     public static void tearDown() {
         connection.clean();
-	}
+    }
 
     /**
      * Check we can connect to MongoDb. Simply creating a connection is not a
@@ -38,10 +38,10 @@ public class RegistrationsMongoDaoTest {
      * getNumberOfRegistrationsTotal() as this performs a query against the DB,
      * and checks we can connect, authenticate, query and return a result
      */
-	@Test
-	public void test1_getNumberOfRegistrationsTotal() {
+    @Test
+    public void test1_getNumberOfRegistrationsTotal() {
         connection.registrationsDao.getNumberOfRegistrationsTotal();
-	}
+    }
 
     /**
      * Check we can insert a new lower tier registration into the registrations

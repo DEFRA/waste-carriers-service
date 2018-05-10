@@ -26,34 +26,34 @@ import java.util.logging.Logger;
 @Consumes(MediaType.APPLICATION_JSON)
 public class OrderResource
 {
-	
-	private OrdersMongoDao dao;
 
-	private Logger log = Logger.getLogger(OrderResource.class.getName());
-	
-	/**
-	 * 
-	 * @param database
-	 */
-	public OrderResource(DatabaseConfiguration database)
-	{
-		dao = new OrdersMongoDao(database);
-	}
-	
+    private OrdersMongoDao dao;
 
-	/**
-	 * Update the given Order within the Registration
-	 * @param registrationId
-	 * @param id
-	 * @param order
-	 * @return
-	 */
-	@PUT
-	@Timed
+    private Logger log = Logger.getLogger(OrderResource.class.getName());
+
+    /**
+     *
+     * @param database
+     */
+    public OrderResource(DatabaseConfiguration database)
+    {
+        dao = new OrdersMongoDao(database);
+    }
+
+
+    /**
+     * Update the given Order within the Registration
+     * @param registrationId
+     * @param id
+     * @param order
+     * @return
+     */
+    @PUT
+    @Timed
     public Order updateOrder(@PathParam("registrationId") String registrationId, @PathParam("id") String id, @Valid Order order)
     {
-		log.info("PUT method on the order. Updating the Order in the database.");
-		order.setDateLastUpdated(new Date());
-    	return dao.updateOrder(registrationId, id, order);
+        log.info("PUT method on the order. Updating the Order in the database.");
+        order.setDateLastUpdated(new Date());
+        return dao.updateOrder(registrationId, id, order);
     }
 }

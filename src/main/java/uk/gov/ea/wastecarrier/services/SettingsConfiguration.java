@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.NotEmpty;
 
 public class SettingsConfiguration extends Configuration {
-	
+
     @NotEmpty
     @JsonProperty
     private String registrationPeriod = "3";
@@ -28,34 +28,34 @@ public class SettingsConfiguration extends Configuration {
     private int copyCardCost = 1000;
 
     /**
-	 * @return the registrationPeriod
-	 */
-	public String getRegistrationPeriod()
-	{
-		return registrationPeriod + " YEARS";
-	}
+     * @return the registrationPeriod
+     */
+    public String getRegistrationPeriod()
+    {
+        return registrationPeriod + " YEARS";
+    }
 
-	/**
-	 * @return the registrationRenewPeriod
-	 */
-	public String getRegistrationRenewPeriod()
-	{
-		return registrationRenewPeriod + " MONTHS";
-	}
+    /**
+     * @return the registrationRenewPeriod
+     */
+    public String getRegistrationRenewPeriod()
+    {
+        return registrationRenewPeriod + " MONTHS";
+    }
 
-	/**
-	 * @return the registrationCost
-	 */
-	public int getRegistrationCost()
-	{
-		return registrationCost;
-	}
+    /**
+     * @return the registrationCost
+     */
+    public int getRegistrationCost()
+    {
+        return registrationCost;
+    }
 
-	/**
-	 * @return the copyCardCost
-	 */
-	public int getCopyCardCost()
-	{
-		return copyCardCost;
-	}
+    /**
+     * @return the copyCardCost
+     */
+    public int getCopyCardCost()
+    {
+        return copyCardCost;
+    }
 }

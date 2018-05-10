@@ -12,9 +12,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class User
 {
-	/**
-	 * 
-	 * field :email,              :type => String, :default => ""
+    /**
+     *
+     * field :email,              :type => String, :default => ""
   field :encrypted_password, :type => String, :default => ""
 
   ## Recoverable
@@ -41,79 +41,79 @@ public class User
   field :failed_attempts, :type => Integer, :default => 0 # Only if lock strategy is :failed_attempts
   field :unlock_token,    :type => String # Only if unlock strategy is :email or :both
   field :locked_at,       :type => Time
-	 */
-	
-	@JsonProperty
-	private String email;
+     */
 
-	@JsonProperty
-	private String confirmed_at;
-	
-	@JsonProperty
-	private String confirmation_sent_at;
-	
-	public final static String COLLECTION_SINGULAR_NAME = "user";
-	public final static String COLLECTION_NAME = COLLECTION_SINGULAR_NAME +"s";
-	
-	public User()
-	{
-	}
-	
-	public User(String email, String confirmed_at,
-			String confirmation_sent_at)
-	{
-		super();
-		this.email = email;
-		this.confirmed_at = confirmed_at;
-		this.confirmation_sent_at = confirmation_sent_at;
-	}
-	
-	/**
-	 * @return the email
-	 */
-	public String getEmail()
-	{
-		return email;
-	}
+    @JsonProperty
+    private String email;
 
-	/**
-	 * @param email the email to set
-	 */
-	public void setEmail(String email)
-	{
-		this.email = email;
-	}
+    @JsonProperty
+    private String confirmed_at;
 
-	/**
-	 * @return the confirmed_at
-	 */
-	public String getConfirmed_at()
-	{
-		return confirmed_at;
-	}
+    @JsonProperty
+    private String confirmation_sent_at;
 
-	/**
-	 * @param confirmed_at the confirmed_at to set
-	 */
-	public void setConfirmed_at(String confirmed_at)
-	{
-		this.confirmed_at = confirmed_at;
-	}
+    public final static String COLLECTION_SINGULAR_NAME = "user";
+    public final static String COLLECTION_NAME = COLLECTION_SINGULAR_NAME +"s";
 
-	/**
-	 * @return the confirmation_sent_at
-	 */
-	public String getConfirmation_sent_at()
-	{
-		return confirmation_sent_at;
-	}
+    public User()
+    {
+    }
 
-	/**
-	 * @param confirmation_sent_at the confirmation_sent_at to set
-	 */
-	public void setConfirmation_sent_at(String confirmation_sent_at)
-	{
-		this.confirmation_sent_at = confirmation_sent_at;
-	}
+    public User(String email, String confirmed_at,
+            String confirmation_sent_at)
+    {
+        super();
+        this.email = email;
+        this.confirmed_at = confirmed_at;
+        this.confirmation_sent_at = confirmation_sent_at;
+    }
+
+    /**
+     * @return the email
+     */
+    public String getEmail()
+    {
+        return email;
+    }
+
+    /**
+     * @param email the email to set
+     */
+    public void setEmail(String email)
+    {
+        this.email = email;
+    }
+
+    /**
+     * @return the confirmed_at
+     */
+    public String getConfirmed_at()
+    {
+        return confirmed_at;
+    }
+
+    /**
+     * @param confirmed_at the confirmed_at to set
+     */
+    public void setConfirmed_at(String confirmed_at)
+    {
+        this.confirmed_at = confirmed_at;
+    }
+
+    /**
+     * @return the confirmation_sent_at
+     */
+    public String getConfirmation_sent_at()
+    {
+        return confirmation_sent_at;
+    }
+
+    /**
+     * @param confirmation_sent_at the confirmation_sent_at to set
+     */
+    public void setConfirmation_sent_at(String confirmation_sent_at)
+    {
+        this.confirmation_sent_at = confirmation_sent_at;
+    }
 
 }

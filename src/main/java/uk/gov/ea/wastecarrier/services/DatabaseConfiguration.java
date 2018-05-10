@@ -23,29 +23,29 @@ public class DatabaseConfiguration {
     @JsonProperty
     private String username;
 
-	@JsonProperty
+    @JsonProperty
     private String password;
 
-	public DatabaseConfiguration() {
-		//empty constructor
-	}
-	
-	/**
-	 * Constructor with arguments.
-	 * @param host
-	 * @param port
-	 * @param name
-	 * @param username
-	 * @param password
-	 */
-	public DatabaseConfiguration(String host, int port, String name, String username, String password) {
-		this.host = host;
-		this.port = port;
-		this.name = name;
-		this.username = username;
-		this.password = password;
-	}
-	
+    public DatabaseConfiguration() {
+        //empty constructor
+    }
+
+    /**
+     * Constructor with arguments.
+     * @param host
+     * @param port
+     * @param name
+     * @param username
+     * @param password
+     */
+    public DatabaseConfiguration(String host, int port, String name, String username, String password) {
+        this.host = host;
+        this.port = port;
+        this.name = name;
+        this.username = username;
+        this.password = password;
+    }
+
     public String getHost() {
         return host;
     }
@@ -59,18 +59,18 @@ public class DatabaseConfiguration {
     }
     
     /**
-	 * @return the username
-	 */
-	public String getUsername()
-	{
-		return username;
-	}
+     * @return the username
+     */
+    public String getUsername()
+    {
+        return username;
+    }
 
-	/**
-	 * @return the password
-	 */
-	public String getPassword()
-	{
-		return password;
-	}
+    /**
+     * @return the password
+     */
+    public String getPassword()
+    {
+        return password;
+    }
 }

@@ -25,10 +25,10 @@ public class MongoHealthCheck extends HealthCheck {
 
     @Override
     protected Result check() throws Exception {
-    	//A regular non-admin mongo user may not be able to see/list all the database names...
-    	DB db = this.databaseHelper.getConnection();
-    	Set<String> collectionNames = db.getCollectionNames();
-    	collectionNames.isEmpty();
+        //A regular non-admin mongo user may not be able to see/list all the database names...
+        DB db = this.databaseHelper.getConnection();
+        Set<String> collectionNames = db.getCollectionNames();
+        collectionNames.isEmpty();
         return Result.healthy();
     }
 

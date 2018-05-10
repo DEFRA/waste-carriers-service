@@ -21,27 +21,27 @@ import java.util.logging.Logger;
 @Consumes(MediaType.APPLICATION_JSON)
 public class SettingsResource
 {	
-	private Logger log = Logger.getLogger(SettingsResource.class.getName());
-	
-	private Settings settings;
-	
-	/**
-	 * 
-	 * @param settings SettingsConfiguration parameters for the Settigns service
-	 */
-	public SettingsResource(SettingsConfiguration settings)
-	{
-		this.settings = new Settings(settings);
-	}
+    private Logger log = Logger.getLogger(SettingsResource.class.getName());
 
-	/**
-	 * GETS the list of reusable generic parameters that are business configurable by the waste carrier forms.
-	 */
-	@GET
-	public Settings getSettings()
-	{
-		log.info("GET METHOD detected in getSettings() method for getting settings");
-		return settings;
-	}
+    private Settings settings;
+
+    /**
+     *
+     * @param settings SettingsConfiguration parameters for the Settigns service
+     */
+    public SettingsResource(SettingsConfiguration settings)
+    {
+        this.settings = new Settings(settings);
+    }
+
+    /**
+     * GETS the list of reusable generic parameters that are business configurable by the waste carrier forms.
+     */
+    @GET
+    public Settings getSettings()
+    {
+        log.info("GET METHOD detected in getSettings() method for getting settings");
+        return settings;
+    }
 
 }
