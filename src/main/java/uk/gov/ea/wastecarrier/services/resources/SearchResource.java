@@ -29,47 +29,51 @@ public class SearchResource {
     }
 
     @GET
-    @Path("/" + Registration.COLLECTION_NAME)
-    public List<Registration> getRegistrations(
-            @QueryParam("from") Optional<String> from,
-            @QueryParam("until") Optional<String> until,
-            @QueryParam("route[]") Set<String> route,
-            @QueryParam("status[]") Set<String> status,
-            @QueryParam("businessType[]") Set<String> businessType,
-            @QueryParam("tier[]") Set<String> tier,
-            @QueryParam("copyCards[]") Set<String> copyCards,
+    @Path("/registrations")
+    public List<Registration> queryRegistrations(
+            @QueryParam("from") @NotEmpty String from,
+            @QueryParam("until") @NotEmpty String until,
+            @QueryParam("route[]") Set<String> routes,
+            @QueryParam("tier[]") Set<String> tiers,
+            @QueryParam("status[]") Set<String> statuses,
+            @QueryParam("businessType[]") Set<String> businessTypes,
+            @QueryParam("copyCards") Optional<String> copyCards,
             @QueryParam("declaredConvictions") Optional<String> declaredConvictions,
             @QueryParam("convictionCheckMatch") Optional<String> convictionCheckMatch,
             @QueryParam("resultCount") Optional<Integer> resultCount
     ) {
 
         log.fine("Get Method Detected at /search/registrations");
-        List<Registration> searchresults;
+        List<Registration> searchResults;
+
+        Integer extractedResultCount = 0;
+        if (resultCount.isPresent()) extractedResultCount = resultCount.get();
+
+        String extractedCopyCards = null;
+        if (copyCards.isPresent()) extractedCopyCards = copyCards.get();
 
         try {
-            RegistrationSearch search = new RegistrationSearch(new SearchHelper(this.databaseHelper));
-            search.fromDate = from;
-            search.toDate = until;
-            search.route = route;
-            search.status = status;
-            search.businessType = businessType;
-            search.tier = tier;
-            search.copyCards = copyCards;
-            search.declaredConvictions = declaredConvictions;
-            search.convictionCheckMatch = convictionCheckMatch;
-            search.resultCount = resultCount;
+            RegistrationSearch search = new RegistrationSearch(
+                    new SearchHelper(this.databaseHelper),
+                    from,
+                    until,
+                    routes,
+                    tiers,
+                    statuses,
+                    businessTypes,
+                    extractedCopyCards,
+                    declaredConvictions.isPresent(),
+                    convictionCheckMatch.isPresent(),
+                    extractedResultCount
+            );
 
-            searchresults = search.getRegistrations();
-
-            if (searchresults.size() == 0) {
-                log.info("No results found - returning empty list");
-            }
+            searchResults = search.execute();
         } catch (MongoException e) {
-            log.severe("Database not found, check the database is running");
+            log.severe("Query error: " + e.getMessage());
             throw new WebApplicationException(Response.Status.SERVICE_UNAVAILABLE);
         }
 
-        return searchresults;
+        return searchResults;
     }
 
     @GET

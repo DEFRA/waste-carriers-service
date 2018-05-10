@@ -27,6 +27,10 @@ public class RegistrationBuilder {
     private Boolean includeCopyCard = false;
 
     private String regIdentifier;
+    private String businessType = "soleTrader";
+    private Date dateRegistered = new Date();
+    private MetaData.RegistrationStatus registrationStatus = MetaData.RegistrationStatus.ACTIVE;
+    private MetaData.RouteType registrationRoute = MetaData.RouteType.DIGITAL;
     private String accountEmail = "jason@example.com";
     private String originalRegNumber = "CB/VM8888WW/A001";
     private String declaredConvictions = "no";
@@ -56,6 +60,30 @@ public class RegistrationBuilder {
     public RegistrationBuilder regIdentifier(String regIdentifier)
     {
         this.regIdentifier = regIdentifier;
+        return this;
+    }
+
+    public RegistrationBuilder businessType(String businessType)
+    {
+        this.businessType = businessType;
+        return this;
+    }
+
+    public RegistrationBuilder dateRegistered(Date dateRegistered)
+    {
+        this.dateRegistered = dateRegistered;
+        return this;
+    }
+
+    public RegistrationBuilder registrationStatus(MetaData.RegistrationStatus registrationStatus)
+    {
+        this.registrationStatus = registrationStatus;
+        return this;
+    }
+
+    public RegistrationBuilder registrationRoute(MetaData.RouteType registrationRoute)
+    {
+        this.registrationRoute = registrationRoute;
         return this;
     }
 
@@ -123,12 +151,7 @@ public class RegistrationBuilder {
         Registration reg = new Registration();
 
         reg.setUuid(generateUUID());
-        reg.setRegIdentifier(generateRegIdentifier(Registration.RegistrationTier.LOWER));
-        reg.setTier(Registration.RegistrationTier.LOWER);
-        reg.setBusinessType("soleTrader");
-        reg.setOtherBusinesses("no");
-        reg.setConstructionWaste("no");
-        reg.setCompanyName("WCR Service test LT");
+        reg.setBusinessType(this.businessType);
         reg.setFirstName("Jason");
         reg.setLastName("Isaacs");
         reg.setPhoneNumber("01179345400");
@@ -231,7 +254,28 @@ public class RegistrationBuilder {
 
         person.setFirstName("Jason");
         person.setLastName("Isaacs");
-        person.setPosition("Owner");
+
+        switch(this.businessType) {
+            case "soleTrader":
+                person.setPosition("Owner");
+                break;
+            case "partnership":
+                person.setPosition("Partner");
+                break;
+            case "limitedCompany":
+                person.setPosition("Director");
+                break;
+            case "publicBody":
+                person.setPosition("Director");
+                break;
+            case "authority":
+                person.setPosition("Manager");
+                break;
+            case "other":
+                person.setPosition("Owner");
+                break;
+        }
+
         person.setDateOfBirth(new Date(-207404198000L));
         person.setPersonType(personType);
         person.setConvictionSearchResult(generateConvictionSearchResult(this.keyPersonConvictionMatch));
@@ -249,19 +293,16 @@ public class RegistrationBuilder {
         return searchResult;
     }
 
-    private MetaData generateMetaData(MetaData.RegistrationStatus status) {
+    private MetaData generateMetaData() {
         MetaData data = new MetaData();
 
-        data.setRoute(MetaData.RouteType.DIGITAL);
-        data.setDateRegistered(new Date());
+        data.setRoute(this.registrationRoute);
+        data.setDateRegistered(this.dateRegistered);
         data.setLastModified(data.getDateRegistered());
 
-        if (status == MetaData.RegistrationStatus.ACTIVE) {
-            data.setStatus(MetaData.RegistrationStatus.PENDING);
-            data.setDateActivated(new Date());
-        } else {
-            data.setStatus(MetaData.RegistrationStatus.PENDING);
-        }
+        data.setStatus(this.registrationStatus);
+
+        if (this.registrationStatus != MetaData.RegistrationStatus.PENDING) data.setDateActivated(new Date());
 
         return data;
     }

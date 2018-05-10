@@ -8,7 +8,6 @@ import uk.gov.ea.wastecarrier.services.support.ConnectionUtil;
 import uk.gov.ea.wastecarrier.services.support.RegistrationBuilder;
 import uk.gov.ea.wastecarrier.services.support.TestUtil;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -60,14 +59,9 @@ public class CopyCardSearchTest {
 
         List<Registration> results = search.execute();
 
-        String[] regs = {
-                results.get(0).getRegIdentifier(),
-                results.get(1).getRegIdentifier()
-        };
-
         assertEquals("2 registrations are returned", 2, results.size());
-        assertEquals("One of them is CBDU5", true, Arrays.stream(regs).anyMatch("CBDU5"::equals));
-        assertEquals("And the other is CBDU8", true, Arrays.stream(regs).anyMatch("CBDU8"::equals));
+        assertEquals("One of them is CBDU5", true, results.stream().map(Registration::getRegIdentifier).anyMatch("CBDU5"::equals));
+        assertEquals("And the other is CBDU8", true, results.stream().map(Registration::getRegIdentifier).anyMatch("CBDU8"::equals));
     }
 
     @Test
@@ -83,16 +77,10 @@ public class CopyCardSearchTest {
 
         List<Registration> results = search.execute();
 
-        String[] regs = {
-                results.get(0).getRegIdentifier(),
-                results.get(1).getRegIdentifier(),
-                results.get(2).getRegIdentifier()
-        };
-
         assertEquals("3 registrations are returned", 3, results.size());
-        assertEquals("One of them is CBDU6", true, Arrays.stream(regs).anyMatch("CBDU6"::equals));
-        assertEquals("One is CBDU7", true, Arrays.stream(regs).anyMatch("CBDU7"::equals));
-        assertEquals("And the other is CBDU8", true, Arrays.stream(regs).anyMatch("CBDU8"::equals));
+        assertEquals("One of them is CBDU6", true, results.stream().map(Registration::getRegIdentifier).anyMatch("CBDU6"::equals));
+        assertEquals("One is CBDU7", true, results.stream().map(Registration::getRegIdentifier).anyMatch("CBDU7"::equals));
+        assertEquals("And the other is CBDU8", true, results.stream().map(Registration::getRegIdentifier).anyMatch("CBDU8"::equals));
     }
 
     @Test

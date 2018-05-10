@@ -8,7 +8,6 @@ import uk.gov.ea.wastecarrier.services.support.ConnectionUtil;
 import uk.gov.ea.wastecarrier.services.support.RegistrationBuilder;
 import uk.gov.ea.wastecarrier.services.support.TestUtil;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
@@ -46,18 +45,11 @@ public class PaymentSearchTest {
 
         List<Registration> results = search.execute();
 
-        String[] regs = {
-                results.get(0).getRegIdentifier(),
-                results.get(1).getRegIdentifier(),
-                results.get(2).getRegIdentifier(),
-                results.get(3).getRegIdentifier()
-        };
-
         assertEquals("4 registrations are returned", 4, results.size());
-        assertEquals("One of them is CBDU4", true, Arrays.stream(regs).anyMatch("CBDU4"::equals));
-        assertEquals("One is CBDU7", true, Arrays.stream(regs).anyMatch("CBDU7"::equals));
-        assertEquals("One is CBDU8", true, Arrays.stream(regs).anyMatch("CBDU8"::equals));
-        assertEquals("And the other is CBDU9", true, Arrays.stream(regs).anyMatch("CBDU9"::equals));
+        assertEquals("One of them is CBDU4", true, results.stream().map(Registration::getRegIdentifier).anyMatch("CBDU4"::equals));
+        assertEquals("One is CBDU7", true, results.stream().map(Registration::getRegIdentifier).anyMatch("CBDU7"::equals));
+        assertEquals("One is CBDU8", true, results.stream().map(Registration::getRegIdentifier).anyMatch("CBDU8"::equals));
+        assertEquals("And the other is CBDU9", true, results.stream().map(Registration::getRegIdentifier).anyMatch("CBDU9"::equals));
     }
 
     @Test
@@ -113,16 +105,10 @@ public class PaymentSearchTest {
 
         List<Registration> results = search.execute();
 
-        String[] regs = {
-                results.get(0).getRegIdentifier(),
-                results.get(1).getRegIdentifier(),
-                results.get(2).getRegIdentifier()
-        };
-
         assertEquals("2 registrations are returned", 3, results.size());
-        assertEquals("One of them is CBDU4", true, Arrays.stream(regs).anyMatch("CBDU4"::equals));
-        assertEquals("One is CBDU8", true, Arrays.stream(regs).anyMatch("CBDU8"::equals));
-        assertEquals("And the other is CBDU9", true, Arrays.stream(regs).anyMatch("CBDU9"::equals));
+        assertEquals("One of them is CBDU4", true, results.stream().map(Registration::getRegIdentifier).anyMatch("CBDU4"::equals));
+        assertEquals("One is CBDU8", true, results.stream().map(Registration::getRegIdentifier).anyMatch("CBDU8"::equals));
+        assertEquals("And the other is CBDU9", true, results.stream().map(Registration::getRegIdentifier).anyMatch("CBDU9"::equals));
     }
 
     @Test
@@ -186,18 +172,11 @@ public class PaymentSearchTest {
 
         List<Registration> results = search.execute();
 
-        String[] regs = {
-                results.get(0).getRegIdentifier(),
-                results.get(1).getRegIdentifier(),
-                results.get(2).getRegIdentifier(),
-                results.get(3).getRegIdentifier()
-        };
-
         assertEquals("4 registrations are returned", 4, results.size());
-        assertEquals("One of them is CBDU4", true, Arrays.stream(regs).anyMatch("CBDU4"::equals));
-        assertEquals("One is CBDU7", true, Arrays.stream(regs).anyMatch("CBDU7"::equals));
-        assertEquals("One is CBDU8", true, Arrays.stream(regs).anyMatch("CBDU8"::equals));
-        assertEquals("And the other is CBDU9", true, Arrays.stream(regs).anyMatch("CBDU9"::equals));
+        assertEquals("One of them is CBDU4", true, results.stream().map(Registration::getRegIdentifier).anyMatch("CBDU4"::equals));
+        assertEquals("One is CBDU7", true, results.stream().map(Registration::getRegIdentifier).anyMatch("CBDU7"::equals));
+        assertEquals("One is CBDU8", true, results.stream().map(Registration::getRegIdentifier).anyMatch("CBDU8"::equals));
+        assertEquals("And the other is CBDU9", true, results.stream().map(Registration::getRegIdentifier).anyMatch("CBDU9"::equals));
     }
 
     @Test
@@ -238,14 +217,9 @@ public class PaymentSearchTest {
 
         List<Registration> results = search.execute();
 
-        String[] regs = {
-                results.get(0).getRegIdentifier(),
-                results.get(1).getRegIdentifier()
-        };
-
         assertEquals("2 registrations are returned", 2, results.size());
-        assertEquals("One of them is CBDU7", true, Arrays.stream(regs).anyMatch("CBDU7"::equals));
-        assertEquals("And the other is CBDU9", true, Arrays.stream(regs).anyMatch("CBDU9"::equals));
+        assertEquals("One of them is CBDU7", true, results.stream().map(Registration::getRegIdentifier).anyMatch("CBDU7"::equals));
+        assertEquals("And the other is CBDU9", true, results.stream().map(Registration::getRegIdentifier).anyMatch("CBDU9"::equals));
     }
 
     @Test
@@ -288,18 +262,11 @@ public class PaymentSearchTest {
 
         List<Registration> results = search.execute();
 
-        String[] regs = {
-                results.get(0).getRegIdentifier(),
-                results.get(1).getRegIdentifier(),
-                results.get(2).getRegIdentifier(),
-                results.get(3).getRegIdentifier()
-        };
-
         assertEquals("4 registrations are returned", 4, results.size());
-        assertEquals("One of them is CBDU4", true, Arrays.stream(regs).anyMatch("CBDU4"::equals));
-        assertEquals("One is CBDU7", true, Arrays.stream(regs).anyMatch("CBDU7"::equals));
-        assertEquals("One is CBDU8", true, Arrays.stream(regs).anyMatch("CBDU8"::equals));
-        assertEquals("And the other is CBDU9", true, Arrays.stream(regs).anyMatch("CBDU9"::equals));
+        assertEquals("One of them is CBDU4", true, results.stream().map(Registration::getRegIdentifier).anyMatch("CBDU4"::equals));
+        assertEquals("One is CBDU7", true, results.stream().map(Registration::getRegIdentifier).anyMatch("CBDU7"::equals));
+        assertEquals("One is CBDU8", true, results.stream().map(Registration::getRegIdentifier).anyMatch("CBDU8"::equals));
+        assertEquals("And the other is CBDU9", true, results.stream().map(Registration::getRegIdentifier).anyMatch("CBDU9"::equals));
     }
 
     @Test
@@ -324,14 +291,9 @@ public class PaymentSearchTest {
 
         List<Registration> results = search.execute();
 
-        String[] regs = {
-                results.get(0).getRegIdentifier(),
-                results.get(1).getRegIdentifier()
-        };
-
         assertEquals("2 registrations are returned", 3, results.size());
-        assertEquals("One is CBDU4", true, Arrays.stream(regs).anyMatch("CBDU4"::equals));
-        assertEquals("And the other is CBDU7", true, Arrays.stream(regs).anyMatch("CBDU7"::equals));
+        assertEquals("One is CBDU4", true, results.stream().map(Registration::getRegIdentifier).anyMatch("CBDU4"::equals));
+        assertEquals("And the other is CBDU7", true, results.stream().map(Registration::getRegIdentifier).anyMatch("CBDU7"::equals));
     }
 
     @Test

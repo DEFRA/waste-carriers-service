@@ -10,10 +10,11 @@ import java.util.*;
 import java.util.logging.Logger;
 
 public class CopyCardSearch {
+
     private final static String DATE_FILTER_PROPERTY = "financeDetails.orders.dateLastUpdated";
     private final static String COMPANY_CONVICTION_MATCH = "conviction_search_result.match_result";
     private final static String KEY_PEOPLE_CONVICTION_MATCH = "key_people.conviction_search_result.match_result";
-    private final static String COPY_CARDS_MATCH = "financeDetails.orders.orderItems.type";
+    private final static String ORDER_ITEM_TYPE_MATCH = "financeDetails.orders.orderItems.type";
 
     private SearchHelper searchHelper;
     private Logger log = Logger.getLogger(CopyCardSearch.class.getName());
@@ -58,7 +59,7 @@ public class CopyCardSearch {
         DBQuery.Query query = DBQuery.and(DBQuery
                 .greaterThanEquals(DATE_FILTER_PROPERTY, this.fromDate)
                 .lessThanEquals(DATE_FILTER_PROPERTY, this.toDate)
-                .is(COPY_CARDS_MATCH, OrderItem.OrderItemType.COPY_CARDS)
+                .is(ORDER_ITEM_TYPE_MATCH, OrderItem.OrderItemType.COPY_CARDS)
         );
 
         if (this.declaredConvictions) query.and(DBQuery.is("declaredConvictions", "yes"));
