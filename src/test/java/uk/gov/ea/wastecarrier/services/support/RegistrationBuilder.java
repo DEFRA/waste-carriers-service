@@ -34,6 +34,9 @@ public class RegistrationBuilder {
     private Date orderCreatedDate = new Date();
     private Date orderUpdatedDate = this.orderCreatedDate;
     private Date paymentReceived = new Date();
+    private Integer paymentAmount = 0;
+    private Payment.PaymentType paymentType = Payment.PaymentType.WORLDPAY;
+    private Integer balance = 0;
 
     public enum BuildType {
         LOWER,
@@ -97,6 +100,24 @@ public class RegistrationBuilder {
     public RegistrationBuilder paymentReceived(Date paymentReceived)
     {
         this.paymentReceived = paymentReceived;
+        return this;
+    }
+
+    public RegistrationBuilder paymentAmount(Integer paymentAmount)
+    {
+        this.paymentAmount = paymentAmount;
+        return this;
+    }
+
+    public RegistrationBuilder paymentType(Payment.PaymentType paymentType)
+    {
+        this.paymentType = paymentType;
+        return this;
+    }
+
+    public RegistrationBuilder balance(Integer balance)
+    {
+        this.balance = balance;
         return this;
     }
 
@@ -288,8 +309,8 @@ public class RegistrationBuilder {
                 details.setPayments(payments);
                 break;
         }
-        
-        details.setBalance(0);
+
+        details.setBalance(this.balance);
 
         return details;
     }
@@ -377,18 +398,22 @@ public class RegistrationBuilder {
         payment.setWorldPayPaymentStatus("AUTHORISED");
         payment.setUpdatedByUser("jason@example.com");
         payment.setComment("Paid via Worldpay");
-        payment.setPaymentType(Payment.PaymentType.WORLDPAY);
+        payment.setPaymentType(this.paymentType);
 
-        switch(this.buildType) {
-            case UPPER:
-                payment.setAmount(15400);
-                break;
-            case UPPER_COPY:
-                payment.setAmount(15900);
-                break;
-            case IRRENEWAL:
-                payment.setAmount(10500);
-                break;
+        if (this.paymentAmount != 0) {
+            payment.setAmount(this.paymentAmount);
+        } else {
+            switch (this.buildType) {
+                case UPPER:
+                    payment.setAmount(15400);
+                    break;
+                case UPPER_COPY:
+                    payment.setAmount(15900);
+                    break;
+                case IRRENEWAL:
+                    payment.setAmount(10500);
+                    break;
+            }
         }
 
         return payment;

@@ -1,22 +1,15 @@
-package uk.gov.ea.wastecarrier.services.mongoDb;
+package uk.gov.ea.wastecarrier.services.search;
 
-import com.google.common.base.Optional;
-import com.mongodb.BasicDBList;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCursor;
+import org.mongojack.DBQuery;
+import org.mongojack.JacksonDBCollection;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
+import java.util.*;
 import java.util.logging.Logger;
 
 public class PaymentSearch
 {
-    private final static String REG_DATE_FILTER_PROPERTY = "metaData.dateRegistered";
+    private final static String HAS_PAYMENTS = "financeDetails.payments";
     private final static String REG_BALANCE_FILTER_PROPERTY = "financeDetails.balance";
     private final static String PAY_DATE_FILTER_PROPERTY = "financeDetails.payments.dateReceived";
     private final static String ORD_DATE_FILTER_PROPERTY = "financeDetails.orders.dateCreated";
@@ -26,171 +19,87 @@ public class PaymentSearch
     private SearchHelper searchHelper;
     private Logger log = Logger.getLogger(PaymentSearch.class.getName());
 
-    public Optional<String> fromDate;
-    public Optional<String> toDate;
-    public Set<String> paymentStatuses;
-    public Set<String> paymentTypes;
-    public Set<String> chargeTypes;
-    public Optional<Integer> resultCount;
+    private Date fromDate;
+    private Date toDate;
+    private PaymentStatus paymentStatus;
+    private Set<String> paymentTypes;
+    private Set<String> chargeTypes;
+    private Integer resultCount;
 
-    public enum PaymentStatus
-    {
+    public enum PaymentStatus {
         AWAITING_PAYMENT,
         FULLY_PAID,
         OVERPAID
     }
 
-    public PaymentSearch(SearchHelper searchHelper)
-    {
+    public PaymentSearch(SearchHelper searchHelper,
+                         String fromDate,
+                         String toDate,
+                         String paymentStatus,
+                         Set<String> paymentTypes,
+                         Set<String> chargeTypes,
+                         Integer resultCount
+    ) {
         this.searchHelper = searchHelper;
+
+        this.fromDate = this.searchHelper.dateStringToDate(fromDate, false).toDate();
+        this.toDate = this.searchHelper.dateStringToDate(toDate, true).toDate();
+        this.paymentStatus = PaymentStatus.valueOf(paymentStatus);
+        this.paymentTypes = paymentTypes;
+        this.chargeTypes = chargeTypes;
+        this.resultCount = resultCount;
     }
 
-    public List<Registration> getRegistrations()
-    {
-        Map<String, Object> queryProps = authorQueryProperties();
+    public List<Registration> execute() {
 
-        BasicDBObject query = new BasicDBObject();
+        JacksonDBCollection<Registration, String> registrations = this.searchHelper.getRegistrations();
 
-        BasicDBList dateFilter = getDateFilter();
-        BasicDBList paymentStatusFilter = getPaymentStatusFilter();
-        boolean haveDateFilter = !dateFilter.isEmpty();
-        boolean havePaymentStatusFilter = !paymentStatusFilter.isEmpty();
-        
-        if (haveDateFilter && havePaymentStatusFilter)
-        {
-            BasicDBList list = new BasicDBList();
-            list.add(new BasicDBObject("$or", dateFilter));
-            list.add(new BasicDBObject("$or", paymentStatusFilter));
-            query.append("$and", list);
-        }
-        else if (haveDateFilter)
-        {
-            query.append("$or", dateFilter);
-        }
-        else if (havePaymentStatusFilter)
-        {
-            query.append("$or", paymentStatusFilter);
-        }
+        DBQuery.Query query = DBQuery.and(DBQuery
+                .exists(HAS_PAYMENTS)
+                .greaterThanEquals(PAY_DATE_FILTER_PROPERTY, this.fromDate)
+                .lessThanEquals(PAY_DATE_FILTER_PROPERTY, this.toDate)
+                .greaterThanEquals(ORD_DATE_FILTER_PROPERTY, this.fromDate)
+                .lessThanEquals(ORD_DATE_FILTER_PROPERTY, this.toDate)
+        );
 
-        if (queryProps != null)
-        {
-            for (Map.Entry<String, Object> entry : queryProps.entrySet())
-            {
-                Object value = entry.getValue();
-                if (value instanceof String[])
-                {
-                    BasicDBObject inQuery = new BasicDBObject("$in", value);
-                    query.append(entry.getKey(), inQuery);
-                }
-                else
-                {
-                    query.append(entry.getKey(), value);
-                }
+        if (!this.paymentTypes.isEmpty()) query.in(PAY_TYPE_FILTER_PROPERTY, this.paymentTypes);
+
+        if (!this.chargeTypes.isEmpty()) query.in(ORD_TYPE_FILTER_PROPERTY, this.chargeTypes);
+
+
+        query.and(paymentStatusQuery());
+
+        List<Registration> results = new LinkedList<>();
+
+        try {
+            if (this.resultCount == 0) {
+                results = searchHelper.toList(registrations.find(query));
+            } else {
+                results = searchHelper.toList(registrations.find(query).limit(this.resultCount));
             }
+        } catch (IllegalArgumentException e) {
+            log.severe("Caught exception: " + e.getMessage() + " - Cannot find payments");
         }
 
-        if (log.isLoggable(Level.INFO))
-        {
-            log.info(query.toString());
-        }
-
-        DBCursor cursor = searchHelper.getRegistrationsCollection().find(query);
-        applyResultCount(cursor);
-
-        return searchHelper.toRegistrationList(cursor);
+        return results;
     }
 
-    protected void applyResultCount(DBCursor cursor)
-    {
-        if (resultCount.isPresent())
-        {
-            Integer count = resultCount.get();
-            if ( count != null && !count.equals(0))
-            {
-                cursor.limit(resultCount.get());
-            }
-        }
-    }
+    private DBQuery.Query paymentStatusQuery() {
 
-    protected BasicDBList getPaymentStatusFilter()
-    {
-        BasicDBList filter = new BasicDBList();
-        if ((paymentStatuses != null) && !paymentStatuses.isEmpty())
-        {
-            for (String value : paymentStatuses) {
-                if (value.equals(PaymentStatus.AWAITING_PAYMENT.name())) {
-                    filter.add(new BasicDBObject(REG_BALANCE_FILTER_PROPERTY, new BasicDBObject("$gt", 0)));
-                } else if (value.equals(PaymentStatus.FULLY_PAID.name())) {
-                    filter.add(new BasicDBObject(REG_BALANCE_FILTER_PROPERTY, 0));
-                } else if (value.equals(PaymentStatus.OVERPAID.name())) {
-                    filter.add(new BasicDBObject(REG_BALANCE_FILTER_PROPERTY, new BasicDBObject("$lt", 0)));
-                }
-            }
+        DBQuery.Query query = null;
+
+        switch (this.paymentStatus) {
+            case AWAITING_PAYMENT:
+                query = DBQuery.greaterThan(REG_BALANCE_FILTER_PROPERTY, 0);
+                break;
+            case FULLY_PAID:
+                query = DBQuery.is(REG_BALANCE_FILTER_PROPERTY, 0);
+                break;
+            case OVERPAID:
+                query = DBQuery.lessThan(REG_BALANCE_FILTER_PROPERTY, 0);
+                break;
         }
 
-        return filter;
-    }
-
-    protected BasicDBList getDateFilter()
-    {
-        Date from = null;
-        Date until = null;
-        BasicDBObject paymentsClause = null;
-        BasicDBObject ordersClause = null;
-
-        if (fromDate.isPresent())
-        {
-            from = SearchHelper.dateStringToDate(fromDate.get(), false).toDate();
-        }
-
-        if (toDate.isPresent())
-        {
-            until = SearchHelper.dateStringToDate(toDate.get(), true).toDate();
-        }
-
-        if (from != null && until != null)
-        {
-            paymentsClause = new BasicDBObject(
-                    PAY_DATE_FILTER_PROPERTY,
-                    new BasicDBObject("$gte", from).append("$lte", until));
-            ordersClause = new BasicDBObject(
-                    ORD_DATE_FILTER_PROPERTY,
-                    new BasicDBObject("$gte", from).append("$lte", until));
-        }
-        else if (from != null)
-        {
-            paymentsClause = new BasicDBObject(
-                    PAY_DATE_FILTER_PROPERTY, new BasicDBObject("$gte", from));
-            ordersClause = new BasicDBObject(
-                    ORD_DATE_FILTER_PROPERTY, new BasicDBObject("$gte", from));
-
-        }
-        else if (until != null)
-        {
-            paymentsClause = new BasicDBObject(
-                    PAY_DATE_FILTER_PROPERTY, new BasicDBObject("$lte", until));
-            ordersClause = new BasicDBObject(
-                    ORD_DATE_FILTER_PROPERTY, new BasicDBObject("$lte", until));
-        }
-
-        BasicDBList filter = new BasicDBList();
-        if (paymentsClause != null) {
-            filter.add(paymentsClause);
-        }
-        if (ordersClause != null) {
-            filter.add(ordersClause);
-        }
-
-        return filter;
-    }
-
-    private Map<String,Object> authorQueryProperties()
-    {
-        Map<String, Object> queryProps = new HashMap<String, Object>();
-
-        searchHelper.addOptionalQueryProperty(PAY_TYPE_FILTER_PROPERTY, this.paymentTypes, queryProps);
-        searchHelper.addOptionalQueryProperty(ORD_TYPE_FILTER_PROPERTY, this.chargeTypes, queryProps);
-
-        return queryProps;
+        return query;
     }
 }

@@ -4,14 +4,9 @@ import com.google.common.base.Optional;
 import com.mongodb.MongoException;
 import org.hibernate.validator.constraints.NotEmpty;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
-import uk.gov.ea.wastecarrier.services.core.CopyCards;
-import uk.gov.ea.wastecarrier.services.core.Payment;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.mongoDb.*;
-import uk.gov.ea.wastecarrier.services.search.CopyCardSearch;
-import uk.gov.ea.wastecarrier.services.search.AccountSearch;
-import uk.gov.ea.wastecarrier.services.search.OriginalRegNumberSearch;
-import uk.gov.ea.wastecarrier.services.search.SearchHelper;
+import uk.gov.ea.wastecarrier.services.search.*;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -78,11 +73,11 @@ public class SearchResource {
     }
 
     @GET
-    @Path("/" + Payment.COLLECTION_NAME)
-    public List<Registration> getRegistrations(
-            @QueryParam("from") Optional<String> from,
-            @QueryParam("until") Optional<String> until,
-            @QueryParam("paymentStatus[]") Set<String> paymentStatuses,
+    @Path("/payments")
+    public List<Registration> queryPayments(
+            @QueryParam("from") @NotEmpty String from,
+            @QueryParam("until") @NotEmpty String until,
+            @QueryParam("paymentStatus") @NotEmpty String paymentStatus,
             @QueryParam("paymentType[]") Set<String> paymentTypes,
             @QueryParam("chargeType[]") Set<String> chargeTypes,
             @QueryParam("resultCount") Optional<Integer> resultCount
@@ -91,22 +86,23 @@ public class SearchResource {
         log.fine("Get Method Detected at /search/payments");
         List<Registration> searchResults;
 
+        Integer extractedResultCount = 0;
+        if (resultCount.isPresent()) extractedResultCount = resultCount.get();
+
         try {
-            PaymentSearch search = new PaymentSearch(new SearchHelper(this.databaseHelper));
-            search.fromDate = from;
-            search.toDate = until;
-            search.paymentStatuses = paymentStatuses;
-            search.paymentTypes = paymentTypes;
-            search.chargeTypes = chargeTypes;
-            search.resultCount = resultCount;
+            PaymentSearch search = new PaymentSearch(
+                    new SearchHelper(this.databaseHelper),
+                    from,
+                    until,
+                    paymentStatus,
+                    paymentTypes,
+                    chargeTypes,
+                    extractedResultCount
+            );
 
-            searchResults = search.getRegistrations();
-
-            if (searchResults.size() == 0) {
-                log.info("No results found - returning empty list");
-            }
+            searchResults = search.execute();
         } catch (MongoException e) {
-            log.severe("Database not found, check the database is running");
+            log.severe("Query error: " + e.getMessage());
             throw new WebApplicationException(Response.Status.SERVICE_UNAVAILABLE);
         }
 
@@ -126,9 +122,10 @@ public class SearchResource {
         log.fine("Get Method Detected at /search/copycards");
         List<Registration> searchResults;
 
+        Integer extractedResultCount = 0;
+        if (resultCount.isPresent()) extractedResultCount = resultCount.get();
+
         try {
-            Integer extractedResultCount = 0;
-            if (resultCount.isPresent()) extractedResultCount = resultCount.get();
             CopyCardSearch search = new CopyCardSearch(
                     new SearchHelper(this.databaseHelper),
                     from,
@@ -139,7 +136,6 @@ public class SearchResource {
             );
 
             searchResults = search.execute();
-
         } catch (MongoException e) {
             log.severe("Query error: " + e.getMessage());
             throw new WebApplicationException(Response.Status.SERVICE_UNAVAILABLE);
@@ -157,7 +153,10 @@ public class SearchResource {
         List<Registration> searchResults;
 
         try {
-            AccountSearch search = new AccountSearch(new SearchHelper(this.databaseHelper), accountEmail);
+            AccountSearch search = new AccountSearch(
+                    new SearchHelper(this.databaseHelper),
+                    accountEmail
+            );
 
             searchResults = search.execute();
         } catch (MongoException e) {
@@ -177,7 +176,10 @@ public class SearchResource {
         List<Registration> searchResults;
 
         try {
-            OriginalRegNumberSearch search = new OriginalRegNumberSearch(new SearchHelper(this.databaseHelper), originalRegNumber);
+            OriginalRegNumberSearch search = new OriginalRegNumberSearch(
+                    new SearchHelper(this.databaseHelper),
+                    originalRegNumber
+            );
 
             searchResults = search.execute();
         } catch (MongoException e) {

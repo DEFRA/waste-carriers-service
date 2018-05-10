@@ -77,10 +77,9 @@ public class CopyCardSearch {
                 results = searchHelper.toList(registrations.find(query).limit(this.resultCount));
             }
         } catch (IllegalArgumentException e) {
-            log.severe("Caught exception: " + e.getMessage() + " - Cannot find copy cards ");
+            log.severe("Caught exception: " + e.getMessage() + " - Cannot find copy cards");
         }
 
         return results;
-
     }
 }
