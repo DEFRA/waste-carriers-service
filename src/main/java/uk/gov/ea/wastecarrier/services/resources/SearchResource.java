@@ -29,6 +29,32 @@ public class SearchResource {
     }
 
     @GET
+    @Path("/registrations/{searchWithin}/{searchValue}")
+    public List<Registration> queryWithin(
+            @PathParam("searchValue") @NotEmpty String searchValue,
+            @PathParam("searchWithin") @NotEmpty String searchWithin
+    ) {
+        log.fine("Get Method Detected at /search/registrations/{searchWithin}/{searchValue}");
+        List<Registration> searchResults;
+
+        try {
+            WithinSearch search = new WithinSearch(
+                    new SearchHelper(this.databaseHelper),
+                    searchValue,
+                    searchWithin,
+                    100
+            );
+
+            searchResults = search.execute();
+        } catch (MongoException e) {
+            log.severe("Query error: " + e.getMessage());
+            throw new WebApplicationException(Response.Status.SERVICE_UNAVAILABLE);
+        }
+
+        return searchResults;
+    }
+
+    @GET
     @Path("/registrations")
     public List<Registration> queryRegistrations(
             @QueryParam("from") @NotEmpty String from,
