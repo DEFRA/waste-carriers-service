@@ -51,8 +51,8 @@ public class RegistrationSearchTest {
         List<Registration> results = search.execute();
 
         assertEquals("8 registration are returned", 8, results.size());
-        assertEquals("Of which CBDU1 is NOT included", true, results.stream().map(Registration::getRegIdentifier).noneMatch("CBDU1"::equals));
-        assertEquals("Nor is CBDU2", true, results.stream().map(Registration::getRegIdentifier).noneMatch("CBDU2"::equals));
+        assertEquals("Of which CBDU1 is NOT included", false, results.stream().map(Registration::getRegIdentifier).anyMatch("CBDU1"::equals));
+        assertEquals("Nor is CBDU2", false, results.stream().map(Registration::getRegIdentifier).anyMatch("CBDU2"::equals));
     }
 
     @Test
@@ -103,8 +103,8 @@ public class RegistrationSearchTest {
         List<Registration> results = search.execute();
 
         assertEquals("8 registration are returned", 8, results.size());
-        assertEquals("Of which CBDU1 is NOT included", true, results.stream().map(Registration::getRegIdentifier).noneMatch("CBDU1"::equals));
-        assertEquals("Nor is CBDU2", true, results.stream().map(Registration::getRegIdentifier).noneMatch("CBDU2"::equals));
+        assertEquals("Of which CBDU1 is NOT included", false, results.stream().map(Registration::getRegIdentifier).anyMatch("CBDU1"::equals));
+        assertEquals("Nor is CBDU2", false, results.stream().map(Registration::getRegIdentifier).anyMatch("CBDU2"::equals));
     }
 
     @Test
@@ -156,8 +156,8 @@ public class RegistrationSearchTest {
         List<Registration> results = search.execute();
 
         assertEquals("8 registration are returned", 8, results.size());
-        assertEquals("Of which CBDU1 is NOT included", true, results.stream().map(Registration::getRegIdentifier).noneMatch("CBDU1"::equals));
-        assertEquals("Nor is CBDU2", true, results.stream().map(Registration::getRegIdentifier).noneMatch("CBDU2"::equals));
+        assertEquals("Of which CBDU1 is NOT included", false, results.stream().map(Registration::getRegIdentifier).anyMatch("CBDU1"::equals));
+        assertEquals("Nor is CBDU2", false, results.stream().map(Registration::getRegIdentifier).anyMatch("CBDU2"::equals));
     }
 
     @Test
@@ -457,8 +457,8 @@ public class RegistrationSearchTest {
         List<Registration> results = search.execute();
 
         assertEquals("4 registrations are returned", 4, results.size());
-        assertEquals("Of which CBDU9 is NOT included", true, results.stream().map(Registration::getRegIdentifier).noneMatch("CBDU9"::equals));
-        assertEquals("Nor is CBDU10", true, results.stream().map(Registration::getRegIdentifier).noneMatch("CBDU10"::equals));
+        assertEquals("Of which CBDU9 is NOT included", false, results.stream().map(Registration::getRegIdentifier).anyMatch("CBDU9"::equals));
+        assertEquals("Nor is CBDU10", false, results.stream().map(Registration::getRegIdentifier).anyMatch("CBDU10"::equals));
     }
 
     @Test
