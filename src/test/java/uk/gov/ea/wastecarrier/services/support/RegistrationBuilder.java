@@ -28,6 +28,10 @@ public class RegistrationBuilder {
 
     private String regIdentifier;
     private String businessType = "soleTrader";
+    private String companyName;
+    private String lastName = "Isaacs";
+    private String registeredPostcode = "BS1 5AH";
+    private String postalPostcode = "WA4 1HT";
     private Date dateRegistered = new Date();
     private MetaData.RegistrationStatus registrationStatus = MetaData.RegistrationStatus.ACTIVE;
     private MetaData.RouteType registrationRoute = MetaData.RouteType.DIGITAL;
@@ -57,92 +61,97 @@ public class RegistrationBuilder {
         this.includeCopyCard = includeCopyCard;
     }
 
-    public RegistrationBuilder regIdentifier(String regIdentifier)
-    {
+    public RegistrationBuilder regIdentifier(String regIdentifier) {
         this.regIdentifier = regIdentifier;
         return this;
     }
 
-    public RegistrationBuilder businessType(String businessType)
-    {
+    public RegistrationBuilder businessType(String businessType) {
         this.businessType = businessType;
         return this;
     }
 
-    public RegistrationBuilder dateRegistered(Date dateRegistered)
-    {
+    public RegistrationBuilder companyName(String companyName) {
+        this.companyName = companyName;
+        return this;
+    }
+
+    public RegistrationBuilder lastName(String lastName) {
+        this.lastName = lastName;
+        return this;
+    }
+
+    public RegistrationBuilder registeredPostcode(String postcode) {
+        this.registeredPostcode = postcode;
+        return this;
+    }
+
+    public RegistrationBuilder postalPostcode(String postcode) {
+        this.postalPostcode = postcode;
+        return this;
+    }
+
+    public RegistrationBuilder dateRegistered(Date dateRegistered) {
         this.dateRegistered = dateRegistered;
         return this;
     }
 
-    public RegistrationBuilder registrationStatus(MetaData.RegistrationStatus registrationStatus)
-    {
+    public RegistrationBuilder registrationStatus(MetaData.RegistrationStatus registrationStatus) {
         this.registrationStatus = registrationStatus;
         return this;
     }
 
-    public RegistrationBuilder registrationRoute(MetaData.RouteType registrationRoute)
-    {
+    public RegistrationBuilder registrationRoute(MetaData.RouteType registrationRoute) {
         this.registrationRoute = registrationRoute;
         return this;
     }
 
-    public RegistrationBuilder accountEmail(String accountEmail)
-    {
+    public RegistrationBuilder accountEmail(String accountEmail) {
         this.accountEmail = accountEmail;
         return this;
     }
 
-    public RegistrationBuilder originalRegNumber(String originalRegNumber)
-    {
+    public RegistrationBuilder originalRegNumber(String originalRegNumber) {
         this.originalRegNumber = originalRegNumber;
         return this;
     }
 
-    public RegistrationBuilder declaredConvictions(String declaredConvictions)
-    {
+    public RegistrationBuilder declaredConvictions(String declaredConvictions) {
         this.declaredConvictions = declaredConvictions;
         return this;
     }
 
-    public RegistrationBuilder companyConvictionMatch(ConvictionSearchResult.MatchResult companyConvictionMatch)
-    {
+    public RegistrationBuilder companyConvictionMatch(ConvictionSearchResult.MatchResult companyConvictionMatch) {
         this.companyConvictionMatch = companyConvictionMatch;
         return this;
     }
 
-    public RegistrationBuilder keyPersonConvictionMatch(ConvictionSearchResult.MatchResult keyPersonConvictionMatch)
-    {
+    public RegistrationBuilder keyPersonConvictionMatch(ConvictionSearchResult.MatchResult keyPersonConvictionMatch) {
         this.keyPersonConvictionMatch = keyPersonConvictionMatch;
         return this;
     }
 
-    public RegistrationBuilder orderCreatedDate(Date orderCreatedDate)
-    {
+    public RegistrationBuilder orderCreatedDate(Date orderCreatedDate) {
         this.orderCreatedDate = orderCreatedDate;
         return this;
     }
 
-    public RegistrationBuilder orderUpdatedDate(Date orderUpdatedDate)
-    {
+    public RegistrationBuilder orderUpdatedDate(Date orderUpdatedDate) {
         this.orderUpdatedDate = orderUpdatedDate;
         return this;
     }
 
-    public RegistrationBuilder paymentReceived(Date paymentReceived)
-    {
+    public RegistrationBuilder paymentReceived(Date paymentReceived) {
         this.paymentReceived = paymentReceived;
         return this;
     }
 
-    public RegistrationBuilder paymentAmount(Integer paymentAmount)
-    {
+    public RegistrationBuilder paymentAmount(Integer paymentAmount) {
         this.paymentAmount = paymentAmount;
         return this;
     }
 
-    public RegistrationBuilder paymentType(Payment.PaymentType paymentType)
-    {
+    public RegistrationBuilder paymentType(Payment.PaymentType paymentType) {
         this.paymentType = paymentType;
         return this;
     }
@@ -152,8 +161,9 @@ public class RegistrationBuilder {
 
         reg.setUuid(generateUUID());
         reg.setBusinessType(this.businessType);
+        reg.setCompanyName(generateCompanyName());
         reg.setFirstName("Jason");
-        reg.setLastName("Isaacs");
+        reg.setLastName(this.lastName);
         reg.setPhoneNumber("01179345400");
         reg.setContactEmail("jason@example.com");
         reg.setAccountEmail(this.accountEmail);
@@ -187,8 +197,6 @@ public class RegistrationBuilder {
 
         reg.setOtherBusinesses("no");
         reg.setConstructionWaste("no");
-
-        reg.setCompanyName("WCR Service test LT");
     }
 
     private Registration buildUpperTier(Registration reg) {
@@ -198,8 +206,6 @@ public class RegistrationBuilder {
         reg.setOtherBusinesses("no");
         reg.setConstructionWaste("yes");
         reg.setRegistrationType("carrier_broker_dealer");
-
-        reg.setCompanyName("WCR Service test UT");
 
         reg.setDeclaredConvictions(this.declaredConvictions);
         reg.setExpires_on(generateExpiryDate());
@@ -232,6 +238,34 @@ public class RegistrationBuilder {
         return "CBDU1";
     }
 
+    private String generateCompanyName() {
+        if (this.companyName != null) return this.companyName;
+
+        String companyName = "";
+        switch(this.businessType) {
+            case "soleTrader":
+                companyName = "Isaacs & Sons";
+                break;
+            case "partnership":
+                companyName = "Isaacs, Kermode & Mayo";
+                break;
+            case "limitedCompany":
+                companyName = "Isaacs Waste Services Ltd";
+                break;
+            case "publicBody":
+                companyName = "Department of Wittertainment";
+                break;
+            case "authority":
+                companyName = "Witter City Council";
+                break;
+            case "other":
+                companyName = "Morrissey Waste consultants";
+                break;
+        }
+
+        return companyName;
+    }
+
     private Address generateAddress(Address.addressType type) {
         Address addr = new Address();
 
@@ -239,11 +273,13 @@ public class RegistrationBuilder {
         addr.setHouseNumber("123");
         addr.setAddressLine1("Upper Street");
         addr.setTownCity("Bristol");
-        addr.setPostcode("BS1 5AH");
 
         if (type == Address.addressType.POSTAL) {
+            addr.setPostcode(this.postalPostcode);
             addr.setFirstName("Jason");
             addr.setLastName("Isaacs");
+        } else {
+            addr.setPostcode(this.registeredPostcode);
         }
 
         return addr;
