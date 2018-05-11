@@ -15,6 +15,15 @@ public class AccountSearch {
 
     private String accountEmail;
 
+    /**
+     * Search for registrations in the database which have a matching accountEmail
+     *
+     * This search directly supports the `Registration.find_by_email` method in
+     * the front end project.
+     *
+     * @param searchHelper
+     * @param accountEmail email to search for
+     */
     public AccountSearch(SearchHelper searchHelper, String accountEmail) {
         this.searchHelper = searchHelper;
         this.accountEmail = accountEmail;

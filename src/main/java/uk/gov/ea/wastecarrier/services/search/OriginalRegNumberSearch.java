@@ -15,6 +15,15 @@ public class OriginalRegNumberSearch {
 
     private String originalRegNumber;
 
+    /**
+     * Search for registrations in the database which have a matching accountEmail
+     *
+     * This search directly supports the `Registration.find_by_original_registration_no` method in
+     * the front end project.
+     *
+     * @param searchHelper
+     * @param originalRegNumber original IR number to search for
+     */
     public OriginalRegNumberSearch(SearchHelper searchHelper, String originalRegNumber) {
         this.searchHelper = searchHelper;
         this.originalRegNumber = originalRegNumber;

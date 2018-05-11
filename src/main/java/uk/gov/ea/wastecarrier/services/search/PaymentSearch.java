@@ -32,6 +32,23 @@ public class PaymentSearch
         OVERPAID
     }
 
+    /**
+     * Search for registrations in the database which have payments between certain dates, and where specified they
+     * match a given filter.
+     *
+     * This search directly supports the search run from the payments report screens in the back office.
+     *
+     * @param searchHelper
+     * @param fromDate either the order created or payment received date is equal to or greater than
+     * @param toDate either the order created or payment received date is equal to or less than
+     * @param paymentStatus filter based on whether then balance of the registration is 0 (FULLY_PAID), greater than 0
+     *                      (AWAITING_PAYMENT), or less than 0 (OVERPAID)
+     * @param paymentTypes a collection of possible payment types that are sent from the frontend. The paymentType field
+     *                     is checked for matches if its specified
+     * @param chargeTypes a collection of possible charge types that are sent from the frontend. The order item type
+     *                    field is checked for matches if its specified
+     * @param resultCount limit number of results to this
+     */
     public PaymentSearch(SearchHelper searchHelper,
                          String fromDate,
                          String toDate,

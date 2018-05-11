@@ -29,6 +29,23 @@ public class RegistrationSearch {
     private Boolean convictionCheckMatch;
     private Integer resultCount;
 
+    /**
+     * Search for all registrations in the database which match the specified filters.
+     *
+     * This search directly supports the search run from the registration report screens in the back office.
+     *
+     * @param searchHelper
+     * @param fromDate
+     * @param toDate
+     * @param routes
+     * @param tiers
+     * @param statuses
+     * @param businessTypes
+     * @param copyCardsFilter
+     * @param declaredConvictions registrations with a declared conviction
+     * @param convictionCheckMatch registrations with a conviction match (either company or key person)
+     * @param resultCount limit number of results to this
+     */
     public RegistrationSearch(
             SearchHelper searchHelper,
             String fromDate,

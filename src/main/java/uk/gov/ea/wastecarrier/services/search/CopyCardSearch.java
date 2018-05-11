@@ -28,6 +28,9 @@ public class CopyCardSearch {
     /**
      * Search for registrations in the database which ordered copy cards between certain dates, and where specified they
      * match a given filter.
+     *
+     * This search directly supports the search run from the copy cards report screens in the back office.
+     *
      * @param searchHelper
      * @param fromDate order last updated date is equal to or greater than
      * @param toDate order last updated date is equal to or less than
