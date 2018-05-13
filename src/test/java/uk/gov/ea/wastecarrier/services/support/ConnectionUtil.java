@@ -13,11 +13,11 @@ public class ConnectionUtil {
     public RegistrationsMongoDao registrationsDao;
 
     public ConnectionUtil()  {
-        String host = System.getenv("WCRS_SERVICES_DB_HOST");
-        int port = Integer.valueOf(System.getenv("WCRS_SERVICES_DB_PORT"));
-        String name = System.getenv("WCRS_SERVICES_DB_NAME");
-        String username = System.getenv("WCRS_SERVICES_DB_USER");
-        String password = System.getenv("WCRS_SERVICES_DB_PASSWD");
+        String host = System.getenv("WCRS_SERVICES_DB_HOST TEST");
+        int port = Integer.valueOf(System.getenv("WCRS_SERVICES_DB_PORT_TEST"));
+        String name = System.getenv("WCRS_SERVICES_DB_NAME_TEST");
+        String username = System.getenv("WCRS_SERVICES_DB_USER_TEST");
+        String password = System.getenv("WCRS_SERVICES_DB_PASSWD_TEST");
 
         DatabaseConfiguration config = new DatabaseConfiguration(host, port, name, username, password);
 
