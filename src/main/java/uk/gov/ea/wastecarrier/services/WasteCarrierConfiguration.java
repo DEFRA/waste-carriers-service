@@ -22,11 +22,6 @@ public class WasteCarrierConfiguration extends Configuration {
     private DatabaseConfiguration userDatabase = new DatabaseConfiguration();
 
     @Valid
-    @NotNull
-    @JsonProperty
-    private ElasticSearchConfiguration elasticSearch = new ElasticSearchConfiguration();
-
-    @Valid
     @NotEmpty
     @JsonProperty
     private String postcodeFilePath = "/postcodes.csv";
@@ -62,10 +57,6 @@ public class WasteCarrierConfiguration extends Configuration {
 
     public DatabaseConfiguration getUserDatabase() {
         return userDatabase;
-    }
-
-    public ElasticSearchConfiguration getElasticSearch() {
-        return elasticSearch;
     }
 
     public String getPostcodeFilePath() {

@@ -27,6 +27,11 @@ public class SettingsConfiguration extends Configuration {
     @JsonProperty
     private int copyCardCost = 1000;
 
+    @Min(1)
+    @Max(1000)
+    @JsonProperty
+    private int searchResultCount;
+
     /**
      * @return the registrationPeriod
      */
@@ -57,5 +62,13 @@ public class SettingsConfiguration extends Configuration {
     public int getCopyCardCost()
     {
         return copyCardCost;
+    }
+
+    /**
+     * @return the searchResultCount
+     */
+    public int getSearchResultCount()
+    {
+        return searchResultCount;
     }
 }

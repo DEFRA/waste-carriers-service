@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import com.mongodb.MongoException;
 import org.hibernate.validator.constraints.NotEmpty;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
+import uk.gov.ea.wastecarrier.services.SettingsConfiguration;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.mongoDb.*;
 import uk.gov.ea.wastecarrier.services.search.*;
@@ -23,9 +24,14 @@ public class SearchResource {
     private Logger log = Logger.getLogger(OrdersResource.class.getName());
 
     private final DatabaseHelper databaseHelper;
+    private final Integer defaultResultCount;
 
-    public SearchResource(DatabaseConfiguration databaseConfiguration) {
+    public SearchResource(
+            DatabaseConfiguration databaseConfiguration,
+            Integer defaultResultCount
+    ) {
         this.databaseHelper = new DatabaseHelper(databaseConfiguration);
+        this.defaultResultCount = defaultResultCount;
     }
 
     @GET
@@ -42,7 +48,7 @@ public class SearchResource {
                     new SearchHelper(this.databaseHelper),
                     searchValue,
                     searchWithin,
-                    100
+                    defaultResultCount
             );
 
             searchResults = search.execute();

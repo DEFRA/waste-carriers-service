@@ -5,21 +5,15 @@ import java.util.logging.Logger;
 
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
-import org.elasticsearch.client.Client;
 
 import uk.gov.ea.wastecarrier.services.cli.IRImporter;
-import uk.gov.ea.wastecarrier.services.elasticsearch.ElasticSearchManaged;
-import uk.gov.ea.wastecarrier.services.elasticsearch.ElasticSearchUtils;
-import uk.gov.ea.wastecarrier.services.health.ElasticSearchHealthCheck;
 import uk.gov.ea.wastecarrier.services.health.MongoHealthCheck;
 import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.MongoManaged;
 import uk.gov.ea.wastecarrier.services.resources.*;
-import uk.gov.ea.wastecarrier.services.tasks.DatabaseCleaner;
 import uk.gov.ea.wastecarrier.services.tasks.IRRenewalPopulator;
 import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationsMongoDao;
 import uk.gov.ea.wastecarrier.services.tasks.EnsureDatabaseIndexesTask;
-import uk.gov.ea.wastecarrier.services.tasks.Indexer;
 import uk.gov.ea.wastecarrier.services.tasks.LocationPopulator;
 import uk.gov.ea.wastecarrier.services.tasks.ExceptionTester;
 import uk.gov.ea.wastecarrier.services.backgroundJobs.BackgroundJobScheduler;
@@ -46,9 +40,6 @@ import net.anthavio.airbrake.AirbrakeLogbackAppender;
 public class WasteCarrierService extends Application<WasteCarrierConfiguration>
 {
     private MongoClient mongoClient;
-
-    // The client used to talk to ElasticSearch.
-    private Client esClient;
 
     // Standard logging declaration.
     private Logger log = Logger.getLogger(WasteCarrierService.class.getName());
@@ -86,7 +77,6 @@ public class WasteCarrierService extends Application<WasteCarrierConfiguration>
     {
         final DatabaseConfiguration dbConfig = configuration.getDatabase();
         final DatabaseConfiguration userDbConfig = configuration.getUserDatabase();
-        final ElasticSearchConfiguration esConfig = configuration.getElasticSearch();
         final String postcodeFilePath = configuration.getPostcodeFilePath();
         final SettingsConfiguration sConfig = configuration.getSettings();
         
@@ -101,30 +91,26 @@ public class WasteCarrierService extends Application<WasteCarrierConfiguration>
         }
         environment.admin().addTask(new ExceptionTester("generateTestException"));
 
-        // Create a singleton instance of the ElasticSearch TransportClient. Client to be closed on shutdown.
-        esClient = ElasticSearchUtils.getNewTransportClient(esConfig);
-
-
         // Add Create Resource.
-        environment.jersey().register(new RegistrationsResource(dbConfig, esConfig, esClient, postcodeFilePath));
+        environment.jersey().register(new RegistrationsResource(dbConfig, postcodeFilePath));
         // Add Read Resource.
-        environment.jersey().register(new RegistrationReadEditResource(dbConfig, userDbConfig, esConfig, esClient, sConfig));
+        environment.jersey().register(new RegistrationReadEditResource(dbConfig, userDbConfig, sConfig));
         // Add Version Resource.
         environment.jersey().register(new RegistrationVersionResource());
 
         // Add Payment Resource, testing new URL for get payment details.
         environment.jersey().register(new NewPaymentResource());
-        environment.jersey().register(new PaymentResource(dbConfig, userDbConfig, configuration.getSettings(), esConfig));
+        environment.jersey().register(new PaymentResource(dbConfig, userDbConfig, configuration.getSettings()));
         
         // Add Order Resource.
         environment.jersey().register(new OrderResource(dbConfig));
-        environment.jersey().register(new OrdersResource(dbConfig, userDbConfig, configuration.getSettings(), esConfig));
+        environment.jersey().register(new OrdersResource(dbConfig, userDbConfig, configuration.getSettings()));
 
         // Add Settings resource.
         environment.jersey().register(new SettingsResource(sConfig));
 
-        // Add query resource.
-        environment.jersey().register(new QueryResource(dbConfig));
+        // Add search resource.
+        environment.jersey().register(new SearchResource(dbConfig, configuration.getSettings().getSearchResultCount()));
 
         // Add IR Renewals resource.
         environment.jersey().register(new IRRenewalResource(dbConfig));
@@ -153,10 +139,6 @@ public class WasteCarrierService extends Application<WasteCarrierConfiguration>
 
         // Add Database management features.
         environment.lifecycle().manage(new MongoManaged(mongoClient));
-        environment.lifecycle().manage(new ElasticSearchManaged(esClient));
-
-        // Add Indexing functionality to clean Elastic Search Indexes and perform re-index of all data.
-        environment.admin().addTask(new Indexer("indexer", dbConfig, esConfig));
 
         // Add managed component and tasks for Background Scheduled Jobs.
         BackgroundJobScheduler dailyJobScheduler = BackgroundJobScheduler.getInstance();
@@ -182,18 +164,11 @@ public class WasteCarrierService extends Application<WasteCarrierConfiguration>
             log.severe("Could not ensure indexes at startup: " + e.getMessage());
         }
 
-
         // Add Location Population functionality to create location indexes for all provided addresses of all data.
         environment.admin().addTask(new LocationPopulator("location", dbConfig, postcodeFilePath));
 
         // Add tasks related to IR data.
         environment.admin().addTask(new IRRenewalPopulator("ir-repopulate", dbConfig, configuration.getIrRenewals()));
-
-        // Add Task for Database cleaner.
-        environment.admin().addTask(new DatabaseCleaner("dbcleaner", dbConfig, esConfig, esClient));
-
-        // Add Heath Check to indexing Service.
-        environment.healthChecks().register("ElasticSearch", new ElasticSearchHealthCheck(ElasticSearchUtils.getNewTransportClient(esConfig)));
 
         // Get and Print the Jar Version to the console for logging purposes.
         Package objPackage = this.getClass().getPackage();
@@ -213,13 +188,8 @@ public class WasteCarrierService extends Application<WasteCarrierConfiguration>
                 {
                     mongoClient.close();
                 }
-                if (esClient != null)
-                {
-                    esClient.close();
-                }
             }
         });
-
     }
     
     private void initialiseAirbrakeIntegration(AirbrakeLogbackConfiguration config)
@@ -273,5 +243,4 @@ public class WasteCarrierService extends Application<WasteCarrierConfiguration>
         // Done.
         log.info("Added Airbrake appender to logging configuration.");
     }
-
 }

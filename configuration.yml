@@ -61,6 +61,8 @@ settings:
   registrationPeriod: ${WCRS_REGISTRATION_EXPIRES_AFTER:-3}
   # renew period (in months)
   registrationRenewPeriod: ${WCRS_REGISTRATION_RENEWAL_WINDOW:-3}
+  # default number of results for search
+  searchResultCount: ${WCRS_SERVICE_SEARCH_RESULT_COUNT:-50}
 
 airbrake:
   url: ${WCRS_SERVICES_AIRBRAKE_URL}
