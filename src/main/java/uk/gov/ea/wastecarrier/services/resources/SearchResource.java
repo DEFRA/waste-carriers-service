@@ -204,9 +204,9 @@ public class SearchResource {
     }
 
     @GET
-    @Path("/originalRegistrationNumber/{originalRegNumber}")
+    @Path("/original/{originalRegistrationNumber}")
     public List<Registration> queryOriginalRegNumber(
-            @PathParam("originalRegistrationNumber") @NotEmpty String originalRegNumber
+            @PathParam("originalRegistrationNumber") String originalRegNumber
     ) {
         log.fine("Get Method Detected at /search/originalRegistrationNumber");
         List<Registration> searchResults;
