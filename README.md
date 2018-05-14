@@ -14,7 +14,6 @@ This application and its associated Maven and Eclipse project implement the serv
 
 - Java 8 JDK - for building the services layer
 - [MongoDB](http://www.mongodb.org) (version 3.6) - to store registrations and user accounts
-- [ElasticSearch](http://www.elasticsearch.org) (version 1.4.1) - for full-text search
 
 ## Installation
 
