@@ -7,9 +7,9 @@ import uk.gov.ea.wastecarrier.services.helper.SearchHelper;
 
 public class RegistrationsConnectionUtil {
 
-    public SearchHelper searchHelper;
     public DatabaseHelper databaseHelper;
     public RegistrationDao dao;
+    public SearchHelper searchHelper;
 
     public RegistrationsConnectionUtil()  {
         String host = System.getenv("WCRS_SERVICES_DB_HOST TEST");

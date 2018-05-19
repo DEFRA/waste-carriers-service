@@ -16,7 +16,7 @@ import uk.gov.ea.wastecarrier.services.helper.DatabaseHelper;
 
 public class EntityMatchingDao implements ICanGetCollection<Entity> {
 
-    public static final String COLLECTION_NAME = "convictions";
+    public static final String COLLECTION_NAME = "entities";
 
     private static Logger log = Logger.getLogger(EntityMatchingDao.class.getName());
     private DatabaseHelper databaseHelper;

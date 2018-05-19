@@ -3,10 +3,13 @@ package uk.gov.ea.wastecarrier.services.support;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.dao.EntityMatchingDao;
 import uk.gov.ea.wastecarrier.services.helper.DatabaseHelper;
+import uk.gov.ea.wastecarrier.services.helper.SearchHelper;
 
 public class EntityMatchingConnectionUtil {
+
     public DatabaseHelper databaseHelper;
     public EntityMatchingDao dao;
+    public SearchHelper searchHelper;
 
     public EntityMatchingConnectionUtil() {
         String host = System.getenv("WCRS_SERVICES_EM_HOST_TEST");
@@ -19,6 +22,7 @@ public class EntityMatchingConnectionUtil {
 
         databaseHelper = new DatabaseHelper(config);
         dao = new EntityMatchingDao(config);
+        searchHelper = new SearchHelper(databaseHelper, dao);
     }
 
     public void clean() {
