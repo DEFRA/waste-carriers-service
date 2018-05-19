@@ -1,4 +1,4 @@
-package uk.gov.ea.wastecarrier.services.mongoDb;
+package uk.gov.ea.wastecarrier.services.dao;
 
 import com.mongodb.MongoClient;
 import io.dropwizard.lifecycle.Managed;
