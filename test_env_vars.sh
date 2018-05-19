@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# source envvars.sh
+# source test_env_vars.sh
 
 export WCRS_SERVICES_DB_HOST_TEST="localhost"
 export WCRS_SERVICES_DB_PORT_TEST=27017
