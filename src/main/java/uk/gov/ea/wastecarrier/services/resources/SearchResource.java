@@ -22,14 +22,18 @@ public class SearchResource {
 
     private Logger log = Logger.getLogger(OrdersResource.class.getName());
 
-    private final DatabaseHelper databaseHelper;
     private final Integer defaultResultCount;
 
+    private final SearchHelper searchHelper;
+
     public SearchResource(
-            DatabaseConfiguration databaseConfiguration,
+            DatabaseConfiguration configuration,
             Integer defaultResultCount
     ) {
-        this.databaseHelper = new DatabaseHelper(databaseConfiguration);
+        this.searchHelper = new SearchHelper(
+                new DatabaseHelper(configuration),
+                new RegistrationDao(configuration)
+        );
         this.defaultResultCount = defaultResultCount;
     }
 
@@ -44,7 +48,7 @@ public class SearchResource {
 
         try {
             WithinSearch search = new WithinSearch(
-                    new SearchHelper(this.databaseHelper),
+                    this.searchHelper,
                     searchValue,
                     searchWithin,
                     defaultResultCount
@@ -85,7 +89,7 @@ public class SearchResource {
 
         try {
             RegistrationSearch search = new RegistrationSearch(
-                    new SearchHelper(this.databaseHelper),
+                    this.searchHelper,
                     from,
                     until,
                     routes,
@@ -126,7 +130,7 @@ public class SearchResource {
 
         try {
             PaymentSearch search = new PaymentSearch(
-                    new SearchHelper(this.databaseHelper),
+                    this.searchHelper,
                     from,
                     until,
                     paymentStatus,
@@ -162,7 +166,7 @@ public class SearchResource {
 
         try {
             CopyCardSearch search = new CopyCardSearch(
-                    new SearchHelper(this.databaseHelper),
+                    this.searchHelper,
                     from,
                     until,
                     declaredConvictions.isPresent(),
@@ -189,7 +193,7 @@ public class SearchResource {
 
         try {
             AccountSearch search = new AccountSearch(
-                    new SearchHelper(this.databaseHelper),
+                    this.searchHelper,
                     accountEmail
             );
 
@@ -212,7 +216,7 @@ public class SearchResource {
 
         try {
             OriginalRegNumberSearch search = new OriginalRegNumberSearch(
-                    new SearchHelper(this.databaseHelper),
+                    this.searchHelper,
                     originalRegNumber
             );
 

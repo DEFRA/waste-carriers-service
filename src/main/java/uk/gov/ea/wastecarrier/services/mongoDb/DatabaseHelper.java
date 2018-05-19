@@ -99,4 +99,8 @@ public class DatabaseHelper {
     public DBCollection getCollection(String collectionName) {
         return getConnection().getCollection(collectionName);
     }
+
+    public DatabaseConfiguration configuration() {
+        return this.dbConfig;
+    }
 }

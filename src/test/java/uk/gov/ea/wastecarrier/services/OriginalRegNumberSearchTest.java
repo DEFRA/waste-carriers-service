@@ -45,6 +45,6 @@ public class OriginalRegNumberSearchTest {
                 .originalRegNumber(originalRegNumber)
                 .build();
 
-        connection.registrationsDao.insertRegistration(reg);
+        connection.dao.insert(reg);
     }
 }

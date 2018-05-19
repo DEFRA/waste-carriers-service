@@ -42,16 +42,13 @@ public class EntityMatchingDaoTest {
 
     @Test
     public void find() {
-        String testIncidentNo = "FTW001234";
-
         Entity document = new EntityBuilder(EntityBuilder.BuildType.COMPANY)
-                .incidentNumber(testIncidentNo)
                 .build();
 
         String id = this.connection.dao.insert(document).id;
 
         document = this.connection.dao.find(id);
 
-        assertEquals("The entity is found", testIncidentNo, document.incidentNumber);
+        assertEquals("The entity is found", id, document.id);
     }
 }

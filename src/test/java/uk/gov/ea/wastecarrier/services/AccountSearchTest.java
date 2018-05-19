@@ -46,7 +46,7 @@ public class AccountSearchTest {
                 .accountEmail(accountEmail)
                 .build();
 
-        connection.registrationsDao.insertRegistration(reg);
+        connection.dao.insert(reg);
     }
 
 }

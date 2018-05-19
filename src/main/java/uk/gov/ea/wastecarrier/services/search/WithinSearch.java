@@ -74,7 +74,7 @@ public class WithinSearch {
         List<Registration> results = executeAny();
         if (!results.isEmpty()) return results;
 
-        JacksonDBCollection<Registration, String> registrations = this.searchHelper.registrationsCollection();
+        JacksonDBCollection<Registration, String> registrations = this.searchHelper.getCollection();
 
         DBQuery.Query query = determineQuery();
         DBSort.SortBuilder sortBy = determineSort();
@@ -90,7 +90,7 @@ public class WithinSearch {
 
     private List<Registration> executeAny() {
 
-        JacksonDBCollection<Registration, String> registrations = this.searchHelper.registrationsCollection();
+        JacksonDBCollection<Registration, String> registrations = this.searchHelper.getCollection();
 
         DBQuery.Query query = DBQuery.regex("regIdentifier", likePattern);
         DBSort.SortBuilder sortBy = DBSort.asc("regIdentifier");

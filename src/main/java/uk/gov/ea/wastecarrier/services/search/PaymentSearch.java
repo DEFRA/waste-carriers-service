@@ -69,7 +69,7 @@ public class PaymentSearch
 
     public List<Registration> execute() {
 
-        JacksonDBCollection<Registration, String> registrations = this.searchHelper.registrationsCollection();
+        JacksonDBCollection<Registration, String> registrations = this.searchHelper.getCollection();
 
         DBQuery.Query query = DBQuery.and(DBQuery
                 .exists(HAS_PAYMENTS)

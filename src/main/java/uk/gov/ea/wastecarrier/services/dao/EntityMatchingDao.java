@@ -1,7 +1,6 @@
 package uk.gov.ea.wastecarrier.services.dao;
 
 import com.mongodb.DB;
-import com.mongodb.DBCollection;
 import org.mongojack.JacksonDBCollection;
 import org.mongojack.WriteResult;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
@@ -12,7 +11,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.util.logging.Logger;
 
-public class EntityMatchingDao {
+public class EntityMatchingDao implements IDataAccessObject<Entity> {
 
     public static final String COLLECTION_NAME = "convictions";
 

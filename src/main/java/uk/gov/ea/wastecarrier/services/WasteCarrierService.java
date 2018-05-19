@@ -12,7 +12,7 @@ import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.MongoManaged;
 import uk.gov.ea.wastecarrier.services.resources.*;
 import uk.gov.ea.wastecarrier.services.tasks.IRRenewalPopulator;
-import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationsMongoDao;
+import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationDao;
 import uk.gov.ea.wastecarrier.services.tasks.EnsureDatabaseIndexesTask;
 import uk.gov.ea.wastecarrier.services.tasks.LocationPopulator;
 import uk.gov.ea.wastecarrier.services.tasks.ExceptionTester;
@@ -122,7 +122,7 @@ public class WasteCarrierService extends Application<WasteCarrierConfiguration>
          */
 
         // Add Database Heath checks.
-        RegistrationsMongoDao dao = new RegistrationsMongoDao(dbConfig);
+        RegistrationDao dao = new RegistrationDao(dbConfig);
 
         DatabaseHelper dbHelper = new DatabaseHelper(dbConfig);
         mongoClient = dbHelper.getMongoClient();

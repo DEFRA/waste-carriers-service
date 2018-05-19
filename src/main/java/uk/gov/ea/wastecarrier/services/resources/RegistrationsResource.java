@@ -31,7 +31,7 @@ import java.util.logging.Logger;
 @Consumes(MediaType.APPLICATION_JSON)
 public class RegistrationsResource
 {
-    private final RegistrationsMongoDao dao;
+    private final RegistrationDao dao;
     private final DatabaseHelper databaseHelper;
     private final PostcodeRegistry postcodeRegistry;
 
@@ -46,7 +46,7 @@ public class RegistrationsResource
             DatabaseConfiguration database,
             String postcodeFilePath) {
         this.databaseHelper = new DatabaseHelper(database);
-        this.dao = new RegistrationsMongoDao(database);
+        this.dao = new RegistrationDao(database);
         this.postcodeRegistry = new PostcodeRegistry(PostcodeRegistry.POSTCODE_FROM.FILE, postcodeFilePath);
     }
 
@@ -55,7 +55,7 @@ public class RegistrationsResource
     @Path("/{registrationNumber}")
     public Registration fetch(@PathParam("registrationNumber") String registrationNumber) {
 
-        Registration reg = dao.findRegistration(registrationNumber);
+        Registration reg = dao.findByRegIdentifier(registrationNumber);
 
         return reg;
     }

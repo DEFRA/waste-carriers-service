@@ -9,7 +9,7 @@ import uk.gov.ea.wastecarrier.services.core.User;
 
 import uk.gov.ea.wastecarrier.services.mongoDb.OrdersMongoDao;
 import uk.gov.ea.wastecarrier.services.mongoDb.PaymentHelper;
-import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationsMongoDao;
+import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationDao;
 import uk.gov.ea.wastecarrier.services.mongoDb.UsersMongoDao;
 
 import javax.validation.Valid;
@@ -35,7 +35,7 @@ import java.util.logging.Logger;
 public class OrdersResource
 {
     private OrdersMongoDao dao;
-    private RegistrationsMongoDao regDao;
+    private RegistrationDao regDao;
     private UsersMongoDao userDao;
     private PaymentHelper paymentHelper;
     
@@ -49,7 +49,7 @@ public class OrdersResource
             SettingsConfiguration settingConfig)
     {
         dao = new OrdersMongoDao(database);
-        regDao = new RegistrationsMongoDao(database);
+        regDao = new RegistrationDao(database);
         userDao = new UsersMongoDao(userDatabase);
         paymentHelper = new PaymentHelper(new Settings(settingConfig));
     }
@@ -74,7 +74,7 @@ public class OrdersResource
          * Update the registration status, if appropriate
          * 
          */
-        Registration registration = regDao.getRegistration(registrationId);
+        Registration registration = regDao.find(registrationId);
         User user = userDao.getUserByEmail(registration.getAccountEmail());
         
         if (paymentHelper.isReadyToBeActivated(registration, user) )
@@ -82,7 +82,7 @@ public class OrdersResource
             registration = paymentHelper.setupRegistrationForActivation(registration);
             try
             {
-                regDao.updateRegistration(registration);
+                regDao.update(registration);
             }
             catch(Exception e)
             {

@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 
 public class AccountSearch {
 
-    private SearchHelper searchHelper;
+    private SearchHelper helper;
     private Logger log = Logger.getLogger(AccountSearch.class.getName());
 
     private String accountEmail;
@@ -21,17 +21,17 @@ public class AccountSearch {
      * This search directly supports the `Registration.find_by_email` method in
      * the front end project.
      *
-     * @param searchHelper
+     * @param helper
      * @param accountEmail email to search for
      */
-    public AccountSearch(SearchHelper searchHelper, String accountEmail) {
-        this.searchHelper = searchHelper;
+    public AccountSearch(SearchHelper helper, String accountEmail) {
+        this.helper = helper;
         this.accountEmail = accountEmail;
     }
 
     public List<Registration> execute() {
 
-        JacksonDBCollection<Registration, String> registrations = this.searchHelper.registrationsCollection();
+        JacksonDBCollection<Registration, String> registrations = this.helper.getCollection();
 
         // Query to find registrations with matching accountEmail
         DBQuery.Query query = DBQuery.is("accountEmail", this.accountEmail);
@@ -39,7 +39,7 @@ public class AccountSearch {
         List<Registration> results = new LinkedList<>();
 
         try {
-            results = searchHelper.toList(registrations.find(query));
+            results = helper.toList(registrations.find(query));
         } catch (IllegalArgumentException e) {
             log.severe("Caught exception: " + e.getMessage() + " - Cannot find accountEmail " + this.accountEmail);
         }

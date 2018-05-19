@@ -3,6 +3,7 @@ package uk.gov.ea.wastecarrier.services.mongoDb;
 import java.util.logging.Logger;
 
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import com.mongodb.DB;
@@ -15,17 +16,19 @@ import org.mongojack.WriteResult;
 
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.core.Registration;
+import uk.gov.ea.wastecarrier.services.dao.IDataAccessObject;
 
 /**
  * 
  * Data Access Object for registrations in MongoDB.
  *
  */
-public class RegistrationsMongoDao 
+public class RegistrationDao implements IDataAccessObject<Registration>
 {
+    public static final String COLLECTION_NAME = "registrations";
 
     /** logger for this class. */
-    private static Logger log = Logger.getLogger(RegistrationsMongoDao.class.getName());
+    private static Logger log = Logger.getLogger(RegistrationDao.class.getName());
 
     /** The database helper. */
     private DatabaseHelper databaseHelper;
@@ -34,19 +37,31 @@ public class RegistrationsMongoDao
      * Constructor with arguments
      * @param database the DatabaseConfiguration
      */
-    public RegistrationsMongoDao(DatabaseConfiguration database)
+    public RegistrationDao(DatabaseConfiguration database)
     {
         log.fine("Constructing DAO with databaseHelper.");
         this.databaseHelper = new DatabaseHelper(database);
     }
 
+    public JacksonDBCollection<Registration, String> getCollection() {
+
+        DB db = this.databaseHelper.getConnection();
+
+        if (db == null) {
+            log.severe("Could not establish database connection to MongoDB! Check the database is running");
+            throw new WebApplicationException(Response.Status.SERVICE_UNAVAILABLE);
+        }
+
+        return JacksonDBCollection.wrap(
+                db.getCollection(COLLECTION_NAME), Registration.class, String.class);
+    }
 
     /**
      * Insert the registration into the database
      * @param registration
      * @return the inserted registration
      */
-    public Registration insertRegistration(Registration registration)
+    public Registration insert(Registration registration)
     {
 
         log.info("Inserting registration into MongoDB");
@@ -77,7 +92,7 @@ public class RegistrationsMongoDao
 
     }
 
-    public Registration findRegistration(String registrationNumber)
+    public Registration findByRegIdentifier(String registrationNumber)
     {
         Registration foundReg;
 
@@ -125,7 +140,7 @@ public class RegistrationsMongoDao
      * @param id
      * @return
      */
-    public Registration getRegistration(String id)
+    public Registration find(String id)
     {
 
         log.info("Retrieving registration  with id = " + id);
@@ -156,7 +171,7 @@ public class RegistrationsMongoDao
         }
     }
 
-    public Registration updateRegistration(Registration reg)
+    public Registration update(Registration reg)
     {
 
         log.info("Updating registration  with id = " + reg.getId());
@@ -192,18 +207,6 @@ public class RegistrationsMongoDao
             log.severe("Update registration - Could not obtain connection to MongoDB!");
             throw new WebApplicationException(Status.SERVICE_UNAVAILABLE);
         }
-    }
-
-
-    /**
-     *
-     * @return the total number of registrations in the database.
-     */
-    public long getNumberOfRegistrationsTotal() {
-        log.info("Getting total number of registrations");
-        long count = this.databaseHelper.getCollection(Registration.COLLECTION_NAME).count();
-        log.info("The total number of registrations is: " + count);
-        return count;
     }
 
     /**

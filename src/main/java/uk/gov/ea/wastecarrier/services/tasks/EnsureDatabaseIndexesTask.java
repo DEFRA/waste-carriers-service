@@ -7,7 +7,7 @@ import java.io.PrintWriter;
 import java.util.logging.Logger;
 
 import io.dropwizard.servlets.tasks.Task;
-import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationsMongoDao;
+import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationDao;
 
 import com.google.common.collect.ImmutableMultimap;
 
@@ -22,14 +22,14 @@ public class EnsureDatabaseIndexesTask extends Task {
     private Logger log = Logger.getLogger(EnsureDatabaseIndexesTask.class.getName());
 
     /** The DAO (injected). */
-    private RegistrationsMongoDao dao;
+    private RegistrationDao dao;
 
     /**
      * Constructor.
      * @param name the task name
      * @param dao the DAO
      */
-    public EnsureDatabaseIndexesTask(String name, RegistrationsMongoDao dao) {
+    public EnsureDatabaseIndexesTask(String name, RegistrationDao dao) {
         super(name);
         this.dao = dao;
     }

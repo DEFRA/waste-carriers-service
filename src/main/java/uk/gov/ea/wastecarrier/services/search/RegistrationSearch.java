@@ -77,7 +77,7 @@ public class RegistrationSearch {
 
     public List<Registration> execute() {
 
-        JacksonDBCollection<Registration, String> registrations = this.searchHelper.registrationsCollection();
+        JacksonDBCollection<Registration, String> registrations = this.searchHelper.getCollection();
 
         List<Registration> results = new LinkedList<>();
 
