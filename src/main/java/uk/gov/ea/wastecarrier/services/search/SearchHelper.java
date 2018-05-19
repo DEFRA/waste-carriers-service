@@ -16,7 +16,7 @@ import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
 import org.joda.time.format.DateTimeParser;
 
-import uk.gov.ea.wastecarrier.services.dao.IDataAccessObject;
+import uk.gov.ea.wastecarrier.services.dao.ICanGetCollection;
 import uk.gov.ea.wastecarrier.services.dao.DatabaseHelper;
 
 public class SearchHelper {
@@ -24,9 +24,9 @@ public class SearchHelper {
     private static Logger log = Logger.getLogger(SearchHelper.class.getName());
 
     private DatabaseHelper databaseHelper;
-    private IDataAccessObject dao;
+    private ICanGetCollection dao;
 
-    public SearchHelper(DatabaseHelper databaseHelper, IDataAccessObject dao) {
+    public SearchHelper(DatabaseHelper databaseHelper, ICanGetCollection dao) {
         this.databaseHelper = databaseHelper;
         this.dao = dao;
     }

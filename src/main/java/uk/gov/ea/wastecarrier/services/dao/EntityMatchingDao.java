@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.core.Entity;
 
-public class EntityMatchingDao implements IDataAccessObject<Entity> {
+public class EntityMatchingDao implements ICanGetCollection<Entity> {
 
     public static final String COLLECTION_NAME = "convictions";
 

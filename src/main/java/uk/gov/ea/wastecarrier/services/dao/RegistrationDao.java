@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 
-public class RegistrationDao implements IDataAccessObject<Registration>
+public class RegistrationDao implements ICanGetCollection<Registration>
 {
     public static final String COLLECTION_NAME = "registrations";
 
