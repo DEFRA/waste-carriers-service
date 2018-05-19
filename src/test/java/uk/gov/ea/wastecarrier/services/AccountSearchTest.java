@@ -11,12 +11,12 @@ import static org.junit.Assert.assertEquals;
 
 public class AccountSearchTest {
 
-    private static ConnectionUtil connection;
+    private static RegistrationsConnectionUtil connection;
     private static final String accountEmail = "joe@example.com";
 
     @BeforeClass
     public static void setup() {
-        connection = new ConnectionUtil();
+        connection = new RegistrationsConnectionUtil();
         createRegistrations();
     }
 

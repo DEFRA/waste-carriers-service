@@ -6,13 +6,13 @@ import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationsMongoDao;
 import uk.gov.ea.wastecarrier.services.search.SearchHelper;
 
-public class ConnectionUtil {
+public class RegistrationsConnectionUtil {
 
     public SearchHelper searchHelper;
     public DatabaseHelper databaseHelper;
     public RegistrationsMongoDao registrationsDao;
 
-    public ConnectionUtil()  {
+    public RegistrationsConnectionUtil()  {
         String host = System.getenv("WCRS_SERVICES_DB_HOST TEST");
         int port = Integer.valueOf(System.getenv("WCRS_SERVICES_DB_PORT_TEST"));
         String name = System.getenv("WCRS_SERVICES_DB_NAME_TEST");

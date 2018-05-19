@@ -16,12 +16,12 @@ import static org.junit.Assert.assertTrue;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class RegistrationsMongoDaoTest {
 
-    private static ConnectionUtil connection;
+    private static RegistrationsConnectionUtil connection;
     private static final String lowerTierRegNumber = "CBDL99999";
 
     @BeforeClass
     public static void setup() {
-        connection = new ConnectionUtil();
+        connection = new RegistrationsConnectionUtil();
     }
 
     /**

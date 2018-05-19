@@ -4,7 +4,7 @@ import org.junit.*;
 import uk.gov.ea.wastecarrier.services.core.Payment;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.search.PaymentSearch;
-import uk.gov.ea.wastecarrier.services.support.ConnectionUtil;
+import uk.gov.ea.wastecarrier.services.support.RegistrationsConnectionUtil;
 import uk.gov.ea.wastecarrier.services.support.RegistrationBuilder;
 import uk.gov.ea.wastecarrier.services.support.TestUtil;
 
@@ -15,11 +15,11 @@ import static org.junit.Assert.assertEquals;
 
 public class PaymentSearchTest {
 
-    private static ConnectionUtil connection;
+    private static RegistrationsConnectionUtil connection;
 
     @BeforeClass
     public static void setup() {
-        connection = new ConnectionUtil();
+        connection = new RegistrationsConnectionUtil();
         createRegistrations();
     }
 

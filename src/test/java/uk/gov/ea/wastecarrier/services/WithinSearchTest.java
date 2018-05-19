@@ -3,7 +3,7 @@ package uk.gov.ea.wastecarrier.services;
 import org.junit.*;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.search.WithinSearch;
-import uk.gov.ea.wastecarrier.services.support.ConnectionUtil;
+import uk.gov.ea.wastecarrier.services.support.RegistrationsConnectionUtil;
 import uk.gov.ea.wastecarrier.services.support.RegistrationBuilder;
 
 import java.util.List;
@@ -12,11 +12,11 @@ import static org.junit.Assert.assertEquals;
 
 public class WithinSearchTest {
 
-    private static ConnectionUtil connection;
+    private static RegistrationsConnectionUtil connection;
 
     @BeforeClass
     public static void setup() {
-        connection = new ConnectionUtil();
+        connection = new RegistrationsConnectionUtil();
         createRegistrations();
     }
 

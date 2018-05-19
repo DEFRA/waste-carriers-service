@@ -5,7 +5,7 @@ import uk.gov.ea.wastecarrier.services.core.ConvictionSearchResult;
 import uk.gov.ea.wastecarrier.services.core.MetaData;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.search.RegistrationSearch;
-import uk.gov.ea.wastecarrier.services.support.ConnectionUtil;
+import uk.gov.ea.wastecarrier.services.support.RegistrationsConnectionUtil;
 import uk.gov.ea.wastecarrier.services.support.RegistrationBuilder;
 import uk.gov.ea.wastecarrier.services.support.TestUtil;
 
@@ -16,11 +16,11 @@ import static org.junit.Assert.assertEquals;
 
 public class RegistrationSearchTest {
 
-    private static ConnectionUtil connection;
+    private static RegistrationsConnectionUtil connection;
 
     @BeforeClass
     public static void setup() {
-        connection = new ConnectionUtil();
+        connection = new RegistrationsConnectionUtil();
         createRegistrations();
     }
 
