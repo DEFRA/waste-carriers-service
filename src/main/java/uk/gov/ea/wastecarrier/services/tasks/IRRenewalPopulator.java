@@ -6,7 +6,7 @@ import io.dropwizard.servlets.tasks.Task;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.IRConfiguration;
 import uk.gov.ea.wastecarrier.services.core.irdata.*;
-import uk.gov.ea.wastecarrier.services.mongoDb.IRRenewalMongoDao;
+import uk.gov.ea.wastecarrier.services.dao.IRRenewalDao;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -29,7 +29,7 @@ public class IRRenewalPopulator extends Task
 {
 
     private ArrayList<IRData> irDataList;
-    private IRRenewalMongoDao dao;
+    private IRRenewalDao dao;
     private String irCompanyDataFilePath;
     private String irIndividualDataFilePath;
     private String irPartnersDataFilePath;
@@ -46,7 +46,7 @@ public class IRRenewalPopulator extends Task
     public IRRenewalPopulator(String name, DatabaseConfiguration database, IRConfiguration irRenewalConfig)
     {
         super(name);
-        this.dao = new IRRenewalMongoDao(database);
+        this.dao = new IRRenewalDao(database);
         this.irCompanyDataFilePath = irRenewalConfig.getIrFolderPath()
                 + File.separatorChar
                 + irRenewalConfig.getIrCompanyFileName();
