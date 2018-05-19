@@ -1,4 +1,4 @@
-package uk.gov.ea.wastecarrier.services.mongoDb;
+package uk.gov.ea.wastecarrier.services.dao;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.core.User;
 
@@ -13,15 +13,15 @@ import org.mongojack.DBQuery;
 import org.mongojack.JacksonDBCollection;
 import uk.gov.ea.wastecarrier.services.helper.DatabaseHelper;
 
-public class UsersMongoDao
+public class UserDao
 {
     /** logger for this class. */
-    private static Logger log = Logger.getLogger(UsersMongoDao.class.getName());
+    private static Logger log = Logger.getLogger(UserDao.class.getName());
 
     /** The database helper. */
     private DatabaseHelper databaseHelper;
 
-    public UsersMongoDao(DatabaseConfiguration database)
+    public UserDao(DatabaseConfiguration database)
     {
         log.info("host = " + database.getHost());
         log.info("port = " + database.getPort());

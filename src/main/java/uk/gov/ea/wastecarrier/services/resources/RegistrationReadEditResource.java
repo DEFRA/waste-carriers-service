@@ -11,7 +11,7 @@ import uk.gov.ea.wastecarrier.services.helper.DatabaseHelper;
 import uk.gov.ea.wastecarrier.services.helper.PaymentHelper;
 import uk.gov.ea.wastecarrier.services.helper.RegistrationHelper;
 import uk.gov.ea.wastecarrier.services.dao.RegistrationDao;
-import uk.gov.ea.wastecarrier.services.mongoDb.UsersMongoDao;
+import uk.gov.ea.wastecarrier.services.dao.UserDao;
 
 import com.mongodb.DB;
 
@@ -44,7 +44,7 @@ public class RegistrationReadEditResource
 {
     private DatabaseHelper databaseHelper;
     private RegistrationDao regDao;
-    private UsersMongoDao userDao;
+    private UserDao userDao;
     private PaymentHelper paymentHelper;
 
     // Standard logging declaration
@@ -56,7 +56,7 @@ public class RegistrationReadEditResource
         this.databaseHelper = new DatabaseHelper(database);
         this.regDao = new RegistrationDao(database);
         this.paymentHelper = new PaymentHelper(new Settings(settingConfig));
-        this.userDao = new UsersMongoDao(userDatabase);
+        this.userDao = new UserDao(userDatabase);
     }
 
     /**

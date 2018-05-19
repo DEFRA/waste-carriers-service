@@ -10,7 +10,7 @@ import uk.gov.ea.wastecarrier.services.core.User;
 import uk.gov.ea.wastecarrier.services.dao.OrderDao;
 import uk.gov.ea.wastecarrier.services.helper.PaymentHelper;
 import uk.gov.ea.wastecarrier.services.dao.RegistrationDao;
-import uk.gov.ea.wastecarrier.services.mongoDb.UsersMongoDao;
+import uk.gov.ea.wastecarrier.services.dao.UserDao;
 
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
@@ -36,7 +36,7 @@ public class OrdersResource
 {
     private OrderDao dao;
     private RegistrationDao regDao;
-    private UsersMongoDao userDao;
+    private UserDao userDao;
     private PaymentHelper paymentHelper;
     
     private Logger log = Logger.getLogger(OrdersResource.class.getName());
@@ -50,7 +50,7 @@ public class OrdersResource
     {
         dao = new OrderDao(database);
         regDao = new RegistrationDao(database);
-        userDao = new UsersMongoDao(userDatabase);
+        userDao = new UserDao(userDatabase);
         paymentHelper = new PaymentHelper(new Settings(settingConfig));
     }
 
