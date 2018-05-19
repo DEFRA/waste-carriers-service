@@ -1,14 +1,13 @@
 package uk.gov.ea.wastecarrier.services;
 
 import org.junit.*;
-import org.junit.runners.MethodSorters;
 import uk.gov.ea.wastecarrier.services.core.Entity;
 import uk.gov.ea.wastecarrier.services.support.EntityBuilder;
 import uk.gov.ea.wastecarrier.services.support.EntityMatchingConnectionUtil;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class EntityMatchingDaoTest {
 
     private static EntityMatchingConnectionUtil connection;
@@ -27,18 +26,32 @@ public class EntityMatchingDaoTest {
     }
 
     @Test
-    public void test1_checkConnection() {
+    public void checkConnection() {
         connection.dao.getCollection().count();
     }
 
     @Test
-    public void test2_insert() {
-        Entity document = new EntityBuilder(EntityBuilder.BuildType.COMPANY).build();
+    public void insert() {
+        Entity document = new EntityBuilder(EntityBuilder.BuildType.COMPANY)
+                .build();
 
-        document = connection.dao.insert(document);
+        String id = this.connection.dao.insert(document).id;
 
-        String id = document.id;
+        assertTrue("The entity is inserted", id != null && !id.isEmpty());
+    }
 
-        assertTrue("The registration is inserted", id != null && !id.isEmpty());
+    @Test
+    public void find() {
+        String testIncidentNo = "FTW001234";
+
+        Entity document = new EntityBuilder(EntityBuilder.BuildType.COMPANY)
+                .incidentNumber(testIncidentNo)
+                .build();
+
+        String id = this.connection.dao.insert(document).id;
+
+        document = this.connection.dao.find(id);
+
+        assertEquals("The entity is found", testIncidentNo, document.incidentNumber);
     }
 }

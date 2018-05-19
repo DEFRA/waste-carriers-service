@@ -23,6 +23,18 @@ public class EntityMatchingDao {
         this.databaseHelper = new DatabaseHelper(configuration);
     }
 
+    public Entity find(String id) {
+
+        JacksonDBCollection<Entity, String> collection = getCollection();
+
+        try {
+            return collection.findOneById(id);
+        } catch (IllegalArgumentException e) {
+            log.severe("Caught exception: Cannot find Entity ID " + id + ". " + e.getMessage());
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
+        }
+    }
+
     public Entity insert(Entity entity) {
 
         Entity savedInstance = null;
