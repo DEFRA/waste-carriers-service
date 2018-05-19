@@ -4,7 +4,7 @@ import com.codahale.metrics.annotation.Timed;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.core.Order;
 import uk.gov.ea.wastecarrier.services.core.Registration;
-import uk.gov.ea.wastecarrier.services.mongoDb.OrdersMongoDao;
+import uk.gov.ea.wastecarrier.services.dao.OrderDao;
 
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
@@ -27,7 +27,7 @@ import java.util.logging.Logger;
 public class OrderResource
 {
 
-    private OrdersMongoDao dao;
+    private OrderDao dao;
 
     private Logger log = Logger.getLogger(OrderResource.class.getName());
 
@@ -37,7 +37,7 @@ public class OrderResource
      */
     public OrderResource(DatabaseConfiguration database)
     {
-        dao = new OrdersMongoDao(database);
+        dao = new OrderDao(database);
     }
 
 
