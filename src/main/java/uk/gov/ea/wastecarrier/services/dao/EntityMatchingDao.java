@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.core.Entity;
+import uk.gov.ea.wastecarrier.services.helper.DatabaseHelper;
 
 public class EntityMatchingDao implements ICanGetCollection<Entity> {
 

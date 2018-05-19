@@ -34,7 +34,7 @@ import uk.gov.ea.wastecarrier.services.core.Order;
 import uk.gov.ea.wastecarrier.services.core.OrderItem;
 import uk.gov.ea.wastecarrier.services.core.Payment;
 import uk.gov.ea.wastecarrier.services.core.Registration;
-import uk.gov.ea.wastecarrier.services.dao.DatabaseHelper;
+import uk.gov.ea.wastecarrier.services.helper.DatabaseHelper;
 
 /**
  * Quartz job which exports data from the Waste Carriers database to flat files

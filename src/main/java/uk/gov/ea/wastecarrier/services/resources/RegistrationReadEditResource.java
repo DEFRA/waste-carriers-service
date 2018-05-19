@@ -7,9 +7,9 @@ import uk.gov.ea.wastecarrier.services.core.MetaData;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.core.Settings;
 import uk.gov.ea.wastecarrier.services.core.User;
-import uk.gov.ea.wastecarrier.services.dao.DatabaseHelper;
-import uk.gov.ea.wastecarrier.services.mongoDb.PaymentHelper;
-import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationHelper;
+import uk.gov.ea.wastecarrier.services.helper.DatabaseHelper;
+import uk.gov.ea.wastecarrier.services.helper.PaymentHelper;
+import uk.gov.ea.wastecarrier.services.helper.RegistrationHelper;
 import uk.gov.ea.wastecarrier.services.dao.RegistrationDao;
 import uk.gov.ea.wastecarrier.services.mongoDb.UsersMongoDao;
 

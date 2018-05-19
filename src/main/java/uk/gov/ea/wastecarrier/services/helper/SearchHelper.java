@@ -1,4 +1,4 @@
-package uk.gov.ea.wastecarrier.services.search;
+package uk.gov.ea.wastecarrier.services.helper;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -13,7 +13,6 @@ import org.joda.time.format.DateTimeFormatterBuilder;
 import org.joda.time.format.DateTimeParser;
 
 import uk.gov.ea.wastecarrier.services.dao.ICanGetCollection;
-import uk.gov.ea.wastecarrier.services.dao.DatabaseHelper;
 
 public class SearchHelper {
 

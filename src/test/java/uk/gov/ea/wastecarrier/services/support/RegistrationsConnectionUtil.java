@@ -1,9 +1,9 @@
 package uk.gov.ea.wastecarrier.services.support;
 
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
-import uk.gov.ea.wastecarrier.services.dao.DatabaseHelper;
+import uk.gov.ea.wastecarrier.services.helper.DatabaseHelper;
 import uk.gov.ea.wastecarrier.services.dao.RegistrationDao;
-import uk.gov.ea.wastecarrier.services.search.SearchHelper;
+import uk.gov.ea.wastecarrier.services.helper.SearchHelper;
 
 public class RegistrationsConnectionUtil {
 

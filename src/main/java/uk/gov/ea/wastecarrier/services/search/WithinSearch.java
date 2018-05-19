@@ -4,6 +4,7 @@ import org.mongojack.DBQuery;
 import org.mongojack.DBSort;
 import org.mongojack.JacksonDBCollection;
 import uk.gov.ea.wastecarrier.services.core.Registration;
+import uk.gov.ea.wastecarrier.services.helper.SearchHelper;
 
 import java.util.LinkedList;
 import java.util.List;

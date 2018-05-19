@@ -3,6 +3,7 @@ package uk.gov.ea.wastecarrier.services.search;
 import org.mongojack.DBQuery;
 import org.mongojack.JacksonDBCollection;
 import uk.gov.ea.wastecarrier.services.core.Registration;
+import uk.gov.ea.wastecarrier.services.helper.SearchHelper;
 
 import java.util.logging.Logger;
 

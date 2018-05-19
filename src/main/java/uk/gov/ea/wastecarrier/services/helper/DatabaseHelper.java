@@ -1,4 +1,4 @@
-package uk.gov.ea.wastecarrier.services.dao;
+package uk.gov.ea.wastecarrier.services.helper;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;

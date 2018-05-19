@@ -11,7 +11,7 @@ import com.mongodb.DB;
 
 import org.mongojack.DBQuery;
 import org.mongojack.JacksonDBCollection;
-import uk.gov.ea.wastecarrier.services.dao.DatabaseHelper;
+import uk.gov.ea.wastecarrier.services.helper.DatabaseHelper;
 
 public class UsersMongoDao
 {

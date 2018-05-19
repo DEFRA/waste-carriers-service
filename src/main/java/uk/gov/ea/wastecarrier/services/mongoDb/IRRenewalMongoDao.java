@@ -17,7 +17,7 @@ import uk.gov.ea.wastecarrier.services.core.irdata.IndividualIRData;
 import uk.gov.ea.wastecarrier.services.core.irdata.IRData;
 import uk.gov.ea.wastecarrier.services.core.irdata.PartnersIRData;
 import uk.gov.ea.wastecarrier.services.core.irdata.PublicBodyIRData;
-import uk.gov.ea.wastecarrier.services.dao.DatabaseHelper;
+import uk.gov.ea.wastecarrier.services.helper.DatabaseHelper;
 
 public class IRRenewalMongoDao
 {

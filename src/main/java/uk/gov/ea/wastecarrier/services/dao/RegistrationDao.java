@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.core.Registration;
+import uk.gov.ea.wastecarrier.services.helper.DatabaseHelper;
 
 public class RegistrationDao implements ICanGetCollection<Registration>
 {

@@ -15,7 +15,7 @@ import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.core.FinanceDetails;
 import uk.gov.ea.wastecarrier.services.core.Payment;
 import uk.gov.ea.wastecarrier.services.core.Registration;
-import uk.gov.ea.wastecarrier.services.dao.DatabaseHelper;
+import uk.gov.ea.wastecarrier.services.helper.DatabaseHelper;
 
 /**
  * Data access operations for registration payments.

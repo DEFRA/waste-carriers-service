@@ -10,7 +10,7 @@ import uk.gov.ea.wastecarrier.services.core.Address;
 import uk.gov.ea.wastecarrier.services.core.Location;
 import uk.gov.ea.wastecarrier.services.core.MetaData;
 import uk.gov.ea.wastecarrier.services.core.Registration;
-import uk.gov.ea.wastecarrier.services.dao.DatabaseHelper;
+import uk.gov.ea.wastecarrier.services.helper.DatabaseHelper;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;

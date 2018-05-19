@@ -7,7 +7,7 @@ import com.mongodb.DB;
 
 
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
-import uk.gov.ea.wastecarrier.services.dao.DatabaseHelper;
+import uk.gov.ea.wastecarrier.services.helper.DatabaseHelper;
 
 /**
  * HeathCheck Class for Monitoring the status of the Mongo Database
