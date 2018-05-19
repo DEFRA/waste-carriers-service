@@ -23,30 +23,20 @@ public class EntityMatchingDao implements IDataAccessObject<Entity> {
     }
 
     public Entity find(String id) {
-
-        JacksonDBCollection<Entity, String> collection = getCollection();
-
-        try {
-            return collection.findOneById(id);
-        } catch (IllegalArgumentException e) {
-            log.severe("Caught exception: Cannot find Entity ID " + id + ". " + e.getMessage());
-            throw new WebApplicationException(Response.Status.NOT_FOUND);
-        }
+        return find(getCollection(), id);
     }
 
     public Entity insert(Entity entity) {
 
-        Entity savedInstance = null;
         JacksonDBCollection<Entity, String> collection = getCollection();
 
-        // Insert registration information into database
+        // Insert entity information into database
         WriteResult<Entity, String> result = collection.insert(entity);
 
         // Get unique ID out of response, and find updated record
         String id = result.getSavedId();
-        savedInstance = collection.findOneById(id);
 
-        return savedInstance;
+        return find(collection, id);
     }
 
     public JacksonDBCollection<Entity, String> getCollection() {
@@ -60,5 +50,15 @@ public class EntityMatchingDao implements IDataAccessObject<Entity> {
 
         return JacksonDBCollection.wrap(
                 db.getCollection(COLLECTION_NAME), Entity.class, String.class);
+    }
+
+    private Entity find(JacksonDBCollection<Entity, String> collection, String id) {
+
+        try {
+            return collection.findOneById(id);
+        } catch (IllegalArgumentException e) {
+            log.severe("Error finding Entity ID " + id + ": " + e.getMessage());
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
+        }
     }
 }
