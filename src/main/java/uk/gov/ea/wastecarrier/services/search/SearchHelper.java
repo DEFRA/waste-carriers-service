@@ -1,12 +1,8 @@
 package uk.gov.ea.wastecarrier.services.search;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Logger;
-
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
-
-import com.mongodb.DB;
 
 import org.mongojack.JacksonDBCollection;
 
@@ -41,18 +37,6 @@ public class SearchHelper {
             returnList.add(r);
         }
         return returnList;
-    }
-
-    private DB getDatabase() {
-        // TODO - Replace/refactor the DatabaseHelper
-        DB db = databaseHelper.getConnection();
-
-        if (db == null) {
-            // Database connection is null - not available???
-            log.severe("Database not available, check the database is running");
-            throw new WebApplicationException(Response.Status.SERVICE_UNAVAILABLE);
-        }
-        return db;
     }
 
     /**
