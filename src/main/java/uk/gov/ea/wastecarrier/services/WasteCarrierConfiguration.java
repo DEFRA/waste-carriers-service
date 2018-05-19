@@ -22,6 +22,11 @@ public class WasteCarrierConfiguration extends Configuration {
     private DatabaseConfiguration userDatabase = new DatabaseConfiguration();
 
     @Valid
+    @NotNull
+    @JsonProperty
+    private DatabaseConfiguration entityMatchingDatabase = new DatabaseConfiguration();
+
+    @Valid
     @NotEmpty
     @JsonProperty
     private String postcodeFilePath = "/postcodes.csv";
@@ -35,6 +40,11 @@ public class WasteCarrierConfiguration extends Configuration {
     @NotNull
     @JsonProperty
     private IRConfiguration irRenewals = new IRConfiguration();
+
+    @Valid
+    @NotNull
+    @JsonProperty
+    private EntityMatchingConfiguration entityMatching = new EntityMatchingConfiguration();
     
     @Valid
     @NotNull
@@ -59,6 +69,10 @@ public class WasteCarrierConfiguration extends Configuration {
         return userDatabase;
     }
 
+    public DatabaseConfiguration getEntityMatchingDatabase() {
+        return entityMatchingDatabase;
+    }
+
     public String getPostcodeFilePath() {
         return postcodeFilePath;
     }
@@ -67,9 +81,12 @@ public class WasteCarrierConfiguration extends Configuration {
         return settings;
     }
 
-    public IRConfiguration getIrRenewals()
-    {
+    public IRConfiguration getIrRenewals() {
         return irRenewals;
+    }
+
+    public EntityMatchingConfiguration getEntityMatching() {
+        return entityMatching;
     }
     
     public ExportJobConfiguration getExportJobConfiguration() {

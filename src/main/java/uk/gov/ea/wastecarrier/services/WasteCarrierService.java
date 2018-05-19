@@ -77,6 +77,7 @@ public class WasteCarrierService extends Application<WasteCarrierConfiguration>
     {
         final DatabaseConfiguration dbConfig = configuration.getDatabase();
         final DatabaseConfiguration userDbConfig = configuration.getUserDatabase();
+        final DatabaseConfiguration entityMatchingDbConfig = configuration.getEntityMatchingDatabase();
         final String postcodeFilePath = configuration.getPostcodeFilePath();
         final SettingsConfiguration sConfig = configuration.getSettings();
         

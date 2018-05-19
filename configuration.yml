@@ -56,6 +56,13 @@ userDatabase:
   username: ${WCRS_USERSDB_USERNAME:-mongoUser}
   password: ${WCRS_USERSDB_PASSWORD:-password1234}
 
+entityMatchingDatabase:
+  host: ${WCRS_ENTITY_SEARCH_DB_HOST:-localhost}
+  port: ${WCRS_ENTITY_SEARCH_DB_PORT1:-27017}
+  name: ${WCRS_ENTITY_SEARCH_DB_NAME:-entity-matching}
+  username: ${WCRS_ENTITY_SEARCH_DB_USERNAME:-mongoUser}
+  password: ${WCRS_ENTITY_SEARCH_DB_PASSWORD:-password1234}
+
 settings:
   # registration period (in years)
   registrationPeriod: ${WCRS_REGISTRATION_EXPIRES_AFTER:-3}
@@ -76,10 +83,19 @@ airbrake:
   # enabled: true or false (default = true)
   # exceptionsOnly: true or false (default = false)
   
-# IrRenewals brings a very limitted set of data into Waste Carriers to allow
+# IrRenewals brings a very limited set of data into Waste Carriers to allow
 # IR customers to "renew" in the service.
 irRenewals:
   irFolderPath: ${WCRS_SERVICES_IR_RENEWAL_FOLDERPATH:-/srv/java/waste-carriers-service/irdata/}
+
+# Entity matching data allows us to match both the company and people in a
+# registration against a list we maintain
+entityMatching:
+  # Path to the file which contains data on the entities to be matched against
+  entitiesFilePath: ${WCRS_SERVICES_ENTITY_SEARCH_FOLDERPATH:-/srv/java/waste-carriers-service/entity_data/entities.csv}
+  # The number of characters that must match at the start of a person's first
+  # name when matching against people.
+  personSearchFirstNameMatchLength: ${WCRS_SERVICES_ENTITY_SEARCH_FN_MATCH_LENGTH:-1}
 
 exportJob:
   # File to use for EPR exports (note: file, not directory).
