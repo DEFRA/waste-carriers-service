@@ -1,4 +1,4 @@
-package uk.gov.ea.wastecarrier.services.mongoDb;
+package uk.gov.ea.wastecarrier.services.dao;
 
 import java.util.logging.Logger;
 
@@ -21,10 +21,10 @@ import uk.gov.ea.wastecarrier.services.helper.DatabaseHelper;
  * Data access operations for registration payments.
  *
  */
-public class PaymentsMongoDao
+public class PaymentDao
 {
     /** logger for this class. */
-    private static Logger log = Logger.getLogger(PaymentsMongoDao.class.getName());
+    private static Logger log = Logger.getLogger(PaymentDao.class.getName());
     
     /** The database helper. */
     private DatabaseHelper databaseHelper;
@@ -33,7 +33,7 @@ public class PaymentsMongoDao
      * Constructor with arguments
      * @param database the DatabaseConfiguration
      */
-    public PaymentsMongoDao(DatabaseConfiguration database)
+    public PaymentDao(DatabaseConfiguration database)
     {
         log.fine("Constructing DAO with databaseHelper.");
         this.databaseHelper = new DatabaseHelper(database);

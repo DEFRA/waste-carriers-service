@@ -8,7 +8,7 @@ import uk.gov.ea.wastecarrier.services.core.Settings;
 import uk.gov.ea.wastecarrier.services.core.User;
 
 import uk.gov.ea.wastecarrier.services.helper.PaymentHelper;
-import uk.gov.ea.wastecarrier.services.mongoDb.PaymentsMongoDao;
+import uk.gov.ea.wastecarrier.services.dao.PaymentDao;
 import uk.gov.ea.wastecarrier.services.dao.RegistrationDao;
 import uk.gov.ea.wastecarrier.services.mongoDb.UsersMongoDao;
 
@@ -35,7 +35,7 @@ import java.util.logging.Logger;
 @Consumes(MediaType.APPLICATION_JSON)
 public class PaymentResource
 {	
-    private PaymentsMongoDao dao;
+    private PaymentDao dao;
     private PaymentHelper paymentHelper;
     private RegistrationDao regDao;
     private UsersMongoDao userDao;
@@ -49,7 +49,7 @@ public class PaymentResource
     public PaymentResource(DatabaseConfiguration database, DatabaseConfiguration userDatabase,
             SettingsConfiguration settingConfig)
     {
-        dao = new PaymentsMongoDao(database);
+        dao = new PaymentDao(database);
         regDao = new RegistrationDao(database);
         paymentHelper = new PaymentHelper(new Settings(settingConfig));
         userDao = new UsersMongoDao(userDatabase);
