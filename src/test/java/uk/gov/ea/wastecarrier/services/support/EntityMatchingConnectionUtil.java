@@ -1,11 +1,12 @@
 package uk.gov.ea.wastecarrier.services.support;
 
-import com.mongodb.DBCollection;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
+import uk.gov.ea.wastecarrier.services.dao.EntityMatchingDao;
 import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
 
 public class EntityMatchingConnectionUtil {
     public DatabaseHelper databaseHelper;
+    public EntityMatchingDao dao;
 
     public EntityMatchingConnectionUtil() {
         String host = System.getenv("WCRS_SERVICES_EM_HOST_TEST");
@@ -17,10 +18,10 @@ public class EntityMatchingConnectionUtil {
         DatabaseConfiguration config = new DatabaseConfiguration(host, port, name, username, password);
 
         databaseHelper = new DatabaseHelper(config);
+        dao = new EntityMatchingDao(config);
     }
 
     public void clean() {
-        DBCollection registrations = this.databaseHelper.getCollection("entities");
-        registrations.drop();
+        this.dao.getCollection().drop();
     }
 }

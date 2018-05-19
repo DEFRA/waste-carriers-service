@@ -2,7 +2,10 @@ package uk.gov.ea.wastecarrier.services;
 
 import org.junit.*;
 import org.junit.runners.MethodSorters;
+import uk.gov.ea.wastecarrier.services.core.Entity;
 import uk.gov.ea.wastecarrier.services.support.EntityMatchingConnectionUtil;
+
+import static org.junit.Assert.assertTrue;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class EntityMatchingDaoTest {
@@ -24,6 +27,19 @@ public class EntityMatchingDaoTest {
 
     @Test
     public void test1_checkConnection() {
-        connection.databaseHelper.getCollection("entities").count();
+        connection.dao.getCollection().count();
+    }
+
+    @Test
+    public void test2_insert() {
+        Entity document = new Entity();
+        document.name = "Jason Issacs";
+        document.systemFlag = "SYSONE";
+        document.incidentNumber = "REF001";
+
+        document = connection.dao.insert(document);
+
+        String id = document.id;
+        assertTrue("The registration is inserted", id != null && !id.isEmpty());
     }
 }
