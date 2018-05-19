@@ -2,6 +2,7 @@ package uk.gov.ea.wastecarrier.services.support;
 
 import com.mongodb.DBCollection;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
+import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationsMongoDao;
 import uk.gov.ea.wastecarrier.services.search.SearchHelper;
@@ -27,7 +28,7 @@ public class RegistrationsConnectionUtil {
     }
 
     public void clean() {
-        DBCollection registrations = this.searchHelper.getRegistrationsCollection();
+        DBCollection registrations = this.databaseHelper.getCollection(Registration.COLLECTION_NAME);
         registrations.drop();
     }
 }

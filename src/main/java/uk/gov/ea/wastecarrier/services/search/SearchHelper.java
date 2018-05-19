@@ -48,10 +48,6 @@ public class SearchHelper {
         return returnList;
     }
 
-    public DBCollection getRegistrationsCollection() {
-        return getDatabase().getCollection(Registration.COLLECTION_NAME);
-    }
-
     private DB getDatabase() {
         // TODO - Replace/refactor the DatabaseHelper
         DB db = databaseHelper.getConnection();

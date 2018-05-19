@@ -105,28 +105,15 @@ public class DatabaseHelper
         }
     }
 
+    public DBCollection getCollection(String collectionName) {
+        return getConnection().getCollection(collectionName);
+    }
+
     /**
      * @param mongoClient the mongoClient to set
      */
-    public void setMongoClient(MongoClient mongoClient)
+    private void setMongoClient(MongoClient mongoClient)
     {
         this.mongoClient = mongoClient;
     }
-
-    /**
-     * @return the db
-     */
-    public DB getDb()
-    {
-        return db;
-    }
-
-    /**
-     * @param db the db to set
-     */
-    public void setDb(DB db)
-    {
-        this.db = db;
-    }
-
 }

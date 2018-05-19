@@ -1,6 +1,3 @@
-/**
- * 
- */
 package uk.gov.ea.wastecarrier.services.mongoDb;
 
 import java.util.logging.Logger;
@@ -9,7 +6,6 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
 import com.mongodb.DB;
-import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.BasicDBObject;
 
@@ -205,11 +201,10 @@ public class RegistrationsMongoDao
      */
     public long getNumberOfRegistrationsTotal() {
         log.info("Getting total number of registrations");
-        long count = getRegistrationsCollection().count();
+        long count = this.databaseHelper.getCollection(Registration.COLLECTION_NAME).count();
         log.info("The total number of registrations is: " + count);
         return count;
     }
-
 
     /**
      * Ensure that the indexes have been defined.
@@ -225,16 +220,7 @@ public class RegistrationsMongoDao
         DBObject keys = new BasicDBObject("uuid", 1);
         DBObject options = new BasicDBObject("unique", true).append("sparse", true);
 
-        getRegistrationsCollection().createIndex(keys, options);
+        this.databaseHelper.getCollection(Registration.COLLECTION_NAME).createIndex(keys, options);
         log.info("Ensured registration indexes.");
-    }
-
-    private DB getDatabase() {
-        //TODO - Replace/refactor the DatabaseHelper
-        return databaseHelper.getConnection();
-    }
-
-    private DBCollection getRegistrationsCollection() {
-        return getDatabase().getCollection(Registration.COLLECTION_NAME);
     }
 }
