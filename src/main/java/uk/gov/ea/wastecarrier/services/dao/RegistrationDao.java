@@ -1,22 +1,20 @@
-package uk.gov.ea.wastecarrier.services.mongoDb;
-
-import java.util.logging.Logger;
-
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
+package uk.gov.ea.wastecarrier.services.dao;
 
 import com.mongodb.DB;
 import com.mongodb.DBObject;
 import com.mongodb.BasicDBObject;
 
-import org.mongojack.DBQuery;
 import org.mongojack.JacksonDBCollection;
 import org.mongojack.WriteResult;
+import org.mongojack.DBQuery;
+
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response.Status;
+
+import java.util.logging.Logger;
 
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.core.Registration;
-import uk.gov.ea.wastecarrier.services.dao.IDataAccessObject;
 
 public class RegistrationDao implements IDataAccessObject<Registration>
 {
@@ -89,7 +87,7 @@ public class RegistrationDao implements IDataAccessObject<Registration>
 
         if (db == null) {
             log.severe("Could not establish database connection to MongoDB! Check the database is running");
-            throw new WebApplicationException(Response.Status.SERVICE_UNAVAILABLE);
+            throw new WebApplicationException(Status.SERVICE_UNAVAILABLE);
         }
 
         return JacksonDBCollection.wrap(
@@ -102,7 +100,7 @@ public class RegistrationDao implements IDataAccessObject<Registration>
             return collection.findOneById(id);
         } catch (IllegalArgumentException e) {
             log.severe("Error finding Registration ID " + id + ": " + e.getMessage());
-            throw new WebApplicationException(Response.Status.NOT_FOUND);
+            throw new WebApplicationException(Status.NOT_FOUND);
         }
     }
 

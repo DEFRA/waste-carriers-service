@@ -5,7 +5,8 @@ import com.mongodb.MongoException;
 import org.hibernate.validator.constraints.NotEmpty;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.core.Registration;
-import uk.gov.ea.wastecarrier.services.mongoDb.*;
+import uk.gov.ea.wastecarrier.services.dao.DatabaseHelper;
+import uk.gov.ea.wastecarrier.services.dao.RegistrationDao;
 import uk.gov.ea.wastecarrier.services.search.*;
 
 import javax.ws.rs.*;

@@ -2,7 +2,7 @@ package uk.gov.ea.wastecarrier.services.support;
 
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.dao.EntityMatchingDao;
-import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
+import uk.gov.ea.wastecarrier.services.dao.DatabaseHelper;
 
 public class EntityMatchingConnectionUtil {
     public DatabaseHelper databaseHelper;

@@ -24,7 +24,7 @@ import org.joda.time.DateTime;
 
 import uk.gov.ea.wastecarrier.services.WasteCarrierConfiguration;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
-import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
+import uk.gov.ea.wastecarrier.services.dao.DatabaseHelper;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.core.Address;
 import uk.gov.ea.wastecarrier.services.core.FinanceDetails;

@@ -1,4 +1,4 @@
-package uk.gov.ea.wastecarrier.services.mongoDb;
+package uk.gov.ea.wastecarrier.services.dao;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;

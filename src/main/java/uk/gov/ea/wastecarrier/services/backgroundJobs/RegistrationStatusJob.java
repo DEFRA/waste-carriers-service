@@ -20,7 +20,7 @@ import java.util.logging.Logger;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.core.MetaData;
 import uk.gov.ea.wastecarrier.services.core.Registration;
-import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
+import uk.gov.ea.wastecarrier.services.dao.DatabaseHelper;
 
 /**
  * Quartz job which updates the status of Registrations in the Waste Carriers

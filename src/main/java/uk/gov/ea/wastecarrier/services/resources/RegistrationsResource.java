@@ -11,6 +11,8 @@ import org.mongojack.WriteResult;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.core.*;
 import uk.gov.ea.wastecarrier.services.core.Registration.RegistrationTier;
+import uk.gov.ea.wastecarrier.services.dao.DatabaseHelper;
+import uk.gov.ea.wastecarrier.services.dao.RegistrationDao;
 import uk.gov.ea.wastecarrier.services.mongoDb.*;
 import uk.gov.ea.wastecarrier.services.tasks.PostcodeRegistry;
 

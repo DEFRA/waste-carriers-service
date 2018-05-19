@@ -7,7 +7,7 @@ import java.io.PrintWriter;
 import java.util.logging.Logger;
 
 import io.dropwizard.servlets.tasks.Task;
-import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationDao;
+import uk.gov.ea.wastecarrier.services.dao.RegistrationDao;
 
 import com.google.common.collect.ImmutableMultimap;
 

@@ -17,7 +17,7 @@ import org.joda.time.format.DateTimeFormatterBuilder;
 import org.joda.time.format.DateTimeParser;
 
 import uk.gov.ea.wastecarrier.services.dao.IDataAccessObject;
-import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
+import uk.gov.ea.wastecarrier.services.dao.DatabaseHelper;
 
 public class SearchHelper {
 

@@ -1,15 +1,17 @@
 package uk.gov.ea.wastecarrier.services.dao;
 
 import com.mongodb.DB;
+
 import org.mongojack.JacksonDBCollection;
 import org.mongojack.WriteResult;
-import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
-import uk.gov.ea.wastecarrier.services.core.Entity;
-import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
 
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+
 import java.util.logging.Logger;
+
+import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
+import uk.gov.ea.wastecarrier.services.core.Entity;
 
 public class EntityMatchingDao implements IDataAccessObject<Entity> {
 
@@ -45,7 +47,7 @@ public class EntityMatchingDao implements IDataAccessObject<Entity> {
 
         if (db == null) {
             log.severe("Could not establish database connection to MongoDB! Check the database is running");
-            throw new WebApplicationException(Response.Status.SERVICE_UNAVAILABLE);
+            throw new WebApplicationException(Status.SERVICE_UNAVAILABLE);
         }
 
         return JacksonDBCollection.wrap(
@@ -58,7 +60,7 @@ public class EntityMatchingDao implements IDataAccessObject<Entity> {
             return collection.findOneById(id);
         } catch (IllegalArgumentException e) {
             log.severe("Error finding Entity ID " + id + ": " + e.getMessage());
-            throw new WebApplicationException(Response.Status.NOT_FOUND);
+            throw new WebApplicationException(Status.NOT_FOUND);
         }
     }
 }

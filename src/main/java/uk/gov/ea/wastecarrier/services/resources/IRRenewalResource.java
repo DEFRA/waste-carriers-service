@@ -28,7 +28,7 @@ import com.mongodb.DB;
 import org.mongojack.DBQuery;
 import org.mongojack.JacksonDBCollection;
 
-import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
+import uk.gov.ea.wastecarrier.services.dao.DatabaseHelper;
 
 /**
  * Resource for accessing and updating individual orders within a registration.

@@ -8,11 +8,11 @@ import io.dropwizard.configuration.SubstitutingSourceProvider;
 
 import uk.gov.ea.wastecarrier.services.cli.IRImporter;
 import uk.gov.ea.wastecarrier.services.health.MongoHealthCheck;
-import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
+import uk.gov.ea.wastecarrier.services.dao.DatabaseHelper;
 import uk.gov.ea.wastecarrier.services.mongoDb.MongoManaged;
 import uk.gov.ea.wastecarrier.services.resources.*;
 import uk.gov.ea.wastecarrier.services.tasks.IRRenewalPopulator;
-import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationDao;
+import uk.gov.ea.wastecarrier.services.dao.RegistrationDao;
 import uk.gov.ea.wastecarrier.services.tasks.EnsureDatabaseIndexesTask;
 import uk.gov.ea.wastecarrier.services.tasks.LocationPopulator;
 import uk.gov.ea.wastecarrier.services.tasks.ExceptionTester;

@@ -7,9 +7,6 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
 import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
-import com.mongodb.BasicDBObject;
 
 import org.mongojack.DBQuery;
 import org.mongojack.DBUpdate;
@@ -20,6 +17,7 @@ import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.core.FinanceDetails;
 import uk.gov.ea.wastecarrier.services.core.Order;
 import uk.gov.ea.wastecarrier.services.core.Registration;
+import uk.gov.ea.wastecarrier.services.dao.DatabaseHelper;
 
 public class OrdersMongoDao
 {
