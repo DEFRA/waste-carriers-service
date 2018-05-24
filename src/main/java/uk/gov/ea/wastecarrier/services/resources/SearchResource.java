@@ -4,7 +4,6 @@ import com.google.common.base.Optional;
 import com.mongodb.MongoException;
 import org.hibernate.validator.constraints.NotEmpty;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
-import uk.gov.ea.wastecarrier.services.SettingsConfiguration;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.mongoDb.*;
 import uk.gov.ea.wastecarrier.services.search.*;
@@ -205,11 +204,11 @@ public class SearchResource {
 
     @GET
     @Path("/original/{originalRegistrationNumber}")
-    public List<Registration> queryOriginalRegNumber(
+    public Registration queryOriginalRegNumber(
             @PathParam("originalRegistrationNumber") String originalRegNumber
     ) {
         log.fine("Get Method Detected at /search/originalRegistrationNumber");
-        List<Registration> searchResults;
+        Registration searchResult;
 
         try {
             OriginalRegNumberSearch search = new OriginalRegNumberSearch(
@@ -217,12 +216,12 @@ public class SearchResource {
                     originalRegNumber
             );
 
-            searchResults = search.execute();
+            searchResult = search.execute();
         } catch (MongoException e) {
             log.severe("Query error: " + e.getMessage());
             throw new WebApplicationException(Response.Status.SERVICE_UNAVAILABLE);
         }
 
-        return searchResults;
+        return searchResult;
     }
 }

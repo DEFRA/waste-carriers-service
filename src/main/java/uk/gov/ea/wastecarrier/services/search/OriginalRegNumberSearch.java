@@ -4,8 +4,6 @@ import org.mongojack.DBQuery;
 import org.mongojack.JacksonDBCollection;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.logging.Logger;
 
 public class OriginalRegNumberSearch {
@@ -29,21 +27,21 @@ public class OriginalRegNumberSearch {
         this.originalRegNumber = originalRegNumber;
     }
 
-    public List<Registration> execute() {
+    public Registration execute() {
 
         JacksonDBCollection<Registration, String> registrations = this.searchHelper.registrationsCollection();
 
         // Query to find registrations with matching accountEmail
         DBQuery.Query query = DBQuery.is("originalRegistrationNumber", this.originalRegNumber);
 
-        List<Registration> results = new LinkedList<>();
+        Registration result = null;
 
         try {
-            results = searchHelper.toList(registrations.find(query));
+            result = registrations.findOne(query);
         } catch (IllegalArgumentException e) {
             log.severe("Caught exception: " + e.getMessage() + " - Cannot find originalRegistrationNumber " + this.originalRegNumber);
         }
 
-        return results;
+        return result;
     }
 }

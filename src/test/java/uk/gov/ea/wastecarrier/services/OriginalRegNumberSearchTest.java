@@ -5,8 +5,6 @@ import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.search.OriginalRegNumberSearch;
 import uk.gov.ea.wastecarrier.services.support.*;
 
-import java.util.List;
-
 import static org.junit.Assert.assertEquals;
 
 public class OriginalRegNumberSearchTest {
@@ -31,9 +29,10 @@ public class OriginalRegNumberSearchTest {
     @Test
     public void searchForRegistration() {
         OriginalRegNumberSearch search = new OriginalRegNumberSearch(connection.searchHelper, originalRegNumber);
-        List<Registration> results = search.execute();
-        String resultOriginalRegNo = results.get(0).getOriginalRegistrationNumber();
-        assertEquals("Matching registrations are found", originalRegNumber, resultOriginalRegNo);
+
+        Registration result = search.execute();
+
+        assertEquals("Matching registrations are found", originalRegNumber, result.getOriginalRegistrationNumber());
     }
 
     /**
