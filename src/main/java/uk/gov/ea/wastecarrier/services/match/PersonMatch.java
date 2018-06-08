@@ -18,18 +18,20 @@ public class PersonMatch {
     private SearchHelper helper;
     private Logger log = Logger.getLogger(PersonMatch.class.getName());
 
-    private String name;
+    private String firstName;
+    private String lastName;
     private Date dateOfBirth;
 
     public PersonMatch(SearchHelper helper, String firstName, String lastName, Date dateOfBirth) {
         this.helper = helper;
-        this.name = generateName(firstName, lastName);
+        this.firstName = parseName(firstName);
+        this.lastName = parseName(lastName);
         this.dateOfBirth = dateOfBirth;
     }
 
     public Entity execute() {
 
-        if (this.name.isEmpty()) return null;
+        if ((this.firstName + this.lastName).isEmpty()) return null;
 
         JacksonDBCollection<Entity, String> collection = this.helper.getCollection();
 
@@ -43,8 +45,9 @@ public class PersonMatch {
             if (document == null) document = nameMatch(collection);
         } catch (IllegalArgumentException e) {
             log.severe(String.format(
-                    "Error matching person %s %s: %s",
-                    this.name,
+                    "Error matching person %s %s %s: %s",
+                    this.firstName,
+                    this.lastName,
                     this.dateOfBirth.toString(),
                     e.getMessage()
             ));
@@ -57,33 +60,37 @@ public class PersonMatch {
     private Entity nameAndDateOfBirthMatch(JacksonDBCollection<Entity, String> collection) {
 
         DBQuery.Query query = DBQuery.and(DBQuery
-                .is("dateOfBirth", this.dateOfBirth)
-                .regex("name", generateNameLikePattern())
-        );
+                .is("dateOfBirth", this.dateOfBirth));
+
+        // If you place these in the and() at the same time they seems to work as an OR
+        // hence we add them separately
+        query.and(DBQuery.regex("name", generateNameLikePattern(this.firstName)));
+        query.and(DBQuery.regex("name", generateNameLikePattern(this.lastName)));
 
         return collection.findOne(query);
     }
 
     private Entity nameMatch(JacksonDBCollection<Entity, String> collection) {
 
-        DBQuery.Query query = DBQuery.regex("name", generateNameLikePattern());
+        // If you place these in the and() at the same time they seems to work as an OR
+        // hence we add them separately
+        DBQuery.Query query = DBQuery.and(DBQuery
+                .regex("name", generateNameLikePattern(this.firstName)));
+        query.and(DBQuery.regex("name", generateNameLikePattern(this.lastName)));
 
         return collection.findOne(query);
     }
 
-    private Pattern generateNameLikePattern() {
+    private Pattern generateNameLikePattern(String name) {
         return Pattern.compile(
-                String.format(".*%s.*", this.name),
+                String.format(".*%s.*", name),
                 Pattern.CASE_INSENSITIVE);
     }
 
-    private String generateName(String firstName, String lastName) {
+    private String parseName(String name) {
 
-        List<String> values = new ArrayList<>();
+        if (name == null || name.trim().isEmpty()) return "";
 
-        if (lastName != null && !lastName.trim().isEmpty()) values.add(lastName.trim());
-        if (firstName != null && !firstName.trim().isEmpty()) values.add(firstName.trim());
-
-        return String.join(", ", values);
+        return name.trim();
     }
 }

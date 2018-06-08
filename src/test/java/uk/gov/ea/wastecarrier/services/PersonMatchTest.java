@@ -22,7 +22,7 @@ public class PersonMatchTest {
 
     @AfterClass
     public static void tearDown() {
-//        connection.clean();
+        connection.clean();
     }
 
     @Test
@@ -53,17 +53,26 @@ public class PersonMatchTest {
     }
 
     @Test
-    public void fullNameMatch() {
+    public void fullNameLastThenFirstMatch() {
         PersonMatch matcher = new PersonMatch(connection.searchHelper, "Jason", "Isaacs", null);
 
         Entity document = matcher.execute();
 
-        assertEquals("Entity matched", "Isaacs, Jason", document.name);
+        assertEquals("Entity matched 'Isaacs, Jason'", "Isaacs, Jason", document.name);
     }
 
     @Test
-    public void fullNameUnknownMatch() {
-        PersonMatch matcher = new PersonMatch(connection.searchHelper, "Tom", "Selleck", null);
+    public void fullNameFirstThenLastMatch() {
+        PersonMatch matcher = new PersonMatch(connection.searchHelper, "Mark", "Kermode", null);
+
+        Entity document = matcher.execute();
+
+        assertEquals("Entity matched 'Mark Kermode'", "Mark Kermode", document.name);
+    }
+
+    @Test
+    public void partialNameMatch() {
+        PersonMatch matcher = new PersonMatch(connection.searchHelper, "Mark", "Isaacs", null);
 
         Entity document = matcher.execute();
 
@@ -92,7 +101,12 @@ public class PersonMatchTest {
     private static void createTestData() {
         Entity document = new EntityBuilder(EntityBuilder.BuildType.PERSON)
                 .build();
-
         connection.dao.insert(document);
+
+        document = new EntityBuilder(EntityBuilder.BuildType.PERSON)
+                .name("Mark Kermode")
+                .build();
+        connection.dao.insert(document);
+
     }
 }
