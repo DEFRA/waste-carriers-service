@@ -67,23 +67,18 @@ public class EntityBuilder {
     public Entity build() {
         Entity doc = new Entity();
 
-        doc.name = generateName();
-        doc.dateOfBirth = this.dateOfBirth;
-        doc.companyNumber = this.companyNumber;
         doc.systemFlag = this.systemFlag;
         doc.incidentNumber = generateIncidentNumber();
 
-        return doc;
-    }
-
-    private String generateName() {
-        if (this.name != null) return this.name;
-
         if (this.buildType == BuildType.COMPANY) {
-            return "Isaacs Waste Services Ltd";
+            doc.companyNumber = this.companyNumber;
+            doc.name = this.name == null ? "Isaacs Waste Services Ltd" : this.name;
         } else {
-            return "Jason Isaacs";
+            doc.dateOfBirth = this.dateOfBirth == null ? new Date(257952324000L) : this.dateOfBirth;
+            doc.name = this.name == null ? "Isaacs, Jason" : this.name;
         }
+
+        return doc;
     }
 
     private String generateIncidentNumber() {
