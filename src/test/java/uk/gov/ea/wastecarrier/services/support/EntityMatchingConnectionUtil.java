@@ -1,14 +1,14 @@
 package uk.gov.ea.wastecarrier.services.support;
 
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
-import uk.gov.ea.wastecarrier.services.dao.EntityMatchingDao;
+import uk.gov.ea.wastecarrier.services.dao.EntityDao;
 import uk.gov.ea.wastecarrier.services.helper.DatabaseHelper;
 import uk.gov.ea.wastecarrier.services.helper.SearchHelper;
 
 public class EntityMatchingConnectionUtil {
 
     public DatabaseHelper databaseHelper;
-    public EntityMatchingDao dao;
+    public EntityDao dao;
     public SearchHelper searchHelper;
 
     public EntityMatchingConnectionUtil() {
@@ -21,7 +21,7 @@ public class EntityMatchingConnectionUtil {
         DatabaseConfiguration config = new DatabaseConfiguration(host, port, name, username, password);
 
         databaseHelper = new DatabaseHelper(config);
-        dao = new EntityMatchingDao(config);
+        dao = new EntityDao(config);
         searchHelper = new SearchHelper(databaseHelper, dao);
     }
 

@@ -8,20 +8,21 @@ import org.mongojack.WriteResult;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.core.Entity;
 import uk.gov.ea.wastecarrier.services.helper.DatabaseHelper;
 
-public class EntityMatchingDao implements ICanGetCollection<Entity> {
+public class EntityDao implements ICanGetCollection<Entity> {
 
     public static final String COLLECTION_NAME = "entities";
 
-    private static Logger log = Logger.getLogger(EntityMatchingDao.class.getName());
+    private static Logger log = Logger.getLogger(EntityDao.class.getName());
     private DatabaseHelper databaseHelper;
 
-    public EntityMatchingDao(DatabaseConfiguration configuration) {
+    public EntityDao(DatabaseConfiguration configuration) {
         this.databaseHelper = new DatabaseHelper(configuration);
     }
 
@@ -53,6 +54,14 @@ public class EntityMatchingDao implements ICanGetCollection<Entity> {
 
         return JacksonDBCollection.wrap(
                 db.getCollection(COLLECTION_NAME), Entity.class, String.class);
+    }
+    public void recreate(List<Entity> entities) {
+        this.getCollection().drop();
+
+        JacksonDBCollection<Entity, String> collection = getCollection();
+
+        // Insert entity information into database
+        WriteResult<Entity, String> result = collection.insert(entities);
     }
 
     private Entity find(JacksonDBCollection<Entity, String> collection, String id) {
