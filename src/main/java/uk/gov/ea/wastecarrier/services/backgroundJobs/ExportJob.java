@@ -1,5 +1,6 @@
 package uk.gov.ea.wastecarrier.services.backgroundJobs;
 
+import com.opencsv.CSVWriter;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobKey;
@@ -20,7 +21,6 @@ import com.mongodb.MongoClient;
 import org.mongojack.JacksonDBCollection;
 import org.mongojack.DBCursor;
 
-import au.com.bytecode.opencsv.CSVWriter;
 import java.text.DecimalFormat;
 
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;

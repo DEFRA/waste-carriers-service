@@ -12,11 +12,11 @@ import java.util.TimeZone;
 import java.util.UUID;
 
 import com.mongodb.DB;
+import com.opencsv.CSVReader;
 import io.dropwizard.cli.ConfiguredCommand;
 import io.dropwizard.setup.Bootstrap;
 import org.mongojack.JacksonDBCollection;
 
-import au.com.bytecode.opencsv.CSVReader;
 import net.sourceforge.argparse4j.impl.Arguments;
 import net.sourceforge.argparse4j.inf.Namespace;
 import net.sourceforge.argparse4j.inf.Subparser;

@@ -1,7 +1,7 @@
 package uk.gov.ea.wastecarrier.services.tasks;
 
-import au.com.bytecode.opencsv.CSVReader;
 import com.google.common.collect.ImmutableMultimap;
+import com.opencsv.CSVReader;
 import io.dropwizard.servlets.tasks.Task;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.IRConfiguration;
