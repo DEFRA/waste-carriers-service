@@ -37,8 +37,8 @@ import net.anthavio.airbrake.AirbrakeLogbackAppender;
  * various get and search operations, and cancel registration.
  *
  */
-public class WasteCarrierService extends Application<WasteCarrierConfiguration>
-{
+public class WasteCarrierService extends Application<WasteCarrierConfiguration> {
+
     private MongoClient mongoClient;
 
     // Standard logging declaration.
@@ -47,8 +47,7 @@ public class WasteCarrierService extends Application<WasteCarrierConfiguration>
     // Logback appender to allow integration with Airbrake.
     private AirbrakeLogbackAppender airbrakeAppender;
 
-    public static void main(String[] args) throws Exception
-    {
+    public static void main(String[] args) throws Exception {
         new WasteCarrierService().run(args);
     }
 
@@ -58,8 +57,7 @@ public class WasteCarrierService extends Application<WasteCarrierConfiguration>
     }
 
     @Override
-    public void initialize(Bootstrap<WasteCarrierConfiguration> bootstrap)
-    {
+    public void initialize(Bootstrap<WasteCarrierConfiguration> bootstrap) {
         bootstrap.setConfigurationSourceProvider(
                 new SubstitutingSourceProvider(
                         bootstrap.getConfigurationSourceProvider(),
@@ -73,8 +71,8 @@ public class WasteCarrierService extends Application<WasteCarrierConfiguration>
     }
 
     @Override
-    public void run(WasteCarrierConfiguration configuration, Environment environment)
-    {
+    public void run(WasteCarrierConfiguration configuration, Environment environment) {
+
         final DatabaseConfiguration dbConfig = configuration.getDatabase();
         final DatabaseConfiguration userDbConfig = configuration.getUserDatabase();
         final DatabaseConfiguration entityMatchingDbConfig = configuration.getEntityMatchingDatabase();
@@ -82,14 +80,12 @@ public class WasteCarrierService extends Application<WasteCarrierConfiguration>
         final SettingsConfiguration sConfig = configuration.getSettings();
         
         // Initialise Airbrake integration.
-        if (configuration.getAirbrakeLogbackConfiguration() != null)
-        {
+        if (configuration.getAirbrakeLogbackConfiguration() != null) {
             initialiseAirbrakeIntegration(configuration.getAirbrakeLogbackConfiguration());
-        }
-        else
-        {
+        } else {
             log.info("No Airbrake configuration found; skipping Airbrake integration.");
         }
+
         environment.admin().addTask(new ExceptionTester("generateTestException"));
 
         // Add Create Resource.
@@ -128,12 +124,9 @@ public class WasteCarrierService extends Application<WasteCarrierConfiguration>
         mongoClient = dbHelper.getMongoClient();
 
         // Test authentication.
-        try
-        {
+        try {
             dbHelper.getConnection();
-        }
-        catch (MongoException e)
-        {
+        } catch (MongoException e) {
             log.severe("Could not connect to Database: " + e.getMessage() + ", continuing to startup.");
         }
         environment.healthChecks().register("MongoHealthCheck", new MongoHealthCheck(dbConfig));
@@ -156,12 +149,9 @@ public class WasteCarrierService extends Application<WasteCarrierConfiguration>
         EnsureDatabaseIndexesTask ensureDbIndexesTask = new EnsureDatabaseIndexesTask("EnsureDatabaseIndexes", dao);
         environment.admin().addTask(ensureDbIndexesTask);
 
-        try
-        {
+        try {
             ensureDbIndexesTask.execute(null, new PrintWriter(System.out));
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             log.severe("Could not ensure indexes at startup: " + e.getMessage());
         }
 
@@ -173,8 +163,7 @@ public class WasteCarrierService extends Application<WasteCarrierConfiguration>
 
         // Get and Print the Jar Version to the console for logging purposes.
         Package objPackage = this.getClass().getPackage();
-        if (objPackage.getImplementationTitle() != null)
-        {
+        if (objPackage.getImplementationTitle() != null) {
             // Only print name and version if running as a Jar, otherwise these functions will not work.
             String name = objPackage.getImplementationTitle();
             String version = objPackage.getImplementationVersion();
@@ -193,27 +182,24 @@ public class WasteCarrierService extends Application<WasteCarrierConfiguration>
         });
     }
     
-    private void initialiseAirbrakeIntegration(AirbrakeLogbackConfiguration config)
-    {
+    private void initialiseAirbrakeIntegration(AirbrakeLogbackConfiguration config) {
+
         // Make sure we only initialise the Airbrake integration once.
-        if (airbrakeAppender != null)
-        {
+        if (airbrakeAppender != null) {
             log.warning("Airbrake log appender already initialised; not initialising again");
             return;
         }
         
         // Get Logback logging context.
         LoggerContext loggerContext = (LoggerContext)org.slf4j.LoggerFactory.getILoggerFactory();
-        if (loggerContext == null)
-        {
+        if (loggerContext == null) {
             log.warning("Cannot obtain Logback LoggerContext; Airbrake integration will be unavailable.");
             return;
         }
         
         // Get root logger.
         ch.qos.logback.classic.Logger rootLogger = loggerContext.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
-        if (rootLogger == null)
-        {
+        if (rootLogger == null) {
             log.warning("Cannot get root logger; Airbrake integration will be unavailable.");
             return;
         }
