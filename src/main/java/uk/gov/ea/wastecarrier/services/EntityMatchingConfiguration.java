@@ -14,9 +14,4 @@ public class EntityMatchingConfiguration extends Configuration {
     @NotEmpty
     @JsonProperty
     public String entitiesFilePath;
-
-    @Min(1)
-    @Max(20)
-    @JsonProperty
-    public int personSearchFirstNameMatchLength;
 }

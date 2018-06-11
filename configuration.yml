@@ -93,9 +93,6 @@ irRenewals:
 entityMatching:
   # Path to the file which contains data on the entities to be matched against
   entitiesFilePath: ${WCRS_SERVICES_ENTITY_SEARCH_FOLDERPATH:-/srv/java/waste-carriers-service/entity_data/entities.csv}
-  # The number of characters that must match at the start of a person's first
-  # name when matching against people.
-  personSearchFirstNameMatchLength: ${WCRS_SERVICES_ENTITY_SEARCH_FN_MATCH_LENGTH:-1}
 
 exportJob:
   # File to use for EPR exports (note: file, not directory).
