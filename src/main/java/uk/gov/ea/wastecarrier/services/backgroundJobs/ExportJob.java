@@ -51,6 +51,7 @@ public class ExportJob implements Job
     public static final String DATABASE_NAME = "database_name";
     public static final String DATABASE_USERNAME = "database_username";
     public static final String DATABASE_PASSWORD = "database_password";
+    public static final String DATABASE_TIMEOUT = "database_timeout";
 
     public static final String EPR_EXPORT_FILE = "epr_export_file";
     public static final String EPR_DATE_FORMAT = "epr_date_format";
@@ -186,13 +187,16 @@ public class ExportJob implements Job
             moneyFormatter = new DecimalFormat(jobConfig.getString(REPORTING_MONEY_FORMAT));
             
             // Build a database helper using the provided configuration.
-            dbHelper = new DatabaseHelper(new DatabaseConfiguration(
-                jobConfig.getString(DATABASE_HOST),
-                jobConfig.getInt(DATABASE_PORT),
-                jobConfig.getString(DATABASE_NAME),
-                jobConfig.getString(DATABASE_USERNAME),
-                jobConfig.getString(DATABASE_PASSWORD)
-            ));
+            dbHelper = new DatabaseHelper(
+                    new DatabaseConfiguration(
+                            jobConfig.getString(DATABASE_HOST),
+                            jobConfig.getInt(DATABASE_PORT),
+                            jobConfig.getString(DATABASE_NAME),
+                            jobConfig.getString(DATABASE_USERNAME),
+                            jobConfig.getString(DATABASE_PASSWORD),
+                            jobConfig.getInt(DATABASE_PORT)
+                    )
+            );
             
             // Check we can connect to the database, and are authenticated.
             DB db = dbHelper.getConnection();

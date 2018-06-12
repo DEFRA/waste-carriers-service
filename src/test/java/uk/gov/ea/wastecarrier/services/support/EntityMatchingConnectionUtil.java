@@ -17,8 +17,9 @@ public class EntityMatchingConnectionUtil {
         String name = System.getenv("WCRS_SERVICES_EM_NAME_TEST");
         String username = System.getenv("WCRS_SERVICES_EM_USER_TEST");
         String password = System.getenv("WCRS_SERVICES_EM_PASSWD_TEST");
+        int timeout = Integer.valueOf(System.getenv("WCRS_SERVICES_EM_SERVER_SEL_TIMEOUT_TEST"));
 
-        DatabaseConfiguration config = new DatabaseConfiguration(host, port, name, username, password);
+        DatabaseConfiguration config = new DatabaseConfiguration(host, port, name, username, password, timeout);
 
         databaseHelper = new DatabaseHelper(config);
         dao = new EntityDao(config);

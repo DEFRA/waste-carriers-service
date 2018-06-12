@@ -173,7 +173,8 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
                 dbConfig.getPort(),
                 dbConfig.getName(),
                 dbConfig.getUsername(),
-                dbConfig.getPassword()
+                dbConfig.getPassword(),
+                dbConfig.getServerSelectionTimeout()
         ));
         
         // Check we can connect to the database, and are authenticated.

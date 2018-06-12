@@ -26,24 +26,27 @@ public class DatabaseConfiguration {
     @JsonProperty
     private String password;
 
-    public DatabaseConfiguration() {
-        //empty constructor
-    }
+    @Min(1000)
+    @Max(60000)
+    @JsonProperty
+    private int serverSelectionTimeout;
 
-    /**
-     * Constructor with arguments.
-     * @param host
-     * @param port
-     * @param name
-     * @param username
-     * @param password
-     */
-    public DatabaseConfiguration(String host, int port, String name, String username, String password) {
+    public DatabaseConfiguration() {}
+
+    public DatabaseConfiguration(
+            String host,
+            int port,
+            String name,
+            String username,
+            String password,
+            int serverSelectionTimeouttimeout
+    ) {
         this.host = host;
         this.port = port;
         this.name = name;
         this.username = username;
         this.password = password;
+        this.serverSelectionTimeout = serverSelectionTimeouttimeout;
     }
 
     public String getHost() {
@@ -57,20 +60,18 @@ public class DatabaseConfiguration {
     public String getName() {
         return name;
     }
-    
-    /**
-     * @return the username
-     */
+
     public String getUsername()
     {
         return username;
     }
 
-    /**
-     * @return the password
-     */
     public String getPassword()
     {
         return password;
+    }
+
+    public int getServerSelectionTimeout() {
+        return serverSelectionTimeout;
     }
 }

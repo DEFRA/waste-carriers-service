@@ -40,28 +40,38 @@ server:
     - type: http
       port: 8005
 
-# added database connection properties, DatabaseConfiguration
+# Registrations database connection properties
 database:
   host: ${WCRS_REGSDB_HOST:-localhost}
   port: ${WCRS_REGSDB_PORT1:-27017}
   name: ${WCRS_REGSDB_NAME:-waste-carriers}
   username: ${WCRS_REGSDB_USERNAME:-mongoUser}
   password: ${WCRS_REGSDB_PASSWORD:-password1234}
+  # Server selection timeout is the number of milliseconds the mongo driver will
+  # wait to select a server for an operation before giving up and raising an
+  # error. The default should be left in production but in dev and test it
+  # allows for quicker tests and failures
+  # For details of other options you can set check out
+  # http://api.mongodb.com/java/3.0/?com/mongodb/MongoClientOptions.html
+  serverSelectionTimeout: ${WCRS_REGSDB_SERVER_SEL_TIMEOUT:-30000}
 
-# added user database connection properties, DatabaseConfiguration
+# Users database connection properties
 userDatabase:
   host: ${WCRS_USERSDB_HOST:-localhost}
   port: ${WCRS_USERSDB_PORT1:-27017}
   name: ${WCRS_USERSDB_NAME:-waste-carriers-users}
   username: ${WCRS_USERSDB_USERNAME:-mongoUser}
   password: ${WCRS_USERSDB_PASSWORD:-password1234}
+  serverSelectionTimeout: ${WCRS_USERSDB_SERVER_SEL_TIMEOUT:-30000}
 
+# Entity Matching database connection properties
 entityMatchingDatabase:
   host: ${WCRS_ENTITY_SEARCH_DB_HOST:-localhost}
   port: ${WCRS_ENTITY_SEARCH_DB_PORT1:-27017}
   name: ${WCRS_ENTITY_SEARCH_DB_NAME:-entity-matching}
   username: ${WCRS_ENTITY_SEARCH_DB_USERNAME:-mongoUser}
   password: ${WCRS_ENTITY_SEARCH_DB_PASSWORD:-password1234}
+  serverSelectionTimeout: ${WCRS_ENTITY_SEARCH_DB_SERVER_SEL_TIMEOUT:-30000}
 
 settings:
   # registration period (in years)

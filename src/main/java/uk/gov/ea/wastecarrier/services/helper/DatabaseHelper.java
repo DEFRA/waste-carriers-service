@@ -81,7 +81,14 @@ public class DatabaseHelper {
                     dbConfig.getPassword().toCharArray()
             );
             ServerAddress server = new ServerAddress(dbConfig.getHost(), dbConfig.getPort());
-            MongoClientOptions options = MongoClientOptions.builder().build();
+
+            MongoClientOptions options = MongoClientOptions
+                    .builder()
+                    .serverSelectionTimeout(
+                        dbConfig.getServerSelectionTimeout()
+                    )
+                    .build();
+
             MongoClient client = new MongoClient(server, credential, options);
 
             this.mongoClient = client;
