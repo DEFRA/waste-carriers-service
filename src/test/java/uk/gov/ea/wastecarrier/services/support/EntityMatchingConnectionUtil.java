@@ -29,4 +29,16 @@ public class EntityMatchingConnectionUtil {
     public void clean() {
         this.dao.getCollection().drop();
     }
+
+    public EntityDao invalidCredentialsDao() {
+        DatabaseConfiguration invalidConfig = new DatabaseConfiguration(
+                this.databaseHelper.configuration().getHost(),
+                this.databaseHelper.configuration().getPort(),
+                this.databaseHelper.configuration().getName(),
+                this.databaseHelper.configuration().getUsername(),
+                "Bl0wMeDownWithAFeather",
+                this.databaseHelper.configuration().getServerSelectionTimeout()
+        );
+        return new EntityDao(invalidConfig);
+    }
 }

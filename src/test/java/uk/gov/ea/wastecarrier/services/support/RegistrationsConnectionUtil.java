@@ -29,4 +29,16 @@ public class RegistrationsConnectionUtil {
     public void clean() {
         this.dao.getCollection().drop();
     }
+
+    public RegistrationDao invalidCredentialsDao() {
+        DatabaseConfiguration invalidConfig = new DatabaseConfiguration(
+                this.databaseHelper.configuration().getHost(),
+                this.databaseHelper.configuration().getPort(),
+                this.databaseHelper.configuration().getName(),
+                this.databaseHelper.configuration().getUsername(),
+                "Bl0wMeDownWithAFeather",
+                this.databaseHelper.configuration().getServerSelectionTimeout()
+        );
+        return new RegistrationDao(invalidConfig);
+    }
 }

@@ -30,15 +30,14 @@ public class RegistrationDaoTest {
         connection.clean();
     }
 
-    /**
-     * Check we can connect to MongoDb. Simply creating a connection is not a
-     * guarantee that everything is working. So we also call
-     * getNumberOfRegistrationsTotal() as this performs a query against the DB,
-     * and checks we can connect, authenticate, query and return a result
-     */
     @Test
     public void checkConnection() {
-        connection.dao.getCollection().count();
+        assertTrue("Returns true when credentials are valid", connection.dao.checkConnection());
+    }
+
+    @Test(expected = Exception.class)
+    public void checkConnectionThrowsExceptionWhenConfigInvalid() {
+        connection.invalidCredentialsDao().checkConnection();
     }
 
     /**

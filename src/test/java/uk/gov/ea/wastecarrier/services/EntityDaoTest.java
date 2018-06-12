@@ -1,10 +1,8 @@
 package uk.gov.ea.wastecarrier.services;
 
 import org.apache.commons.lang3.RandomUtils;
-import org.apache.commons.text.RandomStringGenerator;
 import org.assertj.core.internal.bytebuddy.utility.RandomString;
 import org.junit.*;
-import org.mongojack.JacksonDBCollection;
 import uk.gov.ea.wastecarrier.services.core.Entity;
 import uk.gov.ea.wastecarrier.services.match.CompanyMatch;
 import uk.gov.ea.wastecarrier.services.match.PersonMatch;
@@ -27,7 +25,7 @@ public class EntityDaoTest {
     }
 
     /**
-     * Deletes any registrations we have created during testing
+     * Deletes any entities we have created during testing
      */
     @AfterClass
     public static void tearDown() {
@@ -36,7 +34,12 @@ public class EntityDaoTest {
 
     @Test
     public void checkConnection() {
-        connection.dao.getCollection().count();
+        assertTrue("Returns true when credentials are valid", connection.dao.checkConnection());
+    }
+
+    @Test(expected = Exception.class)
+    public void checkConnectionThrowsExceptionWhenConfigInvalid() {
+        connection.invalidCredentialsDao().checkConnection();
     }
 
     @Test

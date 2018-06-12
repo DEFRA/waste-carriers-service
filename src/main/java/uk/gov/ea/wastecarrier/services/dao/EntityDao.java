@@ -26,6 +26,10 @@ public class EntityDao implements ICanGetCollection<Entity> {
         this.databaseHelper = new DatabaseHelper(configuration);
     }
 
+    public boolean checkConnection() {
+        return getCollection().count() >= 0;
+    }
+
     public Entity find(String id) {
         return find(getCollection(), id);
     }
@@ -55,6 +59,7 @@ public class EntityDao implements ICanGetCollection<Entity> {
         return JacksonDBCollection.wrap(
                 db.getCollection(COLLECTION_NAME), Entity.class, String.class);
     }
+
     public void recreate(List<Entity> entities) {
         this.getCollection().drop();
 

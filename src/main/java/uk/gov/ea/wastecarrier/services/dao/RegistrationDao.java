@@ -17,8 +17,7 @@ import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.helper.DatabaseHelper;
 
-public class RegistrationDao implements ICanGetCollection<Registration>
-{
+public class RegistrationDao implements ICanGetCollection<Registration> {
     public static final String COLLECTION_NAME = "registrations";
 
     private static Logger log = Logger.getLogger(RegistrationDao.class.getName());
@@ -26,6 +25,10 @@ public class RegistrationDao implements ICanGetCollection<Registration>
 
     public RegistrationDao(DatabaseConfiguration database) {
         this.databaseHelper = new DatabaseHelper(database);
+    }
+
+    public boolean checkConnection() {
+        return getCollection().count() >= 0;
     }
 
     public Registration find(String id) {
