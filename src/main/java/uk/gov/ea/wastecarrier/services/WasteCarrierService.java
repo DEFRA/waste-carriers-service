@@ -1,34 +1,25 @@
 package uk.gov.ea.wastecarrier.services;
 
-import java.io.PrintWriter;
-import java.util.logging.Logger;
-
+import ch.qos.logback.classic.LoggerContext;
+import com.mongodb.MongoClient;
+import io.dropwizard.Application;
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
-
+import io.dropwizard.setup.Bootstrap;
+import io.dropwizard.setup.Environment;
+import net.anthavio.airbrake.AirbrakeLogbackAppender;
 import uk.gov.ea.wastecarrier.services.backgroundJobs.*;
 import uk.gov.ea.wastecarrier.services.cli.IRImporter;
 import uk.gov.ea.wastecarrier.services.dao.EntityDao;
+import uk.gov.ea.wastecarrier.services.dao.MongoManaged;
+import uk.gov.ea.wastecarrier.services.dao.RegistrationDao;
 import uk.gov.ea.wastecarrier.services.dao.UserDao;
 import uk.gov.ea.wastecarrier.services.health.MongoHealthCheck;
-import uk.gov.ea.wastecarrier.services.helper.DatabaseHelper;
-import uk.gov.ea.wastecarrier.services.dao.MongoManaged;
 import uk.gov.ea.wastecarrier.services.resources.*;
-import uk.gov.ea.wastecarrier.services.tasks.IRRenewalPopulator;
-import uk.gov.ea.wastecarrier.services.dao.RegistrationDao;
-import uk.gov.ea.wastecarrier.services.tasks.EnsureDatabaseIndexesTask;
-import uk.gov.ea.wastecarrier.services.tasks.LocationPopulator;
-import uk.gov.ea.wastecarrier.services.tasks.ExceptionTester;
+import uk.gov.ea.wastecarrier.services.tasks.*;
 
-import com.mongodb.MongoClient;
-import com.mongodb.MongoException;
-
-import io.dropwizard.Application;
-import io.dropwizard.setup.Bootstrap;
-import io.dropwizard.setup.Environment;
-
-import ch.qos.logback.classic.LoggerContext;
-import net.anthavio.airbrake.AirbrakeLogbackAppender;
+import java.io.PrintWriter;
+import java.util.logging.Logger;
 
 /**
  * The Waste Carrier Service class provides the RESTful services available for completing operations
@@ -37,8 +28,6 @@ import net.anthavio.airbrake.AirbrakeLogbackAppender;
  *
  */
 public class WasteCarrierService extends Application<WasteCarrierConfiguration> {
-
-    private MongoClient mongoClient;
 
     // Standard logging declaration.
     private Logger log = Logger.getLogger(WasteCarrierService.class.getName());
@@ -95,6 +84,8 @@ public class WasteCarrierService extends Application<WasteCarrierConfiguration> 
         addTasks(
                 environment,
                 registrationsConfig,
+                entityMatchingConfig,
+                configuration.getEntityMatching().entitiesFilePath,
                 configuration.getIrRenewals(),
                 postcodeFilePath
         );
@@ -240,6 +231,8 @@ public class WasteCarrierService extends Application<WasteCarrierConfiguration> 
     private void addTasks(
             Environment environment,
             DatabaseConfiguration registrationsConfig,
+            DatabaseConfiguration entityMatchingConfig,
+            String entityFilePath,
             IRConfiguration irConfig,
             String postcodeFilePath
     ) {
@@ -256,6 +249,9 @@ public class WasteCarrierService extends Application<WasteCarrierConfiguration> 
 
         // Add tasks related to IR data.
         environment.admin().addTask(new IRRenewalPopulator("ir-repopulate", registrationsConfig, irConfig));
+
+        // Add task to re-populate entity matching when called
+        environment.admin().addTask(new EntityPopulator("entity-populator", entityMatchingConfig, entityFilePath));
 
         //Add a task to ensure that indexes have been defined in the database.
         EnsureDatabaseIndexesTask ensureDbIndexesTask = new EnsureDatabaseIndexesTask(
