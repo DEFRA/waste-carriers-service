@@ -154,7 +154,7 @@ public class RegistrationReadEditResource
             {
                 //Update the registration status, if appropriate
                 Registration registration = regDao.find(id);
-                User user = userDao.getUserByEmail(registration.getAccountEmail());
+                User user = userDao.findByEmail(registration.getAccountEmail());
 
                 if (paymentHelper.isReadyToBeActivated(registration, user))
                 {

@@ -75,7 +75,7 @@ public class OrdersResource
          * 
          */
         Registration registration = regDao.find(registrationId);
-        User user = userDao.getUserByEmail(registration.getAccountEmail());
+        User user = userDao.findByEmail(registration.getAccountEmail());
         
         if (paymentHelper.isReadyToBeActivated(registration, user) )
         {
