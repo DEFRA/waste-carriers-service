@@ -14,16 +14,16 @@ import java.util.logging.Logger;
  * Currently it only have one ability to do this, via a CSV file containing a set of X an Y 
  * coordinates mapped the Outer part of the postcode.
  * 
- * The PostcodeRegistry.POSTCODE_FROM.FILE option must currently be provided.
+ * The PostcodeRegistryTask.POSTCODE_FROM.FILE option must currently be provided.
  * 
  * @author Steve
  *
  */
-public class PostcodeRegistry
+public class PostcodeRegistryTask
 {
 
     public ArrayList<String[]> postcodes;
-    private static Logger log = Logger.getLogger(PostcodeRegistry.class.getName());
+    private static Logger log = Logger.getLogger(PostcodeRegistryTask.class.getName());
 
     public enum POSTCODE_FROM {
         FILE, LOOKUP
@@ -35,7 +35,7 @@ public class PostcodeRegistry
      * @param pf POSTCODE_FROM enumeration, Used to reference the type of postcode lookup
      * @param csvFile a string of the path to the CSV file
      */
-    public PostcodeRegistry(POSTCODE_FROM pf, String csvFile)
+    public PostcodeRegistryTask(POSTCODE_FROM pf, String csvFile)
     {
         switch (pf)
         {
@@ -68,7 +68,7 @@ public class PostcodeRegistry
         try
         {
             log.info("Try to read from: " + csvFile);
-            InputStream is = PostcodeRegistry.class.getResourceAsStream(csvFile);
+            InputStream is = PostcodeRegistryTask.class.getResourceAsStream(csvFile);
             InputStreamReader isr = new InputStreamReader(is);
             br = new BufferedReader(isr);
 

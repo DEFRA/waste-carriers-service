@@ -25,7 +25,7 @@ import java.text.SimpleDateFormat;
  * @author Steve
  *
  */
-public class IRRenewalPopulator extends Task
+public class IRRenewalPopulatorTask extends Task
 {
 
     private ArrayList<IRData> irDataList;
@@ -34,7 +34,7 @@ public class IRRenewalPopulator extends Task
     private String irIndividualDataFilePath;
     private String irPartnersDataFilePath;
     private String irPublicBodyDataFilePath;
-    private static Logger log = Logger.getLogger(IRRenewalPopulator.class.getName());
+    private static Logger log = Logger.getLogger(IRRenewalPopulatorTask.class.getName());
     
     public enum IRRenewal_Type {
         Company,
@@ -43,7 +43,7 @@ public class IRRenewalPopulator extends Task
         PublicBody
     }
 
-    public IRRenewalPopulator(String name, DatabaseConfiguration database, IRConfiguration irRenewalConfig)
+    public IRRenewalPopulatorTask(String name, DatabaseConfiguration database, IRConfiguration irRenewalConfig)
     {
         super(name);
         this.dao = new IRRenewalDao(database);

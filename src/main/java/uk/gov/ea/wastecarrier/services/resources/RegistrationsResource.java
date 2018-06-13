@@ -14,7 +14,7 @@ import uk.gov.ea.wastecarrier.services.core.Registration.RegistrationTier;
 import uk.gov.ea.wastecarrier.services.helper.DatabaseHelper;
 import uk.gov.ea.wastecarrier.services.dao.RegistrationDao;
 import uk.gov.ea.wastecarrier.services.helper.RegistrationHelper;
-import uk.gov.ea.wastecarrier.services.tasks.PostcodeRegistry;
+import uk.gov.ea.wastecarrier.services.tasks.PostcodeRegistryTask;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
@@ -35,7 +35,7 @@ public class RegistrationsResource
 {
     private final RegistrationDao dao;
     private final DatabaseHelper databaseHelper;
-    private final PostcodeRegistry postcodeRegistry;
+    private final PostcodeRegistryTask postcodeRegistryTask;
 
     // Standard logging declaration
     private Logger log = Logger.getLogger(RegistrationsResource.class.getName());
@@ -49,7 +49,7 @@ public class RegistrationsResource
             String postcodeFilePath) {
         this.databaseHelper = new DatabaseHelper(database);
         this.dao = new RegistrationDao(database);
-        this.postcodeRegistry = new PostcodeRegistry(PostcodeRegistry.POSTCODE_FROM.FILE, postcodeFilePath);
+        this.postcodeRegistryTask = new PostcodeRegistryTask(PostcodeRegistryTask.POSTCODE_FROM.FILE, postcodeFilePath);
     }
 
     @GET
@@ -140,7 +140,7 @@ public class RegistrationsResource
                 }
             }
             if (regAddress != null) {
-                Double[] xyCoords = postcodeRegistry.getXYCoords(regAddress.getPostcode());
+                Double[] xyCoords = postcodeRegistryTask.getXYCoords(regAddress.getPostcode());
                 regAddress.setLocation( new Location( xyCoords[0], xyCoords[1]));
             } else {
                 log.info("Non-UK Address assumed as Postcode could not be found in the registration, Using default location of X:1, Y:1");

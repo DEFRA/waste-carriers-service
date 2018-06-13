@@ -16,15 +16,15 @@ import java.util.List;
 import java.util.logging.Logger;
 
 // POST http://localhost:8005/tasks/entity-populator
-public class EntityPopulator extends PostBodyTask {
+public class EntityPopulatorTask extends PostBodyTask {
 
     private final EntityCsvReader reader;
     private final EntityDao dao;
     private final String filePath;
 
-    private static Logger log = Logger.getLogger(EntityPopulator.class.getName());
+    private static Logger log = Logger.getLogger(EntityPopulatorTask.class.getName());
 
-    public EntityPopulator(
+    public EntityPopulatorTask(
             String name,
             DatabaseConfiguration databaseConfig,
             String entityMatchingSeedFile

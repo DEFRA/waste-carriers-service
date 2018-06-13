@@ -236,16 +236,16 @@ public class WasteCarrierService extends Application<WasteCarrierConfiguration> 
         environment.admin().addTask(new RegistrationStatusJobStarter("start-registrationStatusJob"));
 
         // Allow us to test exception handling, particularly Airbrake / Errbit integration
-        environment.admin().addTask(new ExceptionTester("generateTestException"));
+        environment.admin().addTask(new ExceptionTesterTask("generateTestException"));
 
         // Add Location Population functionality to create location indexes for all provided addresses of all data.
-        environment.admin().addTask(new LocationPopulator("location", registrationsConfig, postcodeFilePath));
+        environment.admin().addTask(new LocationPopulatorTask("location", registrationsConfig, postcodeFilePath));
 
         // Add tasks related to IR data.
-        environment.admin().addTask(new IRRenewalPopulator("ir-repopulate", registrationsConfig, irConfig));
+        environment.admin().addTask(new IRRenewalPopulatorTask("ir-repopulate", registrationsConfig, irConfig));
 
         // Add task to re-populate entity matching when called
-        environment.admin().addTask(new EntityPopulator("entity-populator", entityMatchingConfig, entityFilePath));
+        environment.admin().addTask(new EntityPopulatorTask("entity-populator", entityMatchingConfig, entityFilePath));
 
         //Add a task to ensure that indexes have been defined in the database.
         EnsureDatabaseIndexesTask ensureDbIndexesTask = new EnsureDatabaseIndexesTask(

@@ -29,13 +29,13 @@ import java.util.logging.Logger;
  * @author Steve
  *
  */
-public class LocationPopulator extends Task
+public class LocationPopulatorTask extends Task
 {
     private final DatabaseHelper databaseHelper;
-    private static Logger log = Logger.getLogger(LocationPopulator.class.getName());
+    private static Logger log = Logger.getLogger(LocationPopulatorTask.class.getName());
     private String pathToPostcodeFile;
 
-    public LocationPopulator(String name, DatabaseConfiguration database, String pathToPostcodeFile)
+    public LocationPopulatorTask(String name, DatabaseConfiguration database, String pathToPostcodeFile)
     {
         super(name);
         this.databaseHelper = new DatabaseHelper(database);
@@ -65,7 +65,7 @@ public class LocationPopulator extends Task
             DBCursor<Registration> dbcur = registrations.find();
             log.info(String.format("Found: %s Matching criteria", dbcur.size()));
             
-            PostcodeRegistry pr = new PostcodeRegistry(PostcodeRegistry.POSTCODE_FROM.FILE, pathToPostcodeFile);
+            PostcodeRegistryTask pr = new PostcodeRegistryTask(PostcodeRegistryTask.POSTCODE_FROM.FILE, pathToPostcodeFile);
             
             // for each registration, get out postcode
             for (Registration r : dbcur)
