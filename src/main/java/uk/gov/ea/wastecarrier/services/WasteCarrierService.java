@@ -1,7 +1,6 @@
 package uk.gov.ea.wastecarrier.services;
 
 import ch.qos.logback.classic.LoggerContext;
-import com.mongodb.MongoClient;
 import io.dropwizard.Application;
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
@@ -11,7 +10,6 @@ import net.anthavio.airbrake.AirbrakeLogbackAppender;
 import uk.gov.ea.wastecarrier.services.backgroundJobs.*;
 import uk.gov.ea.wastecarrier.services.cli.IRImporter;
 import uk.gov.ea.wastecarrier.services.dao.EntityDao;
-import uk.gov.ea.wastecarrier.services.dao.MongoManaged;
 import uk.gov.ea.wastecarrier.services.dao.RegistrationDao;
 import uk.gov.ea.wastecarrier.services.dao.UserDao;
 import uk.gov.ea.wastecarrier.services.health.MongoHealthCheck;
@@ -90,7 +88,7 @@ public class WasteCarrierService extends Application<WasteCarrierConfiguration> 
                 postcodeFilePath
         );
 
-        addLifecycle(
+        addBackgroundJobs(
                 environment,
                 registrationsConfig,
                 configuration.getExportJobConfiguration(),
@@ -210,16 +208,12 @@ public class WasteCarrierService extends Application<WasteCarrierConfiguration> 
 
     }
 
-    private void addLifecycle(
+    private void addBackgroundJobs(
             Environment environment,
             DatabaseConfiguration registrationsConfig,
             ExportJobConfiguration exportConfig,
             RegistrationStatusJobConfiguration statusJobConfiguration
     ) {
-
-        // Add Database management features.
-        environment.lifecycle().manage(new MongoManaged(mongoClient));
-
         // Add managed component and tasks for Background Scheduled Jobs.
         BackgroundJobScheduler dailyJobScheduler = BackgroundJobScheduler.getInstance();
         dailyJobScheduler.setDatabaseConfiguration(registrationsConfig);
