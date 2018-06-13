@@ -8,6 +8,8 @@ import io.dropwizard.configuration.SubstitutingSourceProvider;
 
 import uk.gov.ea.wastecarrier.services.backgroundJobs.*;
 import uk.gov.ea.wastecarrier.services.cli.IRImporter;
+import uk.gov.ea.wastecarrier.services.dao.EntityDao;
+import uk.gov.ea.wastecarrier.services.dao.UserDao;
 import uk.gov.ea.wastecarrier.services.health.MongoHealthCheck;
 import uk.gov.ea.wastecarrier.services.helper.DatabaseHelper;
 import uk.gov.ea.wastecarrier.services.dao.MongoManaged;
@@ -70,44 +72,54 @@ public class WasteCarrierService extends Application<WasteCarrierConfiguration> 
     @Override
     public void run(WasteCarrierConfiguration configuration, Environment environment) {
 
-        final DatabaseConfiguration dbConfig = configuration.getDatabase();
+        final DatabaseConfiguration registrationsConfig = configuration.getDatabase();
         final DatabaseConfiguration usersConfig = configuration.getUserDatabase();
         final DatabaseConfiguration entityMatchingConfig = configuration.getEntityMatchingDatabase();
         final String postcodeFilePath = configuration.getPostcodeFilePath();
 
+        checkConnections(registrationsConfig, usersConfig, entityMatchingConfig);
+
         addAirbrake(configuration.getAirbrakeLogbackConfiguration());
-        addHealthChecks(environment, dbConfig, usersConfig, entityMatchingConfig);
-        addResources(environment, dbConfig, usersConfig, entityMatchingConfig, postcodeFilePath, configuration.getSettings());
-        addTasks(environment, dbConfig, configuration.getIrRenewals(), postcodeFilePath);
 
-        // Add Database Heath checks.
-        RegistrationDao dao = new RegistrationDao(dbConfig);
+        addHealthChecks(environment, registrationsConfig, usersConfig, entityMatchingConfig);
 
-        DatabaseHelper dbHelper = new DatabaseHelper(dbConfig);
-        this.mongoClient = dbHelper.getMongoClient();
+        addResources(
+                environment,
+                registrationsConfig,
+                usersConfig,
+                entityMatchingConfig,
+                postcodeFilePath,
+                configuration.getSettings()
+        );
 
-        // Test authentication.
-        try {
-            dbHelper.getConnection();
-        } catch (MongoException e) {
-            log.severe("Could not connect to Database: " + e.getMessage() + ", continuing to startup.");
-        }
+        addTasks(
+                environment,
+                registrationsConfig,
+                configuration.getIrRenewals(),
+                postcodeFilePath
+        );
 
-        addLifecycle(environment, dbConfig, configuration.getExportJobConfiguration(), configuration.getRegistrationStatusJobConfiguration());
+        addLifecycle(
+                environment,
+                registrationsConfig,
+                configuration.getExportJobConfiguration(),
+                configuration.getRegistrationStatusJobConfiguration()
+        );
 
         logPackageNameAndVersion();
+    }
 
-        // Last-ditch cleanup.
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            public void run() {
-                // My shutdown code here.
-                if (mongoClient != null)
-                {
-                    mongoClient.close();
-                }
-            }
-        });
-
+    private void checkConnections(
+            DatabaseConfiguration registrationsConfig,
+            DatabaseConfiguration usersConfig,
+            DatabaseConfiguration entityMatchingConfig
+    ) {
+        // An error will be thrown if the service cannot connect to all 3
+        // databases. If that is the case no point continuing with anything
+        // hence we call it first and don't handle any errors it throws
+        new RegistrationDao(registrationsConfig).checkConnection();
+        new UserDao(usersConfig).checkConnection();
+        new EntityDao(entityMatchingConfig).checkConnection();
     }
 
     private void addAirbrake(AirbrakeLogbackConfiguration config) {
