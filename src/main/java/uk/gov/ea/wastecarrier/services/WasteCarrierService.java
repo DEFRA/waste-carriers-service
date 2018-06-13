@@ -206,6 +206,8 @@ public class WasteCarrierService extends Application<WasteCarrierConfiguration> 
         // Add IR Renewals resource.
         environment.jersey().register(new IRRenewalResource(registrationsConfig));
 
+        // Add entity matching resource
+        environment.jersey().register((new MatchResource(entityMatchingConfig)));
     }
 
     private void addBackgroundJobs(

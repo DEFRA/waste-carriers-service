@@ -36,7 +36,10 @@ public class ConvictionSearchResult {
     @JsonProperty("confirmed_by")
     public String confirmedBy;
 
-    public ConvictionSearchResult() { }
+    public ConvictionSearchResult() {
+        this.matchResult = MatchResult.NO;
+        this.confirmed = "no";
+    }
 
     public ConvictionSearchResult(
             MatchResult matched,
@@ -56,5 +59,14 @@ public class ConvictionSearchResult {
         this.confirmed = confirmed;
         this.confirmedAt = confirmedAt;
         this.confirmedBy = confirmedBy;
+    }
+
+    public void update(Entity matchedEntity) {
+        if (matchedEntity == null) return;
+
+        this.matchResult = MatchResult.YES;
+        this.matchingSystem = matchedEntity.systemFlag;
+        this.reference = matchedEntity.incidentNumber;
+        this.matchedName = matchedEntity.name;
     }
 }
