@@ -1,5 +1,6 @@
 package uk.gov.ea.wastecarrier.services.match;
 
+import org.mongojack.DBCursor;
 import org.mongojack.DBQuery;
 import org.mongojack.DBSort;
 import org.mongojack.JacksonDBCollection;
@@ -97,13 +98,17 @@ public class CompanyMatch {
         String noLeadingZeroes = this.number.replaceFirst("^0+(?!$)", "");
 
         Pattern likePattern = Pattern.compile(
-                String.format(".*%s", noLeadingZeroes),
+                String.format(".*%s$", noLeadingZeroes),
                 Pattern.CASE_INSENSITIVE);
 
         DBQuery.Query query = DBQuery.regex("companyNumber", likePattern);
         DBSort.SortBuilder sortBy = DBSort.asc("companyNumber");
 
-        return collection.find(query).limit(1).sort(sortBy).next();
+        DBCursor<Entity> results = collection.find(query);
+
+        if (results.count() == 0) return null;
+
+        return results.limit(1).sort(sortBy).next();
     }
 
     private String parseName(String name) {

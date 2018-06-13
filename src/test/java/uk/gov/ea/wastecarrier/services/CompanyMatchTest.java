@@ -6,6 +6,8 @@ import uk.gov.ea.wastecarrier.services.match.CompanyMatch;
 import uk.gov.ea.wastecarrier.services.support.EntityBuilder;
 import uk.gov.ea.wastecarrier.services.support.EntityMatchingConnectionUtil;
 
+import javax.ws.rs.WebApplicationException;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -73,7 +75,7 @@ public class CompanyMatchTest {
         Entity document = matcher.execute();
 
         assertNotNull(document);
-        assertEquals("Company with name of 'Isaacs Waste Services Ltd' is found", "Isaacs Waste Services Ltd", document.name);
+        assertEquals("Company with name of 'Isaacs Waste Contractors Ltd' is found", "Isaacs Waste Contractors Ltd", document.name);
     }
 
     @Test
@@ -88,7 +90,7 @@ public class CompanyMatchTest {
 
     @Test
     public void numberMatchFuzzy() {
-        CompanyMatch matcher = new CompanyMatch(connection.searchHelper, null, "5678");
+        CompanyMatch matcher = new CompanyMatch(connection.searchHelper, null, "1234");
 
         Entity document = matcher.execute();
 
