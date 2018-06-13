@@ -81,7 +81,7 @@ public class PersonMatchTest {
 
     @Test
     public void dateOfBirthOnlyMatch() {
-        PersonMatch matcher = new PersonMatch(connection.searchHelper, null, null, new Date(257952324000L));
+        PersonMatch matcher = new PersonMatch(connection.searchHelper, null, null, "05-03-1978");
 
         Entity document = matcher.execute();
 
@@ -90,12 +90,13 @@ public class PersonMatchTest {
 
     @Test
     public void fullNameAndDateOfBirthMatch() {
-        Date matchDate = new Date(257952324000L);
-        PersonMatch matcher = new PersonMatch(connection.searchHelper, "Jason", "Isaacs", matchDate);
+        Date matchDate = new Date(449884800000L);
+        PersonMatch matcher = new PersonMatch(connection.searchHelper, "Jason", "Isaacs", "04-04-1984");
 
         Entity document = matcher.execute();
 
         assertEquals("Entity matched", matchDate, document.dateOfBirth);
+        assertEquals("Jason Isaacs", document.name);
     }
 
     private static void createTestData() {
@@ -108,5 +109,10 @@ public class PersonMatchTest {
                 .build();
         connection.dao.insert(document);
 
+        document = new EntityBuilder(EntityBuilder.BuildType.PERSON)
+                .name("Jason Isaacs")
+                .dateOfBirth(new Date(449884800000l))
+                .build();
+        connection.dao.insert(document);
     }
 }

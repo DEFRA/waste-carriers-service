@@ -10,6 +10,8 @@ import uk.gov.ea.wastecarrier.services.resources.MatchResource;
 import uk.gov.ea.wastecarrier.services.support.EntityBuilder;
 import uk.gov.ea.wastecarrier.services.support.EntityMatchingConnectionUtil;
 
+import java.util.Date;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -48,10 +50,18 @@ public class MatchResourceTest {
 
     @Test
     public void matchPerson() {
-        ConvictionSearchResult result = this.resource.matchPerson("Jason", "Isaacs");
+        ConvictionSearchResult result = this.resource.matchPerson("Mark", "Kermode", "");
 
         assertNotNull(result);
-        assertEquals("Matched person 'Jason Isaacs'", "Isaacs, Jason", result.matchedName);
+        assertEquals("Matched person 'Mark Kermode'", "Mark Kermode", result.matchedName);
+    }
+
+    @Test
+    public void matchPersonWithDateOfBirth() {
+        ConvictionSearchResult result = this.resource.matchPerson("Jason", "Isaacs", "04-04-1984");
+
+        assertNotNull(result);
+        assertEquals("Matched person 'Jason Isaacs'", "Jason Isaacs", result.matchedName);
     }
 
     /**
@@ -76,6 +86,12 @@ public class MatchResourceTest {
 
         document = new EntityBuilder(EntityBuilder.BuildType.PERSON)
                 .name("Mark Kermode")
+                .build();
+        connection.dao.insert(document);
+
+        document = new EntityBuilder(EntityBuilder.BuildType.PERSON)
+                .name("Jason Isaacs")
+                .dateOfBirth(new Date(449884800000l))
                 .build();
         connection.dao.insert(document);
     }

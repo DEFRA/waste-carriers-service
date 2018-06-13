@@ -62,8 +62,8 @@ public class RegistrationSearch {
     ) {
         this.searchHelper = searchHelper;
 
-        this.fromDate = this.searchHelper.dateStringToDate(fromDate, false).toDate();
-        this.toDate = this.searchHelper.dateStringToDate(toDate, true).toDate();
+        this.fromDate = SearchHelper.dateStringToDate(fromDate, false).toDate();
+        this.toDate = SearchHelper.dateStringToDate(toDate, true).toDate();
 
         this.routes = routes;
         this.tiers = tiers;

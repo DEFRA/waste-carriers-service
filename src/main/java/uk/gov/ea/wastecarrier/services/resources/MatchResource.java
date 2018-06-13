@@ -60,7 +60,8 @@ public class MatchResource {
     @Path("/person")
     public ConvictionSearchResult matchPerson(
             @QueryParam("firstname") String firstname,
-            @QueryParam("lastname") String lastname
+            @QueryParam("lastname") String lastname,
+            @QueryParam("dateofbirth") String dateOfBirth
     ) {
 
         log.fine("Get Method Detected at /match/person");
@@ -69,7 +70,7 @@ public class MatchResource {
         result.searchedAt = new Date();
 
         try {
-            PersonMatch matcher = new PersonMatch(this.searchHelper, firstname, lastname, null);
+            PersonMatch matcher = new PersonMatch(this.searchHelper, firstname, lastname, dateOfBirth);
             Entity match = matcher.execute();
             result.update(match);
         } catch (MongoException e) {
