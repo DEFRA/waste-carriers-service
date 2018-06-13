@@ -322,9 +322,9 @@ public class RegistrationBuilder {
     private ConvictionSearchResult generateConvictionSearchResult(ConvictionSearchResult.MatchResult matchResult) {
         ConvictionSearchResult searchResult = new ConvictionSearchResult();
 
-        searchResult.setMatchResult(matchResult);
-        searchResult.setSearchedAt(new Date());
-        searchResult.setConfirmed("no");
+        searchResult.matchResult = matchResult;
+        searchResult.searchedAt = new Date();
+        searchResult.confirmed = "no";
 
         return searchResult;
     }

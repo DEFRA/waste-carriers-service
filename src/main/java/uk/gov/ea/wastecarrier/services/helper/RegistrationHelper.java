@@ -32,8 +32,8 @@ public class RegistrationHelper {
 
         ConvictionSearchResult searchResult = registration.getConvictionSearchResult();
         if (searchResult != null) {
-            if (searchResult.getMatchResult() != ConvictionSearchResult.MatchResult.NO
-                    && searchResult.getConfirmed().equalsIgnoreCase("no")) {
+            if (searchResult.matchResult != ConvictionSearchResult.MatchResult.NO
+                    && searchResult.confirmed.equalsIgnoreCase("no")) {
                 return true;
             }
         }
@@ -42,8 +42,8 @@ public class RegistrationHelper {
             for (KeyPerson person : registration.getKeyPeople()) {
                 searchResult = person.getConvictionSearchResult();
                 if (searchResult != null) {
-                    if (searchResult.getMatchResult() != ConvictionSearchResult.MatchResult.NO
-                            && searchResult.getConfirmed().equalsIgnoreCase("no")) {
+                    if (searchResult.matchResult != ConvictionSearchResult.MatchResult.NO
+                            && searchResult.confirmed.equalsIgnoreCase("no")) {
                         return true;
                     }
                 }

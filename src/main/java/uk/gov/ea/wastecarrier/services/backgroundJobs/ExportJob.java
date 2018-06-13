@@ -652,8 +652,8 @@ public class ExportJob implements Job
                     reg.getDeclaredConvictions(),
                     
                     // Organisation conviction search.
-                    (csr != null) ? safelyGetEnumName(csr.getMatchResult()) : null,
-                    (csr != null) ? safelyFormatDate(reportingDateFormatter, csr.getSearchedAt()) : null
+                    (csr != null) ? safelyGetEnumName(csr.matchResult) : null,
+                    (csr != null) ? safelyFormatDate(reportingDateFormatter, csr.searchedAt) : null
                 }));
                 
                 if (!exportRegistrationAddresses(reg) || !exportRegistrationSignOffs(reg)
@@ -837,8 +837,8 @@ public class ExportJob implements Job
                         keyPerson.getFirstName(),
                         keyPerson.getLastName(),
                         keyPerson.getPosition(),
-                        (csr != null) ? safelyGetEnumName(csr.getMatchResult()) : null,
-                        (csr != null) ? safelyFormatDate(reportingDateFormatter, csr.getSearchedAt()) : null
+                        (csr != null) ? safelyGetEnumName(csr.matchResult) : null,
+                        (csr != null) ? safelyFormatDate(reportingDateFormatter, csr.searchedAt) : null
                     }));
                 }
                 catch (Exception ex)
