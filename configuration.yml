@@ -66,12 +66,12 @@ userDatabase:
 
 # Entity Matching database connection properties
 entityMatchingDatabase:
-  host: ${WCRS_ENTITY_SEARCH_DB_HOST:-localhost}
-  port: ${WCRS_ENTITY_SEARCH_DB_PORT1:-27017}
-  name: ${WCRS_ENTITY_SEARCH_DB_NAME:-entity-matching}
-  username: ${WCRS_ENTITY_SEARCH_DB_USERNAME:-mongoUser}
-  password: ${WCRS_ENTITY_SEARCH_DB_PASSWORD:-password1234}
-  serverSelectionTimeout: ${WCRS_ENTITY_SEARCH_DB_SERVER_SEL_TIMEOUT:-30000}
+  host: ${WCRS_ENTITYMATCHDB_HOST:-localhost}
+  port: ${WCRS_ENTITYMATCHDB_PORT1:-27017}
+  name: ${WCRS_ENTITYMATCHDB_NAME:-entity-matching}
+  username: ${WCRS_ENTITYMATCHDB_USERNAME:-mongoUser}
+  password: ${WCRS_ENTITYMATCHDB_PASSWORD:-password1234}
+  serverSelectionTimeout: ${WCRS_ENTITYMATCHDB_SERVER_SEL_TIMEOUT:-30000}
 
 settings:
   # registration period (in years)

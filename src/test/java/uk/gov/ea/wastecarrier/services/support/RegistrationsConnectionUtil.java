@@ -12,12 +12,12 @@ public class RegistrationsConnectionUtil {
     public SearchHelper searchHelper;
 
     public RegistrationsConnectionUtil()  {
-        String host = System.getenv("WCRS_SERVICES_DB_HOST TEST");
-        int port = Integer.valueOf(System.getenv("WCRS_SERVICES_DB_PORT_TEST"));
-        String name = System.getenv("WCRS_SERVICES_DB_NAME_TEST");
-        String username = System.getenv("WCRS_SERVICES_DB_USER_TEST");
-        String password = System.getenv("WCRS_SERVICES_DB_PASSWD_TEST");
-        int timeout = Integer.valueOf(System.getenv("WCRS_SERVICES_DB_SERVER_SEL_TIMEOUT_TEST"));
+        String host = System.getenv("WCRS_SERVICES_REG_HOST_TEST");
+        int port = Integer.valueOf(System.getenv("WCRS_SERVICES_REG_PORT_TEST"));
+        String name = System.getenv("WCRS_SERVICES_REG_NAME_TEST");
+        String username = System.getenv("WCRS_SERVICES_REG_USER_TEST");
+        String password = System.getenv("WCRS_SERVICES_REG_PASSWD_TEST");
+        int timeout = Integer.valueOf(System.getenv("WCRS_SERVICES_REG_SERVER_SEL_TIMEOUT_TEST"));
 
         DatabaseConfiguration config = new DatabaseConfiguration(host, port, name, username, password, timeout);
 
