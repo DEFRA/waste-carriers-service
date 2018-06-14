@@ -69,7 +69,8 @@ public class SearchHelper {
                 DateTimeFormat.forPattern("dd/MM/yyyy").getParser(),
                 DateTimeFormat.forPattern("dd-MM-yyyy").getParser(),
                 DateTimeFormat.forPattern("dd MM yyyy").getParser(),
-                DateTimeFormat.forPattern("ddMMyyyy").getParser()
+                DateTimeFormat.forPattern("ddMMyyyy").getParser(),
+                DateTimeFormat.forPattern("yyyy-MM-dd").getParser()
         };
 
         DateTimeFormatter formatter =
