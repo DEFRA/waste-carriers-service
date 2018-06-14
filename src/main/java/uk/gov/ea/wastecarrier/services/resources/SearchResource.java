@@ -40,12 +40,12 @@ public class SearchResource {
     }
 
     @GET
-    @Path("/registrations/{searchWithin}/{searchValue}")
+    @Path("/registrations/{searchWithin}")
     public List<Registration> queryWithin(
-            @PathParam("searchValue") @NotEmpty String searchValue,
-            @PathParam("searchWithin") @NotEmpty String searchWithin
+            @PathParam("searchWithin") @NotEmpty String searchWithin,
+            @QueryParam("value") @NotEmpty String searchValue
     ) {
-        log.fine("Get Method Detected at /search/registrations/{searchWithin}/{searchValue}");
+        log.fine("Get Method Detected at /search/registrations/{searchWithin}");
         List<Registration> searchResults;
 
         try {
@@ -186,9 +186,9 @@ public class SearchResource {
     }
 
     @GET
-    @Path("/account/{accountEmail}")
+    @Path("/account")
     public List<Registration> queryAccountEmail(
-            @PathParam("accountEmail") @NotEmpty String accountEmail
+            @QueryParam("email") @NotEmpty String accountEmail
     ) {
         log.fine("Get Method Detected at /search/account");
         List<Registration> searchResults;
