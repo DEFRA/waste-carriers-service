@@ -70,12 +70,12 @@ java -jar target/waste-carriers-service*.jar server  configuration.yml
 You can also override parameters such as https port numbers using the Java '-D' option.
 
 ```bash
-java -Ddw.http.port=8004 -Ddw.http.adminPort=8005 -jar target/waste-carriers-service-1.1.2.jar server my_configuration.yml
+java -Ddw.http.port=8003 -Ddw.http.adminPort=8004 -jar target/waste-carriers-service-1.1.2.jar server my_configuration.yml
 ```
 
 For more details on how to start a Dropwizard service and configuration and startup options, please see the Dropwizard documentation.
 
-Once the application server is started you should be able to access the services application in your browser on <http://localhost:8004/registrations.json>
+Once the application server is started you should be able to access the services application in your browser on <http://localhost:8003/registrations.json>
 
 ## Run Tests
 
