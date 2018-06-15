@@ -46,3 +46,5 @@ nbactions.xml
 
 # Default log location for the service (useful when running on a Vagrant box)
 logs/**
+
+exported_data/**
