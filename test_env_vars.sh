@@ -3,7 +3,7 @@
 # source test_env_vars.sh
 
 export WCRS_SERVICES_REG_HOST_TEST="localhost"
-export WCRS_SERVICES_REG_HOST_TEST=27017
+export WCRS_SERVICES_REG_PORT_TEST=27017
 export WCRS_SERVICES_REG_NAME_TEST="waste-carriers-test"
 export WCRS_SERVICES_REG_USER_TEST="mongoUser"
 export WCRS_SERVICES_REG_PASSWD_TEST="password1234"
