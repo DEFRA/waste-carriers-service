@@ -12,11 +12,11 @@ import java.io.PrintWriter;
  * that we can test exception handling, particularly AirBrake / Errbit
  * integration.
  */ 
-public class ExceptionTester extends Task
+public class ExceptionTesterTask extends Task
 {
-    private static final Logger log = Logger.getLogger(ExceptionTester.class.getName());
+    private static final Logger log = Logger.getLogger(ExceptionTesterTask.class.getName());
     
-    public ExceptionTester(String name)
+    public ExceptionTesterTask(String name)
     {
         super(name);
     }

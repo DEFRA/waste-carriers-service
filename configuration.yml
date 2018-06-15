@@ -40,21 +40,38 @@ server:
     - type: http
       port: 8005
 
-# added database connection properties, DatabaseConfiguration
+# Registrations database connection properties
 database:
   host: ${WCRS_REGSDB_HOST:-localhost}
   port: ${WCRS_REGSDB_PORT1:-27017}
   name: ${WCRS_REGSDB_NAME:-waste-carriers}
   username: ${WCRS_REGSDB_USERNAME:-mongoUser}
   password: ${WCRS_REGSDB_PASSWORD:-password1234}
+  # Server selection timeout is the number of milliseconds the mongo driver will
+  # wait to select a server for an operation before giving up and raising an
+  # error. The default should be left in production but in dev and test it
+  # allows for quicker tests and failures
+  # For details of other options you can set check out
+  # http://api.mongodb.com/java/3.0/?com/mongodb/MongoClientOptions.html
+  serverSelectionTimeout: ${WCRS_REGSDB_SERVER_SEL_TIMEOUT:-30000}
 
-# added user database connection properties, DatabaseConfiguration
+# Users database connection properties
 userDatabase:
   host: ${WCRS_USERSDB_HOST:-localhost}
   port: ${WCRS_USERSDB_PORT1:-27017}
   name: ${WCRS_USERSDB_NAME:-waste-carriers-users}
   username: ${WCRS_USERSDB_USERNAME:-mongoUser}
   password: ${WCRS_USERSDB_PASSWORD:-password1234}
+  serverSelectionTimeout: ${WCRS_USERSDB_SERVER_SEL_TIMEOUT:-30000}
+
+# Entity Matching database connection properties
+entityMatchingDatabase:
+  host: ${WCRS_ENTITYMATCHDB_HOST:-localhost}
+  port: ${WCRS_ENTITYMATCHDB_PORT1:-27017}
+  name: ${WCRS_ENTITYMATCHDB_NAME:-entity-matching}
+  username: ${WCRS_ENTITYMATCHDB_USERNAME:-mongoUser}
+  password: ${WCRS_ENTITYMATCHDB_PASSWORD:-password1234}
+  serverSelectionTimeout: ${WCRS_ENTITYMATCHDB_SERVER_SEL_TIMEOUT:-30000}
 
 settings:
   # registration period (in years)
@@ -76,10 +93,16 @@ airbrake:
   # enabled: true or false (default = true)
   # exceptionsOnly: true or false (default = false)
   
-# IrRenewals brings a very limitted set of data into Waste Carriers to allow
+# IrRenewals brings a very limited set of data into Waste Carriers to allow
 # IR customers to "renew" in the service.
 irRenewals:
   irFolderPath: ${WCRS_SERVICES_IR_RENEWAL_FOLDERPATH:-/srv/java/waste-carriers-service/irdata/}
+
+# Entity matching data allows us to match both the company and people in a
+# registration against a list we maintain
+entityMatching:
+  # Path to the file which contains data on the entities to be matched against
+  entitiesFilePath: ${WCRS_SERVICES_ENTITY_SEARCH_FOLDERPATH:-/srv/java/waste-carriers-service/entity_data/entities.csv}
 
 exportJob:
   # File to use for EPR exports (note: file, not directory).

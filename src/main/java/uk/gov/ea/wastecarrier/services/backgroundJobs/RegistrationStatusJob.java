@@ -20,7 +20,7 @@ import java.util.logging.Logger;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.core.MetaData;
 import uk.gov.ea.wastecarrier.services.core.Registration;
-import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
+import uk.gov.ea.wastecarrier.services.helper.DatabaseHelper;
 
 /**
  * Quartz job which updates the status of Registrations in the Waste Carriers
@@ -37,6 +37,7 @@ public class RegistrationStatusJob implements Job
     public static final String DATABASE_NAME = "database_name";
     public static final String DATABASE_USERNAME = "database_username";
     public static final String DATABASE_PASSWORD = "database_password";
+    public static final String DATABASE_TIMEOUT = "database_timeout";
 
     // Private static members.
     private final static Logger log = Logger.getLogger(RegistrationStatusJob.class.getName());
@@ -125,7 +126,8 @@ public class RegistrationStatusJob implements Job
                 jobConfig.getInt(DATABASE_PORT),
                 jobConfig.getString(DATABASE_NAME),
                 jobConfig.getString(DATABASE_USERNAME),
-                jobConfig.getString(DATABASE_PASSWORD)
+                jobConfig.getString(DATABASE_PASSWORD),
+                jobConfig.getInt(DATABASE_TIMEOUT)
             ));
             
             // Check we can connect to the database, and are authenticated.

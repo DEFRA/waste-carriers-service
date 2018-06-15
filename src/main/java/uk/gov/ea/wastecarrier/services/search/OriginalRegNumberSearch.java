@@ -3,6 +3,7 @@ package uk.gov.ea.wastecarrier.services.search;
 import org.mongojack.DBQuery;
 import org.mongojack.JacksonDBCollection;
 import uk.gov.ea.wastecarrier.services.core.Registration;
+import uk.gov.ea.wastecarrier.services.helper.SearchHelper;
 
 import java.util.logging.Logger;
 
@@ -29,7 +30,7 @@ public class OriginalRegNumberSearch {
 
     public Registration execute() {
 
-        JacksonDBCollection<Registration, String> registrations = this.searchHelper.registrationsCollection();
+        JacksonDBCollection<Registration, String> registrations = this.searchHelper.getCollection();
 
         // Query to find registrations with matching accountEmail
         DBQuery.Query query = DBQuery.is("originalRegistrationNumber", this.originalRegNumber);

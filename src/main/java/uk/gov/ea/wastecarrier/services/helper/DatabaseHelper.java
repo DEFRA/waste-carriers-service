@@ -1,4 +1,4 @@
-package uk.gov.ea.wastecarrier.services.mongoDb;
+package uk.gov.ea.wastecarrier.services.helper;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -6,15 +6,13 @@ import java.util.logging.Logger;
 import com.mongodb.*;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 
-import com.mongodb.client.MongoDatabase;
-
 /**
  * This class is intended to make the various database connections and operations simple by handling the database 
  * configuration and setup, and returning a connection object to be operated upon.
  *
  */
-public class DatabaseHelper
-{
+public class DatabaseHelper {
+
     private MongoClient mongoClient;
 
     private DB db;
@@ -23,15 +21,14 @@ public class DatabaseHelper
     
     private DatabaseConfiguration dbConfig;
 
-    public DatabaseHelper(DatabaseConfiguration database)
-    {
+    public DatabaseHelper(DatabaseConfiguration database) {
+
         // Get connection properties from environment settings
         log.logp(Level.FINE, DatabaseHelper.class.getName(), "DatabaseHelper",
-                "Init DatabaseHelper using database params: " + database.getHost() +":"+ database.getPort());
+                "Init DatabaseHelper using database params: " + database.getName()+ " " + database.getHost() +":"+ database.getPort());
 
         // Save configuration
         this.dbConfig = database;
-
     }
 
     /**
@@ -39,41 +36,32 @@ public class DatabaseHelper
      *
      * @return an Active DB connection object or null if one could not be obtained
      */
-    public DB getConnection()
-    {
+    public DB getConnection() {
         log.logp(Level.FINE, DatabaseHelper.class.getName(), "getConnection", "Get connection");
-        if (db != null)
-        {
+        if (db != null) {
             // Use existing connection
-            try
-            {
+            try {
                 // Use existing connection
                 log.logp(Level.FINE, DatabaseHelper.class.getName(), "getConnection", "Returning cached connection");
                 return db;
             }
-            catch (Exception e)
-            {
-                log.severe("Could not connect to database: " + e.getMessage());
+            catch (Exception e) {
+                log.severe("Could not connect to database " + this.dbConfig.getName() + ": " + e.getMessage());
                 return null;
             }
-        }
-        else
-        {
+        } else {
             // Create new connection
             // Get Database Client
             MongoClient mc = getMongoClient();
-            try
-            {
+            try {
                 // Get Specific database
                 db = mc.getDB(dbConfig.getName());
             }
-            catch (Exception e)
-            {
-                log.severe("Database connection not Found: " + e.getMessage());
+            catch (Exception e) {
+                log.severe("Database connection not found " + this.dbConfig.getName() + ": " + e.getMessage());
                 db = null;
                 return null;
             }
-
             log.logp(Level.FINE, DatabaseHelper.class.getName(), "getConnection", "Returning new connection");
             return db;
         }
@@ -82,51 +70,44 @@ public class DatabaseHelper
     /**
      * @return the mongoClient, or null if errors occurred
      */
-    public MongoClient getMongoClient()
-    {
-        if (mongoClient != null)
-        {
+    public MongoClient getMongoClient() {
+
+        if (mongoClient != null) {
             return mongoClient;
-        }
-        else
-        {
+        } else {
             MongoCredential credential = MongoCredential.createCredential(
                     dbConfig.getUsername(),
                     dbConfig.getName(),
                     dbConfig.getPassword().toCharArray()
             );
             ServerAddress server = new ServerAddress(dbConfig.getHost(), dbConfig.getPort());
-            MongoClientOptions options = MongoClientOptions.builder().build();
+
+            MongoClientOptions options = MongoClientOptions
+                    .builder()
+                    .serverSelectionTimeout(
+                        dbConfig.getServerSelectionTimeout()
+                    )
+                    .build();
+
             MongoClient client = new MongoClient(server, credential, options);
 
-            setMongoClient(client);
+            this.mongoClient = client;
 
             return mongoClient;
         }
     }
 
     /**
-     * @param mongoClient the mongoClient to set
+     * Get the specified collection from the database.
+     *
+     * @param collectionName Name of collection to get
+     * @return The matching collection from the database
      */
-    public void setMongoClient(MongoClient mongoClient)
-    {
-        this.mongoClient = mongoClient;
+    public DBCollection getCollection(String collectionName) {
+        return getConnection().getCollection(collectionName);
     }
 
-    /**
-     * @return the db
-     */
-    public DB getDb()
-    {
-        return db;
+    public DatabaseConfiguration configuration() {
+        return this.dbConfig;
     }
-
-    /**
-     * @param db the db to set
-     */
-    public void setDb(DB db)
-    {
-        this.db = db;
-    }
-
 }

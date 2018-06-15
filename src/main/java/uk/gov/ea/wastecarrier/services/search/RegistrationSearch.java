@@ -5,6 +5,7 @@ import org.mongojack.JacksonDBCollection;
 import uk.gov.ea.wastecarrier.services.core.ConvictionSearchResult;
 import uk.gov.ea.wastecarrier.services.core.OrderItem;
 import uk.gov.ea.wastecarrier.services.core.Registration;
+import uk.gov.ea.wastecarrier.services.helper.SearchHelper;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -61,8 +62,8 @@ public class RegistrationSearch {
     ) {
         this.searchHelper = searchHelper;
 
-        this.fromDate = this.searchHelper.dateStringToDate(fromDate, false).toDate();
-        this.toDate = this.searchHelper.dateStringToDate(toDate, true).toDate();
+        this.fromDate = SearchHelper.dateStringToDate(fromDate, false).toDate();
+        this.toDate = SearchHelper.dateStringToDate(toDate, true).toDate();
 
         this.routes = routes;
         this.tiers = tiers;
@@ -77,7 +78,7 @@ public class RegistrationSearch {
 
     public List<Registration> execute() {
 
-        JacksonDBCollection<Registration, String> registrations = this.searchHelper.registrationsCollection();
+        JacksonDBCollection<Registration, String> registrations = this.searchHelper.getCollection();
 
         List<Registration> results = new LinkedList<>();
 

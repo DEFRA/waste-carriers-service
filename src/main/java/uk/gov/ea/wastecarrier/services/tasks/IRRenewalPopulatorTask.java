@@ -1,12 +1,12 @@
 package uk.gov.ea.wastecarrier.services.tasks;
 
-import au.com.bytecode.opencsv.CSVReader;
 import com.google.common.collect.ImmutableMultimap;
+import com.opencsv.CSVReader;
 import io.dropwizard.servlets.tasks.Task;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.IRConfiguration;
 import uk.gov.ea.wastecarrier.services.core.irdata.*;
-import uk.gov.ea.wastecarrier.services.mongoDb.IRRenewalMongoDao;
+import uk.gov.ea.wastecarrier.services.dao.IRRenewalDao;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -25,16 +25,16 @@ import java.text.SimpleDateFormat;
  * @author Steve
  *
  */
-public class IRRenewalPopulator extends Task
+public class IRRenewalPopulatorTask extends Task
 {
 
     private ArrayList<IRData> irDataList;
-    private IRRenewalMongoDao dao;
+    private IRRenewalDao dao;
     private String irCompanyDataFilePath;
     private String irIndividualDataFilePath;
     private String irPartnersDataFilePath;
     private String irPublicBodyDataFilePath;
-    private static Logger log = Logger.getLogger(IRRenewalPopulator.class.getName());
+    private static Logger log = Logger.getLogger(IRRenewalPopulatorTask.class.getName());
     
     public enum IRRenewal_Type {
         Company,
@@ -43,10 +43,10 @@ public class IRRenewalPopulator extends Task
         PublicBody
     }
 
-    public IRRenewalPopulator(String name, DatabaseConfiguration database, IRConfiguration irRenewalConfig)
+    public IRRenewalPopulatorTask(String name, DatabaseConfiguration database, IRConfiguration irRenewalConfig)
     {
         super(name);
-        this.dao = new IRRenewalMongoDao(database);
+        this.dao = new IRRenewalDao(database);
         this.irCompanyDataFilePath = irRenewalConfig.getIrFolderPath()
                 + File.separatorChar
                 + irRenewalConfig.getIrCompanyFileName();

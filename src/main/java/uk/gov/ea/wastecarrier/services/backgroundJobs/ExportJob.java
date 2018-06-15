@@ -1,5 +1,6 @@
 package uk.gov.ea.wastecarrier.services.backgroundJobs;
 
+import com.opencsv.CSVWriter;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobKey;
@@ -20,7 +21,6 @@ import com.mongodb.MongoClient;
 import org.mongojack.JacksonDBCollection;
 import org.mongojack.DBCursor;
 
-import au.com.bytecode.opencsv.CSVWriter;
 import java.text.DecimalFormat;
 
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
@@ -34,7 +34,7 @@ import uk.gov.ea.wastecarrier.services.core.Order;
 import uk.gov.ea.wastecarrier.services.core.OrderItem;
 import uk.gov.ea.wastecarrier.services.core.Payment;
 import uk.gov.ea.wastecarrier.services.core.Registration;
-import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
+import uk.gov.ea.wastecarrier.services.helper.DatabaseHelper;
 
 /**
  * Quartz job which exports data from the Waste Carriers database to flat files
@@ -51,6 +51,7 @@ public class ExportJob implements Job
     public static final String DATABASE_NAME = "database_name";
     public static final String DATABASE_USERNAME = "database_username";
     public static final String DATABASE_PASSWORD = "database_password";
+    public static final String DATABASE_TIMEOUT = "database_timeout";
 
     public static final String EPR_EXPORT_FILE = "epr_export_file";
     public static final String EPR_DATE_FORMAT = "epr_date_format";
@@ -186,13 +187,16 @@ public class ExportJob implements Job
             moneyFormatter = new DecimalFormat(jobConfig.getString(REPORTING_MONEY_FORMAT));
             
             // Build a database helper using the provided configuration.
-            dbHelper = new DatabaseHelper(new DatabaseConfiguration(
-                jobConfig.getString(DATABASE_HOST),
-                jobConfig.getInt(DATABASE_PORT),
-                jobConfig.getString(DATABASE_NAME),
-                jobConfig.getString(DATABASE_USERNAME),
-                jobConfig.getString(DATABASE_PASSWORD)
-            ));
+            dbHelper = new DatabaseHelper(
+                    new DatabaseConfiguration(
+                            jobConfig.getString(DATABASE_HOST),
+                            jobConfig.getInt(DATABASE_PORT),
+                            jobConfig.getString(DATABASE_NAME),
+                            jobConfig.getString(DATABASE_USERNAME),
+                            jobConfig.getString(DATABASE_PASSWORD),
+                            jobConfig.getInt(DATABASE_PORT)
+                    )
+            );
             
             // Check we can connect to the database, and are authenticated.
             DB db = dbHelper.getConnection();
@@ -648,8 +652,8 @@ public class ExportJob implements Job
                     reg.getDeclaredConvictions(),
                     
                     // Organisation conviction search.
-                    (csr != null) ? safelyGetEnumName(csr.getMatchResult()) : null,
-                    (csr != null) ? safelyFormatDate(reportingDateFormatter, csr.getSearchedAt()) : null
+                    (csr != null) ? safelyGetEnumName(csr.matchResult) : null,
+                    (csr != null) ? safelyFormatDate(reportingDateFormatter, csr.searchedAt) : null
                 }));
                 
                 if (!exportRegistrationAddresses(reg) || !exportRegistrationSignOffs(reg)
@@ -833,8 +837,8 @@ public class ExportJob implements Job
                         keyPerson.getFirstName(),
                         keyPerson.getLastName(),
                         keyPerson.getPosition(),
-                        (csr != null) ? safelyGetEnumName(csr.getMatchResult()) : null,
-                        (csr != null) ? safelyFormatDate(reportingDateFormatter, csr.getSearchedAt()) : null
+                        (csr != null) ? safelyGetEnumName(csr.matchResult) : null,
+                        (csr != null) ? safelyFormatDate(reportingDateFormatter, csr.searchedAt) : null
                     }));
                 }
                 catch (Exception ex)

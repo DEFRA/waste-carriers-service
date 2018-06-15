@@ -1,13 +1,8 @@
-package uk.gov.ea.wastecarrier.services.search;
+package uk.gov.ea.wastecarrier.services.helper;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Logger;
-
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
-
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
 
 import org.mongojack.JacksonDBCollection;
 
@@ -17,27 +12,22 @@ import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
 import org.joda.time.format.DateTimeParser;
 
-import uk.gov.ea.wastecarrier.services.core.Registration;
-import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
+import uk.gov.ea.wastecarrier.services.dao.ICanGetCollection;
 
 public class SearchHelper {
 
     private static Logger log = Logger.getLogger(SearchHelper.class.getName());
-    private DatabaseHelper databaseHelper;
 
-    public SearchHelper(DatabaseHelper databaseHelper) {
+    private DatabaseHelper databaseHelper;
+    private ICanGetCollection dao;
+
+    public SearchHelper(DatabaseHelper databaseHelper, ICanGetCollection dao) {
         this.databaseHelper = databaseHelper;
+        this.dao = dao;
     }
 
-    public JacksonDBCollection<Registration, String> registrationsCollection() {
-        DB db = getDatabase();
-
-        // Create MONGOJACK connection to the database
-        return JacksonDBCollection.wrap(
-                db.getCollection(Registration.COLLECTION_NAME),
-                Registration.class,
-                String.class
-        );
+    public <T> JacksonDBCollection<T, String> getCollection() {
+        return this.dao.getCollection();
     }
 
     public <T> List<T> toList(org.mongojack.DBCursor<T> cursor) {
@@ -46,22 +36,6 @@ public class SearchHelper {
             returnList.add(r);
         }
         return returnList;
-    }
-
-    public DBCollection getRegistrationsCollection() {
-        return getDatabase().getCollection(Registration.COLLECTION_NAME);
-    }
-
-    private DB getDatabase() {
-        // TODO - Replace/refactor the DatabaseHelper
-        DB db = databaseHelper.getConnection();
-
-        if (db == null) {
-            // Database connection is null - not available???
-            log.severe("Database not available, check the database is running");
-            throw new WebApplicationException(Response.Status.SERVICE_UNAVAILABLE);
-        }
-        return db;
     }
 
     /**
@@ -95,7 +69,8 @@ public class SearchHelper {
                 DateTimeFormat.forPattern("dd/MM/yyyy").getParser(),
                 DateTimeFormat.forPattern("dd-MM-yyyy").getParser(),
                 DateTimeFormat.forPattern("dd MM yyyy").getParser(),
-                DateTimeFormat.forPattern("ddMMyyyy").getParser()
+                DateTimeFormat.forPattern("ddMMyyyy").getParser(),
+                DateTimeFormat.forPattern("yyyy-MM-dd").getParser()
         };
 
         DateTimeFormatter formatter =

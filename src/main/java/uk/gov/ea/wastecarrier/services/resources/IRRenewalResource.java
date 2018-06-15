@@ -9,7 +9,7 @@ import uk.gov.ea.wastecarrier.services.core.irdata.IRData;
 import uk.gov.ea.wastecarrier.services.core.irdata.IndividualIRData;
 import uk.gov.ea.wastecarrier.services.core.irdata.PartnersIRData;
 import uk.gov.ea.wastecarrier.services.core.irdata.PublicBodyIRData;
-import uk.gov.ea.wastecarrier.services.mongoDb.IRRenewalMongoDao;
+import uk.gov.ea.wastecarrier.services.dao.IRRenewalDao;
 
 import com.google.common.base.Optional;
 
@@ -28,7 +28,7 @@ import com.mongodb.DB;
 import org.mongojack.DBQuery;
 import org.mongojack.JacksonDBCollection;
 
-import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
+import uk.gov.ea.wastecarrier.services.helper.DatabaseHelper;
 
 /**
  * Resource for accessing and updating individual orders within a registration.
@@ -41,7 +41,7 @@ public class IRRenewalResource
 {
     // Private members set in the constructor.  They provide access to Mongo
     // documents.
-    private final IRRenewalMongoDao dao;
+    private final IRRenewalDao dao;
     private final DatabaseHelper dbHelper;
 
     // Logging capability.
@@ -53,7 +53,7 @@ public class IRRenewalResource
      */
     public IRRenewalResource(DatabaseConfiguration database)
     {
-        dao = new IRRenewalMongoDao(database);
+        dao = new IRRenewalDao(database);
         dbHelper = new DatabaseHelper(database);
     }
 

@@ -3,7 +3,7 @@ package uk.gov.ea.wastecarrier.services;
 import org.junit.*;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.search.WithinSearch;
-import uk.gov.ea.wastecarrier.services.support.ConnectionUtil;
+import uk.gov.ea.wastecarrier.services.support.RegistrationsConnectionUtil;
 import uk.gov.ea.wastecarrier.services.support.RegistrationBuilder;
 
 import java.util.List;
@@ -12,11 +12,11 @@ import static org.junit.Assert.assertEquals;
 
 public class WithinSearchTest {
 
-    private static ConnectionUtil connection;
+    private static RegistrationsConnectionUtil connection;
 
     @BeforeClass
     public static void setup() {
-        connection = new ConnectionUtil();
+        connection = new RegistrationsConnectionUtil();
         createRegistrations();
     }
 
@@ -184,7 +184,7 @@ public class WithinSearchTest {
                 .postalPostcode("NW1 1HT")
                 .build();
 
-        connection.registrationsDao.insertRegistration(reg);
+        connection.dao.insert(reg);
 
         reg = new RegistrationBuilder(RegistrationBuilder.BuildType.LOWER)
                 .regIdentifier("CBDL13")
@@ -194,7 +194,7 @@ public class WithinSearchTest {
                 .postalPostcode("WA4 1HT")
                 .build();
 
-        connection.registrationsDao.insertRegistration(reg);
+        connection.dao.insert(reg);
 
         reg = new RegistrationBuilder(RegistrationBuilder.BuildType.LOWER)
                 .regIdentifier("CBDL12")
@@ -204,7 +204,7 @@ public class WithinSearchTest {
                 .postalPostcode("BS1 5AH")
                 .build();
 
-        connection.registrationsDao.insertRegistration(reg);
+        connection.dao.insert(reg);
 
         reg = new RegistrationBuilder(RegistrationBuilder.BuildType.LOWER)
                 .regIdentifier("CBDL11")
@@ -214,7 +214,7 @@ public class WithinSearchTest {
                 .postalPostcode("BS1")
                 .build();
 
-        connection.registrationsDao.insertRegistration(reg);
+        connection.dao.insert(reg);
 
         reg = new RegistrationBuilder(RegistrationBuilder.BuildType.LOWER)
                 .regIdentifier("CBDL1")
@@ -224,6 +224,6 @@ public class WithinSearchTest {
                 .postalPostcode("WBS1 5AH")
                 .build();
 
-        connection.registrationsDao.insertRegistration(reg);
+        connection.dao.insert(reg);
     }
 }

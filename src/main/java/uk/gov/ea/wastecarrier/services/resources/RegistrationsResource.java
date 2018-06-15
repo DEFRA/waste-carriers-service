@@ -11,8 +11,10 @@ import org.mongojack.WriteResult;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.core.*;
 import uk.gov.ea.wastecarrier.services.core.Registration.RegistrationTier;
-import uk.gov.ea.wastecarrier.services.mongoDb.*;
-import uk.gov.ea.wastecarrier.services.tasks.PostcodeRegistry;
+import uk.gov.ea.wastecarrier.services.helper.DatabaseHelper;
+import uk.gov.ea.wastecarrier.services.dao.RegistrationDao;
+import uk.gov.ea.wastecarrier.services.helper.RegistrationHelper;
+import uk.gov.ea.wastecarrier.services.tasks.PostcodeRegistryTask;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
@@ -31,9 +33,9 @@ import java.util.logging.Logger;
 @Consumes(MediaType.APPLICATION_JSON)
 public class RegistrationsResource
 {
-    private final RegistrationsMongoDao dao;
+    private final RegistrationDao dao;
     private final DatabaseHelper databaseHelper;
-    private final PostcodeRegistry postcodeRegistry;
+    private final PostcodeRegistryTask postcodeRegistryTask;
 
     // Standard logging declaration
     private Logger log = Logger.getLogger(RegistrationsResource.class.getName());
@@ -46,8 +48,8 @@ public class RegistrationsResource
             DatabaseConfiguration database,
             String postcodeFilePath) {
         this.databaseHelper = new DatabaseHelper(database);
-        this.dao = new RegistrationsMongoDao(database);
-        this.postcodeRegistry = new PostcodeRegistry(PostcodeRegistry.POSTCODE_FROM.FILE, postcodeFilePath);
+        this.dao = new RegistrationDao(database);
+        this.postcodeRegistryTask = new PostcodeRegistryTask(PostcodeRegistryTask.POSTCODE_FROM.FILE, postcodeFilePath);
     }
 
     @GET
@@ -55,7 +57,7 @@ public class RegistrationsResource
     @Path("/{registrationNumber}")
     public Registration fetch(@PathParam("registrationNumber") String registrationNumber) {
 
-        Registration reg = dao.findRegistration(registrationNumber);
+        Registration reg = dao.findByRegIdentifier(registrationNumber);
 
         return reg;
     }
@@ -138,7 +140,7 @@ public class RegistrationsResource
                 }
             }
             if (regAddress != null) {
-                Double[] xyCoords = postcodeRegistry.getXYCoords(regAddress.getPostcode());
+                Double[] xyCoords = postcodeRegistryTask.getXYCoords(regAddress.getPostcode());
                 regAddress.setLocation( new Location( xyCoords[0], xyCoords[1]));
             } else {
                 log.info("Non-UK Address assumed as Postcode could not be found in the registration, Using default location of X:1, Y:1");

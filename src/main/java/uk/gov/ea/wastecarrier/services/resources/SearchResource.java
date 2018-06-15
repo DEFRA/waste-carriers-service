@@ -5,7 +5,9 @@ import com.mongodb.MongoException;
 import org.hibernate.validator.constraints.NotEmpty;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.core.Registration;
-import uk.gov.ea.wastecarrier.services.mongoDb.*;
+import uk.gov.ea.wastecarrier.services.helper.DatabaseHelper;
+import uk.gov.ea.wastecarrier.services.dao.RegistrationDao;
+import uk.gov.ea.wastecarrier.services.helper.SearchHelper;
 import uk.gov.ea.wastecarrier.services.search.*;
 
 import javax.ws.rs.*;
@@ -22,29 +24,33 @@ public class SearchResource {
 
     private Logger log = Logger.getLogger(OrdersResource.class.getName());
 
-    private final DatabaseHelper databaseHelper;
     private final Integer defaultResultCount;
 
+    private final SearchHelper searchHelper;
+
     public SearchResource(
-            DatabaseConfiguration databaseConfiguration,
+            DatabaseConfiguration configuration,
             Integer defaultResultCount
     ) {
-        this.databaseHelper = new DatabaseHelper(databaseConfiguration);
+        this.searchHelper = new SearchHelper(
+                new DatabaseHelper(configuration),
+                new RegistrationDao(configuration)
+        );
         this.defaultResultCount = defaultResultCount;
     }
 
     @GET
-    @Path("/registrations/{searchWithin}/{searchValue}")
+    @Path("/registrations/{searchWithin}")
     public List<Registration> queryWithin(
-            @PathParam("searchValue") @NotEmpty String searchValue,
-            @PathParam("searchWithin") @NotEmpty String searchWithin
+            @PathParam("searchWithin") @NotEmpty String searchWithin,
+            @QueryParam("value") @NotEmpty String searchValue
     ) {
-        log.fine("Get Method Detected at /search/registrations/{searchWithin}/{searchValue}");
+        log.fine("Get Method Detected at /search/registrations/{searchWithin}");
         List<Registration> searchResults;
 
         try {
             WithinSearch search = new WithinSearch(
-                    new SearchHelper(this.databaseHelper),
+                    this.searchHelper,
                     searchValue,
                     searchWithin,
                     defaultResultCount
@@ -85,7 +91,7 @@ public class SearchResource {
 
         try {
             RegistrationSearch search = new RegistrationSearch(
-                    new SearchHelper(this.databaseHelper),
+                    this.searchHelper,
                     from,
                     until,
                     routes,
@@ -126,7 +132,7 @@ public class SearchResource {
 
         try {
             PaymentSearch search = new PaymentSearch(
-                    new SearchHelper(this.databaseHelper),
+                    this.searchHelper,
                     from,
                     until,
                     paymentStatus,
@@ -162,7 +168,7 @@ public class SearchResource {
 
         try {
             CopyCardSearch search = new CopyCardSearch(
-                    new SearchHelper(this.databaseHelper),
+                    this.searchHelper,
                     from,
                     until,
                     declaredConvictions.isPresent(),
@@ -180,16 +186,16 @@ public class SearchResource {
     }
 
     @GET
-    @Path("/account/{accountEmail}")
+    @Path("/account")
     public List<Registration> queryAccountEmail(
-            @PathParam("accountEmail") @NotEmpty String accountEmail
+            @QueryParam("email") @NotEmpty String accountEmail
     ) {
         log.fine("Get Method Detected at /search/account");
         List<Registration> searchResults;
 
         try {
             AccountSearch search = new AccountSearch(
-                    new SearchHelper(this.databaseHelper),
+                    this.searchHelper,
                     accountEmail
             );
 
@@ -212,7 +218,7 @@ public class SearchResource {
 
         try {
             OriginalRegNumberSearch search = new OriginalRegNumberSearch(
-                    new SearchHelper(this.databaseHelper),
+                    this.searchHelper,
                     originalRegNumber
             );
 

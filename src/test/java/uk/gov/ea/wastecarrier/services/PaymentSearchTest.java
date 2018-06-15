@@ -4,7 +4,7 @@ import org.junit.*;
 import uk.gov.ea.wastecarrier.services.core.Payment;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.search.PaymentSearch;
-import uk.gov.ea.wastecarrier.services.support.ConnectionUtil;
+import uk.gov.ea.wastecarrier.services.support.RegistrationsConnectionUtil;
 import uk.gov.ea.wastecarrier.services.support.RegistrationBuilder;
 import uk.gov.ea.wastecarrier.services.support.TestUtil;
 
@@ -15,11 +15,11 @@ import static org.junit.Assert.assertEquals;
 
 public class PaymentSearchTest {
 
-    private static ConnectionUtil connection;
+    private static RegistrationsConnectionUtil connection;
 
     @BeforeClass
     public static void setup() {
-        connection = new ConnectionUtil();
+        connection = new RegistrationsConnectionUtil();
         createRegistrations();
     }
 
@@ -324,7 +324,7 @@ public class PaymentSearchTest {
         Registration reg = new RegistrationBuilder(RegistrationBuilder.BuildType.LOWER)
                 .regIdentifier("CBDL1")
                 .build();
-        connection.registrationsDao.insertRegistration(reg);
+        connection.dao.insert(reg);
 
         // Create a new registration with a payment, but its dates are before the
         // date filters in PaymentSearch
@@ -333,7 +333,7 @@ public class PaymentSearchTest {
                 .orderCreatedDate(TestUtil.fromCurrentDate(0,0,-1))
                 .paymentReceived(TestUtil.fromCurrentDate(0,0,-1))
                 .build();
-        connection.registrationsDao.insertRegistration(reg);
+        connection.dao.insert(reg);
 
         // Create a new registration with a payment, but its dates are after the
         // date filters in PaymentSearch
@@ -342,41 +342,41 @@ public class PaymentSearchTest {
                 .orderCreatedDate(TestUtil.fromCurrentDate(0,0,1))
                 .paymentReceived(TestUtil.fromCurrentDate(0,0,1))
                 .build();
-        connection.registrationsDao.insertRegistration(reg);
+        connection.dao.insert(reg);
 
         // Create a new registration with a payment (fully paid)
         reg = new RegistrationBuilder(RegistrationBuilder.BuildType.UPPER)
                 .regIdentifier("CBDU4")
                 .build();
-        connection.registrationsDao.insertRegistration(reg);
+        connection.dao.insert(reg);
 
         // Create a new registration with an under payment (awaiting payment)
         reg = new RegistrationBuilder(RegistrationBuilder.BuildType.UPPER)
                 .regIdentifier("CBDU5")
                 .paymentAmount(10000)
                 .build();
-        connection.registrationsDao.insertRegistration(reg);
+        connection.dao.insert(reg);
 
         // Create a new registration with an over payment (overpaid)
         reg = new RegistrationBuilder(RegistrationBuilder.BuildType.UPPER)
                 .regIdentifier("CBDU6")
                 .paymentAmount(16000)
                 .build();
-        connection.registrationsDao.insertRegistration(reg);
+        connection.dao.insert(reg);
 
         // Create an IR renewal registration with a WORLDPAY_MISSED payment (fully paid)
         reg = new RegistrationBuilder(RegistrationBuilder.BuildType.IRRENEWAL)
                 .regIdentifier("CBDU7")
                 .paymentType(Payment.PaymentType.WORLDPAY_MISSED)
                 .build();
-        connection.registrationsDao.insertRegistration(reg);
+        connection.dao.insert(reg);
 
         // Create a new registration with a copy card order and a payment (fully paid)
         reg = new RegistrationBuilder(RegistrationBuilder.BuildType.UPPER, true)
                 .regIdentifier("CBDU8")
                 .paymentType(Payment.PaymentType.BANKTRANSFER)
                 .build();
-        connection.registrationsDao.insertRegistration(reg);
+        connection.dao.insert(reg);
 
         // Create a new registration with a WORLDPAY_MISSED payment (fully paid)
         // Specifically created for searchForMultipleTypes(), we DO NOT expect to
@@ -385,7 +385,7 @@ public class PaymentSearchTest {
                 .regIdentifier("CBDU9")
                 .paymentType(Payment.PaymentType.WORLDPAY_MISSED)
                 .build();
-        connection.registrationsDao.insertRegistration(reg);
+        connection.dao.insert(reg);
 
     }
 }

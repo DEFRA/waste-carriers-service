@@ -4,6 +4,7 @@ import org.mongojack.DBQuery;
 import org.mongojack.DBSort;
 import org.mongojack.JacksonDBCollection;
 import uk.gov.ea.wastecarrier.services.core.Registration;
+import uk.gov.ea.wastecarrier.services.helper.SearchHelper;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -74,7 +75,7 @@ public class WithinSearch {
         List<Registration> results = executeAny();
         if (!results.isEmpty()) return results;
 
-        JacksonDBCollection<Registration, String> registrations = this.searchHelper.registrationsCollection();
+        JacksonDBCollection<Registration, String> registrations = this.searchHelper.getCollection();
 
         DBQuery.Query query = determineQuery();
         DBSort.SortBuilder sortBy = determineSort();
@@ -90,7 +91,7 @@ public class WithinSearch {
 
     private List<Registration> executeAny() {
 
-        JacksonDBCollection<Registration, String> registrations = this.searchHelper.registrationsCollection();
+        JacksonDBCollection<Registration, String> registrations = this.searchHelper.getCollection();
 
         DBQuery.Query query = DBQuery.regex("regIdentifier", likePattern);
         DBSort.SortBuilder sortBy = DBSort.asc("regIdentifier");

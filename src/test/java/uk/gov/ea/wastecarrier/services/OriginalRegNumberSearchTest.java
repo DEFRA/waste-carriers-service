@@ -9,12 +9,12 @@ import static org.junit.Assert.assertEquals;
 
 public class OriginalRegNumberSearchTest {
 
-    private static ConnectionUtil connection;
+    private static RegistrationsConnectionUtil connection;
     private static final String originalRegNumber = "CB/VM8888WW/A001";
 
     @BeforeClass
     public static void setup() {
-        connection = new ConnectionUtil();
+        connection = new RegistrationsConnectionUtil();
         createRegistrations();
     }
 
@@ -45,6 +45,6 @@ public class OriginalRegNumberSearchTest {
                 .originalRegNumber(originalRegNumber)
                 .build();
 
-        connection.registrationsDao.insertRegistration(reg);
+        connection.dao.insert(reg);
     }
 }

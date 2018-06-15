@@ -7,10 +7,10 @@ import uk.gov.ea.wastecarrier.services.core.Payment;
 import uk.gov.ea.wastecarrier.services.core.Settings;
 import uk.gov.ea.wastecarrier.services.core.User;
 
-import uk.gov.ea.wastecarrier.services.mongoDb.PaymentHelper;
-import uk.gov.ea.wastecarrier.services.mongoDb.PaymentsMongoDao;
-import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationsMongoDao;
-import uk.gov.ea.wastecarrier.services.mongoDb.UsersMongoDao;
+import uk.gov.ea.wastecarrier.services.helper.PaymentHelper;
+import uk.gov.ea.wastecarrier.services.dao.PaymentDao;
+import uk.gov.ea.wastecarrier.services.dao.RegistrationDao;
+import uk.gov.ea.wastecarrier.services.dao.UserDao;
 
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
@@ -35,10 +35,10 @@ import java.util.logging.Logger;
 @Consumes(MediaType.APPLICATION_JSON)
 public class PaymentResource
 {	
-    private PaymentsMongoDao dao;
+    private PaymentDao dao;
     private PaymentHelper paymentHelper;
-    private RegistrationsMongoDao regDao;
-    private UsersMongoDao userDao;
+    private RegistrationDao regDao;
+    private UserDao userDao;
 
     private Logger log = Logger.getLogger(PaymentResource.class.getName());
 
@@ -49,10 +49,10 @@ public class PaymentResource
     public PaymentResource(DatabaseConfiguration database, DatabaseConfiguration userDatabase,
             SettingsConfiguration settingConfig)
     {
-        dao = new PaymentsMongoDao(database);
-        regDao = new RegistrationsMongoDao(database);
+        dao = new PaymentDao(database);
+        regDao = new RegistrationDao(database);
         paymentHelper = new PaymentHelper(new Settings(settingConfig));
-        userDao = new UsersMongoDao(userDatabase);
+        userDao = new UserDao(userDatabase);
     }
 
     /**
@@ -85,8 +85,8 @@ public class PaymentResource
          * Update the registration status, if appropriate
          *
          */
-        Registration registration = regDao.getRegistration(registrationId);
-        User user = userDao.getUserByEmail(registration.getAccountEmail());
+        Registration registration = regDao.find(registrationId);
+        User user = userDao.findByEmail(registration.getAccountEmail());
         if (paymentHelper.isReadyToBeActivated(registration, user) || paymentHelper.isReadyToBeRenewed(registration))
         {
             if (paymentHelper.isReadyToBeRenewed(registration)) registration.setRenewalRequested(null);
@@ -94,7 +94,7 @@ public class PaymentResource
         }
         try
         {
-            regDao.updateRegistration(registration);
+            regDao.update(registration);
         }
         catch(Exception e)
         {

@@ -5,7 +5,7 @@ import uk.gov.ea.wastecarrier.services.core.ConvictionSearchResult;
 import uk.gov.ea.wastecarrier.services.core.MetaData;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.search.RegistrationSearch;
-import uk.gov.ea.wastecarrier.services.support.ConnectionUtil;
+import uk.gov.ea.wastecarrier.services.support.RegistrationsConnectionUtil;
 import uk.gov.ea.wastecarrier.services.support.RegistrationBuilder;
 import uk.gov.ea.wastecarrier.services.support.TestUtil;
 
@@ -16,11 +16,11 @@ import static org.junit.Assert.assertEquals;
 
 public class RegistrationSearchTest {
 
-    private static ConnectionUtil connection;
+    private static RegistrationsConnectionUtil connection;
 
     @BeforeClass
     public static void setup() {
-        connection = new ConnectionUtil();
+        connection = new RegistrationsConnectionUtil();
         createRegistrations();
     }
 
@@ -495,7 +495,7 @@ public class RegistrationSearchTest {
                 .regIdentifier("CBDU1")
                 .dateRegistered(TestUtil.fromCurrentDate(0, 0, -1))
                 .build();
-        connection.registrationsDao.insertRegistration(reg);
+        connection.dao.insert(reg);
 
         // Create a new registration, but its dates are after the date filters
         // in RegistrationSearch
@@ -503,21 +503,21 @@ public class RegistrationSearchTest {
                 .regIdentifier("CBDU2")
                 .dateRegistered(TestUtil.fromCurrentDate(0, 0, 1))
                 .build();
-        connection.registrationsDao.insertRegistration(reg);
+        connection.dao.insert(reg);
 
         // Create a new CHARITY lower tier ACTIVE registration
         reg = new RegistrationBuilder(RegistrationBuilder.BuildType.LOWER)
                 .regIdentifier("CBDL3")
                 .businessType("charity")
                 .build();
-        connection.registrationsDao.insertRegistration(reg);
+        connection.dao.insert(reg);
 
         // Create a new ASSISTED_DIGITAL registration
         reg = new RegistrationBuilder(RegistrationBuilder.BuildType.LOWER)
                 .regIdentifier("CBDL4")
                 .registrationRoute(MetaData.RouteType.ASSISTED_DIGITAL)
                 .build();
-        connection.registrationsDao.insertRegistration(reg);
+        connection.dao.insert(reg);
 
         // Create registration where a conviction has been declared and status
         // is PENDING
@@ -526,7 +526,7 @@ public class RegistrationSearchTest {
                 .registrationStatus(MetaData.RegistrationStatus.PENDING)
                 .declaredConvictions("yes")
                 .build();
-        connection.registrationsDao.insertRegistration(reg);
+        connection.dao.insert(reg);
 
         // Create registration where the company has been flagged and the status
         // is REVOKED
@@ -535,14 +535,14 @@ public class RegistrationSearchTest {
                 .registrationStatus(MetaData.RegistrationStatus.REVOKED)
                 .companyConvictionMatch(ConvictionSearchResult.MatchResult.YES)
                 .build();
-        connection.registrationsDao.insertRegistration(reg);
+        connection.dao.insert(reg);
 
         // Create registration where a person has been flagged
         reg = new RegistrationBuilder(RegistrationBuilder.BuildType.UPPER)
                 .regIdentifier("CBDU7")
                 .keyPersonConvictionMatch(ConvictionSearchResult.MatchResult.YES)
                 .build();
-        connection.registrationsDao.insertRegistration(reg);
+        connection.dao.insert(reg);
 
         // Create a PUBLICBODY registration where a conviction has been declared
         // and it has also been flagged
@@ -552,19 +552,19 @@ public class RegistrationSearchTest {
                 .declaredConvictions("yes")
                 .keyPersonConvictionMatch(ConvictionSearchResult.MatchResult.YES)
                 .build();
-        connection.registrationsDao.insertRegistration(reg);
+        connection.dao.insert(reg);
 
         // Create a new registration with a copy card
         reg = new RegistrationBuilder(RegistrationBuilder.BuildType.UPPER, true)
                 .regIdentifier("CBDU9")
                 .build();
-        connection.registrationsDao.insertRegistration(reg);
+        connection.dao.insert(reg);
 
         // Create a IR renewal registration with a copy card
         reg = new RegistrationBuilder(RegistrationBuilder.BuildType.IRRENEWAL, true)
                 .regIdentifier("CBDU10")
                 .build();
-        connection.registrationsDao.insertRegistration(reg);
+        connection.dao.insert(reg);
 
     }
 }

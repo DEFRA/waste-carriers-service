@@ -5,6 +5,7 @@ import org.mongojack.JacksonDBCollection;
 import uk.gov.ea.wastecarrier.services.core.ConvictionSearchResult;
 import uk.gov.ea.wastecarrier.services.core.OrderItem;
 import uk.gov.ea.wastecarrier.services.core.Registration;
+import uk.gov.ea.wastecarrier.services.helper.SearchHelper;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -57,7 +58,7 @@ public class CopyCardSearch {
 
     public List<Registration> execute() {
 
-        JacksonDBCollection<Registration, String> registrations = this.searchHelper.registrationsCollection();
+        JacksonDBCollection<Registration, String> registrations = this.searchHelper.getCollection();
 
         DBQuery.Query query = DBQuery.and(DBQuery
                 .greaterThanEquals(DATE_FILTER_PROPERTY, this.fromDate)

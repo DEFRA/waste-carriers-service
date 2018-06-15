@@ -1,4 +1,4 @@
-package uk.gov.ea.wastecarrier.services.mongoDb;
+package uk.gov.ea.wastecarrier.services.dao;
 
 import java.util.logging.Logger;
 
@@ -17,11 +17,12 @@ import uk.gov.ea.wastecarrier.services.core.irdata.IndividualIRData;
 import uk.gov.ea.wastecarrier.services.core.irdata.IRData;
 import uk.gov.ea.wastecarrier.services.core.irdata.PartnersIRData;
 import uk.gov.ea.wastecarrier.services.core.irdata.PublicBodyIRData;
+import uk.gov.ea.wastecarrier.services.helper.DatabaseHelper;
 
-public class IRRenewalMongoDao
+public class IRRenewalDao
 {
     /** logger for this class. */
-    private static Logger log = Logger.getLogger(IRRenewalMongoDao.class.getName());
+    private static Logger log = Logger.getLogger(IRRenewalDao.class.getName());
 
     /** The database helper. */
     private DatabaseHelper databaseHelper;
@@ -31,7 +32,7 @@ public class IRRenewalMongoDao
      *
      * @param database the DatabaseConfiguration
      */
-    public IRRenewalMongoDao(DatabaseConfiguration database)
+    public IRRenewalDao(DatabaseConfiguration database)
     {
         log.fine("Constructing DAO with databaseHelper.");
         this.databaseHelper = new DatabaseHelper(database);

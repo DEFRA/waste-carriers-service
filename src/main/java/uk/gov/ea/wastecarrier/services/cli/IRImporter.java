@@ -12,11 +12,11 @@ import java.util.TimeZone;
 import java.util.UUID;
 
 import com.mongodb.DB;
+import com.opencsv.CSVReader;
 import io.dropwizard.cli.ConfiguredCommand;
 import io.dropwizard.setup.Bootstrap;
 import org.mongojack.JacksonDBCollection;
 
-import au.com.bytecode.opencsv.CSVReader;
 import net.sourceforge.argparse4j.impl.Arguments;
 import net.sourceforge.argparse4j.inf.Namespace;
 import net.sourceforge.argparse4j.inf.Subparser;
@@ -24,7 +24,7 @@ import org.joda.time.DateTime;
 
 import uk.gov.ea.wastecarrier.services.WasteCarrierConfiguration;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
-import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
+import uk.gov.ea.wastecarrier.services.helper.DatabaseHelper;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.core.Address;
 import uk.gov.ea.wastecarrier.services.core.FinanceDetails;
@@ -173,7 +173,8 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
                 dbConfig.getPort(),
                 dbConfig.getName(),
                 dbConfig.getUsername(),
-                dbConfig.getPassword()
+                dbConfig.getPassword(),
+                dbConfig.getServerSelectionTimeout()
         ));
         
         // Check we can connect to the database, and are authenticated.

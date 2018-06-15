@@ -7,11 +7,11 @@ import uk.gov.ea.wastecarrier.services.core.MetaData;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.core.Settings;
 import uk.gov.ea.wastecarrier.services.core.User;
-import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
-import uk.gov.ea.wastecarrier.services.mongoDb.PaymentHelper;
-import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationHelper;
-import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationsMongoDao;
-import uk.gov.ea.wastecarrier.services.mongoDb.UsersMongoDao;
+import uk.gov.ea.wastecarrier.services.helper.DatabaseHelper;
+import uk.gov.ea.wastecarrier.services.helper.PaymentHelper;
+import uk.gov.ea.wastecarrier.services.helper.RegistrationHelper;
+import uk.gov.ea.wastecarrier.services.dao.RegistrationDao;
+import uk.gov.ea.wastecarrier.services.dao.UserDao;
 
 import com.mongodb.DB;
 
@@ -43,8 +43,8 @@ import java.util.logging.Logger;
 public class RegistrationReadEditResource
 {
     private DatabaseHelper databaseHelper;
-    private RegistrationsMongoDao regDao;
-    private UsersMongoDao userDao;
+    private RegistrationDao regDao;
+    private UserDao userDao;
     private PaymentHelper paymentHelper;
 
     // Standard logging declaration
@@ -54,9 +54,9 @@ public class RegistrationReadEditResource
             DatabaseConfiguration database, DatabaseConfiguration userDatabase, SettingsConfiguration settingConfig)
     {
         this.databaseHelper = new DatabaseHelper(database);
-        this.regDao = new RegistrationsMongoDao(database);
+        this.regDao = new RegistrationDao(database);
         this.paymentHelper = new PaymentHelper(new Settings(settingConfig));
-        this.userDao = new UsersMongoDao(userDatabase);
+        this.userDao = new UserDao(userDatabase);
     }
 
     /**
@@ -101,7 +101,7 @@ public class RegistrationReadEditResource
                     {
                         // Set and update registration with updated values
                         foundReg = RegistrationHelper.setAsExpired(foundReg);
-                        return regDao.updateRegistration(foundReg);
+                        return regDao.update(foundReg);
                     }
                     return foundReg;
                 }
@@ -153,15 +153,15 @@ public class RegistrationReadEditResource
             try
             {
                 //Update the registration status, if appropriate
-                Registration registration = regDao.getRegistration(id);
-                User user = userDao.getUserByEmail(registration.getAccountEmail());
+                Registration registration = regDao.find(id);
+                User user = userDao.findByEmail(registration.getAccountEmail());
 
                 if (paymentHelper.isReadyToBeActivated(registration, user))
                 {
                     registration = paymentHelper.setupRegistrationForActivation(registration);
                     try
                     {
-                        savedObject = regDao.updateRegistration(registration);
+                        savedObject = regDao.update(registration);
                     }
                     catch (Exception e)
                     {
