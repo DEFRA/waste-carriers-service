@@ -54,10 +54,10 @@ The project uses [Maven](https://maven.apache.org/) as its build tool, and [Mave
 So to build the project call
 
 ```bash
-./mvnw clean package
+./mvnw -B -Dmaven.test.skip=true -T 1C clean package
 ```
 
-The normal command on a machine where Maven is installed is `mvn clean package`.
+N.B. If maven was installed all on the machine you would swap `./mvnw` with `mvn`.
 
 ## Startup
 
@@ -79,14 +79,19 @@ Once the application server is started you should be able to access the services
 
 ## Run Tests
 
-The project doesn't have an extensive suite of unit tests, but is working to improve its test coverage. It also relies on specific test environment variables existing for them to run. As such they are not run automatically during a maven build (`mvn package`) but can be called manually. Before running the tests though you need to have sourced the environment variables. This is because the unit tests can't read from the config file so key details about MongoDb need to be provided as environment variables.
+The project doesn't have an extensive suite of unit tests, but is working to improve its test coverage. They require a working connection to MongoDb, and specific test environment variables existing for them to run. Before running the tests you'll need to have sourced the environment variables. This is because the unit tests can't read from the config file so key details about MongoDb need to be provided as environment variables.
 
 ```bash
 source test_env_vars.sh
-mvn test
 ```
 
 Once you've run the environment variable script, you won't need to do it again until you open a new terminal session.
+
+Hence the command to build above includes the option to skip tests. Instead we advise those working on the project should manually run the tests as and when required using
+
+```bash
+./mvnw test
+```
 
 ## Postcode data
 
