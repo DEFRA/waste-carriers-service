@@ -79,6 +79,16 @@ public class CompanyMatchTest {
     }
 
     @Test
+    public void nameMatchEndsWithPeriod() {
+        CompanyMatch matcher = new CompanyMatch(connection.searchHelper, "Isaacs Waste Services Ltd.", null);
+
+        Entity document = matcher.execute();
+
+        assertNotNull(document);
+        assertEquals("Company with name of 'Isaacs Waste Contractors Ltd' is found", "Isaacs Waste Contractors Ltd", document.name);
+    }
+
+    @Test
     public void numberMatchExact() {
         CompanyMatch matcher = new CompanyMatch(connection.searchHelper, null, "12345678");
 
