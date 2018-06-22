@@ -1,6 +1,42 @@
+env:
+  global:
+    - WCRS_SERVICES_REG_HOST_TEST=localhost
+    - WCRS_SERVICES_REG_PORT_TEST=27017
+    - WCRS_SERVICES_REG_NAME_TEST=waste-carriers-test
+    - WCRS_SERVICES_REG_USER_TEST=mongoUser
+    - WCRS_SERVICES_REG_PASSWD_TEST=password1234
+    - WCRS_SERVICES_REG_SERVER_SEL_TIMEOUT_TEST=1000
+    - WCRS_SERVICES_USR_HOST_TEST=localhost
+    - WCRS_SERVICES_USR_PORT_TEST=27017
+    - WCRS_SERVICES_USR_NAME_TEST=waste-carriers-users-test
+    - WCRS_SERVICES_USR_USER_TEST=mongoUser
+    - WCRS_SERVICES_USR_PASSWD_TEST=password1234
+    - WCRS_SERVICES_USR_SERVER_SEL_TIMEOUT_TEST=1000
+    - WCRS_SERVICES_EMG_HOST_TEST=localhost
+    - WCRS_SERVICES_EMG_PORT_TEST=27017
+    - WCRS_SERVICES_EMG_NAME_TEST=entity-matching-test
+    - WCRS_SERVICES_EMG_USER_TEST=mongoUser
+    - WCRS_SERVICES_EMG_PASSWD_TEST=password1234
+    - WCRS_SERVICES_EMG_SERVER_SEL_TIMEOUT_TEST=1000
+
 language: java
 
 jdk:
   - openjdk8
 
-script: ./mvnw -B -Dmaven.test.skip=true -T 1C clean package
+# Travis CI clones repositories to a depth of 50 commits, which is only really
+# useful if you are performing git operations.
+# https://docs.travis-ci.com/user/customizing-the-build/#Git-Clone-Depth
+git:
+  depth: 3
+
+services:
+  - mongodb
+
+before_script:
+  # Set up Mongo databases
+  - mongo waste-carriers-test --eval 'db.createUser({user:"mongoUser", pwd:"password1234", roles:["readWrite", "dbAdmin", "userAdmin"]})'
+  - mongo waste-carriers-users-test --eval 'db.createUser({user:"mongoUser", pwd:"password1234", roles:["readWrite", "dbAdmin", "userAdmin"]})'
+  - mongo entity-matching-test --eval 'db.createUser({user:"mongoUser", pwd:"password1234", roles:["readWrite", "dbAdmin", "userAdmin"]})'
+
+script: ./mvnw -B -T 1C clean package
