@@ -14,7 +14,10 @@ import uk.gov.ea.wastecarrier.services.dao.RegistrationDao;
 import uk.gov.ea.wastecarrier.services.dao.UserDao;
 import uk.gov.ea.wastecarrier.services.health.MongoHealthCheck;
 import uk.gov.ea.wastecarrier.services.resources.*;
-import uk.gov.ea.wastecarrier.services.tasks.*;
+import uk.gov.ea.wastecarrier.services.tasks.EnsureDatabaseIndexesTask;
+import uk.gov.ea.wastecarrier.services.tasks.EntityPopulatorTask;
+import uk.gov.ea.wastecarrier.services.tasks.ExceptionTesterTask;
+import uk.gov.ea.wastecarrier.services.tasks.IRRenewalPopulatorTask;
 
 import java.io.PrintWriter;
 import java.util.logging.Logger;
@@ -62,7 +65,6 @@ public class WasteCarrierService extends Application<WasteCarrierConfiguration> 
         final DatabaseConfiguration registrationsConfig = configuration.getDatabase();
         final DatabaseConfiguration usersConfig = configuration.getUserDatabase();
         final DatabaseConfiguration entityMatchingConfig = configuration.getEntityMatchingDatabase();
-        final String postcodeFilePath = configuration.getPostcodeFilePath();
 
         checkConnections(registrationsConfig, usersConfig, entityMatchingConfig);
 
@@ -75,7 +77,6 @@ public class WasteCarrierService extends Application<WasteCarrierConfiguration> 
                 registrationsConfig,
                 usersConfig,
                 entityMatchingConfig,
-                postcodeFilePath,
                 configuration.getSettings()
         );
 
@@ -84,8 +85,7 @@ public class WasteCarrierService extends Application<WasteCarrierConfiguration> 
                 registrationsConfig,
                 entityMatchingConfig,
                 configuration.getEntityMatching().entitiesFilePath,
-                configuration.getIrRenewals(),
-                postcodeFilePath
+                configuration.getIrRenewals()
         );
 
         addBackgroundJobs(
@@ -178,12 +178,11 @@ public class WasteCarrierService extends Application<WasteCarrierConfiguration> 
             DatabaseConfiguration registrationsConfig,
             DatabaseConfiguration usersConfig,
             DatabaseConfiguration entityMatchingConfig,
-            String postcodeFilePath,
             SettingsConfiguration settings
     ) {
 
         // Add Create Resource.
-        environment.jersey().register(new RegistrationsResource(registrationsConfig, postcodeFilePath));
+        environment.jersey().register(new RegistrationsResource(registrationsConfig));
         // Add Read Resource.
         environment.jersey().register(new RegistrationReadEditResource(registrationsConfig, usersConfig, settings));
         // Add Version Resource.
@@ -229,8 +228,7 @@ public class WasteCarrierService extends Application<WasteCarrierConfiguration> 
             DatabaseConfiguration registrationsConfig,
             DatabaseConfiguration entityMatchingConfig,
             String entityFilePath,
-            IRConfiguration irConfig,
-            String postcodeFilePath
+            IRConfiguration irConfig
     ) {
         // These link to the background jobs and allow us to execute them manually via the admin port
         environment.admin().addTask(new BackgroundJobMetricsReporter("get-jobMetrics"));
@@ -239,9 +237,6 @@ public class WasteCarrierService extends Application<WasteCarrierConfiguration> 
 
         // Allow us to test exception handling, particularly Airbrake / Errbit integration
         environment.admin().addTask(new ExceptionTesterTask("generateTestException"));
-
-        // Add Location Population functionality to create location indexes for all provided addresses of all data.
-        environment.admin().addTask(new LocationPopulatorTask("location", registrationsConfig, postcodeFilePath));
 
         // Add tasks related to IR data.
         environment.admin().addTask(new IRRenewalPopulatorTask("ir-repopulate", registrationsConfig, irConfig));
@@ -267,7 +262,6 @@ public class WasteCarrierService extends Application<WasteCarrierConfiguration> 
      * Get and print the Jar Version to the console for logging purposes.
      */
     private void logPackageNameAndVersion() {
-
 
         Package objPackage = this.getClass().getPackage();
         if (objPackage.getImplementationTitle() != null) {

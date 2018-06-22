@@ -27,11 +27,6 @@ public class WasteCarrierConfiguration extends Configuration {
     private DatabaseConfiguration entityMatchingDatabase = new DatabaseConfiguration();
 
     @Valid
-    @NotEmpty
-    @JsonProperty
-    private String postcodeFilePath = "/postcodes.csv";
-
-    @Valid
     @NotNull
     @JsonProperty
     private SettingsConfiguration settings = new SettingsConfiguration();
@@ -71,10 +66,6 @@ public class WasteCarrierConfiguration extends Configuration {
 
     public DatabaseConfiguration getEntityMatchingDatabase() {
         return entityMatchingDatabase;
-    }
-
-    public String getPostcodeFilePath() {
-        return postcodeFilePath;
     }
 
     public SettingsConfiguration getSettings() {

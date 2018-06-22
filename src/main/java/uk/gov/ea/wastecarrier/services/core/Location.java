@@ -15,40 +15,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Location {
 
     @JsonProperty()
-    private double lat;
+    public double lat;
 
     @JsonProperty()
-    private double lon;
+    public double lon;
 
     /**
      * This empty default constructor is needed for JSON to be happy. The alternative is add
      * "@JsonProperty("id")" in-front of the "long id" definition in the fully qualified constructor
      */
-    public Location()
-    {
-    }
+    public Location() { }
 
-    public Location(double lat, double lon)
-    {
+    public Location(double lat, double lon) {
         this.lat = lat;
         this.lon = lon;
-    }
-
-    public double getLon() {
-        return lon;
-    }
-
-    public void setLon(double lon)
-    {
-        this.lon = lon;
-    }
-    
-    public double getLat() {
-        return lat;
-    }
-
-    public void setLat(double lat)
-    {
-        this.lat = lat;
     }
 }

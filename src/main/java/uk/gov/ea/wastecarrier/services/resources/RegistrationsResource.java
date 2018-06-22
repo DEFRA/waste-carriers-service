@@ -14,7 +14,6 @@ import uk.gov.ea.wastecarrier.services.core.Registration.RegistrationTier;
 import uk.gov.ea.wastecarrier.services.helper.DatabaseHelper;
 import uk.gov.ea.wastecarrier.services.dao.RegistrationDao;
 import uk.gov.ea.wastecarrier.services.helper.RegistrationHelper;
-import uk.gov.ea.wastecarrier.services.tasks.PostcodeRegistryTask;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
@@ -35,21 +34,13 @@ public class RegistrationsResource
 {
     private final RegistrationDao dao;
     private final DatabaseHelper databaseHelper;
-    private final PostcodeRegistryTask postcodeRegistryTask;
 
     // Standard logging declaration
     private Logger log = Logger.getLogger(RegistrationsResource.class.getName());
 
-    /**
-     *
-     * @param database the DatabaseConfiguration
-     */
-    public RegistrationsResource(
-            DatabaseConfiguration database,
-            String postcodeFilePath) {
+    public RegistrationsResource(DatabaseConfiguration database) {
         this.databaseHelper = new DatabaseHelper(database);
         this.dao = new RegistrationDao(database);
-        this.postcodeRegistryTask = new PostcodeRegistryTask(PostcodeRegistryTask.POSTCODE_FROM.FILE, postcodeFilePath);
     }
 
     @GET
@@ -123,34 +114,9 @@ public class RegistrationsResource
                 log.severe("Incoming registration with missing route field");
                 throw new WebApplicationException(Status.BAD_REQUEST);
             }
-            
-            /*
-             * Insert registration details into the database
-             */
+
             // Update Registration MetaData to include current time
             reg.setMetaData(new MetaData(MetaData.getCurrentDateTime(), "userDetailAddedAtRegistration", currentMetaData.getRoute()));
-
-            // Update Registration Location to include location, derived from postcode
-            Address regAddress = null;
-            for (Iterator<Address> address = reg.getAddresses().iterator(); address.hasNext(); ) {
-                Address thisAddress = address.next();
-                if (thisAddress.getAddressType().equals(Address.addressType.REGISTERED)) {
-                    regAddress = thisAddress;
-                    break;
-                }
-            }
-            if (regAddress != null) {
-                Double[] xyCoords = postcodeRegistryTask.getXYCoords(regAddress.getPostcode());
-                regAddress.setLocation( new Location( xyCoords[0], xyCoords[1]));
-            } else {
-                log.info("Non-UK Address assumed as Postcode could not be found in the registration, Using default location of X:1, Y:1");
-                regAddress.setLocation( new Location(1, 1));
-                
-                // Update MetaData to include a message to state location information set to default
-                MetaData tmpMD = reg.getMetaData();
-                tmpMD.setAnotherString("Non-UK Address Assumed");
-                reg.setMetaData(tmpMD);
-            }
             
             // Update Registration to include sequential identifier.
             updateRegistrationIdentifier(reg, db);
