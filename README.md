@@ -93,17 +93,6 @@ Hence the command to build above includes the option to skip tests. Instead we a
 ./mvnw test
 ```
 
-## Postcode data
-
-The service uses postcode data with associated latitude and longitude coordinates, uploaded from a postcodes CSV file available here:
-http://www.freemaptools.com/download/outcode-postcodes/postcodes.csv
-
-Contains Ordnance Survey data © Crown copyright and database right 2013
-
-Contains Royal Mail data © Royal Mail copyright and database right 2013
-
-Contains National Statistics data © Crown copyright and database right 2013
-
 ## Contributing to this project
 
 If you have an idea you'd like to contribute please log an issue.
