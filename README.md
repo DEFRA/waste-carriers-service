@@ -1,5 +1,7 @@
 # Waste Carriers Service
 
+[![Build Status](https://travis-ci.org/DEFRA/waste-carriers-service.svg?branch=develop)](https://travis-ci.org/DEFRA/waste-carriers-service)
+
 Waste Carriers Registration Service application.
 
 The Waste Carrier Registrations Service allows businesses, who deal with waste and thus have to register according to the regulations, to register online. Once registered, businesses can sign in again to edit their registrations if needed.
