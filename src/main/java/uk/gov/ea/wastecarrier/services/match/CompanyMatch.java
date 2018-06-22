@@ -113,13 +113,22 @@ public class CompanyMatch {
 
     private String parseName(String name) {
 
-        if (name == null || name.trim().isEmpty()) return "";
+        if (name == null) return "";
+
+        name = name.trim();
+        if (name.isEmpty()) return "";
+
+        // Check for a period on the end. Not doing so means the match could
+        // be confused by something like 'Test Waste Ltd.' because 'Ltd.'
+        // won't be caught by ignored words check, and it might be that in the
+        // db the record is held as 'Ltd' or 'Limited'.
+        if (name.endsWith(".")) name = name.substring(0, name.length() - 1);
 
         StringBuilder parsedName = new StringBuilder();
 
         for (String word: Arrays.asList(name.toLowerCase().split(" "))) {
             if (!word.isEmpty() && !ignoredNameWords.contains(word)) {
-                parsedName.append(word + ' ');
+                parsedName.append(word).append(" ");
             }
         }
 
