@@ -12,14 +12,13 @@ public class EntityMatchingConnectionUtil {
     public SearchHelper searchHelper;
 
     public EntityMatchingConnectionUtil() {
-        String host = System.getenv("WCRS_SERVICES_EMG_HOST_TEST");
-        int port = Integer.valueOf(System.getenv("WCRS_SERVICES_EMG_PORT_TEST"));
-        String name = System.getenv("WCRS_SERVICES_EMG_NAME_TEST");
-        String username = System.getenv("WCRS_SERVICES_EMG_USER_TEST");
-        String password = System.getenv("WCRS_SERVICES_EMG_PASSWD_TEST");
-        int timeout = Integer.valueOf(System.getenv("WCRS_SERVICES_EMG_SERVER_SEL_TIMEOUT_TEST"));
+        String url  = System.getenv("WCRS_TEST_ENTSDB_URL1");
+        String name = System.getenv("WCRS_TEST_ENTSDB_NAME");
+        String username = System.getenv("WCRS_TEST_ENTSDB_USERNAME");
+        String password = System.getenv("WCRS_TEST_ENTSDB_PASSWORD");
+        int timeout = Integer.valueOf(System.getenv("WCRS_TEST_ENTSDB_SERVER_SEL_TIMEOUT"));
 
-        DatabaseConfiguration config = new DatabaseConfiguration(host, port, name, username, password, timeout);
+        DatabaseConfiguration config = new DatabaseConfiguration(url, name, username, password, timeout);
 
         databaseHelper = new DatabaseHelper(config);
         dao = new EntityDao(config);
@@ -32,8 +31,7 @@ public class EntityMatchingConnectionUtil {
 
     public EntityDao invalidCredentialsDao() {
         DatabaseConfiguration invalidConfig = new DatabaseConfiguration(
-                this.databaseHelper.configuration().getHost(),
-                this.databaseHelper.configuration().getPort(),
+                this.databaseHelper.configuration().getUrl(),
                 this.databaseHelper.configuration().getName(),
                 this.databaseHelper.configuration().getUsername(),
                 "Bl0wMeDownWithAFeather",

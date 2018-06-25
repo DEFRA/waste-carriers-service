@@ -9,12 +9,11 @@ import org.hibernate.validator.constraints.NotEmpty;
 public class DatabaseConfiguration {
     @NotEmpty
     @JsonProperty
+    private String url;
+
     private String host;
 
-    @Min(1)
-    @Max(65535)
-    @JsonProperty
-    private int port = 5672;
+    private int port;
     
     @NotEmpty
     @JsonProperty
@@ -34,26 +33,34 @@ public class DatabaseConfiguration {
     public DatabaseConfiguration() {}
 
     public DatabaseConfiguration(
-            String host,
-            int port,
+            String url,
             String name,
             String username,
             String password,
-            int serverSelectionTimeouttimeout
+            int serverSelectionTimeout
     ) {
-        this.host = host;
-        this.port = port;
+        this.url = url;
         this.name = name;
         this.username = username;
         this.password = password;
-        this.serverSelectionTimeout = serverSelectionTimeouttimeout;
+        this.serverSelectionTimeout = serverSelectionTimeout;
+
+        setHostAndPort();
+    }
+
+    public String getUrl() {
+        return host;
     }
 
     public String getHost() {
+        if (this.host == null || this.host.isEmpty()) setHostAndPort();
+
         return host;
     }
 
     public int getPort() {
+        if (this.port == 0) setHostAndPort();
+
         return port;
     }
     
@@ -73,5 +80,11 @@ public class DatabaseConfiguration {
 
     public int getServerSelectionTimeout() {
         return serverSelectionTimeout;
+    }
+
+    private void setHostAndPort() {
+        String[] parts = this.url.split(":");
+        this.host = parts[0];
+        this.port = Integer.valueOf(parts[1]);
     }
 }

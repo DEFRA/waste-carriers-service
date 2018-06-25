@@ -12,14 +12,13 @@ public class UsersConnectionUtil {
     public UserDao dao;
 
     public UsersConnectionUtil() {
-        String host = System.getenv("WCRS_SERVICES_USR_HOST_TEST");
-        int port = Integer.valueOf(System.getenv("WCRS_SERVICES_USR_PORT_TEST"));
-        String name = System.getenv("WCRS_SERVICES_USR_NAME_TEST");
-        String username = System.getenv("WCRS_SERVICES_USR_USER_TEST");
-        String password = System.getenv("WCRS_SERVICES_USR_PASSWD_TEST");
-        int timeout = Integer.valueOf(System.getenv("WCRS_SERVICES_USR_SERVER_SEL_TIMEOUT_TEST"));
+        String url  = System.getenv("WCRS_TEST_USERSDB_URL1");
+        String name = System.getenv("WCRS_TEST_USERSDB_NAME");
+        String username = System.getenv("WCRS_TEST_USERSDB_USERNAME");
+        String password = System.getenv("WCRS_TEST_USERSDB_PASSWORD");
+        int timeout = Integer.valueOf(System.getenv("WCRS_TEST_USERSDB_SERVER_SEL_TIMEOUT"));
 
-        DatabaseConfiguration config = new DatabaseConfiguration(host, port, name, username, password, timeout);
+        DatabaseConfiguration config = new DatabaseConfiguration(url, name, username, password, timeout);
 
         databaseHelper = new DatabaseHelper(config);
         dao = new UserDao(config);
@@ -47,8 +46,7 @@ public class UsersConnectionUtil {
 
     public UserDao invalidCredentialsDao() {
         DatabaseConfiguration invalidConfig = new DatabaseConfiguration(
-                this.databaseHelper.configuration().getHost(),
-                this.databaseHelper.configuration().getPort(),
+                this.databaseHelper.configuration().getUrl(),
                 this.databaseHelper.configuration().getName(),
                 this.databaseHelper.configuration().getUsername(),
                 "Bl0wMeDownWithAFeather",

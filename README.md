@@ -36,8 +36,8 @@ The service uses a Dropwizard configuration file (configuration.yml) which in tu
 You'll need to set the following environment variables before using it. For example
 
 ```bash
-export WCRS_SERVICES_AIRBRAKE_URL="https://myairbrakeinstance.example.com"
-export WCRS_SERVICES_AIRBRAKE_API_KEY="d03r78y5372a11111111111"
+export WCRS_SERVICES_AIRBRAKE_HOST="https://myairbrakeinstance.example.com"
+export WCRS_SERVICES_AIRBRAKE_PROJECT_KEY="d03r78y5372a11111111111"
 export WCRS_SERVICES_AIRBRAKE_ENVNAME="pre-production"
 ```
 
