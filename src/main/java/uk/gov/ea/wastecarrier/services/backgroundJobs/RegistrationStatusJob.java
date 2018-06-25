@@ -32,8 +32,7 @@ public class RegistrationStatusJob implements Job
 {
     // Public 'constants' used in the JobDataMap, which passes configuration
     // to this job.
-    public static final String DATABASE_HOST = "database_host";
-    public static final String DATABASE_PORT = "database_port";
+    public static final String DATABASE_URL = "database_url";
     public static final String DATABASE_NAME = "database_name";
     public static final String DATABASE_USERNAME = "database_username";
     public static final String DATABASE_PASSWORD = "database_password";
@@ -114,16 +113,14 @@ public class RegistrationStatusJob implements Job
             
             // Log job configuration for debugging purposes.
             JobDataMap jobConfig = context.getJobDetail().getJobDataMap();
-            log.fine(String.format("--> Will attempt to use database %s on %s:%d",
+            log.fine(String.format("--> Will attempt to use database %s on %s",
                 jobConfig.getString(DATABASE_NAME),
-                jobConfig.getString(DATABASE_HOST),
-                jobConfig.getInt(DATABASE_PORT)
-            ));
+                jobConfig.getString(DATABASE_URL))
+            );
             
             // Build a database helper using the provided configuration.
             dbHelper = new DatabaseHelper(new DatabaseConfiguration(
-                jobConfig.getString(DATABASE_HOST),
-                jobConfig.getInt(DATABASE_PORT),
+                jobConfig.getString(DATABASE_URL),
                 jobConfig.getString(DATABASE_NAME),
                 jobConfig.getString(DATABASE_USERNAME),
                 jobConfig.getString(DATABASE_PASSWORD),

@@ -42,8 +42,7 @@ server:
 
 # Registrations database connection properties
 database:
-  host: ${WCRS_REGSDB_HOST:-localhost}
-  port: ${WCRS_REGSDB_PORT1:-27017}
+  url: ${WCRS_REGSDB_URL1:-localhost:27017}
   name: ${WCRS_REGSDB_NAME:-waste-carriers}
   username: ${WCRS_REGSDB_USERNAME:-mongoUser}
   password: ${WCRS_REGSDB_PASSWORD:-password1234}
@@ -57,8 +56,7 @@ database:
 
 # Users database connection properties
 userDatabase:
-  host: ${WCRS_USERSDB_HOST:-localhost}
-  port: ${WCRS_USERSDB_PORT1:-27017}
+  url: ${WCRS_USERSDB_URL1:-localhost:27017}
   name: ${WCRS_USERSDB_NAME:-waste-carriers-users}
   username: ${WCRS_USERSDB_USERNAME:-mongoUser}
   password: ${WCRS_USERSDB_PASSWORD:-password1234}
@@ -66,12 +64,11 @@ userDatabase:
 
 # Entity Matching database connection properties
 entityMatchingDatabase:
-  host: ${WCRS_ENTITYMATCHDB_HOST:-localhost}
-  port: ${WCRS_ENTITYMATCHDB_PORT1:-27017}
-  name: ${WCRS_ENTITYMATCHDB_NAME:-entity-matching}
-  username: ${WCRS_ENTITYMATCHDB_USERNAME:-mongoUser}
-  password: ${WCRS_ENTITYMATCHDB_PASSWORD:-password1234}
-  serverSelectionTimeout: ${WCRS_ENTITYMATCHDB_SERVER_SEL_TIMEOUT:-30000}
+  url: ${WCRS_ENTSDB_URL1:-localhost:27017}
+  name: ${WCRS_ENTSDB_NAME:-entity-matching}
+  username: ${WCRS_ENTSDB_USERNAME:-mongoUser}
+  password: ${WCRS_ENTSDB_PASSWORD:-password1234}
+  serverSelectionTimeout: ${WCRS_ENTSDB_SERVER_SEL_TIMEOUT:-30000}
 
 settings:
   # registration period (in years)
@@ -82,8 +79,8 @@ settings:
   searchResultCount: ${WCRS_SERVICE_SEARCH_RESULT_COUNT:-50}
 
 airbrake:
-  url: ${WCRS_SERVICES_AIRBRAKE_URL}
-  apiKey: ${WCRS_SERVICES_AIRBRAKE_API_KEY}
+  url: ${WCRS_SERVICES_AIRBRAKE_HOST}
+  apiKey: ${WCRS_SERVICES_AIRBRAKE_PROJECT_KEY}
   environmentName: ${WCRS_SERVICES_AIRBRAKE_ENVNAME}
   # The 'threshold' here can take values: OFF, ERROR, WARN, INFO, DEBUG, TRACE
   # or ALL.  If no value is provided, or the value is unrecognised, by default
@@ -96,30 +93,30 @@ airbrake:
 # IrRenewals brings a very limited set of data into Waste Carriers to allow
 # IR customers to "renew" in the service.
 irRenewals:
-  irFolderPath: ${WCRS_SERVICES_IR_RENEWAL_FOLDERPATH:-/srv/java/waste-carriers-service/irdata/}
+  irFolderPath: ${WCRS_IR_RENEWAL_FOLDERPATH:-/srv/java/waste-carriers-service/irdata/}
 
 # Entity matching data allows us to match both the company and people in a
 # registration against a list we maintain
 entityMatching:
   # Path to the file which contains data on the entities to be matched against
-  entitiesFilePath: ${WCRS_SERVICES_ENTITY_SEARCH_FOLDERPATH:-/srv/java/waste-carriers-service/entity_data/entities.csv}
+  entitiesFilePath: ${WCRS_ENTITY_SEARCH_FOLDERPATH:-/srv/java/waste-carriers-service/entity_data/entities.csv}
 
 exportJob:
   # File to use for EPR exports (note: file, not directory).
-  eprExportFile: ${WCRS_SERVICES_EPR_EXPORT_FILE:-/srv/java/waste-carriers-service/exports/waste-carriers-epr.csv}
+  eprExportFile: ${WCRS_EPR_EXPORT_FILE:-/srv/java/waste-carriers-service/exports/waste-carriers-epr.csv}
   # Date format to use for EPR exports.
   eprExportDateFormat: "yyyy-MM-dd"
   # Path to use for Reporting Snapshot exports (note: directory, not file).
-  reportingExportPath: ${WCRS_SERVICES_REPORTING_EXPORT_PATH:-/srv/java/waste-carriers-service/exports}
+  reportingExportPath: ${WCRS_REPORTING_EXPORT_PATH:-/srv/java/waste-carriers-service/exports}
   # Date format to use for Reporting Snapshot exports.
   reportingExportDateFormat: "yyyy-MM-dd'T'HH:mm'Z'"
   # Money format to use for Reporting Snapshot exports.
   reportingExportMoneyFormat: "0.00"
-  # Cron expression for scheduled job execution.  Leave empty to make the job
+  # Cron expression for scheduled job execution. Leave empty to make the job
   # run on a manual trigger only.  Default is daily at 9pm.
-  cronExpression: ${WCRS_SERVICES_EXPORT_JOB_CRON_SCHEDULE:-30 0/15 * * * ?}
+  cronExpression: ${WCRS_EXPORT_JOB_CRON_SCHEDULE:-30 0/15 * * * ?}
 
 registrationStatusJob:
-  # Cron expression for scheduled job exectuion.  Leave empty to make the job
+  # Cron expression for scheduled job execution. Leave empty to make the job
   # run on a manual trigger only.  Default is daily at 8pm.
-  cronExpression: ${WCRS_SERVICES_STATUS_JOB_CRON_SCHEDULE:-0 0/15 * * * ?}
+  cronExpression: ${WCRS_STATUS_JOB_CRON_SCHEDULE:-0 0/15 * * * ?}

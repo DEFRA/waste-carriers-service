@@ -169,8 +169,7 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
         
         // Build a database helper.
         DatabaseHelper dbHelper = new DatabaseHelper(new DatabaseConfiguration(
-                dbConfig.getHost(),
-                dbConfig.getPort(),
+                dbConfig.getUrl(),
                 dbConfig.getName(),
                 dbConfig.getUsername(),
                 dbConfig.getPassword(),
@@ -945,7 +944,7 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
                             dataRow[CsvColumn.Firstname.index()], dataRow[CsvColumn.Lastname.index()], reg.getRegIdentifier()));
                     
                     // Rails app will error without a DoB, so lets create a fake one for now.
-                    personDateOfBirth = new Date(0, 0, 1);
+                    personDateOfBirth = new Date(0L);
                 }
                 
                 // Have we already added this person from a previous row in the
