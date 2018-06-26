@@ -79,7 +79,7 @@ settings:
   searchResultCount: ${WCRS_SERVICE_SEARCH_RESULT_COUNT:-50}
 
 airbrake:
-  url: ${WCRS_SERVICES_AIRBRAKE_HOST}
+  url: ${WCRS_AIRBRAKE_URL}
   apiKey: ${WCRS_SERVICES_AIRBRAKE_PROJECT_KEY}
   environmentName: ${WCRS_SERVICES_AIRBRAKE_ENVNAME}
   # The 'threshold' here can take values: OFF, ERROR, WARN, INFO, DEBUG, TRACE
