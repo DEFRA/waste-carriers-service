@@ -177,6 +177,8 @@ public class BackgroundJobScheduler implements Managed
 
         JobDataMap dataMap = exportJob.getJobDataMap();
         dataMap.put(ExportJob.DATABASE_URL, databaseConfig.getUrl());
+        dataMap.put(ExportJob.DATABASE_HOST, databaseConfig.getHost());
+        dataMap.put(ExportJob.DATABASE_PORT, databaseConfig.getPort());
         dataMap.put(ExportJob.DATABASE_NAME, databaseConfig.getName());
         dataMap.put(ExportJob.DATABASE_USERNAME, databaseConfig.getUsername());
         dataMap.put(ExportJob.DATABASE_PASSWORD, databaseConfig.getPassword());
@@ -216,6 +218,8 @@ public class BackgroundJobScheduler implements Managed
         
         JobDataMap dataMap = regStatusJob.getJobDataMap();
         dataMap.put(RegistrationStatusJob.DATABASE_URL, databaseConfig.getUrl());
+        dataMap.put(RegistrationStatusJob.DATABASE_HOST, databaseConfig.getHost());
+        dataMap.put(RegistrationStatusJob.DATABASE_PORT, databaseConfig.getPort());
         dataMap.put(RegistrationStatusJob.DATABASE_NAME, databaseConfig.getName());
         dataMap.put(RegistrationStatusJob.DATABASE_USERNAME, databaseConfig.getUsername());
         dataMap.put(RegistrationStatusJob.DATABASE_PASSWORD, databaseConfig.getPassword());
