@@ -49,7 +49,7 @@ public class DatabaseConfiguration {
     }
 
     public String getUrl() {
-        return host;
+        return this.url;
     }
 
     public String getHost() {
