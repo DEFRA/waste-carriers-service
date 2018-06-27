@@ -62,35 +62,36 @@ public class WasteCarrierService extends Application<WasteCarrierConfiguration> 
     @Override
     public void run(WasteCarrierConfiguration configuration, Environment environment) {
 
-        final DatabaseConfiguration registrationsConfig = configuration.getDatabase();
-        final DatabaseConfiguration usersConfig = configuration.getUserDatabase();
-        final DatabaseConfiguration entityMatchingConfig = configuration.getEntityMatchingDatabase();
+        final DatabaseConfiguration registrationsDb = configuration.getDatabase();
+        final DatabaseConfiguration usersDb = configuration.getUserDatabase();
+        final DatabaseConfiguration entityMatchingDb = configuration.getEntityMatchingDatabase();
 
-        checkConnections(registrationsConfig, usersConfig, entityMatchingConfig);
+        checkConnections(registrationsDb, usersDb, entityMatchingDb);
 
         addAirbrake(configuration.getAirbrakeLogbackConfiguration());
 
-        addHealthChecks(environment, registrationsConfig, usersConfig, entityMatchingConfig);
+        addHealthChecks(environment, registrationsDb, usersDb, entityMatchingDb);
 
         addResources(
                 environment,
-                registrationsConfig,
-                usersConfig,
-                entityMatchingConfig,
-                configuration.getSettings()
+                registrationsDb,
+                usersDb,
+                entityMatchingDb,
+                configuration.getSettings(),
+                configuration.getMockConfiguration()
         );
 
         addTasks(
                 environment,
-                registrationsConfig,
-                entityMatchingConfig,
+                registrationsDb,
+                entityMatchingDb,
                 configuration.getEntityMatching().entitiesFilePath,
                 configuration.getIrRenewals()
         );
 
         addBackgroundJobs(
                 environment,
-                registrationsConfig,
+                registrationsDb,
                 configuration.getExportJobConfiguration(),
                 configuration.getRegistrationStatusJobConfiguration()
         );
@@ -99,16 +100,16 @@ public class WasteCarrierService extends Application<WasteCarrierConfiguration> 
     }
 
     private void checkConnections(
-            DatabaseConfiguration registrationsConfig,
-            DatabaseConfiguration usersConfig,
-            DatabaseConfiguration entityMatchingConfig
+            DatabaseConfiguration registrationsDb,
+            DatabaseConfiguration usersDb,
+            DatabaseConfiguration entityMatchingDb
     ) {
         // An error will be thrown if the service cannot connect to all 3
         // databases. If that is the case no point continuing with anything
         // hence we call it first and don't handle any errors it throws
-        new RegistrationDao(registrationsConfig).checkConnection();
-        new UserDao(usersConfig).checkConnection();
-        new EntityDao(entityMatchingConfig).checkConnection();
+        new RegistrationDao(registrationsDb).checkConnection();
+        new UserDao(usersDb).checkConnection();
+        new EntityDao(entityMatchingDb).checkConnection();
     }
 
     private void addAirbrake(AirbrakeLogbackConfiguration config) {
@@ -164,60 +165,64 @@ public class WasteCarrierService extends Application<WasteCarrierConfiguration> 
 
     private void addHealthChecks(
             Environment environment,
-            DatabaseConfiguration registrationsConfig,
-            DatabaseConfiguration usersConfig,
-            DatabaseConfiguration entityMatchingConfig
+            DatabaseConfiguration registrationsDb,
+            DatabaseConfiguration usersDb,
+            DatabaseConfiguration entityMatchingDb
     ) {
-        environment.healthChecks().register("RegistrationsHealthCheck", new MongoHealthCheck(registrationsConfig));
-        environment.healthChecks().register("UsersHealthCheck", new MongoHealthCheck(usersConfig));
-        environment.healthChecks().register("EntityMatchingHealthCheck", new MongoHealthCheck(entityMatchingConfig));
+        environment.healthChecks().register("RegistrationsHealthCheck", new MongoHealthCheck(registrationsDb));
+        environment.healthChecks().register("UsersHealthCheck", new MongoHealthCheck(usersDb));
+        environment.healthChecks().register("EntityMatchingHealthCheck", new MongoHealthCheck(entityMatchingDb));
     }
 
     private void addResources(
             Environment environment,
-            DatabaseConfiguration registrationsConfig,
-            DatabaseConfiguration usersConfig,
-            DatabaseConfiguration entityMatchingConfig,
-            SettingsConfiguration settings
+            DatabaseConfiguration registrationsDb,
+            DatabaseConfiguration usersDb,
+            DatabaseConfiguration entityMatchingDb,
+            SettingsConfiguration settings,
+            MockConfiguration mockConfiguration
     ) {
 
         // Add Create Resource.
-        environment.jersey().register(new RegistrationsResource(registrationsConfig));
+        environment.jersey().register(new RegistrationsResource(registrationsDb));
         // Add Read Resource.
-        environment.jersey().register(new RegistrationReadEditResource(registrationsConfig, usersConfig, settings));
+        environment.jersey().register(new RegistrationReadEditResource(registrationsDb, usersDb, settings));
         // Add Version Resource.
         environment.jersey().register(new RegistrationVersionResource());
 
         // Add Payment Resource, testing new URL for get payment details.
         environment.jersey().register(new NewPaymentResource());
-        environment.jersey().register(new PaymentResource(registrationsConfig, usersConfig, settings));
+        environment.jersey().register(new PaymentResource(registrationsDb, usersDb, settings));
 
         // Add Order Resource.
-        environment.jersey().register(new OrderResource(registrationsConfig));
-        environment.jersey().register(new OrdersResource(registrationsConfig, usersConfig, settings));
+        environment.jersey().register(new OrderResource(registrationsDb));
+        environment.jersey().register(new OrdersResource(registrationsDb, usersDb, settings));
 
         // Add Settings resource.
         environment.jersey().register(new SettingsResource(settings));
 
         // Add search resource.
-        environment.jersey().register(new SearchResource(registrationsConfig, settings.getSearchResultCount()));
+        environment.jersey().register(new SearchResource(registrationsDb, settings.getSearchResultCount()));
 
         // Add IR Renewals resource.
-        environment.jersey().register(new IRRenewalResource(registrationsConfig));
+        environment.jersey().register(new IRRenewalResource(registrationsDb));
 
         // Add entity matching resource
-        environment.jersey().register((new MatchResource(entityMatchingConfig)));
+        environment.jersey().register(new MatchResource(entityMatchingDb));
+
+        // Add mocks resource
+        environment.jersey().register(new MocksResource(registrationsDb, mockConfiguration));
     }
 
     private void addBackgroundJobs(
             Environment environment,
-            DatabaseConfiguration registrationsConfig,
+            DatabaseConfiguration registrationsDb,
             ExportJobConfiguration exportConfig,
             RegistrationStatusJobConfiguration statusJobConfiguration
     ) {
         // Add managed component and tasks for Background Scheduled Jobs.
         BackgroundJobScheduler dailyJobScheduler = BackgroundJobScheduler.getInstance();
-        dailyJobScheduler.setDatabaseConfiguration(registrationsConfig);
+        dailyJobScheduler.setDatabaseConfiguration(registrationsDb);
         dailyJobScheduler.setExportJobConfiguration(exportConfig);
         dailyJobScheduler.setRegistrationStatusJobConfiguration(statusJobConfiguration);
         environment.lifecycle().manage(dailyJobScheduler);
@@ -225,8 +230,8 @@ public class WasteCarrierService extends Application<WasteCarrierConfiguration> 
 
     private void addTasks(
             Environment environment,
-            DatabaseConfiguration registrationsConfig,
-            DatabaseConfiguration entityMatchingConfig,
+            DatabaseConfiguration registrationsDb,
+            DatabaseConfiguration entityMatchingDb,
             String entityFilePath,
             IRConfiguration irConfig
     ) {
@@ -239,15 +244,15 @@ public class WasteCarrierService extends Application<WasteCarrierConfiguration> 
         environment.admin().addTask(new ExceptionTesterTask("generateTestException"));
 
         // Add tasks related to IR data.
-        environment.admin().addTask(new IRRenewalPopulatorTask("ir-repopulate", registrationsConfig, irConfig));
+        environment.admin().addTask(new IRRenewalPopulatorTask("ir-repopulate", registrationsDb, irConfig));
 
         // Add task to re-populate entity matching when called
-        environment.admin().addTask(new EntityPopulatorTask("entity-populator", entityMatchingConfig, entityFilePath));
+        environment.admin().addTask(new EntityPopulatorTask("entity-populator", entityMatchingDb, entityFilePath));
 
         //Add a task to ensure that indexes have been defined in the database.
         EnsureDatabaseIndexesTask ensureDbIndexesTask = new EnsureDatabaseIndexesTask(
                 "EnsureDatabaseIndexes",
-                new RegistrationDao(registrationsConfig)
+                new RegistrationDao(registrationsDb)
         );
         environment.admin().addTask(ensureDbIndexesTask);
 
