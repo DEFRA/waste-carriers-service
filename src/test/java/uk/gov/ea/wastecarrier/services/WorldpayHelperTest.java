@@ -3,7 +3,7 @@ package uk.gov.ea.wastecarrier.services;
 import org.junit.*;
 import org.w3c.dom.Document;
 import uk.gov.ea.wastecarrier.services.core.mocks.WorldpayOrder;
-import uk.gov.ea.wastecarrier.services.helper.WorldpayHelper;
+import uk.gov.ea.wastecarrier.services.helper.mocks.WorldpayHelper;
 import uk.gov.ea.wastecarrier.services.support.FixtureReader;
 import uk.gov.ea.wastecarrier.services.support.WorldpayOrderBuilder;
 

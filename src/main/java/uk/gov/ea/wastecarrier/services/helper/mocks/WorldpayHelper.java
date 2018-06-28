@@ -1,9 +1,10 @@
-package uk.gov.ea.wastecarrier.services.helper;
+package uk.gov.ea.wastecarrier.services.helper.mocks;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 import uk.gov.ea.wastecarrier.services.core.mocks.WorldpayOrder;
+import uk.gov.ea.wastecarrier.services.helper.ResourceHelper;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;

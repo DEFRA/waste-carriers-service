@@ -1,7 +1,7 @@
 package uk.gov.ea.wastecarrier.services.support;
 
 import uk.gov.ea.wastecarrier.services.core.mocks.WorldpayOrder;
-import uk.gov.ea.wastecarrier.services.helper.WorldpayHelper;
+import uk.gov.ea.wastecarrier.services.helper.mocks.WorldpayHelper;
 
 import java.util.Date;
 

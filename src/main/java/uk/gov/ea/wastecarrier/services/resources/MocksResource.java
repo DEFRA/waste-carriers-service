@@ -6,11 +6,12 @@ import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.MockConfiguration;
 import uk.gov.ea.wastecarrier.services.core.mocks.WorldpayOrder;
 import uk.gov.ea.wastecarrier.services.dao.MockWorldpayDao;
-import uk.gov.ea.wastecarrier.services.helper.WorldpayHelper;
+import uk.gov.ea.wastecarrier.services.helper.ResourceHelper;
+import uk.gov.ea.wastecarrier.services.helper.mocks.CompaniesHouseHelper;
+import uk.gov.ea.wastecarrier.services.helper.mocks.WorldpayHelper;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
@@ -20,28 +21,30 @@ import java.util.logging.Logger;
 public class MocksResource {
 
     private final MockWorldpayDao dao;
-    private final WorldpayHelper helper;
+    private final CompaniesHouseHelper companyHelper;
+    private final WorldpayHelper worldpayHelper;
     private final Integer mockDelay;
 
     private Logger log = Logger.getLogger(MocksResource.class.getName());
 
     public MocksResource(DatabaseConfiguration configuration, MockConfiguration config) {
         this.dao = new MockWorldpayDao(configuration);
-        this.helper = new WorldpayHelper(config.worldPayAdminCode, config.servicesDomain, config.macSecret);
+        this.worldpayHelper = new WorldpayHelper(config.worldPayAdminCode, config.servicesDomain, config.macSecret);
+        this.companyHelper = new CompaniesHouseHelper();
         this.mockDelay = config.delay;
     }
 
     @GET
     @Path("/worldpay/payment-service")
     public String paymentService(String body) {
-        Document xmlBody = helper.stringToXml(body);
+        Document xmlBody = worldpayHelper.stringToXml(body);
 
-        WorldpayOrder order = helper.convertFromXml(xmlBody);
+        WorldpayOrder order = worldpayHelper.convertFromXml(xmlBody);
         this.dao.insert(order);
 
         delay();
 
-        return helper.initialResponse(order.merchantCode, order.orderCode, order.worldpayId);
+        return worldpayHelper.initialResponse(order.merchantCode, order.orderCode, order.worldpayId);
     }
 
     @GET
@@ -55,16 +58,24 @@ public class MocksResource {
             @QueryParam("errorURL") String errorURL
     ) {
 
-        String orderCode = this.helper.extractOrderCodeFromKey(orderKey);
+        String orderCode = this.worldpayHelper.extractOrderCodeFromKey(orderKey);
 
         WorldpayOrder order = this.dao.findByOrderCode(orderCode);
-        String redirectUrl = this.helper.orderCompletedRedirectUrl(order, successUrl);
+        String redirectUrl = this.worldpayHelper.orderCompletedRedirectUrl(order, successUrl);
 
         URI target = UriBuilder.fromUri(redirectUrl).build();
 
         delay();
 
         return Response.seeOther(target).build();
+    }
+
+    @GET
+    @Path("/company/{companyNumber}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String companiesHouse(@PathParam("companyNumber") String companyNumber) {
+        delay();
+        return this.companyHelper.response(companyNumber);
     }
 
     private void delay() {

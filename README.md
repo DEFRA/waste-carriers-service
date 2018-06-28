@@ -94,6 +94,26 @@ Hence the command to build above includes the option to skip tests. Instead we a
 ./mvnw test
 ```
 
+## Mocks
+
+When running performance tests we need the ability to mock external services so as not to get in trouble by putting them under heavy load. To support this in the simplest way, we have built mocking functionality into this project.
+
+Note, where example endpoints are given you should amend them to match your own environment setup.
+
+### Companies House
+
+The service has the ability to mock the [Companies House API](https://api.companieshouse.gov.uk/company/). It simply has recorded the JSON responses for a number of companies, provides a resource that matches the real endpoint. Simply point the user facing app to <http://localhost:8003/mocks/company/> within its config and if the company number provided matches one of those previously recorded it will return a response.
+
+If no value is passed through (null) then `{}` is returned. Else if a number is sent that does not match a pre-recorded response the service will return the same 'not found' JSON that Companies House does.
+
+### Worldpay
+
+The service has the ability to mock [Worldpay](http://support.worldpay.com/support/kb/gg/corporate-gateway-guide/content/home.htm). It doesn't present a UI for users to fill in payment details like the real Worldpay, but it does handle the same [XML interactions](https://github.com/DEFRA/waste-carriers-renewals/wiki/Making-a-payment-with-WorldPay).
+
+So it can receive the initial request at <http://localhost:8003/mocks/worldpay/payment-service>, will save the order details to MongoDb and then return the correct redirect url to the client app. That url points back to this service at <http://localhost:8003/mocks/worldpay/dispatcher> which when called will return a valid success response for the specified order.
+
+For this to work the Worldpay environment variables the service is reading from must match those being used by the client app else the client will reject the success response provided by the service.
+
 ## Contributing to this project
 
 If you have an idea you'd like to contribute please log an issue.

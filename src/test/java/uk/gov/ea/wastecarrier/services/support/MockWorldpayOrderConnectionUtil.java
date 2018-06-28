@@ -7,6 +7,7 @@ import uk.gov.ea.wastecarrier.services.helper.SearchHelper;
 
 public class MockWorldpayOrderConnectionUtil {
 
+    public DatabaseConfiguration databaseConfig;
     public DatabaseHelper databaseHelper;
     public MockWorldpayDao dao;
     public SearchHelper searchHelper;
@@ -18,10 +19,10 @@ public class MockWorldpayOrderConnectionUtil {
         String password = System.getenv("WCRS_TEST_REGSDB_PASSWORD");
         int timeout = Integer.valueOf(System.getenv("WCRS_TEST_REGSDB_SERVER_SEL_TIMEOUT"));
 
-        DatabaseConfiguration config = new DatabaseConfiguration(url, name, username, password, timeout);
+        this.databaseConfig = new DatabaseConfiguration(url, name, username, password, timeout);
 
-        databaseHelper = new DatabaseHelper(config);
-        dao = new MockWorldpayDao(config);
+        databaseHelper = new DatabaseHelper(this.databaseConfig);
+        dao = new MockWorldpayDao(this.databaseConfig);
         searchHelper = new SearchHelper(databaseHelper, dao);
     }
 
