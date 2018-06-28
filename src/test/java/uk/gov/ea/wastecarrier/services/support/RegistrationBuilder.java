@@ -378,7 +378,7 @@ public class RegistrationBuilder {
         order.setOrderCode(order.getOrderId());
 
         order.setPaymentMethod(Order.PaymentMethod.ONLINE);
-        order.setMerchantId("EASERRSIMECOM");
+        order.setMerchantId("WCRSERVICE");
         order.setCurrency("GBP");
         order.setDateCreated(this.orderCreatedDate);
         order.setDateLastUpdated(this.orderUpdatedDate);

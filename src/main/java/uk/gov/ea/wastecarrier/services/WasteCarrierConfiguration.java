@@ -52,9 +52,14 @@ public class WasteCarrierConfiguration extends Configuration {
     private RegistrationStatusJobConfiguration registrationStatusJob = new RegistrationStatusJobConfiguration();
     
     @Valid
+    @NotNull
     @JsonProperty
     private AirbrakeLogbackConfiguration airbrake = new AirbrakeLogbackConfiguration();
 
+    @Valid
+    @NotNull
+    @JsonProperty
+    private MockConfiguration mock = new MockConfiguration();
     
     public DatabaseConfiguration getDatabase() {
         return database;
@@ -90,5 +95,9 @@ public class WasteCarrierConfiguration extends Configuration {
     
     public AirbrakeLogbackConfiguration getAirbrakeLogbackConfiguration() {
         return airbrake;
+    }
+
+    public MockConfiguration getMockConfiguration() {
+        return mock;
     }
 }
