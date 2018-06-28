@@ -49,10 +49,10 @@ public class MocksResource {
     public Response dispatcher(
             @QueryParam("OrderKey") @NotEmpty String orderKey,
             @QueryParam("successURL") @NotEmpty String successUrl,
-            @QueryParam("pendingURL") @NotEmpty String pendingURL,
-            @QueryParam("failureURL") @NotEmpty String failureURL,
-            @QueryParam("cancelURL") @NotEmpty String cancelURL,
-            @QueryParam("errorURL") @NotEmpty String errorURL
+            @QueryParam("pendingURL") String pendingURL,
+            @QueryParam("failureURL") String failureURL,
+            @QueryParam("cancelURL") String cancelURL,
+            @QueryParam("errorURL") String errorURL
     ) {
 
         String orderCode = this.helper.extractOrderCodeFromKey(orderKey);
