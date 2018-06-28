@@ -67,14 +67,18 @@ public class WorldpayHelper {
     public String orderCompletedRedirectUrl(WorldpayOrder order, String successUrl) {
 
         String queryString = String.format(
-                "?orderKey=%s&paymentStatus=AUTHORISED&paymentAmount=%s&paymentCurrency=%s&mac=%s&source=WP",
+                "orderKey=%s&paymentStatus=AUTHORISED&paymentAmount=%s&paymentCurrency=%s&mac=%s&source=WP",
                 generateOrderKey(order).replaceAll("\\^","%5E"),
                 String.valueOf(order.value),
                 order.currencyCode,
                 generateMac(order)
         );
 
-        return successUrl + queryString;
+        // The frontend success url includes a ?local=en on the end. The renewals one has no ?
+        // So to handle generating the redirect url correctly we need to test than handle this
+        if (successUrl.endsWith("?locale=en")) return successUrl + "&" + queryString;
+
+        return successUrl + "?" + queryString;
     }
 
     public String extractOrderCodeFromKey(String orderKey) {
