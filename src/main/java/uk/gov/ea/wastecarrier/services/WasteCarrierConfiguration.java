@@ -24,11 +24,6 @@ public class WasteCarrierConfiguration extends Configuration {
     @Valid
     @NotNull
     @JsonProperty
-    private DatabaseConfiguration entityMatchingDatabase = new DatabaseConfiguration();
-
-    @Valid
-    @NotNull
-    @JsonProperty
     private SettingsConfiguration settings = new SettingsConfiguration();
 
     @Valid
@@ -67,10 +62,6 @@ public class WasteCarrierConfiguration extends Configuration {
 
     public DatabaseConfiguration getUserDatabase() {
         return userDatabase;
-    }
-
-    public DatabaseConfiguration getEntityMatchingDatabase() {
-        return entityMatchingDatabase;
     }
 
     public SettingsConfiguration getSettings() {

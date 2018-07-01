@@ -10,11 +10,6 @@ env:
     - WCRS_TEST_USERSDB_USERNAME=mongoUser
     - WCRS_TEST_USERSDB_PASSWORD=password1234
     - WCRS_TEST_USERSDB_SERVER_SEL_TIMEOUT=1000
-    - WCRS_TEST_ENTSDB_URL1="localhost:27017"
-    - WCRS_TEST_ENTSDB_NAME=entity-matching-test
-    - WCRS_TEST_ENTSDB_USERNAME=mongoUser
-    - WCRS_TEST_ENTSDB_PASSWORD=password1234
-    - WCRS_TEST_ENTSDB_SERVER_SEL_TIMEOUT=1000
 
 language: java
 
@@ -34,6 +29,5 @@ before_script:
   # Set up Mongo databases
   - mongo waste-carriers-test --eval 'db.createUser({user:"mongoUser", pwd:"password1234", roles:["readWrite", "dbAdmin", "userAdmin"]})'
   - mongo waste-carriers-users-test --eval 'db.createUser({user:"mongoUser", pwd:"password1234", roles:["readWrite", "dbAdmin", "userAdmin"]})'
-  - mongo entity-matching-test --eval 'db.createUser({user:"mongoUser", pwd:"password1234", roles:["readWrite", "dbAdmin", "userAdmin"]})'
 
 script: ./mvnw -B -T 1C clean package

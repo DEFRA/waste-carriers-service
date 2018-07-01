@@ -12,11 +12,11 @@ public class EntityMatchingConnectionUtil {
     public SearchHelper searchHelper;
 
     public EntityMatchingConnectionUtil() {
-        String url  = System.getenv("WCRS_TEST_ENTSDB_URL1");
-        String name = System.getenv("WCRS_TEST_ENTSDB_NAME");
-        String username = System.getenv("WCRS_TEST_ENTSDB_USERNAME");
-        String password = System.getenv("WCRS_TEST_ENTSDB_PASSWORD");
-        int timeout = Integer.valueOf(System.getenv("WCRS_TEST_ENTSDB_SERVER_SEL_TIMEOUT"));
+        String url  = System.getenv("WCRS_TEST_REGSDB_URL1");
+        String name = System.getenv("WCRS_TEST_REGSDB_NAME");
+        String username = System.getenv("WCRS_TEST_REGSDB_USERNAME");
+        String password = System.getenv("WCRS_TEST_REGSDB_PASSWORD");
+        int timeout = Integer.valueOf(System.getenv("WCRS_TEST_REGSDB_SERVER_SEL_TIMEOUT"));
 
         DatabaseConfiguration config = new DatabaseConfiguration(url, name, username, password, timeout);
 

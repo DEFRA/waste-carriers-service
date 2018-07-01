@@ -64,7 +64,7 @@ public class WasteCarrierService extends Application<WasteCarrierConfiguration> 
 
         final DatabaseConfiguration registrationsDb = configuration.getDatabase();
         final DatabaseConfiguration usersDb = configuration.getUserDatabase();
-        final DatabaseConfiguration entityMatchingDb = configuration.getEntityMatchingDatabase();
+        final DatabaseConfiguration entityMatchingDb = configuration.getDatabase();
 
         checkConnections(registrationsDb, usersDb, entityMatchingDb);
 
