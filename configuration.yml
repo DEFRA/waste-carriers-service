@@ -62,14 +62,6 @@ userDatabase:
   password: ${WCRS_USERSDB_PASSWORD:-password1234}
   serverSelectionTimeout: ${WCRS_USERSDB_SERVER_SEL_TIMEOUT:-30000}
 
-# Entity Matching database connection properties
-entityMatchingDatabase:
-  url: ${WCRS_ENTSDB_URL1:-localhost:27017}
-  name: ${WCRS_ENTSDB_NAME:-entity-matching}
-  username: ${WCRS_ENTSDB_USERNAME:-mongoUser}
-  password: ${WCRS_ENTSDB_PASSWORD:-password1234}
-  serverSelectionTimeout: ${WCRS_ENTSDB_SERVER_SEL_TIMEOUT:-30000}
-
 settings:
   # registration period (in years)
   registrationPeriod: ${WCRS_REGISTRATION_EXPIRES_AFTER:-3}
