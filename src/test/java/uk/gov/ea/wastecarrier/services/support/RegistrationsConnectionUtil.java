@@ -12,13 +12,10 @@ public class RegistrationsConnectionUtil {
     public SearchHelper searchHelper;
 
     public RegistrationsConnectionUtil()  {
-        String url  = System.getenv("WCRS_TEST_REGSDB_URL1");
-        String name = System.getenv("WCRS_TEST_REGSDB_NAME");
-        String username = System.getenv("WCRS_TEST_REGSDB_USERNAME");
-        String password = System.getenv("WCRS_TEST_REGSDB_PASSWORD");
-        int timeout = Integer.valueOf(System.getenv("WCRS_TEST_REGSDB_SERVER_SEL_TIMEOUT"));
+        String uri = System.getenv("WCRS_TEST_REGSDB_URI");
+        int timeout = Integer.valueOf(System.getenv("WCRS_TEST_MONGODB_SERVER_SEL_TIMEOUT"));
 
-        DatabaseConfiguration config = new DatabaseConfiguration(url, name, username, password, timeout);
+        DatabaseConfiguration config = new DatabaseConfiguration(uri, timeout);
 
         databaseHelper = new DatabaseHelper(config);
         dao = new RegistrationDao(config);
@@ -30,11 +27,12 @@ public class RegistrationsConnectionUtil {
     }
 
     public RegistrationDao invalidCredentialsDao() {
+        String validUsername = this.databaseHelper.configuration().getMongoClientURI().getUsername();
+        String validUri = this.databaseHelper.configuration().getMongoClientURI().getURI();
+
+        String invalidUri = validUri.replaceFirst(validUsername, "lockedOut");
         DatabaseConfiguration invalidConfig = new DatabaseConfiguration(
-                this.databaseHelper.configuration().getUrl(),
-                this.databaseHelper.configuration().getName(),
-                this.databaseHelper.configuration().getUsername(),
-                "Bl0wMeDownWithAFeather",
+                invalidUri,
                 this.databaseHelper.configuration().getServerSelectionTimeout()
         );
         return new RegistrationDao(invalidConfig);

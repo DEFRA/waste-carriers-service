@@ -46,12 +46,7 @@ public class ExportJob implements Job
 {
     // Public 'constants' used in the JobDataMap, which passes configuration
     // to this job.
-    public static final String DATABASE_URL = "database_url";
-    public static final String DATABASE_HOST = "database_host";
-    public static final String DATABASE_PORT = "database_port";
-    public static final String DATABASE_NAME = "database_name";
-    public static final String DATABASE_USERNAME = "database_username";
-    public static final String DATABASE_PASSWORD = "database_password";
+    public static final String DATABASE_URI = "database_uri";
     public static final String DATABASE_TIMEOUT = "database_timeout";
 
     public static final String EPR_EXPORT_FILE = "epr_export_file";
@@ -167,10 +162,6 @@ public class ExportJob implements Job
             
             // Log job configuration for debugging purposes.
             JobDataMap jobConfig = context.getJobDetail().getJobDataMap();
-            log.fine(String.format("--> Will attempt to use database %s on %s",
-                jobConfig.getString(DATABASE_NAME),
-                jobConfig.getString(DATABASE_URL)
-            ));
             log.fine(String.format("--> The EPR export file is %s", jobConfig.getString(EPR_EXPORT_FILE)));
             log.fine(String.format("--> The EPR date format is %s", jobConfig.getString(EPR_DATE_FORMAT)));
             log.fine(String.format("--> The Reporting export path is %s", jobConfig.getString(REPORTING_EXPORT_PATH)));
@@ -189,10 +180,7 @@ public class ExportJob implements Job
             // Build a database helper using the provided configuration.
             dbHelper = new DatabaseHelper(
                     new DatabaseConfiguration(
-                            jobConfig.getString(DATABASE_URL),
-                            jobConfig.getString(DATABASE_NAME),
-                            jobConfig.getString(DATABASE_USERNAME),
-                            jobConfig.getString(DATABASE_PASSWORD),
+                            jobConfig.getString(DATABASE_URI),
                             jobConfig.getInt(DATABASE_TIMEOUT)
                     )
             );

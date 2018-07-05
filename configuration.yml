@@ -42,25 +42,19 @@ server:
 
 # Registrations database connection properties
 database:
-  url: ${WCRS_REGSDB_URL1:-localhost:27017}
-  name: ${WCRS_REGSDB_NAME:-waste-carriers}
-  username: ${WCRS_REGSDB_USERNAME:-mongoUser}
-  password: ${WCRS_REGSDB_PASSWORD:-password1234}
+  uri: ${WCRS_REGSDB_URI:-mongodb://mongoUser:password1234@localhost:27017/waste-carriers}
   # Server selection timeout is the number of milliseconds the mongo driver will
   # wait to select a server for an operation before giving up and raising an
   # error. The default should be left in production but in dev and test it
   # allows for quicker tests and failures
   # For details of other options you can set check out
   # http://api.mongodb.com/java/3.0/?com/mongodb/MongoClientOptions.html
-  serverSelectionTimeout: ${WCRS_REGSDB_SERVER_SEL_TIMEOUT:-30000}
+  serverSelectionTimeout: ${WCRS_MONGODB_SERVER_SEL_TIMEOUT:-30000}
 
 # Users database connection properties
 userDatabase:
-  url: ${WCRS_USERSDB_URL1:-localhost:27017}
-  name: ${WCRS_USERSDB_NAME:-waste-carriers-users}
-  username: ${WCRS_USERSDB_USERNAME:-mongoUser}
-  password: ${WCRS_USERSDB_PASSWORD:-password1234}
-  serverSelectionTimeout: ${WCRS_USERSDB_SERVER_SEL_TIMEOUT:-30000}
+  uri: ${WCRS_USERSDB_URI:-mongodb://mongoUser:password1234@localhost:27017/waste-carriers-users}
+  serverSelectionTimeout: ${WCRS_MONGODB_SERVER_SEL_TIMEOUT:-30000}
 
 settings:
   # registration period (in years)

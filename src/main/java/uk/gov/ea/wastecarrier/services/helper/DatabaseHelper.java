@@ -22,11 +22,6 @@ public class DatabaseHelper {
     private DatabaseConfiguration dbConfig;
 
     public DatabaseHelper(DatabaseConfiguration database) {
-
-        // Get connection properties from environment settings
-        log.logp(Level.FINE, DatabaseHelper.class.getName(), "DatabaseHelper",
-                "Init DatabaseHelper using database params: " + database.getName()+ " " + database.getHost() +":"+ database.getPort());
-
         // Save configuration
         this.dbConfig = database;
     }
@@ -46,7 +41,7 @@ public class DatabaseHelper {
                 return db;
             }
             catch (Exception e) {
-                log.severe("Could not connect to database " + this.dbConfig.getName() + ": " + e.getMessage());
+                log.severe("Could not connect to database " + this.dbConfig.getMongoClientURI().getDatabase() + ": " + e.getMessage());
                 return null;
             }
         } else {
@@ -55,10 +50,10 @@ public class DatabaseHelper {
             MongoClient mc = getMongoClient();
             try {
                 // Get Specific database
-                db = mc.getDB(dbConfig.getName());
+                db = mc.getDB(dbConfig.getMongoClientURI().getDatabase());
             }
             catch (Exception e) {
-                log.severe("Database connection not found " + this.dbConfig.getName() + ": " + e.getMessage());
+                log.severe("Database connection not found " + this.dbConfig.getMongoClientURI().getDatabase() + ": " + e.getMessage());
                 db = null;
                 return null;
             }
@@ -75,23 +70,7 @@ public class DatabaseHelper {
         if (mongoClient != null) {
             return mongoClient;
         } else {
-            MongoCredential credential = MongoCredential.createCredential(
-                    dbConfig.getUsername(),
-                    dbConfig.getName(),
-                    dbConfig.getPassword().toCharArray()
-            );
-            ServerAddress server = new ServerAddress(dbConfig.getHost(), dbConfig.getPort());
-
-            MongoClientOptions options = MongoClientOptions
-                    .builder()
-                    .serverSelectionTimeout(
-                        dbConfig.getServerSelectionTimeout()
-                    )
-                    .build();
-
-            MongoClient client = new MongoClient(server, credential, options);
-
-            this.mongoClient = client;
+            this.mongoClient = new MongoClient(this.dbConfig.getMongoClientURI());
 
             return mongoClient;
         }
