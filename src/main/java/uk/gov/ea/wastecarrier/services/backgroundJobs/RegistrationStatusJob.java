@@ -32,12 +32,7 @@ public class RegistrationStatusJob implements Job
 {
     // Public 'constants' used in the JobDataMap, which passes configuration
     // to this job.
-    public static final String DATABASE_URL = "database_url";
-    public static final String DATABASE_HOST = "database_host";
-    public static final String DATABASE_PORT = "database_port";
-    public static final String DATABASE_NAME = "database_name";
-    public static final String DATABASE_USERNAME = "database_username";
-    public static final String DATABASE_PASSWORD = "database_password";
+    public static final String DATABASE_URI = "database_uri";
     public static final String DATABASE_TIMEOUT = "database_timeout";
 
     // Private static members.
@@ -51,16 +46,14 @@ public class RegistrationStatusJob implements Job
     /**
      * Public empty constructor, for Quartz.
      */
-    public RegistrationStatusJob()
-    {
+    public RegistrationStatusJob() {
         // Nothing to do; "initialisation" is done inside execute().
     }
 
     /**
      * Resets metrics we store about this job.
      */
-    private void resetJobMetrics()
-    {
+    private void resetJobMetrics() {
         lastStartTime = new Date();
         lastRunTimeMS = -1;
         expiredCount = 0;
@@ -71,21 +64,17 @@ public class RegistrationStatusJob implements Job
      * BackgroundJobMetricsReporter.
      * @param out An object to write the metrics to.
      */
-    public static void reportMetrics(PrintWriter out)
-    {
+    public static void reportMetrics(PrintWriter out) {
         out.println("\n** Registration Status job **");
         
-        if (lastStartTime == null)
-        {
+        if (lastStartTime == null) {
             out.println("The registration status job has not yet been run.");
         }
-        else if (lastRunTimeMS < 0)
-        {
+        else if (lastRunTimeMS < 0) {
             out.println("The registration status job is currently running.");
             out.println(String.format("Start time: %s", BackgroundJobMetricsReporter.formatDate(lastStartTime)));
         }
-        else
-        {
+        else {
             int msPerMin = 1000 * 60;
             int minutes = lastRunTimeMS / msPerMin;
             int seconds = (lastRunTimeMS - (minutes * msPerMin)) / 1000;
@@ -101,38 +90,28 @@ public class RegistrationStatusJob implements Job
      * @throws JobExecutionException 
      */
     @Override
-    public void execute(JobExecutionContext context) throws JobExecutionException
-    {
+    public void execute(JobExecutionContext context) throws JobExecutionException {
         resetJobMetrics();
         
         DatabaseHelper dbHelper = null;
         
-        try
-        {
+        try {
             // Record the start of the job execution.
             JobKey jobKey = context.getJobDetail().getKey();
             log.info(String.format("Starting execution of the Registration Status job, with key %s", jobKey.toString()));
             
             // Log job configuration for debugging purposes.
             JobDataMap jobConfig = context.getJobDetail().getJobDataMap();
-            log.fine(String.format("--> Will attempt to use database %s on %s",
-                jobConfig.getString(DATABASE_NAME),
-                jobConfig.getString(DATABASE_URL))
-            );
             
             // Build a database helper using the provided configuration.
             dbHelper = new DatabaseHelper(new DatabaseConfiguration(
-                jobConfig.getString(DATABASE_URL),
-                jobConfig.getString(DATABASE_NAME),
-                jobConfig.getString(DATABASE_USERNAME),
-                jobConfig.getString(DATABASE_PASSWORD),
+                jobConfig.getString(DATABASE_URI),
                 jobConfig.getInt(DATABASE_TIMEOUT)
             ));
             
             // Check we can connect to the database, and are authenticated.
             DB db = dbHelper.getConnection();
-            if (db == null)
-            {
+            if (db == null) {
                 throw new RuntimeException("Error: No database connection available; aborting.");
             }
             
@@ -148,21 +127,15 @@ public class RegistrationStatusJob implements Job
             
             // Finished successfully.
             log.info("Successfully completed execution of the Registration Status job");
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             // Quartz only allows us to throw a JobExecutionException from this
             // method, so we wrap all other exceptions.
             log.severe(String.format("Unexpected exception during Registration Status job: %s", ex.getMessage()));
             throw new JobExecutionException(ex);
-        }
-        finally
-        {
-            if (dbHelper != null)
-            {
+        } finally {
+            if (dbHelper != null) {
                 MongoClient mongo = dbHelper.getMongoClient();
-                if (mongo != null)
-                {
+                if (mongo != null) {
                     mongo.close();
                 }
             }
@@ -174,8 +147,7 @@ public class RegistrationStatusJob implements Job
      * marks them as expired.
      * @param registrations The registrations document collection.
      */
-    private void expireRegistrations(JacksonDBCollection<Registration, String> registrations)
-    {
+    private void expireRegistrations(JacksonDBCollection<Registration, String> registrations) {
         // We'll use the same date for checking for expiry, and for updating the
         // 'last modified' timestamp.
         Date now = new Date();

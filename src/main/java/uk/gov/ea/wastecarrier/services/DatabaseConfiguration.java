@@ -4,87 +4,56 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.mongodb.Mongo;
+import com.mongodb.MongoClientURI;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class DatabaseConfiguration {
+
     @NotEmpty
     @JsonProperty
-    private String url;
-
-    private String host;
-
-    private int port;
-    
-    @NotEmpty
-    @JsonProperty
-    private String name;
-    
-    @JsonProperty
-    private String username;
-
-    @JsonProperty
-    private String password;
+    private String uri;
 
     @Min(1000)
     @Max(60000)
     @JsonProperty
     private int serverSelectionTimeout;
 
+    private MongoClientURI mongoClientURI;
+
     public DatabaseConfiguration() {}
 
-    public DatabaseConfiguration(
-            String url,
-            String name,
-            String username,
-            String password,
-            int serverSelectionTimeout
-    ) {
-        this.url = url;
-        this.name = name;
-        this.username = username;
-        this.password = password;
+    public DatabaseConfiguration(String uri, int serverSelectionTimeout) {
+        this.uri = uri;
         this.serverSelectionTimeout = serverSelectionTimeout;
-
-        setHostAndPort();
     }
 
-    public String getUrl() {
-        return this.url;
+    public String getUri() {
+        return this.uri;
     }
 
-    public String getHost() {
-        if (this.host == null || this.host.isEmpty()) setHostAndPort();
+    public MongoClientURI getMongoClientURI() {
 
-        return host;
-    }
+        if (this.mongoClientURI == null) {
+            this.mongoClientURI = new MongoClientURI(includeServerSelectionTimeoutMS(uri, serverSelectionTimeout));
+        }
 
-    public int getPort() {
-        if (this.port == 0) setHostAndPort();
-
-        return port;
-    }
-    
-    public String getName() {
-        return name;
-    }
-
-    public String getUsername()
-    {
-        return username;
-    }
-
-    public String getPassword()
-    {
-        return password;
+        return this.mongoClientURI;
     }
 
     public int getServerSelectionTimeout() {
         return serverSelectionTimeout;
     }
 
-    private void setHostAndPort() {
-        String[] parts = this.url.split(":");
-        this.host = parts[0];
-        this.port = Integer.valueOf(parts[1]);
+    private String includeServerSelectionTimeoutMS(String uri, int serverSelectionTimeout) {
+        if (uri.endsWith("?")) {
+            return uri + "&serverSelectionTimeoutMS=" + String.valueOf(serverSelectionTimeout);
+        }
+        else {
+            return uri + "?serverSelectionTimeoutMS=" + String.valueOf(serverSelectionTimeout);
+        }
     }
 }

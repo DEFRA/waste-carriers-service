@@ -12,13 +12,10 @@ public class UsersConnectionUtil {
     public UserDao dao;
 
     public UsersConnectionUtil() {
-        String url  = System.getenv("WCRS_TEST_USERSDB_URL1");
-        String name = System.getenv("WCRS_TEST_USERSDB_NAME");
-        String username = System.getenv("WCRS_TEST_USERSDB_USERNAME");
-        String password = System.getenv("WCRS_TEST_USERSDB_PASSWORD");
-        int timeout = Integer.valueOf(System.getenv("WCRS_TEST_USERSDB_SERVER_SEL_TIMEOUT"));
+        String uri = System.getenv("WCRS_TEST_REGSDB_URI");
+        int timeout = Integer.valueOf(System.getenv("WCRS_TEST_MONGODB_SERVER_SEL_TIMEOUT"));
 
-        DatabaseConfiguration config = new DatabaseConfiguration(url, name, username, password, timeout);
+        DatabaseConfiguration config = new DatabaseConfiguration(uri, timeout);
 
         databaseHelper = new DatabaseHelper(config);
         dao = new UserDao(config);
@@ -45,11 +42,12 @@ public class UsersConnectionUtil {
     }
 
     public UserDao invalidCredentialsDao() {
+        String validUsername = this.databaseHelper.configuration().getMongoClientURI().getUsername();
+        String validUri = this.databaseHelper.configuration().getMongoClientURI().getURI();
+
+        String invalidUri = validUri.replaceFirst(validUsername, "lockedOut");
         DatabaseConfiguration invalidConfig = new DatabaseConfiguration(
-                this.databaseHelper.configuration().getUrl(),
-                this.databaseHelper.configuration().getName(),
-                this.databaseHelper.configuration().getUsername(),
-                "Bl0wMeDownWithAFeather",
+                invalidUri,
                 this.databaseHelper.configuration().getServerSelectionTimeout()
         );
         return new UserDao(invalidConfig);

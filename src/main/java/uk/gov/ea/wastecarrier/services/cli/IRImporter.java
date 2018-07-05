@@ -149,8 +149,7 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
      * @throws Exception 
      */
     @Override
-    public void run(Bootstrap<WasteCarrierConfiguration> bootstrap, Namespace namespace, WasteCarrierConfiguration configuration) throws Exception
-    {
+    public void run(Bootstrap<WasteCarrierConfiguration> bootstrap, Namespace namespace, WasteCarrierConfiguration configuration) throws Exception {
         // Output useful logging.
         System.out.println("IR-Import command starting");
         System.out.println(String.format(" - will attempt to import from %s", namespace.getString("source")));
@@ -168,18 +167,11 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
         DatabaseConfiguration dbConfig = configuration.getDatabase();
         
         // Build a database helper.
-        DatabaseHelper dbHelper = new DatabaseHelper(new DatabaseConfiguration(
-                dbConfig.getUrl(),
-                dbConfig.getName(),
-                dbConfig.getUsername(),
-                dbConfig.getPassword(),
-                dbConfig.getServerSelectionTimeout()
-        ));
+        DatabaseHelper dbHelper = new DatabaseHelper(dbConfig);
         
         // Check we can connect to the database, and are authenticated.
         DB db = dbHelper.getConnection();
-        if (db == null)
-        {
+        if (db == null) {
             throw new RuntimeException("Error: No database connection available; aborting.");
         }
         

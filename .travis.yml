@@ -1,15 +1,8 @@
 env:
   global:
-    - WCRS_TEST_REGSDB_URL1="localhost:27017"
-    - WCRS_TEST_REGSDB_NAME=waste-carriers-test
-    - WCRS_TEST_REGSDB_USERNAME=mongoUser
-    - WCRS_TEST_REGSDB_PASSWORD=password1234
-    - WCRS_TEST_REGSDB_SERVER_SEL_TIMEOUT=1000
-    - WCRS_TEST_USERSDB_URL1="localhost:27017"
-    - WCRS_TEST_USERSDB_NAME=waste-carriers-users-test
-    - WCRS_TEST_USERSDB_USERNAME=mongoUser
-    - WCRS_TEST_USERSDB_PASSWORD=password1234
-    - WCRS_TEST_USERSDB_SERVER_SEL_TIMEOUT=1000
+    - WCRS_TEST_REGSDB_URI="mongodb://mongoUser:password1234@localhost:27017/waste-carriers-test"
+    - WCRS_TEST_USERSDB_URI="mongodb://mongoUser:password1234@localhost:27017/waste-carriers-users-test"
+    - WCRS_TEST_MONGODB_SERVER_SEL_TIMEOUT=1000
 
 language: java
 
