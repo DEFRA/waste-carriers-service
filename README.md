@@ -45,7 +45,7 @@ Other values in the configuration file have a default, however you can override 
 Alternatively, you can create another local configuration file with your values in it, and refer to this file when starting up the service.
 
 ```bash
-java -jar target/waste-carriers-service*.jar server my_configuration.yml
+java -jar target/waste-carriers-service.jar server my_configuration.yml
 ```
 
 ## Build
@@ -65,13 +65,13 @@ N.B. If maven was installed all on the machine you would swap `./mvnw` with `mvn
 Start the service by providing the name of the jar file, the command 'server', and the name of the configuration file.
 
 ```bash
-java -jar target/waste-carriers-service*.jar server  configuration.yml
+java -jar target/waste-carriers-service.jar server  configuration.yml
 ```
 
 You can also override parameters such as https port numbers using the Java '-D' option.
 
 ```bash
-java -Ddw.http.port=8003 -Ddw.http.adminPort=8004 -jar target/waste-carriers-service-1.1.2.jar server my_configuration.yml
+java -Ddw.http.port=8003 -Ddw.http.adminPort=8004 -jar target/waste-carriers-service.jar server my_configuration.yml
 ```
 
 For more details on how to start a Dropwizard service and configuration and startup options, please see the Dropwizard documentation.
