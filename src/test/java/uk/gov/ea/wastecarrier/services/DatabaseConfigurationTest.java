@@ -40,5 +40,6 @@ public class DatabaseConfigurationTest {
 
         assertEquals("waste-carriers", dbConfig.getMongoClientURI().getDatabase());
         assertEquals("mongoUser", dbConfig.getMongoClientURI().getUsername());
+        assertEquals("wcrepl", dbConfig.getMongoClientURI().getOptions().getRequiredReplicaSetName());
     }
 }

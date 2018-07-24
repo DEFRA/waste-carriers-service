@@ -49,7 +49,7 @@ public class DatabaseConfiguration {
     }
 
     private String includeServerSelectionTimeoutMS(String uri, int serverSelectionTimeout) {
-        if (uri.endsWith("?")) {
+        if (uri.contains("?")) {
             return uri + "&serverSelectionTimeoutMS=" + String.valueOf(serverSelectionTimeout);
         }
         else {
