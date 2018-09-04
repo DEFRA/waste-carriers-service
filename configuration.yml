@@ -75,7 +75,7 @@ airbrake:
   # Other values you can set for Airbrake integration, but not required:
   # enabled: true or false (default = true)
   # exceptionsOnly: true or false (default = false)
-  
+
 # IrRenewals brings a very limited set of data into Waste Carriers to allow
 # IR customers to "renew" in the service.
 irRenewals:
@@ -89,7 +89,7 @@ entityMatching:
 
 exportJob:
   # File to use for EPR exports (note: file, not directory).
-  eprExportFile: ${WCRS_EPR_EXPORT_FILE:-/srv/java/waste-carriers-service/exports/waste-carriers-epr.csv}
+  eprExportFile: ${WCRS_EPR_EXPORT_FILE:-/srv/java/waste-carriers-service/exports/waste_carriers_epr_daily_full.csv}
   # Date format to use for EPR exports.
   eprExportDateFormat: "yyyy-MM-dd"
   # Path to use for Reporting Snapshot exports (note: directory, not file).
