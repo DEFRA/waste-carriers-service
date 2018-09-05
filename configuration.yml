@@ -100,12 +100,12 @@ exportJob:
   reportingExportMoneyFormat: "0.00"
   # Cron expression for scheduled job execution. Leave empty to make the job
   # run on a manual trigger only.  Default is daily at 9pm.
-  cronExpression: ${WCRS_EXPORT_JOB_CRON_SCHEDULE:-30 0/15 * * * ?}
+  cronExpression: ${WCRS_EXPORT_JOB_CRON_SCHEDULE:-0 0 21 1/1 * ? *}
 
 registrationStatusJob:
   # Cron expression for scheduled job execution. Leave empty to make the job
   # run on a manual trigger only.  Default is daily at 8pm.
-  cronExpression: ${WCRS_STATUS_JOB_CRON_SCHEDULE:-0 0/15 * * * ?}
+  cronExpression: ${WCRS_STATUS_JOB_CRON_SCHEDULE:-0 0 20 1/1 * ? *}
 
 mock:
   # Once a payment is complete with worldpay it redirects the user to the
