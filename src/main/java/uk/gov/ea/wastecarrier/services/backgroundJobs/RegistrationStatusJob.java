@@ -14,7 +14,9 @@ import org.mongojack.JacksonDBCollection;
 import org.mongojack.WriteResult;
 
 import java.io.PrintWriter;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 import java.util.logging.Logger;
 
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
@@ -147,25 +149,25 @@ public class RegistrationStatusJob implements Job
      * marks them as expired.
      * @param registrations The registrations document collection.
      */
-    private void expireRegistrations(JacksonDBCollection<Registration, String> registrations) {
-        // We'll use the same date for checking for expiry, and for updating the
-        // 'last modified' timestamp.
-        Date now = new Date();
-        
+    public void expireRegistrations(JacksonDBCollection<Registration, String> registrations) {
+        // Expiration is not time dependent. So our filter will be anything where
+        // expires_on is less than 00:00am tomorrow (so anything up 23:59 today)
+        Date tomorrow = tomorrowsDate();
+
         // Define a query that decides which documents to update.
         // We want to find all Upper-Tier registrations that are currently in
         // the ACTIVE state and have an expiry date of earlier than 'now'.
         BasicDBObject query = new BasicDBObject();
         query.append("tier", Registration.RegistrationTier.UPPER.toString());
         query.append("metaData.status", MetaData.RegistrationStatus.ACTIVE.toString());
-        query.append("expires_on", new BasicDBObject("$lt", now));
+        query.append("expires_on", new BasicDBObject("$lt", tomorrow));
         
         // Define an operation that describes how to update all the matched
         // documents.  We want to update the registration status to EXPIRED.
         // We'll also update the 'last modified' timestamp.
         BasicDBObject fieldsToSet = new BasicDBObject();
         fieldsToSet.append("metaData.status", MetaData.RegistrationStatus.EXPIRED.toString());
-        fieldsToSet.append("metaData.lastModified", now);
+        fieldsToSet.append("metaData.lastModified", new Date());
         BasicDBObject update = new BasicDBObject("$set", fieldsToSet);
         
         // Expire all relevant registrations.
@@ -181,5 +183,23 @@ public class RegistrationStatusJob implements Job
             expiredCount = result.getN();
         }
         log.info(String.format("Number of registrations expired: %d", expiredCount));
+    }
+
+    /**
+     * Returns the date to use when determining if a registration is expired or
+     * not. It takes the current date, removes the time element, then adds a day.
+     * So when searching for registrations that are expired, we are looking for
+     * anything less than this date.
+     *
+     * @return the date tomorrow, with time set to 0
+     */
+    private Date tomorrowsDate() {
+        Calendar tomorrow = Calendar.getInstance();
+        tomorrow.set(Calendar.HOUR_OF_DAY, 0);
+        tomorrow.set(Calendar.MINUTE, 0);
+        tomorrow.set(Calendar.SECOND, 0);
+        tomorrow.add(Calendar.DATE, 1);
+
+        return tomorrow.getTime();
     }
 }
