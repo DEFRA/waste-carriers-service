@@ -3,6 +3,7 @@ package uk.gov.ea.wastecarrier.services.support;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 public class TestUtil {
 
@@ -17,6 +18,14 @@ public class TestUtil {
         calendar.add(Calendar.DATE, days);
 
         return calendar.getTime();
+    }
+
+    public static Date todayPlus(int numberToAdd, int period) {
+        TimeZone utcTimeZone = TimeZone.getTimeZone("UTC");
+        Calendar today = Calendar.getInstance(utcTimeZone);
+        today.add(period, numberToAdd);
+
+        return today.getTime();
     }
 
     public static Date fromCurrentDate(Integer years, Integer months, Integer days) {
