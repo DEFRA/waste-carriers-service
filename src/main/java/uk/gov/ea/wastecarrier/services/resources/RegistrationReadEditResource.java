@@ -1,21 +1,19 @@
 package uk.gov.ea.wastecarrier.services.resources;
 
+import com.codahale.metrics.annotation.Timed;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
-import uk.gov.ea.wastecarrier.services.ElasticSearchConfiguration;
 import uk.gov.ea.wastecarrier.services.SettingsConfiguration;
 import uk.gov.ea.wastecarrier.services.core.MetaData;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.core.Settings;
 import uk.gov.ea.wastecarrier.services.core.User;
-import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
-import uk.gov.ea.wastecarrier.services.mongoDb.PaymentHelper;
-import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationHelper;
-import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationsMongoDao;
-import uk.gov.ea.wastecarrier.services.mongoDb.UsersMongoDao;
-import uk.gov.ea.wastecarrier.services.tasks.Indexer;
+import uk.gov.ea.wastecarrier.services.helper.DatabaseHelper;
+import uk.gov.ea.wastecarrier.services.helper.PaymentHelper;
+import uk.gov.ea.wastecarrier.services.helper.RegistrationHelper;
+import uk.gov.ea.wastecarrier.services.dao.RegistrationDao;
+import uk.gov.ea.wastecarrier.services.dao.UserDao;
 
 import com.mongodb.DB;
-import com.yammer.metrics.annotation.Timed;
 
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
@@ -29,9 +27,8 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
-import org.elasticsearch.client.Client;
-import net.vz.mongodb.jackson.JacksonDBCollection;
-import net.vz.mongodb.jackson.WriteResult;
+import org.mongojack.JacksonDBCollection;
+import org.mongojack.WriteResult;
 
 import java.util.logging.Logger;
 
@@ -46,31 +43,20 @@ import java.util.logging.Logger;
 public class RegistrationReadEditResource
 {
     private DatabaseHelper databaseHelper;
-    //Note: not re-using Clients, instantiating fresh clients instead.
-    //private Client esClient;
-    private ElasticSearchConfiguration esConfig;
-    private RegistrationsMongoDao regDao;
-    private UsersMongoDao userDao;
+    private RegistrationDao regDao;
+    private UserDao userDao;
     private PaymentHelper paymentHelper;
 
     // Standard logging declaration
     private Logger log = Logger.getLogger(RegistrationReadEditResource.class.getName());
 
-    /**
-     *
-     * @param mQConfig
-     * @param database
-     */
     public RegistrationReadEditResource(
-            DatabaseConfiguration database, DatabaseConfiguration userDatabase, ElasticSearchConfiguration elasticSearch,
-            Client esClient, SettingsConfiguration settingConfig)
+            DatabaseConfiguration database, DatabaseConfiguration userDatabase, SettingsConfiguration settingConfig)
     {
         this.databaseHelper = new DatabaseHelper(database);
-        this.esConfig = elasticSearch;
-        this.regDao = new RegistrationsMongoDao(new DatabaseHelper(database));
+        this.regDao = new RegistrationDao(database);
         this.paymentHelper = new PaymentHelper(new Settings(settingConfig));
-        this.userDao = new UsersMongoDao(userDatabase);
-        //this.esClient = esClient;
+        this.userDao = new UserDao(userDatabase);
     }
 
     /**
@@ -90,12 +76,6 @@ public class RegistrationReadEditResource
         DB db = databaseHelper.getConnection();
         if (db != null)
         {
-            if (!db.isAuthenticated())
-            {
-                log.severe("Get registration - Could not authenticate against MongoDB!");
-                throw new WebApplicationException(Status.FORBIDDEN);
-            }
-
             // Create MONGOJACK connection to the database
             JacksonDBCollection<Registration, String> registrations = JacksonDBCollection.wrap(
                     db.getCollection(Registration.COLLECTION_NAME), Registration.class, String.class);
@@ -121,22 +101,15 @@ public class RegistrationReadEditResource
                     {
                         // Set and update registration with updated values
                         foundReg = RegistrationHelper.setAsExpired(foundReg);
-                        return regDao.updateRegistration(foundReg);
+                        return regDao.update(foundReg);
                     }
                     return foundReg;
                 }
                 else
                 {
-                    // Remove Registration from Elastic search
-                    Registration tmpReg = new Registration();
-                    tmpReg.setId(id);
-                    Indexer.deleteElasticSearchIndex(esConfig, tmpReg);
-                    log.info("Deleted:" + id + " from Elastic Search");
-
                     log.info("Valid ID format, but Cannot find Registration for ID: " + id);
                     throw new WebApplicationException(Status.NOT_FOUND);
                 }
-
             }
             catch (IllegalArgumentException e)
             {
@@ -168,12 +141,6 @@ public class RegistrationReadEditResource
         DB db = databaseHelper.getConnection();
         if (db != null)
         {
-            if (!db.isAuthenticated())
-            {
-                log.severe("Updating registration - Could not authenticate against MongoDB!");
-                throw new WebApplicationException(Status.FORBIDDEN);
-            }
-
             // Create MONGOJACK connection to the database
             JacksonDBCollection<Registration, String> registrations = JacksonDBCollection.wrap(
                     db.getCollection(Registration.COLLECTION_NAME), Registration.class, String.class);
@@ -182,52 +149,40 @@ public class RegistrationReadEditResource
             WriteResult<Registration, String> result = registrations.updateById(id, reg);
             log.fine("Found result: '" + result + "' ");
 
-            if (!String.valueOf("").equals(result.getError()))
+            log.info("Registration updated successfully in MongoDB for ID:" + id);
+            try
             {
-                log.info("Registration updated successfully in MongoDB for ID:" + id);
-                try
-                {
-                    //Update the registration status, if appropriate
-                    Registration registration = regDao.getRegistration(id);
-                    User user = userDao.getUserByEmail(registration.getAccountEmail());
+                //Update the registration status, if appropriate
+                Registration registration = regDao.find(id);
+                User user = userDao.findByEmail(registration.getAccountEmail());
 
-                    if (paymentHelper.isReadyToBeActivated(registration, user))
+                if (paymentHelper.isReadyToBeActivated(registration, user))
+                {
+                    registration = paymentHelper.setupRegistrationForActivation(registration);
+                    try
                     {
-                        registration = paymentHelper.setupRegistrationForActivation(registration);
-                        try
-                        {
-                            savedObject = regDao.updateRegistration(registration);
-                        }
-                        catch (Exception e)
-                        {
-                            // TODO: Need to handle this better because if the registration update
-                            // fails as the first update worked?
-                            log.severe("Error while updating registration after update with ID " + registration.getId() + " in MongoDB.");
-                            throw new WebApplicationException(Status.NOT_MODIFIED);
-                        }
+                        savedObject = regDao.update(registration);
                     }
-
-                    // Make a second request for the updated full registration details to be returned
-                    savedObject = registrations.findOneById(id);
-                    log.fine("Found Updated Registration, Details include:- CompanyName:" + savedObject.getCompanyName());
-
-                    // Perform another create index operation which should override previous index information
-                    log.info("Indexing the updated registration in ElasticSearch...");
-                    Indexer.indexRegistration(esConfig, savedObject);
-
-                    return savedObject;
+                    catch (Exception e)
+                    {
+                        // TODO: Need to handle this better because if the registration update
+                        // fails as the first update worked?
+                        log.severe("Error while updating registration after update with ID " + registration.getId() + " in MongoDB.");
+                        throw new WebApplicationException(Status.NOT_MODIFIED);
+                    }
                 }
-                catch (IllegalArgumentException e)
-                {
-                    log.severe("Catching exception while trying to update registration: " + e.getMessage());
-                    log.warning("Cannot find Registration ID: " + id);
-                    throw new WebApplicationException(Status.NOT_FOUND);
-                }
+
+                // Make a second request for the updated full registration details to be returned
+                savedObject = registrations.findOneById(id);
+                log.fine("Found Updated Registration, Details include:- CompanyName:" + savedObject.getCompanyName());
+
+                return savedObject;
             }
-            else
+            catch (IllegalArgumentException e)
             {
-                log.severe("Error while updating registration with ID " + id + " in MongoDB. Result error:" + result.getError());
-                throw new WebApplicationException(Status.NOT_MODIFIED);
+                log.severe("Catching exception while trying to update registration: " + e.getMessage());
+                log.warning("Cannot find Registration ID: " + id);
+                throw new WebApplicationException(Status.NOT_FOUND);
             }
         }
         else
@@ -253,12 +208,6 @@ public class RegistrationReadEditResource
         DB db = databaseHelper.getConnection();
         if (db != null)
         {
-            if (!db.isAuthenticated())
-            {
-                log.severe("Could not authenticate against MongoDB!");
-                throw new WebApplicationException(Status.FORBIDDEN);
-            }
-
             // Create MONGOJACK connection to the database
             JacksonDBCollection<Registration, String> registrations = JacksonDBCollection.wrap(
                     db.getCollection(Registration.COLLECTION_NAME), Registration.class, String.class);
@@ -273,31 +222,14 @@ public class RegistrationReadEditResource
                     log.info("Found Registration, CompanyName:" + foundReg.getCompanyName());
 
                     // Remove Found Registration from Database
-                    result = registrations.remove(foundReg);
-                    // If no errors detected, also removed from Search
-                    if (result.getError() == null)
-                    {
-                        log.info("Deleted registration with ID:" + foundReg.getId() + " from MongoDB");
+                    registrations.removeById(id);
+                    log.info("Deleted registration with ID:" + foundReg.getId() + " from MongoDB");
 
-                        // Remove Registration from Elastic search
-                        Indexer.deleteElasticSearchIndex(esConfig, foundReg);
-                        log.info("Deleted registration with ID:" + foundReg.getId() + " from Elastic Search");
-                    }
-                    else
-                    {
-                        log.severe("ERROR: Could not delete registration from MongoDB: Error:" + result.getError());
-                        throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
-                    }
                     // Operation completed
                     return null;
                 }
                 log.info("Valid ID format, but Cannot find Registration for ID: " + id);
 
-                // Also Delete from Elastic Search if not found in database
-                Registration tmpReg = new Registration();
-                tmpReg.setId(id);
-                Indexer.deleteElasticSearchIndex(esConfig, tmpReg);
-                log.info("Deleted:" + id + " from Elastic Search");
                 throw new WebApplicationException(Status.NOT_FOUND);
             }
             catch (IllegalArgumentException e)

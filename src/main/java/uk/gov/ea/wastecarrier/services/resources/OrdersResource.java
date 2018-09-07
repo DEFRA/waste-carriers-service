@@ -1,19 +1,16 @@
 package uk.gov.ea.wastecarrier.services.resources;
 
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
-import uk.gov.ea.wastecarrier.services.ElasticSearchConfiguration;
 import uk.gov.ea.wastecarrier.services.SettingsConfiguration;
 import uk.gov.ea.wastecarrier.services.core.Order;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.core.Settings;
 import uk.gov.ea.wastecarrier.services.core.User;
 
-import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
-import uk.gov.ea.wastecarrier.services.mongoDb.OrdersMongoDao;
-import uk.gov.ea.wastecarrier.services.mongoDb.PaymentHelper;
-import uk.gov.ea.wastecarrier.services.mongoDb.RegistrationsMongoDao;
-import uk.gov.ea.wastecarrier.services.mongoDb.UsersMongoDao;
-import uk.gov.ea.wastecarrier.services.tasks.Indexer;
+import uk.gov.ea.wastecarrier.services.dao.OrderDao;
+import uk.gov.ea.wastecarrier.services.helper.PaymentHelper;
+import uk.gov.ea.wastecarrier.services.dao.RegistrationDao;
+import uk.gov.ea.wastecarrier.services.dao.UserDao;
 
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
@@ -37,10 +34,9 @@ import java.util.logging.Logger;
 @Consumes(MediaType.APPLICATION_JSON)
 public class OrdersResource
 {
-    private OrdersMongoDao dao;
-    private RegistrationsMongoDao regDao;
-    private UsersMongoDao userDao;
-    private ElasticSearchConfiguration esConfig;
+    private OrderDao dao;
+    private RegistrationDao regDao;
+    private UserDao userDao;
     private PaymentHelper paymentHelper;
     
     private Logger log = Logger.getLogger(OrdersResource.class.getName());
@@ -50,12 +46,11 @@ public class OrdersResource
      * @param database
      */
     public OrdersResource(DatabaseConfiguration database, DatabaseConfiguration userDatabase,
-            SettingsConfiguration settingConfig, ElasticSearchConfiguration elasticSearch)
+            SettingsConfiguration settingConfig)
     {
-        dao = new OrdersMongoDao(database);
-        regDao = new RegistrationsMongoDao(new DatabaseHelper(database));
-        userDao = new UsersMongoDao(userDatabase);
-        esConfig = elasticSearch;
+        dao = new OrderDao(database);
+        regDao = new RegistrationDao(database);
+        userDao = new UserDao(userDatabase);
         paymentHelper = new PaymentHelper(new Settings(settingConfig));
     }
 
@@ -79,18 +74,15 @@ public class OrdersResource
          * Update the registration status, if appropriate
          * 
          */
-        Registration registration = regDao.getRegistration(registrationId);
-        User user = userDao.getUserByEmail(registration.getAccountEmail());
+        Registration registration = regDao.find(registrationId);
+        User user = userDao.findByEmail(registration.getAccountEmail());
         
         if (paymentHelper.isReadyToBeActivated(registration, user) )
         {
             registration = paymentHelper.setupRegistrationForActivation(registration);
             try
             {
-                Registration savedObject = regDao.updateRegistration(registration);
-                
-                log.info("Re-Index the updated registration in ElasticSearch...");
-                Indexer.indexRegistration(esConfig, savedObject);
+                regDao.update(registration);
             }
             catch(Exception e)
             {
@@ -102,9 +94,6 @@ public class OrdersResource
                 throw new WebApplicationException(Status.NOT_MODIFIED);
             }
         }
-        
-        log.info("Re-Index the registration (with new order) in ElasticSearch");
-        Indexer.indexRegistration(esConfig, registration);
         
         return resultOrder;
     }

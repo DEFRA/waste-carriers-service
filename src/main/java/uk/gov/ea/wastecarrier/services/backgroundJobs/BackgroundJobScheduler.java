@@ -1,7 +1,6 @@
 package uk.gov.ea.wastecarrier.services.backgroundJobs;
 
-import com.yammer.dropwizard.lifecycle.Managed;
-
+import io.dropwizard.lifecycle.Managed;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.JobDataMap;
@@ -177,11 +176,8 @@ public class BackgroundJobScheduler implements Managed
             .build();
 
         JobDataMap dataMap = exportJob.getJobDataMap();
-        dataMap.put(ExportJob.DATABASE_HOST, databaseConfig.getHost());
-        dataMap.put(ExportJob.DATABASE_PORT, databaseConfig.getPort());
-        dataMap.put(ExportJob.DATABASE_NAME, databaseConfig.getName());
-        dataMap.put(ExportJob.DATABASE_USERNAME, databaseConfig.getUsername());
-        dataMap.put(ExportJob.DATABASE_PASSWORD, databaseConfig.getPassword());
+        dataMap.put(ExportJob.DATABASE_URI, databaseConfig.getUri());
+        dataMap.put(ExportJob.DATABASE_TIMEOUT, databaseConfig.getServerSelectionTimeout());
         dataMap.put(ExportJob.EPR_EXPORT_FILE, exportJobConfig.getEprExportFile());
         dataMap.put(ExportJob.EPR_DATE_FORMAT, exportJobConfig.getEprExportDateFormat());
         dataMap.put(ExportJob.REPORTING_EXPORT_PATH, exportJobConfig.getReportingExportPath());
@@ -216,12 +212,9 @@ public class BackgroundJobScheduler implements Managed
                 .build();
         
         JobDataMap dataMap = regStatusJob.getJobDataMap();
-        dataMap.put(RegistrationStatusJob.DATABASE_HOST, databaseConfig.getHost());
-        dataMap.put(RegistrationStatusJob.DATABASE_PORT, databaseConfig.getPort());
-        dataMap.put(RegistrationStatusJob.DATABASE_NAME, databaseConfig.getName());
-        dataMap.put(RegistrationStatusJob.DATABASE_USERNAME, databaseConfig.getUsername());
-        dataMap.put(RegistrationStatusJob.DATABASE_PASSWORD, databaseConfig.getPassword());
-        
+        dataMap.put(RegistrationStatusJob.DATABASE_URI, databaseConfig.getUri());
+        dataMap.put(RegistrationStatusJob.DATABASE_TIMEOUT, databaseConfig.getServerSelectionTimeout());
+
         return regStatusJob;
     }
     

@@ -1,5 +1,6 @@
 package uk.gov.ea.wastecarrier.services.core;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -10,43 +11,23 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author Steve
  * 
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Location {
 
-	@JsonProperty()
-    private double lat;
+    @JsonProperty()
+    public double lat;
 
-	@JsonProperty()
-    private double lon;
-	
-	/**
-	 * This empty default constructor is needed for JSON to be happy. The alternative is add
-	 * "@JsonProperty("id")" in-front of the "long id" definition in the fully qualified constructor
-	 */
-	public Location()
-	{
-	}
-	
-	public Location(double lat, double lon)
-	{
-		this.lat = lat;
-		this.lon = lon;
-	}
+    @JsonProperty()
+    public double lon;
 
-    public double getLon() {
-        return lon;
+    /**
+     * This empty default constructor is needed for JSON to be happy. The alternative is add
+     * "@JsonProperty("id")" in-front of the "long id" definition in the fully qualified constructor
+     */
+    public Location() { }
+
+    public Location(double lat, double lon) {
+        this.lat = lat;
+        this.lon = lon;
     }
-
-	public void setLon(double lon)
-	{
-		this.lon = lon;
-	}
-    
-    public double getLat() {
-        return lat;
-    }
-
-	public void setLat(double lat)
-	{
-		this.lat = lat;
-	}
 }

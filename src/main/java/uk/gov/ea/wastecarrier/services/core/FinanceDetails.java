@@ -2,6 +2,7 @@ package uk.gov.ea.wastecarrier.services.core;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -12,135 +13,136 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author Steve
  *
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class FinanceDetails
 {
-	@JsonProperty
-	private List<Order> orders;
-	
-	@JsonProperty
-	private List<Payment> payments;
-	
-	private int balance;
-	
-	public final static String COLLECTION_SINGULAR_NAME = "financeDetail";
-	public final static String COLLECTION_NAME = COLLECTION_SINGULAR_NAME +"s";
-	
-	public FinanceDetails()
-	{
-	}
+    @JsonProperty
+    private List<Order> orders;
 
-	/**
-	 * @return the orders
-	 */
-	public List<Order> getOrders()
-	{
-		return orders;
-	}
+    @JsonProperty
+    private List<Payment> payments;
 
-	/**
-	 * @param orders the orders to set
-	 */
-	public void setOrders(List<Order> orders)
-	{
-		this.orders = orders;
-	}
+    private int balance;
 
-	/**
-	 * @return the payments
-	 */
-	public List<Payment> getPayments()
-	{
-		return payments;
-	}
+    public final static String COLLECTION_SINGULAR_NAME = "financeDetail";
+    public final static String COLLECTION_NAME = COLLECTION_SINGULAR_NAME +"s";
 
-	/**
-	 * @param payments the payments to set
-	 */
-	public void setPayments(List<Payment> payments)
-	{
-		this.payments = payments;
-	}
+    public FinanceDetails()
+    {
+    }
 
-	/**
-	 * @return the balance
-	 */
-	public int getBalance()
-	{
-		/*
-		 * Calculate balance from values in orders, and deduct payment.
-		 */
-		int runningTotal = 0;
-		if (getOrders() != null)
-		{
-			for (Order o : getOrders())
-			{
-				runningTotal += o.getTotalAmount();
-			}
-		}
-		if (getPayments() != null)
-		{
-			for (Payment p : getPayments())
-			{
-				runningTotal -= p.getAmount();
-			}
-		}
-		this.balance = runningTotal;
-		return balance;
-	}
+    /**
+     * @return the orders
+     */
+    public List<Order> getOrders()
+    {
+        return orders;
+    }
 
-	/**
-	 * @param balance the balance to set
-	 */
-	public void setBalance(int balance)
-	{
-		this.balance = balance;
-	}
-	
-	/**
-	 * @param orderCode
-	 * @return the Payment with the given orderCode, or null if it does not exist
-	 */
-	public Payment getPaymentForOrderCode(String orderCode)
-	{
-		if (orderCode == null)
-		{
-			return null;
-		}
-		if (getPayments() == null)
-		{
-			return null;
-		}
-		for (Payment payment: getPayments())
-		{
-			if (orderCode.equals(payment.getOrderKey()))
-			{
-				return payment;
-			}
-		}
-		return null;
-	}
-	
-	/**
-	 * @param orderCode
-	 * @return the Payment with the given orderCode, or null if it does not exist
-	 */
-	public Order getOrderForOrderCode(String orderCode)
-	{
-		if (orderCode == null)
-		{
-			return null;
-		}
-		if (getOrders() == null)
-		{
-			return null;
-		}
-		for (Order order: getOrders())
-		{
-			if (orderCode.equals(order.getOrderCode()))
-			{
-				return order;
-			}
-		}
-		return null;
-	}
+    /**
+     * @param orders the orders to set
+     */
+    public void setOrders(List<Order> orders)
+    {
+        this.orders = orders;
+    }
+
+    /**
+     * @return the payments
+     */
+    public List<Payment> getPayments()
+    {
+        return payments;
+    }
+
+    /**
+     * @param payments the payments to set
+     */
+    public void setPayments(List<Payment> payments)
+    {
+        this.payments = payments;
+    }
+
+    /**
+     * @return the balance
+     */
+    public int getBalance()
+    {
+        /*
+         * Calculate balance from values in orders, and deduct payment.
+         */
+        int runningTotal = 0;
+        if (getOrders() != null)
+        {
+            for (Order o : getOrders())
+            {
+                runningTotal += o.getTotalAmount();
+            }
+        }
+        if (getPayments() != null)
+        {
+            for (Payment p : getPayments())
+            {
+                runningTotal -= p.getAmount();
+            }
+        }
+        this.balance = runningTotal;
+        return balance;
+    }
+
+    /**
+     * @param balance the balance to set
+     */
+    public void setBalance(int balance)
+    {
+        this.balance = balance;
+    }
+
+    /**
+     * @param orderCode
+     * @return the Payment with the given orderCode, or null if it does not exist
+     */
+    public Payment getPaymentForOrderCode(String orderCode)
+    {
+        if (orderCode == null)
+        {
+            return null;
+        }
+        if (getPayments() == null)
+        {
+            return null;
+        }
+        for (Payment payment: getPayments())
+        {
+            if (orderCode.equals(payment.getOrderKey()))
+            {
+                return payment;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @param orderCode
+     * @return the Payment with the given orderCode, or null if it does not exist
+     */
+    public Order getOrderForOrderCode(String orderCode)
+    {
+        if (orderCode == null)
+        {
+            return null;
+        }
+        if (getOrders() == null)
+        {
+            return null;
+        }
+        for (Order order: getOrders())
+        {
+            if (orderCode.equals(order.getOrderCode()))
+            {
+                return order;
+            }
+        }
+        return null;
+    }
 }

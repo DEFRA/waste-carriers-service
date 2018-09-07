@@ -3,7 +3,7 @@ package uk.gov.ea.wastecarrier.services;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import com.yammer.dropwizard.config.Configuration;
+import io.dropwizard.Configuration;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -24,22 +24,17 @@ public class WasteCarrierConfiguration extends Configuration {
     @Valid
     @NotNull
     @JsonProperty
-    private ElasticSearchConfiguration elasticSearch = new ElasticSearchConfiguration();
-
-    @Valid
-    @NotEmpty
-    @JsonProperty
-    private String postcodeFilePath = "/postcodes.csv";
-
-    @Valid
-    @NotNull
-    @JsonProperty
     private SettingsConfiguration settings = new SettingsConfiguration();
 
     @Valid
     @NotNull
     @JsonProperty
     private IRConfiguration irRenewals = new IRConfiguration();
+
+    @Valid
+    @NotNull
+    @JsonProperty
+    private EntityMatchingConfiguration entityMatching = new EntityMatchingConfiguration();
     
     @Valid
     @NotNull
@@ -52,9 +47,14 @@ public class WasteCarrierConfiguration extends Configuration {
     private RegistrationStatusJobConfiguration registrationStatusJob = new RegistrationStatusJobConfiguration();
     
     @Valid
+    @NotNull
     @JsonProperty
     private AirbrakeLogbackConfiguration airbrake = new AirbrakeLogbackConfiguration();
 
+    @Valid
+    @NotNull
+    @JsonProperty
+    private MockConfiguration mock = new MockConfiguration();
     
     public DatabaseConfiguration getDatabase() {
         return database;
@@ -64,21 +64,16 @@ public class WasteCarrierConfiguration extends Configuration {
         return userDatabase;
     }
 
-    public ElasticSearchConfiguration getElasticSearch() {
-        return elasticSearch;
-    }
-
-    public String getPostcodeFilePath() {
-        return postcodeFilePath;
-    }
-
     public SettingsConfiguration getSettings() {
         return settings;
     }
 
-    public IRConfiguration getIrRenewals()
-    {
+    public IRConfiguration getIrRenewals() {
         return irRenewals;
+    }
+
+    public EntityMatchingConfiguration getEntityMatching() {
+        return entityMatching;
     }
     
     public ExportJobConfiguration getExportJobConfiguration() {
@@ -91,5 +86,9 @@ public class WasteCarrierConfiguration extends Configuration {
     
     public AirbrakeLogbackConfiguration getAirbrakeLogbackConfiguration() {
         return airbrake;
+    }
+
+    public MockConfiguration getMockConfiguration() {
+        return mock;
     }
 }

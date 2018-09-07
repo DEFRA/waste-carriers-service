@@ -1,9 +1,8 @@
 package uk.gov.ea.wastecarrier.services.resources;
 
+import com.codahale.metrics.annotation.Timed;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.core.Payment;
-
-import com.yammer.metrics.annotation.Timed;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -23,17 +22,17 @@ import java.util.logging.Logger;
 @Consumes(MediaType.APPLICATION_JSON)
 public class NewPaymentResource
 {
-	
-	private Logger log = Logger.getLogger(NewPaymentResource.class.getName());
-	
-	/**
-	 * 
-	 */
-	public NewPaymentResource()
-	{
-	}
-	
-	/**
+
+    private Logger log = Logger.getLogger(NewPaymentResource.class.getName());
+
+    /**
+     *
+     */
+    public NewPaymentResource()
+    {
+    }
+
+    /**
      * This retrieves and empty payment details from the services
      * 
      * @return if found returns a Payment object from the Java, otherwise throws WebApplicationException NOT_FOUND
@@ -42,9 +41,9 @@ public class NewPaymentResource
     @Timed
     public Payment newPayment() 
     {	
-    	log.info("Get Method Detected, Returning empty payment details");
-    	
-    	return new Payment();
+        log.info("Get Method Detected, Returning empty payment details");
+
+        return new Payment();
     }
 
 }

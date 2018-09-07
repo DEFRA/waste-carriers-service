@@ -1,11 +1,10 @@
 package uk.gov.ea.wastecarrier.services.resources;
 
+import com.codahale.metrics.annotation.Timed;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
 import uk.gov.ea.wastecarrier.services.core.Order;
 import uk.gov.ea.wastecarrier.services.core.Registration;
-import uk.gov.ea.wastecarrier.services.mongoDb.OrdersMongoDao;
-
-import com.yammer.metrics.annotation.Timed;
+import uk.gov.ea.wastecarrier.services.dao.OrderDao;
 
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
@@ -27,34 +26,34 @@ import java.util.logging.Logger;
 @Consumes(MediaType.APPLICATION_JSON)
 public class OrderResource
 {
-	
-	private OrdersMongoDao dao;
 
-	private Logger log = Logger.getLogger(OrderResource.class.getName());
-	
-	/**
-	 * 
-	 * @param database
-	 */
-	public OrderResource(DatabaseConfiguration database)
-	{
-		dao = new OrdersMongoDao(database);
-	}
-	
+    private OrderDao dao;
 
-	/**
-	 * Update the given Order within the Registration
-	 * @param registrationId
-	 * @param id
-	 * @param order
-	 * @return
-	 */
-	@PUT
-	@Timed
+    private Logger log = Logger.getLogger(OrderResource.class.getName());
+
+    /**
+     *
+     * @param database
+     */
+    public OrderResource(DatabaseConfiguration database)
+    {
+        dao = new OrderDao(database);
+    }
+
+
+    /**
+     * Update the given Order within the Registration
+     * @param registrationId
+     * @param id
+     * @param order
+     * @return
+     */
+    @PUT
+    @Timed
     public Order updateOrder(@PathParam("registrationId") String registrationId, @PathParam("id") String id, @Valid Order order)
     {
-		log.info("PUT method on the order. Updating the Order in the database.");
-		order.setDateLastUpdated(new Date());
-    	return dao.updateOrder(registrationId, id, order);
+        log.info("PUT method on the order. Updating the Order in the database.");
+        order.setDateLastUpdated(new Date());
+        return dao.updateOrder(registrationId, id, order);
     }
 }

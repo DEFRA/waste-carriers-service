@@ -2,7 +2,7 @@ package uk.gov.ea.wastecarrier.services.core;
 
 import java.util.logging.Logger;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -15,63 +15,63 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Version
 {
-	/*
-	 * This is the version string for this service
-	 */
-	@JsonProperty
-	@NotEmpty
+    /*
+     * This is the version string for this service
+     */
+    @JsonProperty
+    @NotEmpty
     private String versionDetails;
-	
-	@JsonProperty
-	@NotEmpty
+
+    @JsonProperty
+    @NotEmpty
     private String lastBuilt;
 
-	// Standard logging declaration
-	private Logger log = Logger.getLogger(Version.class.getName());
-	
-	public final static String VERSION_SINGULAR_NAME = "version";
-	
-	/**
-	 * Default constructor is required for non complete objects, and as alternative to 
-	 * defining specific JSON names per property
-	 */
-	public Version ()
-	{
-		log.fine("Initialize empty Version object");
-		this.setVersionDetails("DEFAULT");
-		this.setLastBuilt("DEFAULT-2013-12-04");
-	}
-	
-	/**
-	 * @return the versionDetails
-	 */
-	public String getVersionDetails()
-	{
-		return versionDetails;
-	}
-	
-	/**
-	 * @return the lastBuilt
-	 */
-	public String getLastBuilt()
-	{
-		return lastBuilt;
-	}
+    // Standard logging declaration
+    private Logger log = Logger.getLogger(Version.class.getName());
 
-	/**
-	 * @param versionDetails the versionDetails to set
-	 */
-	public void setVersionDetails(String versionDetails)
-	{
-		this.versionDetails = versionDetails;
-	}
+    public final static String VERSION_SINGULAR_NAME = "version";
 
-	/**
-	 * @param lastBuilt the lastBuilt to set
-	 */
-	public void setLastBuilt(String lastBuilt)
-	{
-		this.lastBuilt = lastBuilt;
-	}
+    /**
+     * Default constructor is required for non complete objects, and as alternative to
+     * defining specific JSON names per property
+     */
+    public Version ()
+    {
+        log.fine("Initialize empty Version object");
+        this.setVersionDetails("DEFAULT");
+        this.setLastBuilt("DEFAULT-2013-12-04");
+    }
+
+    /**
+     * @return the versionDetails
+     */
+    public String getVersionDetails()
+    {
+        return versionDetails;
+    }
+
+    /**
+     * @return the lastBuilt
+     */
+    public String getLastBuilt()
+    {
+        return lastBuilt;
+    }
+
+    /**
+     * @param versionDetails the versionDetails to set
+     */
+    public void setVersionDetails(String versionDetails)
+    {
+        this.versionDetails = versionDetails;
+    }
+
+    /**
+     * @param lastBuilt the lastBuilt to set
+     */
+    public void setLastBuilt(String lastBuilt)
+    {
+        this.lastBuilt = lastBuilt;
+    }
 
 }

@@ -1,5 +1,9 @@
 # Waste Carriers Service
 
+[![Build Status](https://travis-ci.org/DEFRA/waste-carriers-service.svg?branch=develop)](https://travis-ci.org/DEFRA/waste-carriers-service)
+[![Maintainability](https://api.codeclimate.com/v1/badges/2931ee9159971050f098/maintainability)](https://codeclimate.com/github/DEFRA/waste-carriers-service/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/2931ee9159971050f098/test_coverage)](https://codeclimate.com/github/DEFRA/waste-carriers-service/test_coverage)
+
 Waste Carriers Registration Service application.
 
 The Waste Carrier Registrations Service allows businesses, who deal with waste and thus have to register according to the regulations, to register online. Once registered, businesses can sign in again to edit their registrations if needed.
@@ -10,6 +14,11 @@ The service is implemented as a frontend web application, with a service API and
 
 This application and its associated Maven and Eclipse project implement the service layer and the associated RESTful services API.
 
+## Prerequisites
+
+- Java 8 JDK - for building the services layer
+- [MongoDB](http://www.mongodb.org) (version 3.6) - to store registrations and user accounts
+
 ## Installation
 
 Clone the repository, copying the project into a working directory:
@@ -18,13 +27,6 @@ Clone the repository, copying the project into a working directory:
 git clone https://github.com/DEFRA/waste-carriers-service.git
 ```
 
-## Prerequisites
-
-- Java 7 JDK - for building the services layer
-- [Maven](http://maven.apache.org/) (version 3.0 or above) - for building the services layer
-- [MongoDB](http://www.mongodb.org) (version 2.4) - to store registrations and user accounts
-- [ElasticSearch](http://www.elasticsearch.org) (version 1.4.1) - for full-text search
-
 ## Dependents
 
 The waste-carriers-frontend application, which is implemented in Ruby on Rails, is the client of the services exposed by this application.
@@ -32,60 +34,87 @@ The waste-carriers-frontend application, which is implemented in Ruby on Rails, 
 ## Configuration
 
 The service uses a Dropwizard configuration file (configuration.yml) which in turn refers to environment variables.
-You may want or need to set the following environment variables, e.g. in your ~/.bash_profile (if you are a Mac or Linux user):
+
+You'll need to set the following environment variables before using it. For example
 
 ```bash
-export WCRS_SERVICES_DB_HOST="localhost"
-export WCRS_SERVICES_DB_PORT=27017
-export WCRS_SERVICES_DB_NAME="waste-carriers"
-export WCRS_SERVICES_DB_USER="mongoUser"
-export WCRS_SERVICES_DB_PASSWD="<your-mongo-password>"
+export WCRS_SERVICES_AIRBRAKE_PROJECT_KEY="d03r78y5372a11111111111"
+export WCRS_SERVICES_AIRBRAKE_ENVNAME="pre-production"
 ```
+
+Other values in the configuration file have a default, however you can override them by setting the environment variable specified.
 
 Alternatively, you can create another local configuration file with your values in it, and refer to this file when starting up the service.
 
+```bash
+java -jar target/waste-carriers-service.jar server my_configuration.yml
+```
+
 ## Build
 
-Using Maven
+The project uses [Maven](https://maven.apache.org/) as its build tool, and [Maven Wrapper](https://github.com/takari/maven-wrapper) to handle getting a version of Maven on your machine to build the project.
+
+So to build the project call
 
 ```bash
-mvn clean package
+./mvnw -B -Dmaven.test.skip=true -T 1C clean package
 ```
+
+N.B. If maven was installed all on the machine you would swap `./mvnw` with `mvn`.
 
 ## Startup
 
 Start the service by providing the name of the jar file, the command 'server', and the name of the configuration file.
 
 ```bash
-java -jar target/waste-exemplar-services*.jar server  my_configuration.yml
+java -jar target/waste-carriers-service.jar server  configuration.yml
 ```
 
 You can also override parameters such as https port numbers using the Java '-D' option.
 
 ```bash
-java -Ddw.http.port=9090 -Ddw.http.adminPort=9091 -jar target/waste-exemplar-services-1.1.2.jar server my_configuration.yml
+java -Ddw.http.port=8003 -Ddw.http.adminPort=8004 -jar target/waste-carriers-service.jar server my_configuration.yml
 ```
 
 For more details on how to start a Dropwizard service and configuration and startup options, please see the Dropwizard documentation.
 
-Once the application server is started you should be able to access the services application in your browser on <http://localhost:9090/registrations.json>
+Once the application server is started you should be able to access the services application in your browser on <http://localhost:8003/registrations.json>
 
 ## Run Tests
 
+The project doesn't have an extensive suite of unit tests, but is working to improve its test coverage. They require a working connection to MongoDb, and specific test environment variables existing for them to run. Before running the tests you'll need to have sourced the environment variables. This is because the unit tests can't read from the config file so key details about MongoDb need to be provided as environment variables.
+
 ```bash
-mvn test
+source test_env_vars.sh
 ```
 
-## Postcode data
+Once you've run the environment variable script, you won't need to do it again until you open a new terminal session.
 
-The service uses postcode data with associated latitude and longitude coordinates, uploaded from a postcodes CSV file available here:
-http://www.freemaptools.com/download/outcode-postcodes/postcodes.csv
+Hence the command to build above includes the option to skip tests. Instead we advise those working on the project should manually run the tests as and when required using
 
-Contains Ordnance Survey data © Crown copyright and database right 2013
+```bash
+./mvnw test
+```
 
-Contains Royal Mail data © Royal Mail copyright and database right 2013
+## Mocks
 
-Contains National Statistics data © Crown copyright and database right 2013
+When running performance tests we need the ability to mock external services so as not to get in trouble by putting them under heavy load. To support this in the simplest way, we have built mocking functionality into this project.
+
+Note, where example endpoints are given you should amend them to match your own environment setup.
+
+### Companies House
+
+The service has the ability to mock the [Companies House API](https://api.companieshouse.gov.uk/company/). It simply has recorded the JSON responses for a number of companies, provides a resource that matches the real endpoint. Simply point the user facing app to <http://localhost:8003/mocks/company/> within its config and if the company number provided matches one of those previously recorded it will return a response.
+
+If no value is passed through (null) then `{}` is returned. Else if a number is sent that does not match a pre-recorded response the service will return the same 'not found' JSON that Companies House does.
+
+### Worldpay
+
+The service has the ability to mock [Worldpay](http://support.worldpay.com/support/kb/gg/corporate-gateway-guide/content/home.htm). It doesn't present a UI for users to fill in payment details like the real Worldpay, but it does handle the same [XML interactions](https://github.com/DEFRA/waste-carriers-renewals/wiki/Making-a-payment-with-WorldPay).
+
+So it can receive the initial request at <http://localhost:8003/mocks/worldpay/payment-service>, will save the order details to MongoDb and then return the correct redirect url to the client app. That url points back to this service at <http://localhost:8003/mocks/worldpay/dispatcher> which when called will return a valid success response for the specified order.
+
+For this to work the Worldpay environment variables the service is reading from must match those being used by the client app else the client will reject the success response provided by the service.
 
 ## Contributing to this project
 

@@ -4,73 +4,56 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.mongodb.Mongo;
+import com.mongodb.MongoClientURI;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class DatabaseConfiguration {
+
     @NotEmpty
     @JsonProperty
-    private String host;
+    private String uri;
 
-    @Min(1)
-    @Max(65535)
+    @Min(1000)
+    @Max(60000)
     @JsonProperty
-    private int port = 5672;
-    
-    @NotEmpty
-    @JsonProperty
-    private String name;
-    
-    @JsonProperty
-    private String username;
+    private int serverSelectionTimeout;
 
-	@JsonProperty
-    private String password;
+    private MongoClientURI mongoClientURI;
 
-	public DatabaseConfiguration() {
-		//empty constructor
-	}
-	
-	/**
-	 * Constructor with arguments.
-	 * @param host
-	 * @param port
-	 * @param name
-	 * @param username
-	 * @param password
-	 */
-	public DatabaseConfiguration(String host, int port, String name, String username, String password) {
-		this.host = host;
-		this.port = port;
-		this.name = name;
-		this.username = username;
-		this.password = password;
-	}
-	
-    public String getHost() {
-        return host;
+    public DatabaseConfiguration() {}
+
+    public DatabaseConfiguration(String uri, int serverSelectionTimeout) {
+        this.uri = uri;
+        this.serverSelectionTimeout = serverSelectionTimeout;
     }
 
-    public int getPort() {
-        return port;
+    public String getUri() {
+        return this.uri;
     }
-    
-    public String getName() {
-        return name;
-    }
-    
-    /**
-	 * @return the username
-	 */
-	public String getUsername()
-	{
-		return username;
-	}
 
-	/**
-	 * @return the password
-	 */
-	public String getPassword()
-	{
-		return password;
-	}
+    public MongoClientURI getMongoClientURI() {
+
+        if (this.mongoClientURI == null) {
+            this.mongoClientURI = new MongoClientURI(includeServerSelectionTimeoutMS(uri, serverSelectionTimeout));
+        }
+
+        return this.mongoClientURI;
+    }
+
+    public int getServerSelectionTimeout() {
+        return serverSelectionTimeout;
+    }
+
+    private String includeServerSelectionTimeoutMS(String uri, int serverSelectionTimeout) {
+        if (uri.contains("?")) {
+            return uri + "&serverSelectionTimeoutMS=" + String.valueOf(serverSelectionTimeout);
+        }
+        else {
+            return uri + "?serverSelectionTimeoutMS=" + String.valueOf(serverSelectionTimeout);
+        }
+    }
 }

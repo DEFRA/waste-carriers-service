@@ -1,0 +1,75 @@
+{
+  "company_number": "02050399",
+  "accounts": {
+    "accounting_reference_date": {
+      "month": "03",
+      "day": "31"
+    },
+    "next_due": "2018-12-31",
+    "next_made_up_to": "2018-03-31",
+    "overdue": false,
+    "last_accounts": {
+      "period_start_on": "2016-04-01",
+      "made_up_to": "2017-03-31",
+      "type": "micro-entity",
+      "period_end_on": "2017-03-31"
+    },
+    "next_accounts": {
+      "period_end_on": "2018-03-31",
+      "overdue": false,
+      "period_start_on": "2017-04-01",
+      "due_on": "2018-12-31"
+    }
+  },
+  "jurisdiction": "england-wales",
+  "registered_office_address": {
+    "region": "Mid Glamorgan",
+    "locality": "Caerphilly",
+    "postal_code": "CF83 1BR",
+    "address_line_1": "15 Lon Uchaf Lon Uchaf"
+  },
+  "last_full_members_list_date": "2015-12-31",
+  "date_of_creation": "1986-08-28",
+  "type": "ltd",
+  "has_been_liquidated": false,
+  "company_name": "ZENITH PRINT (UK) LIMITED",
+  "sic_codes": [
+    "70100"
+  ],
+  "undeliverable_registered_office_address": false,
+  "has_insolvency_history": false,
+  "etag": "9c6b544fbd0427cdfbb53e0870ca8fa32c084470",
+  "company_status": "active",
+  "has_charges": true,
+  "previous_company_names": [
+    {
+      "ceased_on": "1996-03-22",
+      "effective_from": "1993-04-22",
+      "name": "ZENITH TREFOREST PRESS LIMITED"
+    },
+    {
+      "name": "ZENITH COLOUR PRINTING LIMITED",
+      "ceased_on": "1993-04-22",
+      "effective_from": "1986-11-14"
+    },
+    {
+      "effective_from": "1986-08-28",
+      "ceased_on": "1986-11-14",
+      "name": "CHANCETACKLE LIMITED"
+    }
+  ],
+  "confirmation_statement": {
+    "last_made_up_to": "2017-12-31",
+    "next_made_up_to": "2018-12-31",
+    "overdue": false,
+    "next_due": "2019-01-14"
+  },
+  "links": {
+    "self": "/company/02050399",
+    "filing_history": "/company/02050399/filing-history",
+    "officers": "/company/02050399/officers",
+    "charges": "/company/02050399/charges"
+  },
+  "registered_office_is_in_dispute": false,
+  "can_file": true
+}

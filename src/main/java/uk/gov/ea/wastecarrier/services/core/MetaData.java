@@ -1,5 +1,7 @@
 package uk.gov.ea.wastecarrier.services.core;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -11,43 +13,44 @@ import java.util.Date;
  * Audit trail and monitoring purposes
  *
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class MetaData {
-	
+
     private Date dateRegistered;
-	
+
     private String anotherString;
 
-	private Date lastModified;
-	
-	private Date dateActivated;
-	
-	private RegistrationStatus status;
-	
-	private String revokedReason;
-	
-	private RouteType route;
-	
-	private String distance = "n/a";
+    private Date lastModified;
 
-	/**
-	 * Statuses and their meaning:
-	 * 
-	 * PENDING: Initial State
-	 * ACTIVATE: 
-	 * ACTIVE: Registration has been Verified and should appear on the register
-	 * REVOKED: Registration has been removed from the register by the EA
-	 * INACTIVE: Registration has been deleted from the register by the registrant
-	 *
-	 */
+    private Date dateActivated;
+
+    private RegistrationStatus status;
+
+    private String revokedReason;
+
+    private RouteType route;
+
+    private String distance = "n/a";
+
+    /**
+     * Statuses and their meaning:
+     *
+     * PENDING: Initial State
+     * ACTIVATE:
+     * ACTIVE: Registration has been Verified and should appear on the register
+     * REVOKED: Registration has been removed from the register by the EA
+     * INACTIVE: Registration has been deleted from the register by the registrant
+     *
+     */
         
         // TODO in next CI: Remove the "ACTIVATE" item; it is unused.
-	public enum RegistrationStatus {
-	    PENDING, ACTIVATE, ACTIVE, REVOKED, EXPIRED, INACTIVE, REFUSED
-	}
-	
-	public enum RouteType {
-	    DIGITAL, ASSISTED_DIGITAL
-	}
+    public enum RegistrationStatus {
+        PENDING, ACTIVATE, ACTIVE, REVOKED, EXPIRED, INACTIVE, REFUSED
+    }
+
+    public enum RouteType {
+        DIGITAL, ASSISTED_DIGITAL
+    }
     
     /**
      * Other possible meta data values include the following:
@@ -62,14 +65,14 @@ public class MetaData {
      *  					By default its initiator unless login mechanic provided
      * 
      */
-	
-	/**
-	 * This empty default constructor is needed for JSON to be happy. The alternative is add
-	 * "@JsonProperty("id")" in-front of the "long id" definition in the fully qualified constructor
-	 */
-	public MetaData()
-	{
-	}
+
+    /**
+     * This empty default constructor is needed for JSON to be happy. The alternative is add
+     * "@JsonProperty("id")" in-front of the "long id" definition in the fully qualified constructor
+     */
+    public MetaData()
+    {
+    }
 
     public MetaData(Date dateRegistered, String anotherString, RouteType route)
     {
@@ -90,123 +93,123 @@ public class MetaData {
         return anotherString;
     }
 
-	/**
-	 * @return the lastModified
-	 */
-	public Date getLastModified()
-	{
-		return lastModified;
-	}
-	
-	/**
-	 * @return the dateActivated
-	 */
-	public Date getDateActivated()
-	{
-		return dateActivated;
-	}
-	
-	/**
-	 * @return the status
-	 */
-	public RegistrationStatus getStatus()
-	{
-		return status;
-	}
-	
-	/**
-	 * @return the revokedReason
-	 */
-	public String getRevokedReason()
-	{
-		return revokedReason;
-	}
-	
-	/**
-	 * @return the route
-	 */
-	public RouteType getRoute()
-	{
-		return route;
-	}
-	
-	/**
-	 * @return the distance
-	 */
-	public String getDistance()
-	{
-		return distance;
-	}
-	
-	public static Date getCurrentDateTime()
+    /**
+     * @return the lastModified
+     */
+    public Date getLastModified()
     {
-		//@SamGriffiths [20150127]- changed the formats of all Dates to Date rather than String
-		Date date = new Date();
-		return date;
+        return lastModified;
     }
-	
-	/**
-	 * @param dateRegistered the dateRegistered to set
-	 */
-	public void setDateRegistered(Date dateRegistered)
-	{
-		this.dateRegistered = dateRegistered;
-	}
-	
-	/**
-	 * @param anotherString the anotherString to set
-	 */
-	public void setAnotherString(String anotherString)
-	{
-		this.anotherString = anotherString;
-	}
 
-	/**
-	 * @param lastModified the lastModified to set
-	 */
-	public void setLastModified(Date lastModified)
-	{
-		this.lastModified = lastModified;
-	}
-	
-	/**
-	 * @param dateActivated the dateActivated to set
-	 */
-	public void setDateActivated(Date dateActivated)
-	{
-		this.dateActivated = dateActivated;
-	}
-	
-	/**
-	 * @param status the status to set
-	 */
-	public void setStatus(RegistrationStatus status)
-	{
-		this.status = status;
-	}
-	
-	/**
-	 * @param revokedReason the revokedReason to set
-	 */
-	public void setRevokedReason(String revokedReason)
-	{
-		this.revokedReason = revokedReason;
-	}
-	
-	/**
-	 * @param route the route to set
-	 */
-	public void setRoute(RouteType route)
-	{
-		this.route = route;
-	}
+    /**
+     * @return the dateActivated
+     */
+    public Date getDateActivated()
+    {
+        return dateActivated;
+    }
 
-	/**
-	 * @param distance the distance to set
-	 */
-	public void setDistance(String distance)
-	{
-		this.distance = distance;
-	}
+    /**
+     * @return the status
+     */
+    public RegistrationStatus getStatus()
+    {
+        return status;
+    }
+
+    /**
+     * @return the revokedReason
+     */
+    public String getRevokedReason()
+    {
+        return revokedReason;
+    }
+
+    /**
+     * @return the route
+     */
+    public RouteType getRoute()
+    {
+        return route;
+    }
+
+    /**
+     * @return the distance
+     */
+    public String getDistance()
+    {
+        return distance;
+    }
+
+    public static Date getCurrentDateTime()
+    {
+        //@SamGriffiths [20150127]- changed the formats of all Dates to Date rather than String
+        Date date = new Date();
+        return date;
+    }
+
+    /**
+     * @param dateRegistered the dateRegistered to set
+     */
+    public void setDateRegistered(Date dateRegistered)
+    {
+        this.dateRegistered = dateRegistered;
+    }
+
+    /**
+     * @param anotherString the anotherString to set
+     */
+    public void setAnotherString(String anotherString)
+    {
+        this.anotherString = anotherString;
+    }
+
+    /**
+     * @param lastModified the lastModified to set
+     */
+    public void setLastModified(Date lastModified)
+    {
+        this.lastModified = lastModified;
+    }
+
+    /**
+     * @param dateActivated the dateActivated to set
+     */
+    public void setDateActivated(Date dateActivated)
+    {
+        this.dateActivated = dateActivated;
+    }
+
+    /**
+     * @param status the status to set
+     */
+    public void setStatus(RegistrationStatus status)
+    {
+        this.status = status;
+    }
+
+    /**
+     * @param revokedReason the revokedReason to set
+     */
+    public void setRevokedReason(String revokedReason)
+    {
+        this.revokedReason = revokedReason;
+    }
+
+    /**
+     * @param route the route to set
+     */
+    public void setRoute(RouteType route)
+    {
+        this.route = route;
+    }
+
+    /**
+     * @param distance the distance to set
+     */
+    public void setDistance(String distance)
+    {
+        this.distance = distance;
+    }
 
 }

@@ -5,6 +5,7 @@ import java.util.Date;
 import javax.annotation.Nonnull;
 import javax.validation.Valid;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.mongojack.MongoCollection;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -14,20 +15,25 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author Steve
  *
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 @MongoCollection(name = "orderItems")
 public class OrderItem
 {
     @JsonProperty
     private int amount;
+
     @Valid
     @JsonProperty
     private String currency;
     private Date lastUpdated;
+
     @Valid
     @JsonProperty
     private String description;
+
     @JsonProperty
     private String reference;
+
     @Nonnull
     @JsonProperty
     private OrderItemType type;
@@ -39,7 +45,6 @@ public class OrderItem
         NEW,
         EDIT,
         RENEW,
-        IRRENEW,    /* The IRRENEW might not be needed? */
         COPY_CARDS,
         CHARGE_ADJUST,
         IR_IMPORT
@@ -48,7 +53,7 @@ public class OrderItem
     public OrderItem()
     {
     }
-    
+
     public OrderItem(int amount, String currency, Date lastUpdated, String description,
             String reference)
     {

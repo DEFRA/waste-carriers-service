@@ -1,8 +1,5 @@
 package uk.gov.ea.wastecarrier.services.cli;
 
-import com.yammer.dropwizard.cli.ConfiguredCommand;
-import com.yammer.dropwizard.config.Bootstrap;
-
 import java.io.*;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
@@ -15,9 +12,11 @@ import java.util.TimeZone;
 import java.util.UUID;
 
 import com.mongodb.DB;
-import net.vz.mongodb.jackson.JacksonDBCollection;
+import com.opencsv.CSVReader;
+import io.dropwizard.cli.ConfiguredCommand;
+import io.dropwizard.setup.Bootstrap;
+import org.mongojack.JacksonDBCollection;
 
-import au.com.bytecode.opencsv.CSVReader;
 import net.sourceforge.argparse4j.impl.Arguments;
 import net.sourceforge.argparse4j.inf.Namespace;
 import net.sourceforge.argparse4j.inf.Subparser;
@@ -25,7 +24,7 @@ import org.joda.time.DateTime;
 
 import uk.gov.ea.wastecarrier.services.WasteCarrierConfiguration;
 import uk.gov.ea.wastecarrier.services.DatabaseConfiguration;
-import uk.gov.ea.wastecarrier.services.mongoDb.DatabaseHelper;
+import uk.gov.ea.wastecarrier.services.helper.DatabaseHelper;
 import uk.gov.ea.wastecarrier.services.core.Registration;
 import uk.gov.ea.wastecarrier.services.core.Address;
 import uk.gov.ea.wastecarrier.services.core.FinanceDetails;
@@ -150,8 +149,7 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
      * @throws Exception 
      */
     @Override
-    public void run(Bootstrap<WasteCarrierConfiguration> bootstrap, Namespace namespace, WasteCarrierConfiguration configuration) throws Exception
-    {
+    public void run(Bootstrap<WasteCarrierConfiguration> bootstrap, Namespace namespace, WasteCarrierConfiguration configuration) throws Exception {
         // Output useful logging.
         System.out.println("IR-Import command starting");
         System.out.println(String.format(" - will attempt to import from %s", namespace.getString("source")));
@@ -169,23 +167,12 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
         DatabaseConfiguration dbConfig = configuration.getDatabase();
         
         // Build a database helper.
-        DatabaseHelper dbHelper = new DatabaseHelper(new DatabaseConfiguration(
-                dbConfig.getHost(),
-                dbConfig.getPort(),
-                dbConfig.getName(),
-                dbConfig.getUsername(),
-                dbConfig.getPassword()
-        ));
+        DatabaseHelper dbHelper = new DatabaseHelper(dbConfig);
         
         // Check we can connect to the database, and are authenticated.
         DB db = dbHelper.getConnection();
-        if (db == null)
-        {
+        if (db == null) {
             throw new RuntimeException("Error: No database connection available; aborting.");
-        }
-        if (!db.isAuthenticated())
-        {
-            throw new RuntimeException("Error: Could not authenticate against database; aborting.");
         }
         
         // Create MONGOJACK connection to the database.
@@ -949,7 +936,7 @@ public class IRImporter extends ConfiguredCommand<WasteCarrierConfiguration>
                             dataRow[CsvColumn.Firstname.index()], dataRow[CsvColumn.Lastname.index()], reg.getRegIdentifier()));
                     
                     // Rails app will error without a DoB, so lets create a fake one for now.
-                    personDateOfBirth = new Date(0, 0, 1);
+                    personDateOfBirth = new Date(0L);
                 }
                 
                 // Have we already added this person from a previous row in the
