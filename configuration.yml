@@ -3,8 +3,8 @@
 
 # Added standard logging information
 logging:
-  #standard logging level (should usually be INFO)
-  level: INFO
+  # logging level (we set to ERROR in production to help us identify actual issues)
+  level: ${WCRS_SERVICES_LOGLEVEL:-ERROR}
   appenders:
     # Settings for logging to stdout.
     - type: console
