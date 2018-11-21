@@ -1,6 +1,7 @@
 package uk.gov.ea.wastecarrier.services.backgroundJobs;
 
 import com.opencsv.CSVWriter;
+import org.mongojack.DBQuery;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobKey;
@@ -373,8 +374,11 @@ public class ExportJob implements Job
     private void processAllRegistrations(DB database, JobDataMap jobConfig) throws Exception
     {
         log.info("Beginning processing all Registration records");
-        
-        // A cursor we will use later.
+
+        int pageSize = 20;
+        int resultCount = 0;
+        String lastId = null;
+        DBQuery.Query query = DBQuery.greaterThan("_id", lastId);
         DBCursor<Registration> dbcur = null;
         
         // Create MONGOJACK connection to the database.
@@ -411,17 +415,24 @@ public class ExportJob implements Job
             orderItemsCsvFile.writeNext(getOrderItemsExportColumnTitles());
             paymentsCsvFile.writeNext(getPaymentExportColumnTitles());
 
-            // Process all registrations in the database.
-            // IMPORTANT: As this cursor will be quite long-lived, we need to
-            // enable the "snapshot" option to ensure each document is returned
-            // only once.
-            dbcur = registrations.find().snapshot();
-            for (Registration reg : dbcur)
-            {
-                registrationUid++;
-                exportRegistrationForReporting(reg);
-                exportRegistrationForEpr(eprCsvFile, reg);
-            }
+            do {
+                if (lastId == null) {
+                    dbcur = registrations.find().limit(pageSize);
+                } else {
+                    dbcur = registrations.find(query).limit(pageSize);
+                }
+
+                resultCount = dbcur.size();
+
+                for (Registration reg : dbcur) {
+                    lastId = reg.getId();
+                    registrationUid++;
+                    exportRegistrationForReporting(reg);
+                    exportRegistrationForEpr(eprCsvFile, reg);
+                }
+
+                query = DBQuery.greaterThan("_id", lastId);
+            } while (resultCount > 0);
         }
         finally
         {
