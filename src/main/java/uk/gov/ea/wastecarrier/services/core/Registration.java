@@ -77,6 +77,8 @@ public class Registration
     /*
      * These are the recorded smart answers
      */
+    @JsonProperty
+    private String location;
     @Valid
     @NotEmpty
     @JsonProperty
@@ -234,6 +236,14 @@ public class Registration
     public String getUuid()
     {
         return uuid;
+    }
+
+    /**
+     * @return the location
+     */
+    public String getLocation()
+    {
+        return location;
     }
 
     /**
@@ -443,6 +453,14 @@ public class Registration
     public void setUuid(String uuid)
     {
         this.uuid = uuid;
+    }
+
+    /**
+     * @param location the location to set
+     */
+    public void setLocation(String location)
+    {
+        this.location = location;
     }
 
     /**
@@ -769,6 +787,7 @@ public class Registration
         final Registration other = (Registration) obj;
         return Objects.equals(this.tier, other.tier)
                 && Objects.equals(this.registrationType, other.registrationType)
+                && Objects.equals(this.location, other.location)
                 && Objects.equals(this.businessType, other.businessType)
                 && Objects.equals(this.otherBusinesses, other.otherBusinesses)
                 && Objects.equals(this.isMainService, other.isMainService)
@@ -801,7 +820,7 @@ public class Registration
     @Override
     public int hashCode()
     {
-        return Objects.hash(tier, registrationType, businessType, otherBusinesses, isMainService, constructionWaste,
+        return Objects.hash(tier, registrationType, location, businessType, otherBusinesses, isMainService, constructionWaste,
                 onlyAMF, companyName, individualsType, publicBodyType, publicBodyTypeOther, companyNo,
                 title, otherTitle, firstName, lastName, position, phoneNumber, contactEmail, totalFee, registrationFee,
                 copyCardFee, copyCards, accountEmail, declaredConvictions, declaration, expires_on, originalRegistrationNumber
