@@ -27,6 +27,7 @@ public class RegistrationBuilder {
     private Boolean includeCopyCard = false;
 
     private String regIdentifier;
+    private String location = "england";
     private String businessType = "soleTrader";
     private String companyName;
     private String lastName = "Isaacs";
@@ -63,6 +64,11 @@ public class RegistrationBuilder {
 
     public RegistrationBuilder regIdentifier(String regIdentifier) {
         this.regIdentifier = regIdentifier;
+        return this;
+    }
+
+    public RegistrationBuilder location(String location) {
+        this.location = location;
         return this;
     }
 
@@ -160,6 +166,7 @@ public class RegistrationBuilder {
         Registration reg = new Registration();
 
         reg.setUuid(generateUUID());
+        reg.setLocation(this.location);
         reg.setBusinessType(this.businessType);
         reg.setCompanyName(generateCompanyName());
         reg.setFirstName("Jason");
