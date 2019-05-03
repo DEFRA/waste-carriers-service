@@ -32,7 +32,7 @@ before_script:
   - if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then chmod +x ./cc-test-reporter; fi
   - if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then ./cc-test-reporter before-build; fi
 
-script: ./mvnw -B -T 1C clean package
+script: ./mvnw -B -T 1C clean test package
 
 after_script:
   # In order to get this to work found we could not use the standard
