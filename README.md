@@ -1,6 +1,6 @@
 # Waste Carriers Service
 
-[![Build Status](https://travis-ci.org/DEFRA/waste-carriers-service.svg?branch=develop)](https://travis-ci.org/DEFRA/waste-carriers-service)
+[![Build Status](https://travis-ci.com/DEFRA/waste-carriers-service.svg?branch=develop)](https://travis-ci.com/DEFRA/waste-carriers-service)
 [![Maintainability](https://api.codeclimate.com/v1/badges/2931ee9159971050f098/maintainability)](https://codeclimate.com/github/DEFRA/waste-carriers-service/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/2931ee9159971050f098/test_coverage)](https://codeclimate.com/github/DEFRA/waste-carriers-service/test_coverage)
 
