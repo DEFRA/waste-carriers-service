@@ -77,8 +77,7 @@ public class WasteCarrierService extends Application<WasteCarrierConfiguration> 
                 registrationsDb,
                 usersDb,
                 entityMatchingDb,
-                configuration.getSettings(),
-                configuration.getMockConfiguration()
+                configuration.getSettings()
         );
 
         addTasks(
@@ -179,8 +178,7 @@ public class WasteCarrierService extends Application<WasteCarrierConfiguration> 
             DatabaseConfiguration registrationsDb,
             DatabaseConfiguration usersDb,
             DatabaseConfiguration entityMatchingDb,
-            SettingsConfiguration settings,
-            MockConfiguration mockConfiguration
+            SettingsConfiguration settings
     ) {
 
         // Add Create Resource.
@@ -209,9 +207,6 @@ public class WasteCarrierService extends Application<WasteCarrierConfiguration> 
 
         // Add entity matching resource
         environment.jersey().register(new MatchResource(entityMatchingDb));
-
-        // Add mocks resource
-        environment.jersey().register(new MocksResource(registrationsDb, mockConfiguration));
     }
 
     private void addBackgroundJobs(

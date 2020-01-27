@@ -106,10 +106,3 @@ registrationStatusJob:
   # Cron expression for scheduled job execution. Leave empty to make the job
   # run on a manual trigger only.  Default is daily at 8pm.
   cronExpression: ${WCRS_STATUS_JOB_CRON_SCHEDULE:-0 0 20 1/1 * ? *}
-
-mock:
-  # To try and more closely mock calling out to Worldpay you can have the
-  # service pause during each call. The default is a best guess at trying to
-  # and take into account reading from the xml files/generating responses whilst
-  # delaying enough to mimic a normal call to the service
-  delay: ${WCRS_MOCK_DELAY:-200}
