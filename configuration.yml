@@ -108,24 +108,6 @@ registrationStatusJob:
   cronExpression: ${WCRS_STATUS_JOB_CRON_SCHEDULE:-0 0 20 1/1 * ? *}
 
 mock:
-  # Once a payment is complete with worldpay it redirects the user to the
-  # original client. In that redirection it passes a number of params of which
-  # an admin code is one of them. As we don't receive it in any requests from
-  # the client, we have to pull it from the environment
-  worldPayAdminCode: ${WCRS_WORLDPAY_ADMIN_CODE:-ENVIRONMENTAGENCY}
-  # Upon receiving the initial request from a service using worldpay, we have
-  # to generate a url that the client should redirect the user to. So we need
-  # to know what our own url is within the current environment. We first
-  # look for a public domain, as that is what it would be in a production env.
-  # Else we default to what it would be when all the services are running
-  # locally
-  servicesDomain: ${WCRS_PUBLIC_DOMAIN:-http://localhost:8003}
-  # The mac secret is a password shared only between Worldpay and its customers.
-  # Its used along with some information from the order to sign the success
-  # response. In this way the client is sure its worldpay telling them the user
-  # has completed payment and no one else. So again we need to grab this from
-  # the environment.
-  macSecret: ${WCRS_WORLDPAY_ECOM_MACSECRET:-macKeydaddyyeahfool@7}
   # To try and more closely mock calling out to Worldpay you can have the
   # service pause during each call. The default is a best guess at trying to
   # and take into account reading from the xml files/generating responses whilst
