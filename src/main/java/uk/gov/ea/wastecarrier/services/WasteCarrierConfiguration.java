@@ -5,10 +5,8 @@ import javax.validation.constraints.NotNull;
 
 import io.dropwizard.Configuration;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.hibernate.validator.constraints.NotEmpty;
 
 import uk.gov.ea.wastecarrier.services.backgroundJobs.ExportJobConfiguration;
-import uk.gov.ea.wastecarrier.services.backgroundJobs.RegistrationStatusJobConfiguration;
 
 public class WasteCarrierConfiguration extends Configuration {
     @Valid
@@ -44,11 +42,6 @@ public class WasteCarrierConfiguration extends Configuration {
     @Valid
     @NotNull
     @JsonProperty
-    private RegistrationStatusJobConfiguration registrationStatusJob = new RegistrationStatusJobConfiguration();
-    
-    @Valid
-    @NotNull
-    @JsonProperty
     private AirbrakeLogbackConfiguration airbrake = new AirbrakeLogbackConfiguration();
     
     public DatabaseConfiguration getDatabase() {
@@ -73,10 +66,6 @@ public class WasteCarrierConfiguration extends Configuration {
     
     public ExportJobConfiguration getExportJobConfiguration() {
         return exportJob;
-    }
-    
-    public RegistrationStatusJobConfiguration getRegistrationStatusJobConfiguration() {
-        return registrationStatusJob;
     }
     
     public AirbrakeLogbackConfiguration getAirbrakeLogbackConfiguration() {

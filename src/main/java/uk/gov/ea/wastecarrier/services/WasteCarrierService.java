@@ -86,8 +86,7 @@ public class WasteCarrierService extends Application<WasteCarrierConfiguration> 
         addBackgroundJobs(
                 environment,
                 registrationsDb,
-                configuration.getExportJobConfiguration(),
-                configuration.getRegistrationStatusJobConfiguration()
+                configuration.getExportJobConfiguration()
         );
 
         logPackageNameAndVersion();
@@ -207,14 +206,12 @@ public class WasteCarrierService extends Application<WasteCarrierConfiguration> 
     private void addBackgroundJobs(
             Environment environment,
             DatabaseConfiguration registrationsDb,
-            ExportJobConfiguration exportConfig,
-            RegistrationStatusJobConfiguration statusJobConfiguration
+            ExportJobConfiguration exportConfig
     ) {
         // Add managed component and tasks for Background Scheduled Jobs.
         BackgroundJobScheduler dailyJobScheduler = BackgroundJobScheduler.getInstance();
         dailyJobScheduler.setDatabaseConfiguration(registrationsDb);
         dailyJobScheduler.setExportJobConfiguration(exportConfig);
-        dailyJobScheduler.setRegistrationStatusJobConfiguration(statusJobConfiguration);
         environment.lifecycle().manage(dailyJobScheduler);
     }
 
@@ -228,7 +225,6 @@ public class WasteCarrierService extends Application<WasteCarrierConfiguration> 
         // These link to the background jobs and allow us to execute them manually via the admin port
         environment.admin().addTask(new BackgroundJobMetricsReporter("get-jobMetrics"));
         environment.admin().addTask(new ExportJobStarter("start-exportJob"));
-        environment.admin().addTask(new RegistrationStatusJobStarter("start-registrationStatusJob"));
 
         // Allow us to test exception handling, particularly Airbrake / Errbit integration
         environment.admin().addTask(new ExceptionTesterTask("generateTestException"));
