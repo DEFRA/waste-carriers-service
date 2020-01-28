@@ -6,8 +6,6 @@ import javax.validation.constraints.NotNull;
 import io.dropwizard.Configuration;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import uk.gov.ea.wastecarrier.services.backgroundJobs.ExportJobConfiguration;
-
 public class WasteCarrierConfiguration extends Configuration {
     @Valid
     @NotNull
@@ -37,11 +35,6 @@ public class WasteCarrierConfiguration extends Configuration {
     @Valid
     @NotNull
     @JsonProperty
-    private ExportJobConfiguration exportJob = new ExportJobConfiguration();
-    
-    @Valid
-    @NotNull
-    @JsonProperty
     private AirbrakeLogbackConfiguration airbrake = new AirbrakeLogbackConfiguration();
     
     public DatabaseConfiguration getDatabase() {
@@ -62,10 +55,6 @@ public class WasteCarrierConfiguration extends Configuration {
 
     public EntityMatchingConfiguration getEntityMatching() {
         return entityMatching;
-    }
-    
-    public ExportJobConfiguration getExportJobConfiguration() {
-        return exportJob;
     }
     
     public AirbrakeLogbackConfiguration getAirbrakeLogbackConfiguration() {
