@@ -8,7 +8,6 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import net.anthavio.airbrake.AirbrakeLogbackAppender;
 import uk.gov.ea.wastecarrier.services.backgroundJobs.*;
-import uk.gov.ea.wastecarrier.services.cli.IRImporter;
 import uk.gov.ea.wastecarrier.services.dao.EntityDao;
 import uk.gov.ea.wastecarrier.services.dao.RegistrationDao;
 import uk.gov.ea.wastecarrier.services.dao.UserDao;
@@ -53,10 +52,6 @@ public class WasteCarrierService extends Application<WasteCarrierConfiguration> 
                         new EnvironmentVariableSubstitutor(false)
                 )
         );
-
-        // Add a command to import IR registrations.
-        // This can only be performed when the server is NOT running.
-        bootstrap.addCommand(new IRImporter());
     }
 
     @Override
