@@ -86,18 +86,3 @@ irRenewals:
 entityMatching:
   # Path to the file which contains data on the entities to be matched against
   entitiesFilePath: ${WCRS_ENTITY_SEARCH_FOLDERPATH:-/srv/java/waste-carriers-service/entity_data/entities.csv}
-
-exportJob:
-  # File to use for EPR exports (note: file, not directory).
-  eprExportFile: ${WCRS_EPR_EXPORT_FILE:-/srv/java/waste-carriers-service/exports/waste_carriers_epr_daily_full.csv}
-  # Date format to use for EPR exports.
-  eprExportDateFormat: "yyyy-MM-dd"
-  # Path to use for Reporting Snapshot exports (note: directory, not file).
-  reportingExportPath: ${WCRS_REPORTING_EXPORT_PATH:-/srv/java/waste-carriers-service/exports}
-  # Date format to use for Reporting Snapshot exports.
-  reportingExportDateFormat: "yyyy-MM-dd'T'HH:mm'Z'"
-  # Money format to use for Reporting Snapshot exports.
-  reportingExportMoneyFormat: "0.00"
-  # Cron expression for scheduled job execution. Leave empty to make the job
-  # run on a manual trigger only.  Default is daily at 9pm.
-  cronExpression: ${WCRS_EXPORT_JOB_CRON_SCHEDULE:-0 0 21 1/1 * ? *}

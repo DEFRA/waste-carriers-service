@@ -47,11 +47,6 @@
             <version>4.0</version>
         </dependency>
         <dependency>
-            <groupId>org.quartz-scheduler</groupId>
-            <artifactId>quartz</artifactId>
-            <version>2.2.2</version>
-        </dependency>
-        <dependency>
             <groupId>net.anthavio</groupId>
             <artifactId>airbrake-logback</artifactId>
             <version>1.0.3</version>

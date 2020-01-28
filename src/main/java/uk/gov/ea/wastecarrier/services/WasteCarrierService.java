@@ -7,7 +7,6 @@ import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import net.anthavio.airbrake.AirbrakeLogbackAppender;
-import uk.gov.ea.wastecarrier.services.backgroundJobs.*;
 import uk.gov.ea.wastecarrier.services.dao.EntityDao;
 import uk.gov.ea.wastecarrier.services.dao.RegistrationDao;
 import uk.gov.ea.wastecarrier.services.dao.UserDao;
@@ -81,12 +80,6 @@ public class WasteCarrierService extends Application<WasteCarrierConfiguration> 
                 entityMatchingDb,
                 configuration.getEntityMatching().entitiesFilePath,
                 configuration.getIrRenewals()
-        );
-
-        addBackgroundJobs(
-                environment,
-                registrationsDb,
-                configuration.getExportJobConfiguration()
         );
 
         logPackageNameAndVersion();
@@ -203,18 +196,6 @@ public class WasteCarrierService extends Application<WasteCarrierConfiguration> 
         environment.jersey().register(new MatchResource(entityMatchingDb));
     }
 
-    private void addBackgroundJobs(
-            Environment environment,
-            DatabaseConfiguration registrationsDb,
-            ExportJobConfiguration exportConfig
-    ) {
-        // Add managed component and tasks for Background Scheduled Jobs.
-        BackgroundJobScheduler dailyJobScheduler = BackgroundJobScheduler.getInstance();
-        dailyJobScheduler.setDatabaseConfiguration(registrationsDb);
-        dailyJobScheduler.setExportJobConfiguration(exportConfig);
-        environment.lifecycle().manage(dailyJobScheduler);
-    }
-
     private void addTasks(
             Environment environment,
             DatabaseConfiguration registrationsDb,
@@ -222,10 +203,6 @@ public class WasteCarrierService extends Application<WasteCarrierConfiguration> 
             String entityFilePath,
             IRConfiguration irConfig
     ) {
-        // These link to the background jobs and allow us to execute them manually via the admin port
-        environment.admin().addTask(new BackgroundJobMetricsReporter("get-jobMetrics"));
-        environment.admin().addTask(new ExportJobStarter("start-exportJob"));
-
         // Allow us to test exception handling, particularly Airbrake / Errbit integration
         environment.admin().addTask(new ExceptionTesterTask("generateTestException"));
 
