@@ -63,6 +63,5 @@ public class BackgroundJobMetricsReporter extends Task
         out.println("Note: all timestamps are in UTC.");
         BackgroundJobScheduler.getInstance().reportMetrics(out);
         ExportJob.reportMetrics(out);
-        RegistrationStatusJob.reportMetrics(out);
     }	
 }
