@@ -29,7 +29,7 @@ before_script:
 
 script:
   # the following command line builds the project, runs the tests with coverage and then execute the SonarCloud analysis
-  - ./mvnw -B -T 1C clean test org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dsonar.projectKey=DEFRA_waste-carriers-service
+  - ./mvnw clean test org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dsonar.projectKey=DEFRA_waste-carriers-service
   # - ./mvnw -B -T 1C clean test package
 
 # after_script:
