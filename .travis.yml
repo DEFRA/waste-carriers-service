@@ -30,11 +30,3 @@ before_script:
 script:
   # the following command line builds the project, runs the tests with coverage and then execute the SonarCloud analysis
   - ./mvnw clean test org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dsonar.projectKey=DEFRA_waste-carriers-service
-  # - ./mvnw -B -T 1C clean test package
-
-# after_script:
-#   # In order to get this to work found we could not use the standard
-#   # ./cc-test-reporter after-build but instead have to use the lower level cmds
-#   # format-coverage and upload-coverage. Solved this only after finding
-#   # https://github.com/codeclimate/test-reporter/issues/259#issuecomment-374280649
-#   - if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then JACOCO_SOURCE_PATH=src/main/java ./cc-test-reporter format-coverage target/jacoco/jacoco.xml --input-type jacoco && ./cc-test-reporter upload-coverage; fi
