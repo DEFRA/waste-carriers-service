@@ -1,8 +1,9 @@
 # Waste Carriers Service
 
-[![Build Status](https://travis-ci.com/DEFRA/waste-carriers-service.svg?branch=develop)](https://travis-ci.com/DEFRA/waste-carriers-service)
-[![Maintainability](https://api.codeclimate.com/v1/badges/2931ee9159971050f098/maintainability)](https://codeclimate.com/github/DEFRA/waste-carriers-service/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/2931ee9159971050f098/test_coverage)](https://codeclimate.com/github/DEFRA/waste-carriers-service/test_coverage)
+[![Build Status](https://travis-ci.com/DEFRA/waste-carriers-service.svg?branch=master)](https://travis-ci.com/DEFRA/waste-carriers-service)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=DEFRA_waste-carriers-service&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=DEFRA_waste-carriers-service)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=DEFRA_waste-carriers-service&metric=coverage)](https://sonarcloud.io/dashboard?id=DEFRA_waste-carriers-service)
+[![Licence](https://img.shields.io/badge/Licence-OGLv3-blue.svg)](http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3)
 
 Waste Carriers Registration Service application.
 
