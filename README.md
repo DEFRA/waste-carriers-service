@@ -1,6 +1,6 @@
 # Waste Carriers Service
 
-[![Build Status](https://travis-ci.com/DEFRA/waste-carriers-service.svg?branch=master)](https://travis-ci.com/DEFRA/waste-carriers-service)
+[![Build Status](https://travis-ci.com/DEFRA/waste-carriers-service.svg?branch=main)](https://travis-ci.com/DEFRA/waste-carriers-service)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=DEFRA_waste-carriers-service&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=DEFRA_waste-carriers-service)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=DEFRA_waste-carriers-service&metric=coverage)](https://sonarcloud.io/dashboard?id=DEFRA_waste-carriers-service)
 [![Licence](https://img.shields.io/badge/Licence-OGLv3-blue.svg)](http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3)
