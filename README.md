@@ -1,5 +1,7 @@
 # Waste Carriers Service
 
+> As of 27 October 2020, this repo is no longer in use and is no longer being maintained. See [waste-carriers-engine](https://github.com/DEFRA/waste-carriers-engine/) and its host apps instead.
+
 [![Build Status](https://travis-ci.com/DEFRA/waste-carriers-service.svg?branch=main)](https://travis-ci.com/DEFRA/waste-carriers-service)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=DEFRA_waste-carriers-service&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=DEFRA_waste-carriers-service)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=DEFRA_waste-carriers-service&metric=coverage)](https://sonarcloud.io/dashboard?id=DEFRA_waste-carriers-service)
